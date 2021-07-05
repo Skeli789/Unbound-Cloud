@@ -349,6 +349,11 @@ export function GetVisibleIVs(pokemon)
     ]);
 }
 
+export function CanMonGigantamax(pokemon)
+{
+    return ((pokemon["metInfo"] & 0x800) !== 0);
+}
+
 export function GetSpeciesName(species)
 {
     if (typeof(species) == "string")

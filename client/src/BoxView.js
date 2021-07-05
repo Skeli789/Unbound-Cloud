@@ -9,7 +9,7 @@ import withReactContent from 'sweetalert2-react-content'
 
 import {BOX_HOME, BOX_SAVE, BOX_SLOT_LEFT, BOX_SLOT_RIGHT} from './MainPage';
 import {PokemonSummary} from "./PokemonSummary";
-import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsBlankMon} from "./PokemonUtil";
+import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsBlankMon, GetSpeciesName} from "./PokemonUtil";
 import {Search, MatchesSearchCriteria} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
 import {CreateSingleBlankSelectedPos} from "./Util";
@@ -561,8 +561,8 @@ export class BoxView extends Component
 
         let species = speciesList[i];
         let link = GetIconSpeciesLinkBySpecies(species);
-        let alt = species.split("SPECIES_")[1];
-        let icon = <img src={link} alt={alt} className="box-icon-image living-dex-icon"
+        let alt = GetSpeciesName(species);
+        let icon = <img src={link} alt={alt} aria-label={alt} className="box-icon-image living-dex-icon"
                         onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
 
         if (link === monInSlotLink)
@@ -591,14 +591,12 @@ export class BoxView extends Component
             else
             {
                 var className = "box-icon-image";
-                var alt = pokemon["species"];
-                if (alt.startsWith("SPECIES_"))
-                    alt = alt.split("SPECIES_")[1];
+                var alt = pokemon["nickname"];
 
                 if (!this.matchesSearchCriteria(pokemon))
                     className += " box-icon-faded";
 
-                icon = <img src={link} alt={alt} className={className}
+                icon = <img src={link} alt={alt} aria-label={alt} className={className}
                             onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
             }
 
@@ -680,6 +678,7 @@ export class BoxView extends Component
 
         if (this.isHomeBox() && !this.state.editingTitle)
             livingDexIcon = <CgPokemon size={editIconSize  + 10} onClick={this.changeLivingDexView.bind(this)}
+                                       aria-label="Living Dex View"
                                        className="box-name-living-dex-icon" style={{color: this.state.livingDexState === LIVING_DEX_NO_FORMS ? "violet"
                                                                                          : this.state.livingDexState === LIVING_DEX_ALL ? "lightseagreen"
                                                                                          : "black"}} />;
@@ -689,19 +688,22 @@ export class BoxView extends Component
             
             title = this.state.titles[this.getCurrentBox()];
             titleEditIcon = this.state.editingTitle ? ""
-                          : this.isHomeBox() ? <GrEdit size={editIconSize} onClick={this.startEditingTitle.bind(this)} className="box-name-edit-icon" />
+                          : this.isHomeBox() ? <GrEdit size={editIconSize} aria-label="Edit Title"
+                                                onClick={this.startEditingTitle.bind(this)} className="box-name-edit-icon" />
                           : "";
             
             if (this.state.editingTitle)
             {
                 title =
                     <div>
-                        <GiCancel size={editIconSize  + 10} onClick={this.cancelEditingTitle.bind(this)} className="box-name-cancel-icon" />
+                        <GiCancel size={editIconSize  + 10} aria-label="Cancel Editing"
+                                  onClick={this.cancelEditingTitle.bind(this)} className="box-name-cancel-icon" />
                         <input type="text" className="box-name-text box-name-input"
                                             onChange={(event) => this.updateTitleNameInput(event.target.value)}
                                             onKeyDown={(event) => event.keyCode === 13 ? this.renameTitle() : {}}
                                             value={this.state.titleInput}/>
-                        <AiOutlineSave size={editIconSize + 10} onClick={this.renameTitle.bind(this)} className="box-name-save-icon" />
+                        <AiOutlineSave size={editIconSize + 10} aria-label="Save Title"
+                                       onClick={this.renameTitle.bind(this)} className="box-name-save-icon" />
                     </div>
 
                 titleEditIcon = "";
@@ -723,32 +725,32 @@ export class BoxView extends Component
         return (
             <div className="box-view">
                 <div className={titleContainerClass}>
-                    <AiOutlineArrowLeft size={42} onClick={this.handleChangeBox.bind(this, -1)} className="box-change-arrow" />
+                    <AiOutlineArrowLeft size={42} aria-label="Previous Box" onClick={this.handleChangeBox.bind(this, -1)} className="box-change-arrow" />
                     <span className="box-name">
                         {livingDexIcon}
                         {title}
                         {titleEditIcon}
                     </span>
-                    <AiOutlineArrowRight size={42} onClick={this.handleChangeBox.bind(this, 1)} className="box-change-arrow" />
+                    <AiOutlineArrowRight size={42} aria-label="Next Box" onClick={this.handleChangeBox.bind(this, 1)} className="box-change-arrow" />
                 </div>
                 <div className={"box " + (this.isHomeBox() ? "home-box" : "save-box")}>
                     {icons}
                 </div>
                 <div className="box-lower-icons">
-                    <BiSearchAlt2 size={34} className={"box-lower-icon" + (this.shouldFilterSearchResults() ? " green-icon" : "")}
+                    <BiSearchAlt2 size={34} aria-label="Search" className={"box-lower-icon" + (this.shouldFilterSearchResults() ? " green-icon" : "")}
                               onClick={this.startSearching.bind(this)}/>
-                    <GrMultiple size={28} className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
+                    <GrMultiple size={28} aria-label="Select All" className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
                     {
                         //Save Icon
                         this.getParentState().changeWasMade[this.state.boxType] ?
-                            <AiOutlineSave size={36} className="box-lower-icon" onClick={() => this.state.parent.saveAndExit()}/>
+                            <AiOutlineSave size={36} aria-label="Save" className="box-lower-icon" onClick={() => this.state.parent.saveAndExit()}/>
                         :
                             ""
                     }
                     {
                         //Fix Living Dex Icon
                         this.state.livingDexState !== LIVING_DEX_NONE && !this.state.fixingLivingDex && this.isHomeBox() ?
-                            <AiOutlineTool size={36} className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
+                            <AiOutlineTool size={36} aria-label="Fix Living Dex" className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
                         :
                             ""
                     }
@@ -756,8 +758,8 @@ export class BoxView extends Component
                         //Release & Showdown Icons
                         this.areAnyPokemonSelectedInCurrentBox() ?
                             <>
-                                <GrTrash size={28} className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
-                                <CgExport size={30} className="box-lower-icon" onClick = {this.viewShowdownExport.bind(this)}/>
+                                <GrTrash size={28} aria-label="Release" className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
+                                <CgExport size={30} aria-label="Showdown" className="box-lower-icon" onClick = {this.viewShowdownExport.bind(this)}/>
                             </>
                         :
                             ""
