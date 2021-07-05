@@ -1,0 +1,19 @@
+.search-view
+{
+    width: 100%;
+    max-width: 428px;
+    margin-bottom: 1%;
+}
+
+.search-form
+{
+    padding: 10px;
+    margin-bottom: 2%;
+}
+
+.search-title-text
+{
+    font-size: 25px !important;
+    text-align: center;
+    margin-bottom: 0px;
+}

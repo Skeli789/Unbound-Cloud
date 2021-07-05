@@ -1,0 +1,86 @@
+.mini-boxes
+{
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 1%;
+}
+
+.mini-boxes > div
+{
+    flex: 1 0 20%; /*5 boxes per row*/
+}
+
+
+@media (max-width: 1130px) /*Below and including this screen size*/
+{
+    .mini-boxes > div
+    {
+        flex-basis: 25%; /*4 boxes per row*/
+    }
+}
+
+@media (max-width: 900px)
+{
+    .mini-boxes > div
+    {
+        flex-basis: 26%; /*3 boxes per row*/
+    }
+}
+
+@media (max-width: 690px)
+{
+    .mini-boxes > div
+    {
+        flex-basis: 34%; /*2 boxes per row*/
+    }
+}
+  
+@media (max-width: 300px)
+{
+    .mini-boxes > div
+    {
+        flex-basis: 51%; /*1 box per row*/
+    }
+}
+
+.mini-box-with-title
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1%;
+}
+
+
+.mini-box
+{
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto;
+    padding: 2px;
+    width: fit-content;
+    cursor: pointer;
+}
+
+.mini-box:hover
+{
+    filter: brightness(150%);
+}
+
+.mini-box-cell
+{
+    border: 1px solid rgb(0, 0, 0);
+    width: 15px;
+    height: 15px;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.mini-box-title
+{    
+    font-size: 1.25rem !important;
+}
+
+.mini-box-current-box-title
+{
+    color: red;
+}

@@ -1,0 +1,7 @@
+/node_modules
+/logs
+.ipynb_checkpoints/
+.idea/
+__pycache__/
+.env
+*.ipynb
