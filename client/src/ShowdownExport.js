@@ -1,7 +1,7 @@
 
 import React, {Component} from 'react';
 
-import {GetMonAbility, GetMonNature, GetVisibleIVs, GetVisibleEVs, IsMonShiny, GetMonGender,
+import {GetMonAbility, GetMonNature, GetVisibleIVs, GetVisibleEVs, IsMonShiny, GetMonGender, CanMonGigantamax,
         GetSpeciesName, GetNatureName, GetAbilityName, GetMoveName, GetItemName, GetMonLevel} from './PokemonUtil';
 
 import "./stylesheets/ShowdownExport.css";
@@ -30,10 +30,15 @@ export class ShowdownExport extends Component
         var abilityLine = "Ability: " + GetAbilityName(GetMonAbility(pokemon));
         var levelLine = "Level: " + GetMonLevel(pokemon);
         var shinyLine = "Shiny: " + (IsMonShiny(pokemon) ? "Yes" : "No");
+        var gigantamaxLine = "";
+        var friendshipLine = "Happiness: " + pokemon["friendship"];
         var natureLine = GetNatureName(GetMonNature(pokemon)) + " Nature";
         var evsLine = "EVs: ";
         var ivsLine = "IVs: ";
         var moveNames = [];
+
+        if (CanMonGigantamax(pokemon)) //Only display if it can
+            gigantamaxLine = "Gigantamax: Yes\n"
 
         var ivs = GetVisibleIVs(pokemon);
         for (i = 0; i < ivs.length; ++i)
@@ -67,7 +72,7 @@ export class ShowdownExport extends Component
             nameLine += ` @ ${itemName}`;
         
         var textArea =
-            `${nameLine}\n${abilityLine}\n${levelLine}\n${shinyLine}\n${evsLine}\n${natureLine}\n${ivsLine}\n`;
+            `${nameLine}\n${abilityLine}\n${levelLine}\n${shinyLine}\n${gigantamaxLine}${friendshipLine}\n${evsLine}\n${natureLine}\n${ivsLine}\n`;
 
         for (let moveName of moveNames)
             textArea += `- ${moveName}\n`;

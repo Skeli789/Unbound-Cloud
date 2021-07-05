@@ -4,10 +4,14 @@
 
 import React, {Component} from 'react';
 import {GetMonLevel, GetMonAbility, GetMonNature, GetMonGender, GetVisibleStats, /*GetVisibleEVs, GetVisibleIVs,*/
-        GetMonOTName, GetMonOTGender, GetMonVisibleOTId,
+        GetMonOTName, GetMonOTGender, GetMonVisibleOTId, CanMonGigantamax,
         GetMoveName, GetAbilityName, GetNatureName} from "./PokemonUtil";
+import MoveData from "./data/MoveData.json";
 
 import "./stylesheets/PokemonSummary.css";
+import { GiVampireCape } from 'react-icons/gi';
+
+const BASE_GFX_LINK = "images/";
 
 const NATURE_STAT_TABLE =
 [
@@ -39,6 +43,8 @@ const NATURE_STAT_TABLE =
     [    0,  0,  0,     0,     0], // Quirky
 ];
 
+const PP_BONUS_MASK = [0x03, 0x0c, 0x30, 0xc0];
+
 
 export class PokemonSummary extends Component
 {
@@ -49,6 +55,26 @@ export class PokemonSummary extends Component
         {
             pokemon: props.pokemon,
         };
+    }
+
+    getPP(pokemon, move, moveIndex)
+    {
+        var ppBonuses = pokemon["ppBonuses"];
+        var basePP = MoveData[move]["pp"];
+        return Math.min(Math.floor(basePP + ((basePP * 20 * ((PP_BONUS_MASK[moveIndex] & ppBonuses) >> (2 * moveIndex))) / 100), 99));
+    }
+
+    printBallIcon()
+    {
+        var ballType = this.state.pokemon["pokeBall"];
+        var ballName = ballType.split("BALL_TYPE_")[1].split("_BALL")[0].toLowerCase();
+        ballName = ballName.charAt(0).toUpperCase() + ballName.slice(1) + " Ball";
+
+        return (
+            <div className="summary-ball-icon-container">
+                <img src={BASE_GFX_LINK + ballType + ".png"} alt="" aria-label={ballName}/>
+            </div>
+        )
     }
 
     printStats()
@@ -110,15 +136,53 @@ export class PokemonSummary extends Component
 
         if (this.state.pokemon !== null && this.state.pokemon["moves"] !== null)
         {
-            for (let move of this.state.pokemon["moves"])
+            for (let i = 0; i < this.state.pokemon["moves"].length; ++i)
             {
+                let move = this.state.pokemon["moves"][i];
+
+                //Print Type
+                if (move in MoveData)
+                {
+                    var moveType = MoveData[move]["type"];
+                    var typeName = moveType.toLowerCase().charAt(5).toUpperCase() + moveType.toLowerCase().slice(6); //Start after TYPE_
+                    var alt = typeName.slice(0, 2);
+                    moves.push(<img src={BASE_GFX_LINK + moveType + ".png"} alt={alt} aria-label={typeName} className="summary-move-type" key={key++} />)
+                }
+                else
+                {
+                    moves.push(<span className="summary-move-type" key={key++}/>);
+                }
+
+                //Print Name
                 var moveName = GetMoveName(move);
                 moves.push(<span className="summary-move" key={key++}>{moveName}</span>)
+
+                if (move in MoveData)
+                {
+                    //Print PP
+                    var pp = this.getPP(this.state.pokemon, move, i);
+                    moves.push(<span className="summary-pp" key={key++}>{pp}</span>);
+
+                    //Print Move Split
+                    var moveSplit = MoveData[move]["split"];
+                    var splitName = moveSplit.toLowerCase().charAt(6).toUpperCase() + moveSplit.toLowerCase().slice(7); //Start after SPLIT_
+                    var alt = typeName.slice(0, 2);
+                    moves.push(<img src={BASE_GFX_LINK + moveSplit + ".png"} alt={alt} aria-label={splitName} className="summary-move-split" key={key++} />)
+                }
+                else
+                {
+                    moves.push(<span className="summary-pp" key={key++}/>);
+                    moves.push(<span className="summary-move-split" key={key++}/>);
+                }
             }
         }
 
         return (
             <div className="summary-moves-container">
+                <span className="summary-moves-col-1-filler"/>
+                <span className="summary-moves-col-2-filler"/>
+                <span className="summary-moves-pp-title summary-pp">PP</span>
+                <span className="summary-moves-split-title">Split</span>
                 {moves}
             </div>
         )
@@ -142,6 +206,9 @@ export class PokemonSummary extends Component
         var level = GetMonLevel(this.state.pokemon);
         var ability = GetAbilityName(GetMonAbility(this.state.pokemon));
         var nature = GetNatureName(GetMonNature(this.state.pokemon));
+        var friendship = this.state.pokemon["friendship"];
+        var maxFriendship = 255;
+        var heartFriendship = 220;
 
         return (
             <div className="pokemon-summary-container">
@@ -155,6 +222,20 @@ export class PokemonSummary extends Component
                     <span className="summary-level">
                         Lv. {level}
                     </span>
+                    {
+                        friendship >= heartFriendship ?
+                            <span className="summary-heart" style={{color: (friendship >= maxFriendship) ? "red" : "grey"}}>
+                                ♥
+                            </span>
+                        :
+                            ""
+                    }
+                    {
+                        CanMonGigantamax(this.state.pokemon) ?
+                            <img src={BASE_GFX_LINK + "gigantamax.png"} alt={"Gigantamax"} aria-label="Can Gigantamax" className="summary-gigantamax"/>
+                        :
+                            ""
+                    }
                 </div>
                 <div className="summary-ot-container">
                     <span className={GetMonOTGender(this.state.pokemon) === "M" ? "summary-male-ot" : "summary-female-ot"}>
@@ -168,6 +249,7 @@ export class PokemonSummary extends Component
                 <div className="summary-nature">
                     Nature: {nature}
                 </div>
+                {this.printBallIcon()}
                 {this.printStats()}
                 {this.printMoves()}
             </div>

@@ -693,6 +693,7 @@ export default class MainPage extends Component {
 
         return (
             <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_EDITING_HOME_BOXES ? " top-bar-button-selected" : "")}
+                    aria-label="Home to Home"
                     onClick={() => this.changeBoxView(STATE_EDITING_HOME_BOXES)}>
                 <FaHome size={size} /> ↔ <FaHome size={size} />
             </Button>
@@ -705,6 +706,7 @@ export default class MainPage extends Component {
 
         return (
             <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_EDITING_SAVE_FILE ? " top-bar-button-selected" : "")}
+                    aria-label="Save File to Save File"
                     onClick={() => this.changeBoxView(STATE_EDITING_SAVE_FILE)}>
                 <FaGamepad size={size} /> ↔ <FaGamepad size={size} />
             </Button>
@@ -717,6 +719,7 @@ export default class MainPage extends Component {
 
         return (
             <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_MOVING_POKEMON ? " top-bar-button-selected" : "")}
+                    aria-label="Home to Save File"
                     onClick={() => this.changeBoxView(STATE_MOVING_POKEMON)}>
                 <FaHome size={size} /> ↔ <FaGamepad size={size} />
             </Button>
