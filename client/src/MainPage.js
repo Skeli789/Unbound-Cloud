@@ -4,13 +4,12 @@
 
 import React, {Component} from 'react'
 import {Button} from "react-bootstrap";
-import {isMobile} from "react-device-detect";
 //import {StatusCode} from "status-code-enum";
 import axios from "axios";
 import {config} from "./config";
 
 import {BoxList} from "./BoxList";
-import {BoxView, HIGHEST_SAVE_BOX_NUM, HIGHEST_HOME_BOX_NUM, MONS_PER_BOX, MONS_PER_ROW} from "./BoxView";
+import {BoxView, HIGHEST_HOME_BOX_NUM, HIGHEST_SAVE_BOX_NUM, MONS_PER_BOX, MONS_PER_ROW} from "./BoxView";
 import {IsBlankMon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from "./Util";
 import SaveData from "./data/Test Output.json"
@@ -21,6 +20,9 @@ import "./stylesheets/MainPage.css";
 
 export const BOX_HOME = 0;
 export const BOX_SAVE = 1;
+
+export const BOX_SLOT_LEFT = 0;
+export const BOX_SLOT_RIGHT = 1;
 
 const STATE_UPLOAD_SAVE = 0;
 const STATE_UPLOADING_SAVE_FILE = 1;
@@ -97,17 +99,46 @@ export default class MainPage extends Component {
         this.setState(stateChange);
     }
 
-    getBoxesByBoxType(boxType)
+    getBoxTypeByBoxSlot(boxSlot)
     {
-        if (boxType === BOX_HOME)
+        if (this.state.editState === STATE_EDITING_HOME_BOXES)
+            return BOX_HOME;
+        else if (this.state.editState === STATE_EDITING_SAVE_FILE)
+            return BOX_SAVE;
+
+        if (boxSlot === BOX_SLOT_LEFT)
+            return BOX_HOME;
+        else
+            return BOX_SAVE;
+    }
+
+    getTitlesByBoxSlot(boxSlot)
+    {
+        if (this.getBoxTypeByBoxSlot(boxSlot) === BOX_HOME)
+            return this.state.homeTitles;
+        else
+            return this.state.saveTitles;
+    }
+
+    getBoxesByBoxSlot(boxSlot)
+    {
+        if (this.getBoxTypeByBoxSlot(boxSlot) === BOX_HOME)
             return this.state.homeBoxes;
         else
             return this.state.saveBoxes;
     }
 
-    getMonAtBoxPos(boxType, boxPos)
+    getBoxAmountByBoxSlot(boxSlot)
     {
-        return this.getBoxesByBoxType(boxType)[boxPos];
+        if (this.getBoxTypeByBoxSlot(boxSlot) === BOX_HOME)
+            return HIGHEST_HOME_BOX_NUM;
+        else
+            return HIGHEST_SAVE_BOX_NUM;
+    }
+
+    getMonAtBoxPos(boxSlot, boxPos)
+    {
+        return this.getBoxesByBoxSlot(boxSlot)[boxPos];
     }
 
     chooseSaveFile(e)
@@ -216,22 +247,25 @@ export default class MainPage extends Component {
         boxes2[boxesOffset2] = temp;
     }
 
-    swapDifferentBoxedPokemon(multiSwap)
+    swapDifferentBoxSlotPokemon(multiSwap)
     {
-        var saveBoxes = this.state.saveBoxes;
-        var homeBoxes = this.state.homeBoxes;
+        var leftBoxes = this.getBoxesByBoxSlot(BOX_SLOT_LEFT);
+        var rightBoxes = this.getBoxesByBoxSlot(BOX_SLOT_RIGHT);
         var changeWasMade = this.state.changeWasMade;
+        var leftBoxType = this.getBoxTypeByBoxSlot(BOX_SLOT_LEFT);
+        var rightBoxType = this.getBoxTypeByBoxSlot(BOX_SLOT_RIGHT);
 
-        if (this.state.selectedMonBox[BOX_SAVE] <= HIGHEST_SAVE_BOX_NUM
-        && this.state.selectedMonBox[BOX_HOME] <= HIGHEST_HOME_BOX_NUM)
+        if (this.state.selectedMonBox[BOX_SLOT_LEFT] < this.getBoxAmountByBoxSlot(BOX_SLOT_LEFT)
+        && this.state.selectedMonBox[BOX_SLOT_RIGHT] < this.getBoxAmountByBoxSlot(BOX_SLOT_RIGHT))
         {
             if (!multiSwap)
             {
-                var homeOffset = this.state.selectedMonBox[BOX_HOME] * MONS_PER_BOX + this.state.selectedMonPos[BOX_HOME].indexOf(true);
-                var saveOffset = this.state.selectedMonBox[BOX_SAVE] * MONS_PER_BOX + this.state.selectedMonPos[BOX_SAVE].indexOf(true);
+                var leftOffset = this.state.selectedMonBox[BOX_SLOT_LEFT] * MONS_PER_BOX + this.state.selectedMonPos[BOX_SLOT_LEFT].indexOf(true);
+                var rightOffset = this.state.selectedMonBox[BOX_SLOT_RIGHT] * MONS_PER_BOX + this.state.selectedMonPos[BOX_SLOT_RIGHT].indexOf(true);
 
-                this.swapBoxedPokemon(homeBoxes, saveBoxes, homeOffset, saveOffset);
-                changeWasMade = [true, true];
+                this.swapBoxedPokemon(leftBoxes, rightBoxes, leftOffset, rightOffset);
+                changeWasMade[leftBoxType] = true;
+                changeWasMade[rightBoxType] = true;
             }
             else
             {
@@ -241,17 +275,17 @@ export default class MainPage extends Component {
                 var leftCol = Number.MAX_SAFE_INTEGER;
                 var rightCol = 0;
 
-                if (this.state.selectedMonPos[BOX_SAVE].filter(x => x).length >= 2) //Count number of "true"s in array
+                if (this.state.selectedMonPos[BOX_SLOT_RIGHT].filter(x => x).length >= 2) //Count number of "true"s in array
                 {
-                    multiFrom = BOX_SAVE;
-                    multiTo = BOX_HOME;
-                    multiTopLeftPos = this.state.selectedMonPos[BOX_HOME].indexOf(true);
+                    multiFrom = BOX_SLOT_RIGHT;
+                    multiTo = BOX_SLOT_LEFT;
+                    multiTopLeftPos = this.state.selectedMonPos[BOX_SLOT_LEFT].indexOf(true);
                 }
                 else
                 {
-                    multiFrom = BOX_HOME;
-                    multiTo = BOX_SAVE;
-                    multiTopLeftPos = this.state.selectedMonPos[BOX_SAVE].indexOf(true);
+                    multiFrom = BOX_SLOT_LEFT;
+                    multiTo = BOX_SLOT_RIGHT;
+                    multiTopLeftPos = this.state.selectedMonPos[BOX_SLOT_RIGHT].indexOf(true);
                 }
 
                 //Get area of moving mons
@@ -330,11 +364,12 @@ export default class MainPage extends Component {
 
                             let fromOffset = this.state.selectedMonBox[multiFrom] * MONS_PER_BOX + i;
                             let toOffset = this.state.selectedMonBox[multiTo] * MONS_PER_BOX + toRow * MONS_PER_ROW + toCol;
-                            this.swapBoxedPokemon(this.getBoxesByBoxType(multiFrom), this.getBoxesByBoxType(multiTo), fromOffset, toOffset);
+                            this.swapBoxedPokemon(this.getBoxesByBoxSlot(multiFrom), this.getBoxesByBoxSlot(multiTo), fromOffset, toOffset);
                         }
                     }
 
-                    changeWasMade = [true, true];
+                    changeWasMade[this.getBoxTypeByBoxSlot(multiTo)] = true;
+                    changeWasMade[this.getBoxTypeByBoxSlot(multiFrom)] = true;
                 }
                 else
                 {
@@ -351,8 +386,8 @@ export default class MainPage extends Component {
 
         this.setState({
             selectedMonPos: this.generateBlankSelectedPos(),
-            saveBoxes: saveBoxes,
-            homeBoxes: homeBoxes,
+            saveBoxes: (leftBoxType === BOX_SAVE) ? leftBoxes : (rightBoxType === BOX_SAVE) ? rightBoxes : this.state.saveBoxes,
+            homeBoxes: (leftBoxType === BOX_HOME) ? leftBoxes : (rightBoxType === BOX_HOME) ? rightBoxes : this.state.homeBoxes,
             changeWasMade: changeWasMade,
             multiMoveError: [false, false],
         })
@@ -360,22 +395,24 @@ export default class MainPage extends Component {
 
     swapDraggingBoxPokemon()
     {
-        var boxes1 = this.getBoxesByBoxType(this.state.draggingFromBox);
-        var boxes2 = this.getBoxesByBoxType(this.state.draggingToBox);
-        var offset1 = this.state.draggingMon;
-        var offset2 = this.state.draggingOver;
+        var fromBoxes = this.getBoxesByBoxSlot(this.state.draggingFromBox);
+        var toBoxes = this.getBoxesByBoxSlot(this.state.draggingToBox);
+        var fromOffset = this.state.draggingMon;
+        var toOffset = this.state.draggingOver;
         var selectedMonPos = this.state.selectedMonPos;
         var viewingMon = this.state.viewingMon;
         var changeWasMade = this.state.changeWasMade;
+        var fromBoxType = this.getBoxTypeByBoxSlot(this.state.draggingFromBox);
+        var toBoxType = this.getBoxTypeByBoxSlot(this.state.draggingToBox);
 
-        if (offset1 >= 0 && offset2 >= 0
-        && (this.state.draggingFromBox !== this.state.draggingToBox || offset1 !== offset2)) //Make sure different Pokemon are being swapped
+        if (fromOffset >= 0 && toOffset >= 0
+        && (this.state.draggingFromBox !== this.state.draggingToBox || fromOffset !== toOffset)) //Make sure different Pokemon are being swapped
         {
-            this.swapBoxedPokemon(boxes1, boxes2, offset1, offset2);
+            this.swapBoxedPokemon(fromBoxes, toBoxes, fromOffset, toOffset);
             selectedMonPos = this.generateBlankSelectedPos(); //Only remove if swap was made
             viewingMon = [null, null];
-            changeWasMade[this.state.draggingFromBox] = true;
-            changeWasMade[this.state.draggingToBox] = true;
+            changeWasMade[fromBoxType] = true;
+            changeWasMade[toBoxType] = true;
         }
 
         this.setState({
@@ -385,27 +422,27 @@ export default class MainPage extends Component {
             viewingMon: viewingMon,
             changeWasMade: changeWasMade,
             multiMoveError: [false, false],
-            saveBoxes: (this.state.draggingFromBox === BOX_SAVE) ? boxes1 : (this.state.draggingToBox === BOX_SAVE) ? boxes2 : this.state.saveBoxes,
-            homeBoxes: (this.state.draggingFromBox === BOX_HOME) ? boxes1 : (this.state.draggingToBox === BOX_HOME) ? boxes2 : this.state.homeBoxes,
+            saveBoxes: (fromBoxType === BOX_SAVE) ? fromBoxes : (toBoxType === BOX_SAVE) ? toBoxes : this.state.saveBoxes,
+            homeBoxes: (fromBoxType === BOX_HOME) ? fromBoxes : (toBoxType === BOX_HOME) ? toBoxes : this.state.homeBoxes,
         })
     }
 
-    releaseSelectedPokemon(boxType)
+    releaseSelectedPokemon(boxSlot, boxType)
     {
-        var boxes = this.getBoxesByBoxType(boxType);
+        var boxes = this.getBoxesByBoxSlot(boxSlot);
         var selectedMonPos = this.state.selectedMonPos;
         var viewingMon = this.state.viewingMon;
         var changeWasMade = this.state.changeWasMade;
-        viewingMon[boxType] = null;
+        viewingMon[boxSlot] = null;
 
-        if (this.state.selectedMonBox[boxType] >= 0
-        && this.state.selectedMonBox[boxType] <= HIGHEST_SAVE_BOX_NUM)
+        if (this.state.selectedMonBox[boxSlot] >= 0
+        && this.state.selectedMonBox[boxSlot] < this.getBoxAmountByBoxSlot(boxSlot))
         {
-            var startIndex = this.state.selectedMonBox[boxType] * MONS_PER_BOX;
+            var startIndex = this.state.selectedMonBox[boxSlot] * MONS_PER_BOX;
 
             for (let i = 0; i < MONS_PER_BOX; ++i)
             {
-                if (this.state.selectedMonPos[boxType][i])
+                if (this.state.selectedMonPos[boxSlot][i])
                 {
                     let offset =  startIndex + i;
                     boxes[offset] = this.generateBlankMonObject();
@@ -414,7 +451,7 @@ export default class MainPage extends Component {
             }
         }
 
-        selectedMonPos[boxType] = CreateSingleBlankSelectedPos();
+        selectedMonPos[boxSlot] = CreateSingleBlankSelectedPos();
 
         this.setState({
             saveBoxes: (boxType === BOX_SAVE) ? boxes : this.state.saveBoxes,
@@ -489,7 +526,7 @@ export default class MainPage extends Component {
         var blankObject = this.generateBlankMonObject();
 
         var homeBoxes = []
-        for (let i = 1; i <= HIGHEST_HOME_BOX_NUM + 1; ++i)
+        for (let i = 1; i <= HIGHEST_HOME_BOX_NUM; ++i)
         {
             for (let j = 1; j <= 30; ++j)
                 homeBoxes.push(Object.assign({}, blankObject))
@@ -502,7 +539,7 @@ export default class MainPage extends Component {
     {
         var titles = [];
 
-        for (let i = 1; i <= HIGHEST_HOME_BOX_NUM + 1; ++i)
+        for (let i = 1; i <= HIGHEST_HOME_BOX_NUM; ++i)
             titles.push("Home " + i);
 
         return titles;
@@ -569,15 +606,48 @@ export default class MainPage extends Component {
 
     changeBoxView(newState)
     {
-        this.setState({
-            editState: newState,
-            selectedMonBox: [0, 0],
-            selectedMonPos: this.generateBlankSelectedPos(),
-            viewingMon: [null, null],
-            viewingBoxList: -1,
-            draggingMon: -1,
-            multiMoveError: [false, false],
-        });
+        if (newState !== this.state.editState)
+        {
+            var oldState = this.state.editState;
+            var currentBoxes = this.state.currentBox;
+
+            if ((newState === STATE_EDITING_HOME_BOXES || newState === STATE_EDITING_SAVE_FILE)
+            && ((oldState === STATE_EDITING_HOME_BOXES || oldState === STATE_EDITING_SAVE_FILE)))
+                currentBoxes = [0, 1]; //Stagger boxes
+            else
+            {
+                if (newState === STATE_MOVING_POKEMON)
+                {
+                    if (oldState === STATE_EDITING_HOME_BOXES)
+                        currentBoxes[BOX_SLOT_RIGHT] = 0; //Reset save box
+                    else
+                        currentBoxes[BOX_SLOT_LEFT] = 0; //Reset home box
+                }
+                else if (newState === STATE_EDITING_HOME_BOXES)
+                {
+                    currentBoxes[BOX_SLOT_RIGHT] = 0; //Reset old save box
+                    if (currentBoxes[BOX_SLOT_LEFT] === currentBoxes[BOX_SLOT_RIGHT]) //Both are 0
+                        currentBoxes[BOX_SLOT_RIGHT] = 1;
+                }
+                else
+                {
+                    currentBoxes[BOX_SLOT_LEFT] = 0; //Reset home box
+                    if (currentBoxes[BOX_SLOT_LEFT] === currentBoxes[BOX_SLOT_RIGHT]) //Both are 0
+                        currentBoxes[BOX_SLOT_LEFT] = 1;
+                }
+            }
+
+            this.setState({
+                editState: newState,
+                selectedMonBox: [0, 0],
+                selectedMonPos: this.generateBlankSelectedPos(),
+                viewingMon: [null, null],
+                currentBox: currentBoxes,
+                viewingBoxList: -1,
+                draggingMon: -1,
+                multiMoveError: [false, false],
+            });
+        }
     }
 
     moveDraggingMonIcon(e)
@@ -667,12 +737,14 @@ export default class MainPage extends Component {
     boxListScreen()
     {
         return (
-            <BoxList boxes={this.state.viewingBoxList === BOX_HOME ? this.state.homeBoxes : this.state.saveBoxes}
-                     titles={this.state.viewingBoxList === BOX_HOME ? this.state.homeTitles : this.state.saveTitles}
-                     boxCount={this.state.viewingBoxList === BOX_HOME ? HIGHEST_HOME_BOX_NUM + 1 : HIGHEST_SAVE_BOX_NUM + 1}
-                     currentBoxes={this.state.currentBox} boxType={this.state.viewingBoxList}
-                     selectedMonPos={this.state.selectedMonPos} viewingMon={this.state.viewingMon}
-                     searchCriteria={this.state.searchCriteria[this.state.viewingBoxList]} updateParentState={this.updateState}/>
+            <BoxList boxes={this.getBoxesByBoxSlot(this.state.viewingBoxList)}
+                     titles={this.getTitlesByBoxSlot(this.state.viewingBoxList)}
+                     boxCount={this.getBoxAmountByBoxSlot(this.state.viewingBoxList)}
+                     boxType={this.getBoxTypeByBoxSlot(this.state.viewingBoxList)} boxSlot={this.state.viewingBoxList}
+                     currentBoxes={this.state.currentBox} selectedMonPos={this.state.selectedMonPos}
+                     viewingMon={this.state.viewingMon} searchCriteria={this.state.searchCriteria[this.state.viewingBoxList]}
+                     isSameBoxBothSides={this.state.editState === STATE_EDITING_SAVE_FILE || this.state.editState === STATE_EDITING_HOME_BOXES}
+                     updateParentState={this.updateState}/>
         );
     }
 
@@ -778,11 +850,11 @@ export default class MainPage extends Component {
     printEditingHomeBoxes()
     {
         var homeBoxView1 = <BoxView pokemonJSON={this.state.homeBoxes} titles={this.state.homeTitles}
-                                   parent={this} boxType={BOX_HOME}
-                                   key={BOX_HOME + 3}/>; //The +3 forces a rerender by assigning a new key
+                                    parent={this} boxType={BOX_HOME} boxSlot={BOX_SLOT_LEFT}
+                                    isSameBoxBothSides={true} key={BOX_HOME + 3}/>; //The +3 forces a rerender by assigning a new key
         var homeBoxView2 = <BoxView pokemonJSON={this.state.homeBoxes} titles={this.state.homeTitles}
-                                    parent={this} boxType={BOX_HOME}
-                                    key={BOX_HOME + 4}/>; //The +4 forces a rerender by assigning a new key
+                                    parent={this} boxType={BOX_HOME} boxSlot={BOX_SLOT_RIGHT}
+                                    isSameBoxBothSides={true} key={BOX_HOME + 4}/>; //The +4 forces a rerender by assigning a new key
 
         return (
             <div>         
@@ -806,11 +878,11 @@ export default class MainPage extends Component {
     printEditingSaveBoxes()
     {
         var saveBoxView1 = <BoxView pokemonJSON={this.state.saveBoxes} titles={this.state.saveTitles}
-                                   parent={this} boxType={BOX_SAVE}
-                                   key={BOX_SAVE + 5}/>; //The +5 forces a rerender by assigning a new key
+                                    parent={this} boxType={BOX_SAVE} boxSlot={BOX_SLOT_LEFT}
+                                    isSameBoxBothSides={true} key={BOX_SAVE + 5}/>; //The +5 forces a rerender by assigning a new key
         var saveBoxView2 = <BoxView pokemonJSON={this.state.saveBoxes} titles={this.state.saveTitles}
-                                    parent={this} boxType={BOX_SAVE}
-                                    key={BOX_SAVE + 6}/>; //The +6 forces a rerender by assigning a new key
+                                    parent={this} boxType={BOX_SAVE} boxSlot={BOX_SLOT_RIGHT}
+                                    isSameBoxBothSides={true} key={BOX_SAVE + 6}/>; //The +6 forces a rerender by assigning a new key
 
         return (
             <div>                
@@ -834,11 +906,11 @@ export default class MainPage extends Component {
     printMovingPokemon()
     {
         var homeBoxView = <BoxView pokemonJSON={this.state.homeBoxes} titles={this.state.homeTitles}
-                                   parent={this} boxType={BOX_HOME}
-                                   key={BOX_HOME}/>;
+                                   parent={this} boxType={BOX_HOME} boxSlot={BOX_SLOT_LEFT}
+                                   isSameBoxBothSides={false} key={BOX_HOME}/>;
         var saveBoxView = <BoxView pokemonJSON={this.state.saveBoxes} titles={this.state.saveTitles}
-                                   parent={this} boxType={BOX_SAVE}
-                                   key={BOX_SAVE}/>;
+                                   parent={this} boxType={BOX_SAVE} boxSlot={BOX_SLOT_RIGHT}
+                                   isSameBoxBothSides={false} key={BOX_SAVE}/>;
  
         return (
             <div>

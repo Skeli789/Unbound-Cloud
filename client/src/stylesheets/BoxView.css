@@ -6,14 +6,16 @@
 {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .box-title-edit
 {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-top: 10px;
+    margin-bottom: 2px;
     max-height: 50px;
 }
 

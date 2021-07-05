@@ -84,3 +84,10 @@
 {
     color: red;
 }
+
+.disabled-box
+{    
+    background-color: grey;
+    filter: unset !important;
+    cursor: not-allowed !important;
+}

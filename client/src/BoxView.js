@@ -7,7 +7,7 @@ import {isMobile} from "react-device-detect";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import {BOX_HOME, BOX_SAVE} from './MainPage';
+import {BOX_HOME, BOX_SAVE, BOX_SLOT_LEFT, BOX_SLOT_RIGHT} from './MainPage';
 import {PokemonSummary} from "./PokemonSummary";
 import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsBlankMon} from "./PokemonUtil";
 import {Search, MatchesSearchCriteria} from "./Search";
@@ -23,8 +23,8 @@ import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
 
 import "./stylesheets/BoxView.css";
 
-export const HIGHEST_SAVE_BOX_NUM = 25 - 1; //Starts at 0
-export const HIGHEST_HOME_BOX_NUM = 100 - 1; //Starts at 0
+export const HIGHEST_SAVE_BOX_NUM = 25;
+export const HIGHEST_HOME_BOX_NUM = 100;
 export const MONS_PER_ROW = 6;
 export const MONS_PER_BOX = 30;
 
@@ -33,6 +33,8 @@ const LIVING_DEX_NO_FORMS = 1;
 const LIVING_DEX_ALL = 2;
 
 const PopUp = withReactContent(Swal);
+
+//TODO: Visible stats on the summary view.
 
 
 export class BoxView extends Component
@@ -54,6 +56,8 @@ export class BoxView extends Component
             allPokemon: props.pokemonJSON,
             titles: props.titles,
             boxType: props.boxType,
+            boxSlot: props.boxSlot,
+            isSameBoxBothSides: props.isSameBoxBothSides,
             parent: props.parent,
         };
     }
@@ -68,14 +72,19 @@ export class BoxView extends Component
         return this.state.boxType === BOX_HOME;
     }
 
+    isSameBoxBothSides()
+    {
+        return this.state.isSameBoxBothSides;
+    }
+
     getCurrentBox()
     {
-        return this.getParentState().currentBox[this.state.boxType];
+        return this.getParentState().currentBox[this.state.boxSlot];
     }
 
     shouldFilterSearchResults()
     {
-        return this.getParentState().searchCriteria[this.state.boxType] !== null;
+        return this.getParentState().searchCriteria[this.state.boxSlot] !== null;
     }
 
     getParentState()
@@ -85,8 +94,8 @@ export class BoxView extends Component
 
     isMonSelected(boxPos)
     {
-        return this.getParentState().selectedMonBox[this.state.boxType] === this.getCurrentBox()
-            && this.getParentState().selectedMonPos[this.state.boxType][boxPos];
+        return this.getParentState().selectedMonBox[this.state.boxSlot] === this.getCurrentBox()
+            && this.getParentState().selectedMonPos[this.state.boxSlot][boxPos];
     }
 
     areAnyPokemonSelectedInCurrentBox()
@@ -95,12 +104,12 @@ export class BoxView extends Component
         var selectedMonPos = this.getParentState().selectedMonPos;
         var selectedMonBox = this.getParentState().selectedMonBox;
 
-        if (selectedMonBox[this.state.boxType] === this.getCurrentBox())
+        if (selectedMonBox[this.state.boxSlot] === this.getCurrentBox())
         {
             for (let i = 0; i < MONS_PER_BOX; ++i)
             {
                 if (!IsBlankMon(this.state.allPokemon[i + startIndex]) //Ignore blank slots
-                && selectedMonPos[this.state.boxType][i])
+                && selectedMonPos[this.state.boxSlot][i])
                     return true; //At least one mon selected
             }
         }
@@ -110,17 +119,17 @@ export class BoxView extends Component
 
     canSelectMonAtPos(boxPos)
     {
-        var saveSelectionActive = this.getParentState().selectedMonPos[BOX_SAVE].some((x) => x); //At least one mon selected
-        var homeSelectionActive = this.getParentState().selectedMonPos[BOX_HOME].some((x) => x); //At least one mon selected
+        var rightSelectionActive = this.getParentState().selectedMonPos[BOX_SLOT_RIGHT].some((x) => x); //At least one mon selected
+        var leftSelectionActive = this.getParentState().selectedMonPos[BOX_SLOT_LEFT].some((x) => x); //At least one mon selected
         var speciesNameSelected = this.getSpeciesNameInCurrentBoxAt(boxPos);
         var selectedNullSpecies = (speciesNameSelected === "none" || speciesNameSelected === "unknown");
 
         if (selectedNullSpecies
-        && ((this.state.boxType === BOX_HOME && !saveSelectionActive)
-         || (this.state.boxType === BOX_SAVE && !homeSelectionActive)))
+        && ((this.state.boxSlot === BOX_SLOT_LEFT && !rightSelectionActive)
+         || (this.state.boxSlot === BOX_SLOT_RIGHT && !leftSelectionActive)))
             return false; //Clicking on a blank spot doesn't nothing if no other Pokemon has been selected yet
 
-        if (!homeSelectionActive && !saveSelectionActive && selectedNullSpecies) //A home mon hasn't been selected yet
+        if (!leftSelectionActive && !rightSelectionActive && selectedNullSpecies) //A home mon hasn't been selected yet
             return false; //Can't select a blank spot
 
         //The blank spot can be chosen to deselect the currently selected mon or move the other selected mon to
@@ -129,8 +138,8 @@ export class BoxView extends Component
 
     doesClickingSpotDeselectChoice(boxPos)
     {
-        var saveSelectionActive = this.getParentState().selectedMonPos[BOX_SAVE].some((x) => x); //At least one mon selected
-        var homeSelectionActive = this.getParentState().selectedMonPos[BOX_HOME].some((x) => x); //At least one mon selected
+        var saveSelectionActive = this.getParentState().selectedMonPos[BOX_SLOT_RIGHT].some((x) => x); //At least one mon selected
+        var homeSelectionActive = this.getParentState().selectedMonPos[BOX_SLOT_LEFT].some((x) => x); //At least one mon selected
         var speciesNameSelected = this.getSpeciesNameInCurrentBoxAt(boxPos);
         var selectedNullSpecies = (speciesNameSelected === "none" || speciesNameSelected === "unknown");
     
@@ -146,10 +155,10 @@ export class BoxView extends Component
 
     doingMultiSwap()
     {
-        var currBoxType = this.state.boxType;
+        var currBoxSlot = this.state.boxSlot;
 
-        if (this.getParentState().selectedMonPos[currBoxType].filter(x => x).length >= 2
-        || this.getParentState().selectedMonPos[currBoxType ^ 1].filter(x => x).length >= 2) //At least two mons selected in one box
+        if (this.getParentState().selectedMonPos[currBoxSlot].filter(x => x).length >= 2
+        || this.getParentState().selectedMonPos[currBoxSlot ^ 1].filter(x => x).length >= 2) //At least two mons selected in one box
             return true;
 
         return false;
@@ -162,7 +171,7 @@ export class BoxView extends Component
 
     getViewingMon()
     {
-        return this.getParentState().viewingMon[this.state.boxType];
+        return this.getParentState().viewingMon[this.state.boxSlot];
     }
 
     getMonInCurrentBoxAt(boxPos)
@@ -181,7 +190,7 @@ export class BoxView extends Component
         if (!this.shouldFilterSearchResults())
             return true; //Not searching
 
-        var searchCriteria = this.getParentState().searchCriteria[this.state.boxType];
+        var searchCriteria = this.getParentState().searchCriteria[this.state.boxSlot];
 
         return MatchesSearchCriteria(pokemon, searchCriteria);
     }
@@ -191,9 +200,9 @@ export class BoxView extends Component
         var currentBoxes = this.getParentState().currentBox;
         var selectedMonPos = this.getParentState().selectedMonPos;
         var viewingMon = this.getParentState().viewingMon;
-        currentBoxes[this.state.boxType] = boxNum;
-        selectedMonPos[this.state.boxType] = CreateSingleBlankSelectedPos(); //Wipe 
-        viewingMon[this.state.boxType] = null; //Wipe
+        currentBoxes[this.state.boxSlot] = boxNum;
+        selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos(); //Wipe 
+        viewingMon[this.state.boxSlot] = null; //Wipe
 
         this.setState({editingTitle: false, viewingShowdown: false});
         this.state.parent.setState({
@@ -205,19 +214,30 @@ export class BoxView extends Component
 
     handleChangeBox(change)
     {
-        var boxNum = this.getCurrentBox() + change;
+        var boxNum = this.getCurrentBox();
 
-        if (boxNum < 0) //Underflow
+        while (true)
         {
-            if (this.isSaveBox())
-                boxNum = HIGHEST_SAVE_BOX_NUM;
-            else
-                boxNum = HIGHEST_HOME_BOX_NUM;
+            boxNum += change;
+
+            if (boxNum < 0) //Underflow
+            {
+                //Wrap around
+                if (this.isSaveBox())
+                    boxNum = HIGHEST_SAVE_BOX_NUM - 1;
+                else
+                    boxNum = HIGHEST_HOME_BOX_NUM - 1;
+            }
+            else if (this.isSaveBox() && boxNum >= HIGHEST_SAVE_BOX_NUM)
+                boxNum = 0; //Wrap around
+            else if (this.isHomeBox() && boxNum >= HIGHEST_HOME_BOX_NUM)
+                boxNum = 0; //Wrap around
+
+            if (this.isSameBoxBothSides() && this.getParentState().currentBox[this.state.boxSlot ^ 1] === boxNum) //Same box on both sides
+                continue; //Force another increase so both boxes don't display the same mons
+
+            break;
         }
-        else if (this.isSaveBox() && boxNum > HIGHEST_SAVE_BOX_NUM)
-            boxNum = 0; //Wrap around
-        else if (this.isHomeBox() && boxNum > HIGHEST_HOME_BOX_NUM)
-            boxNum = 0; //Wrap around
 
         this.setCurrentBox(boxNum);
     }
@@ -226,7 +246,7 @@ export class BoxView extends Component
     {
         var swapMons = false;
         var multiSwap = false;
-        var boxType = this.state.boxType;
+        var boxSlot = this.state.boxSlot;
         var newSelectedMonBoxes = this.getParentState().selectedMonBox;
         var newSelectedMonPos = this.getParentState().selectedMonPos;
         var newViewingMon = this.getParentState().viewingMon;
@@ -237,24 +257,24 @@ export class BoxView extends Component
         if (this.canSelectMonAtPos(boxPos))
         {
             if (this.doesClickingSpotDeselectChoice(boxPos))
-                newSelectedMonPos[boxType] = CreateSingleBlankSelectedPos(); //Deselect all
+                newSelectedMonPos[boxSlot] = CreateSingleBlankSelectedPos(); //Deselect all
             else
-                newSelectedMonPos[boxType][boxPos] = true;
+                newSelectedMonPos[boxSlot][boxPos] = true;
 
-            newSelectedMonBoxes[boxType] = this.getCurrentBox();
+            newSelectedMonBoxes[boxSlot] = this.getCurrentBox();
         }
 
         //Update the selection variables
-        if (this.getParentState().selectedMonPos[boxType ^ 1].some((x) => x)) //Both selections are now active
+        if (this.getParentState().selectedMonPos[boxSlot ^ 1].some((x) => x)) //Both selections are now active
             swapMons = true;
 
         //Try remove viewing mons
         if (swapMons)
             newViewingMon = [null, null]; //No more viewing mons after the swap completes
         else if (selectedNullSpecies)
-            newViewingMon[this.state.boxType] = null; //Deselected
+            newViewingMon[boxSlot] = null; //Deselected
         else
-            newViewingMon[this.state.boxType] = pokemon;        
+            newViewingMon[boxSlot] = pokemon;        
 
         //Check for multi swap
         if (swapMons && this.doingMultiSwap())
@@ -267,7 +287,7 @@ export class BoxView extends Component
         }, () =>
         {
             if (swapMons)
-                this.state.parent.swapDifferentBoxedPokemon(multiSwap);
+                this.state.parent.swapDifferentBoxSlotPokemon(multiSwap);
         });
 
         this.setState({
@@ -285,12 +305,12 @@ export class BoxView extends Component
             return; //No dragging empty cell
 
         var viewingMon = this.getParentState().viewingMon;
-        viewingMon[this.state.boxType] = pokemon;
+        viewingMon[this.state.boxSlot] = pokemon;
     
         this.state.parent.setState({
             draggingMon: allBoxesPos,
             draggingImg: imgUrl,
-            draggingFromBox: this.state.boxType,
+            draggingFromBox: this.state.boxSlot,
             viewingMon: viewingMon,
         });
 
@@ -303,7 +323,7 @@ export class BoxView extends Component
         {
             this.state.parent.setState({
                 draggingOver: allBoxesPos,
-                draggingToBox: this.state.boxType
+                draggingToBox: this.state.boxSlot
             });
         }
     }
@@ -316,7 +336,7 @@ export class BoxView extends Component
         if (speciesName !== "none" && speciesName !== "unknown") //Don't change when clicking on a blank spot
         {
             var newViewingMon = this.getParentState().viewingMon;
-            newViewingMon[this.state.boxType] = pokemon;
+            newViewingMon[this.state.boxSlot] = pokemon;
             this.state.parent.setState({viewingMon: newViewingMon});
             this.setState({viewingMonKey: boxPos, viewingShowdown: false});
         }
@@ -330,14 +350,14 @@ export class BoxView extends Component
         var selectedMonBox = this.getParentState().selectedMonBox;
 
         //Check if all are selected
-        if (selectedMonBox[this.state.boxType] === this.getCurrentBox())
+        if (selectedMonBox[this.state.boxSlot] === this.getCurrentBox())
         {
             let i;
     
             for (i = 0; i < MONS_PER_BOX; ++i)
             {
                 if (!IsBlankMon(this.state.allPokemon[i + startIndex]) //Ignore blank slots
-                && !selectedMonPos[this.state.boxType][i])
+                && !selectedMonPos[this.state.boxSlot][i])
                     break; //At least one mon not selected
             }
 
@@ -346,27 +366,27 @@ export class BoxView extends Component
         }
 
         if (allSelected)
-            selectedMonPos[this.state.boxType] = CreateSingleBlankSelectedPos();
+            selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos();
         else //At least one mon not selected
         {
             //Select all mons in box
-            selectedMonPos[this.state.boxType] = CreateSingleBlankSelectedPos();
+            selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos();
 
             for (let i = 0; i < MONS_PER_BOX; ++i)
             {
                 if (!IsBlankMon(this.state.allPokemon[i + startIndex]) //Don't select blank slots
                 && this.matchesSearchCriteria(this.state.allPokemon[i + startIndex]))
-                    selectedMonPos[this.state.boxType][i] = true;
+                    selectedMonPos[this.state.boxSlot][i] = true;
             }
         }
 
-        selectedMonBox[this.state.boxType] = this.getCurrentBox();
+        selectedMonBox[this.state.boxSlot] = this.getCurrentBox();
         this.setState({selectedMonPos: selectedMonPos, selectedMonBox: selectedMonBox});
     }
 
     viewBoxList()
     {
-        this.state.parent.setState({viewingBoxList: this.state.boxType});
+        this.state.parent.setState({viewingBoxList: this.state.boxSlot});
     }
 
     startSearching()
@@ -374,15 +394,15 @@ export class BoxView extends Component
         if (this.shouldFilterSearchResults())
         {
             var searchCriteria = this.getParentState().searchCriteria;
-            searchCriteria[this.state.boxType] = null; //Wipe and end search
+            searchCriteria[this.state.boxSlot] = null; //Wipe and end search
             this.state.parent.setState({searchCriteria: searchCriteria});
             return;
         }
 
         var selectedMonPos = this.getParentState().selectedMonPos;
         var viewingMon = this.getParentState().viewingMon;
-        selectedMonPos[this.state.boxType] = CreateSingleBlankSelectedPos(); //Wipe 
-        viewingMon[this.state.boxType] = null; //Wipe
+        selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos(); //Wipe 
+        viewingMon[this.state.boxSlot] = null; //Wipe
 
         this.state.parent.setState({
             viewingMon: viewingMon,
@@ -448,8 +468,8 @@ export class BoxView extends Component
         this.setState({livingDexState: livingDexState, viewingShowdown: false});
 
         //Adjust Parent State
-        selectedMonPos[this.state.boxType] = CreateSingleBlankSelectedPos(); //Wipe 
-        viewingMon[this.state.boxType] = null; //Wipe
+        selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos(); //Wipe 
+        viewingMon[this.state.boxSlot] = null; //Wipe
         this.state.parent.setState({selectedMonPos: selectedMonPos, viewingMon: viewingMon});
     }
 
@@ -503,7 +523,7 @@ export class BoxView extends Component
         {
             if (result.isDenied) //Denied means released because it's the red button
             {
-                this.state.parent.releaseSelectedPokemon(this.state.boxType);
+                this.state.parent.releaseSelectedPokemon(this.state.boxSlot, this.state.boxType);
                 PopUp.fire('Bye-bye, Pokémon!', '', 'success')
             }
         })
@@ -518,14 +538,14 @@ export class BoxView extends Component
         {
             shouldView = false;
 
-            if (viewingMon[this.state.boxType] === null 
-            || Object.keys(viewingMon[this.state.boxType]).length === 0) //Wasn't viewing any mon before
-                viewingMon[this.state.boxType] = null;  //Don't show the summary after the showdown box closes
+            if (viewingMon[this.state.boxSlot] === null 
+            || Object.keys(viewingMon[this.state.boxSlot]).length === 0) //Wasn't viewing any mon before
+                viewingMon[this.state.boxSlot] = null;  //Don't show the summary after the showdown box closes
         }
         else //Start viewing
         {
-            if (viewingMon[this.state.boxType] === null)
-                viewingMon[this.state.boxType] = {}; //Not actually viewing but allow the showdown data to appear
+            if (viewingMon[this.state.boxSlot] === null)
+                viewingMon[this.state.boxSlot] = {}; //Not actually viewing but allow the showdown data to appear
         }
 
         this.setState({viewingShowdown: shouldView});
@@ -626,7 +646,7 @@ export class BoxView extends Component
 
                 for (let i = 0; i < MONS_PER_BOX; ++i)
                 {
-                    if (this.getParentState().selectedMonPos[this.state.boxType][i]) //Selected
+                    if (this.getParentState().selectedMonPos[this.state.boxSlot][i]) //Selected
                         pokemonList.push(this.getMonInCurrentBoxAt(i));
                 }
 
@@ -641,7 +661,7 @@ export class BoxView extends Component
 
     printSearchView()
     {
-        return <Search boxType={this.state.boxType} parent={this} mainPage={this.state.parent}/>;
+        return <Search boxType={this.state.boxType} boxSlot={this.state.boxSlot} parent={this} mainPage={this.state.parent}/>;
     }
 
     /*
@@ -747,7 +767,7 @@ export class BoxView extends Component
                     this.state.fixingLivingDex
                     ?
                         <p>Please Wait...</p>
-                    : this.getParentState().multiMoveError[this.state.boxType]
+                    : this.getParentState().multiMoveError[this.state.boxSlot]
                     ?
                         <p className="no-multi-move-space-error">Not enough space for the move.</p>
                     :

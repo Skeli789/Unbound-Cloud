@@ -10,7 +10,8 @@ import SpeciesDefines from "./data/UnboundSpecies.json";
 
 const SHINY_ODDS = 16; //Actual probability is SHINY_ODDS/65536
 
-const SPECIES_FORMS_ICON_NAMES = {
+const SPECIES_FORMS_ICON_NAMES =
+{
     "SPECIES_PIKACHU_CAP_ORIGINAL": "pikachu-original-cap",
     "SPECIES_PIKACHU_CAP_HOENN": "pikachu-hoenn-cap",
     "SPECIES_PIKACHU_CAP_SINNOH": "pikachu-sinnoh-cap",
@@ -58,7 +59,8 @@ const SPECIES_FORMS_ICON_NAMES = {
     "SPECIES_URSHIFU_RAPID": "urshifu",
 };
 
-const BASE_FORMS_OF_BANNED_SPECIES = { //All forms that can't exist outside of battle
+const BASE_FORMS_OF_BANNED_SPECIES = //All forms that can't exist outside of battle
+{
     "SPECIES_CHERRIM_SUN": "SPECIES_CHERRIM",
     "SPECIES_DARMANITANZEN": "SPECIES_DARMANITAN",
     "SPECIES_DARMANITAN_G_ZEN": "SPECIES_DARMANITAN_G",
@@ -72,6 +74,7 @@ const BASE_FORMS_OF_BANNED_SPECIES = { //All forms that can't exist outside of b
     "SPECIES_ZAMAZENTA_CROWNED": "SPECIES_ZAMAZENTA",
     "SPECIES_ETERNATUS_ETERNAMAX": "SPECIES_ETERNATUS",
 };
+
 
 function Getu32HighHalf(num)
 {
@@ -280,13 +283,40 @@ export function GetMonGender(pokemon)
 
 export function GetMonNature(pokemon)
 {
-    return pokemon["personality"] % 25;
+    return pokemon["nature"];
+}
+
+export function GetMonOTName(pokemon)
+{
+    return pokemon["otName"];   
+}
+
+export function GetMonOTGender(pokemon)
+{
+    if ((pokemon["metInfo"] & 0x8000) !== 0) //Top bit
+        return "F";
+
+    return "M";
+}
+
+export function GetMonVisibleOTId(pokemon)
+{
+    return pokemon["otId"] & 0xFFFF; //Lower half
 }
 
 export function GetVisibleStats(pokemon)
 {
-    //TODO
-    return [0, 0, 0, 0, 0, 0];
+    if (pokemon === null || pokemon["rawStats"] === null || pokemon["rawStats"].length === 0)
+        return [0, 0, 0, 0, 0, 0];
+
+    return ([
+        pokemon["rawStats"][0], //HP
+        pokemon["rawStats"][1], //Attack
+        pokemon["rawStats"][2], //Defense
+        pokemon["rawStats"][4], //Sp. Atk
+        pokemon["rawStats"][5], //Sp. Def
+        pokemon["rawStats"][3], //Speed
+    ]);
 }
 
 export function GetVisibleEVs(pokemon)
