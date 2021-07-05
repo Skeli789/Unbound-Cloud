@@ -64,8 +64,18 @@
 
 .top-bar-button
 {
+    background-color: rebeccapurple !important;
+    border-color: rebeccapurple !important;
+    box-shadow: unset !important;
     width: 50%;
     font-size: 24px;
+    border-radius: 0px;
+}
+
+.top-bar-button-selected
+{
+    background-color: mediumpurple !important;
+    border-color: mediumpurple !important;
 }
 
 .dragging-image
