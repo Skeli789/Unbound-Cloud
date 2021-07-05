@@ -26,10 +26,9 @@ const STATE_UPLOAD_SAVE = 0;
 const STATE_UPLOADING_SAVE_FILE = 1;
 const STATE_UPLOAD_HOME_FILE = 2;
 const STATE_UPLOADING_HOME_FILE = 3;
-const STATE_CHOOSE_FUNCTION = 4;
-const STATE_EDITING_HOME_BOXES = 5;
-const STATE_EDITING_SAVE_FILE = 6;
-const STATE_MOVING_POKEMON = 7;
+const STATE_EDITING_HOME_BOXES = 4;
+const STATE_EDITING_SAVE_FILE = 5;
+const STATE_MOVING_POKEMON = 6;
 
 export default class MainPage extends Component {
     constructor(props)
@@ -86,6 +85,11 @@ export default class MainPage extends Component {
             e.preventDefault();
             e.returnValue = true; //Display pop-up warning
         }
+    }
+    
+    areBoxViewsVertical()
+    {
+        return window.innerWidth < 865; //px
     }
 
     updateState(stateChange)
@@ -185,7 +189,7 @@ export default class MainPage extends Component {
             console.log("Home file upload successful.");
 
             this.setState({
-                editState: STATE_CHOOSE_FUNCTION,
+                editState: STATE_MOVING_POKEMON,
                 homeBoxes: res.data.boxes,
                 homeTitles: res.data.titles,
                 fileUploadError: false,
@@ -615,28 +619,48 @@ export default class MainPage extends Component {
 
     editOnlyHomePokemonButton()
     {
+        var size = window.innerWidth < 500 ? 28 : 42;
+
         return (
-            <Button size="lg" className="top-bar-button" onClick={() => this.changeBoxView(STATE_EDITING_HOME_BOXES)}>
-                <FaHome size={42} /> ↔ <FaHome size={42} />
+            <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_EDITING_HOME_BOXES ? " top-bar-button-selected" : "")}
+                    onClick={() => this.changeBoxView(STATE_EDITING_HOME_BOXES)}>
+                <FaHome size={size} /> ↔ <FaHome size={size} />
             </Button>
         );
     }
 
     editOnlySavePokemonButton()
     {
+        var size = window.innerWidth < 500 ? 28 : 42;
+
         return (
-            <Button size="lg" className="top-bar-button" onClick={() => this.changeBoxView(STATE_EDITING_SAVE_FILE)}>
-                <FaGamepad size={42} /> ↔ <FaGamepad size={42} />
+            <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_EDITING_SAVE_FILE ? " top-bar-button-selected" : "")}
+                    onClick={() => this.changeBoxView(STATE_EDITING_SAVE_FILE)}>
+                <FaGamepad size={size} /> ↔ <FaGamepad size={size} />
             </Button>
         );
     }
 
     transferPokemonButton()
     {
+        var size = window.innerWidth < 500 ? 28 : 42;
+
         return (
-            <Button size="lg" className="top-bar-button" onClick={() => this.changeBoxView(STATE_MOVING_POKEMON)}>
-                <FaHome size={42} /> ↔ <FaGamepad size={42} />
+            <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_MOVING_POKEMON ? " top-bar-button-selected" : "")}
+                    onClick={() => this.changeBoxView(STATE_MOVING_POKEMON)}>
+                <FaHome size={size} /> ↔ <FaGamepad size={size} />
             </Button>
+        );
+    }
+
+    navBarButtons()
+    {
+        return (
+            <div className="top-bar-buttons">
+                {this.editOnlyHomePokemonButton()}
+                {this.transferPokemonButton()}
+                {this.editOnlySavePokemonButton()}
+            </div>
         );
     }
 
@@ -710,7 +734,7 @@ export default class MainPage extends Component {
                         <input type="file" hidden onChange={(e) => this.chooseHomeFile(e)} />
                     </label>
                     
-                    <Button size="lg" onClick={() => this.setState({editState: STATE_CHOOSE_FUNCTION})}
+                    <Button size="lg" onClick={() => this.setState({editState: STATE_MOVING_POKEMON})}
                             className="main-page-home-create-new-button">
                         Create New
                     </Button>
@@ -751,17 +775,6 @@ export default class MainPage extends Component {
         )
     }
 
-    printChooseFunction()
-    {
-        return (
-            <div className="main-page-choice-buttons">
-                {this.editOnlyHomePokemonButton()}
-                {this.editOnlySavePokemonButton()}
-                {this.transferPokemonButton()}
-            </div>
-        )
-    }
-
     printEditingHomeBoxes()
     {
         var homeBoxView1 = <BoxView pokemonJSON={this.state.homeBoxes} titles={this.state.homeTitles}
@@ -773,17 +786,14 @@ export default class MainPage extends Component {
 
         return (
             <div>         
-                <div className="top-bar-buttons">
-                    {this.transferPokemonButton()}
-                    {this.editOnlySavePokemonButton()}
-                </div>
+                {this.navBarButtons()}
 
             {
                 this.state.viewingBoxList >= 0 ?
                     this.boxListScreen()
                 :
-                    <div className={!isMobile ? "scroll-container" : ""}>
-                        <div className={isMobile ? "main-page-boxes-mobile" : "main-page-boxes"}>
+                    <div className={!this.areBoxViewsVertical() ? "scroll-container" : ""}>
+                        <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
                                 {homeBoxView1}
                                 {homeBoxView2}
                         </div>
@@ -804,17 +814,14 @@ export default class MainPage extends Component {
 
         return (
             <div>                
-                <div className="top-bar-buttons">
-                    {this.editOnlyHomePokemonButton()}
-                    {this.transferPokemonButton()}
-                </div>
+                {this.navBarButtons()}
 
             {
                 this.state.viewingBoxList >= 0 ?
                     this.boxListScreen()
                 :
-                    <div className={!isMobile ? "scroll-container" : ""}>
-                        <div className={isMobile ? "main-page-boxes-mobile" : "main-page-boxes"}>
+                    <div className={!this.areBoxViewsVertical() ? "scroll-container" : ""}>
+                        <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
                                 {saveBoxView1}
                                 {saveBoxView2}
                         </div>
@@ -835,17 +842,14 @@ export default class MainPage extends Component {
  
         return (
             <div>
-                <div className="top-bar-buttons">
-                    {this.editOnlyHomePokemonButton()}
-                    {this.editOnlySavePokemonButton()}
-                </div>
+                {this.navBarButtons()}
 
                 {
                     this.state.viewingBoxList >= 0 ?
                         this.boxListScreen()
                     :
-                        <div className={!isMobile ? "scroll-container" : ""}>
-                            <div className={isMobile ? "main-page-boxes-mobile" : "main-page-boxes"}>
+                        <div className={!this.areBoxViewsVertical() ? "scroll-container" : ""}>
+                            <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
                                 {homeBoxView}
                                 {saveBoxView}
                             </div>
@@ -876,9 +880,6 @@ export default class MainPage extends Component {
                 break;
             case STATE_UPLOADING_HOME_FILE:
                 page = this.printUploadingHomeFile();
-                break;
-            case STATE_CHOOSE_FUNCTION:
-                page = this.printChooseFunction();
                 break;
             case STATE_EDITING_HOME_BOXES:
                 title = ""; //Don't display title

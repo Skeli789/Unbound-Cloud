@@ -589,7 +589,7 @@ export class BoxView extends Component
                     icon = livingDexIcon;
             }
 
-            let spanClassName = "box-icon" + (this.isMonSelected(key) ? " selected-box-icon" : "");
+            let spanClassName = "box-icon" + (!isMobile ? " box-icon-hoverable" : "") + (this.isMonSelected(key) ? " selected-box-icon" : "");
 
             if (addLivingDexIcon && livingDexIcon !== "") //Can't click on this
             {

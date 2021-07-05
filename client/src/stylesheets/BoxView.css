@@ -61,8 +61,8 @@
 .box-name-cancel-icon
 {
     position: relative;
-    right: 8px;
-    bottom: 6px;
+    right: 1px;
+    bottom: 4px;
     cursor: pointer;
     user-select: none; /*Prevent text highlighting when button is clicked*/
 }
@@ -111,7 +111,7 @@
     user-select: none;
 }
 
-.box-icon:hover
+.box-icon-hoverable:hover
 {
     background-color: rgba(255, 255, 255, 0.9) !important;
     cursor: pointer;
