@@ -25,9 +25,25 @@
     margin-left: 10px;
 }
 
+
+.summary-ot-container
+{
+    grid-column: 1;
+}
+
 .summary-ability
 {
     grid-column: 1;
+}
+
+.summary-male-ot
+{
+    color: blue;
+}
+
+.summary-female-ot
+{
+    color: red;
 }
 
 .summary-nature
@@ -68,7 +84,7 @@
 
 .summary-moves-container
 {
-    grid-row: 4; /*From above*/
+    grid-row: 5; /*From above*/
     grid-column: 2; /*From above*/
     display: grid;
     grid-template-rows: auto auto auto auto;

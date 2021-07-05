@@ -43,11 +43,14 @@ def ConvertPokemonToCompressedMon(pokemonData):
         if properAbility != currAbility:  # Came from game with different Ability
             print(pokemonData["nickname"] + "'s Ability doesn't match.")
             # Try to match Ability to correct one
-            if currAbility == BaseStatsDict[species]["hiddenAbility"]:
+            if currAbility == BaseStatsDict[species]["hiddenAbility"] \
+                    or IsCloneAbility(currAbility, BaseStatsDict[species]["hiddenAbility"]):
                 pokemonData["hiddenAbility"] = 1
-            elif currAbility == BaseStatsDict[species]["ability1"]:
+            elif currAbility == BaseStatsDict[species]["ability1"] \
+                    or IsCloneAbility(currAbility, BaseStatsDict[species]["ability1"]):
                 pokemonData["personality"] &= ~1  # Clear lowest bit
-            elif currAbility == BaseStatsDict[species]["ability2"]:
+            elif currAbility == BaseStatsDict[species]["ability2"] \
+                    or IsCloneAbility(currAbility, BaseStatsDict[species]["ability2"]):
                 pokemonData["personality"] |= 1  # Add lowest bit
 
     for key in pokemonData:

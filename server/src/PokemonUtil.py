@@ -1,5 +1,23 @@
 from Utils import *
 
+CloneAbilities = [
+    ("ABILITY_AIRLOCK", "ABILITY_CLOUDNINE"),
+    ("ABILITY_BATTLEARMOR", "ABILITY_SHELLARMOR"),
+    ("ABILITY_CLEARBODY", "ABILITY_WHITESMOKE"),
+    ("ABILITY_DAZZLING", "ABILITY_QUEENLYMAJESTY"),
+    ("ABILITY_SOLIDROCK", "ABILITY_FILTER", "ABILITY_PRISMARMOR"),
+    ("ABILITY_GOOEY", "ABILITY_TANGLINGHAIR"),
+    ("ABILITY_HUGEPOWER", "ABILITY_PUREPOWER"),
+    ("ABILITY_INSOMNIA", "ABILITY_VITALSPIRIT"),
+    ("ABILITY_MOLDBREAKER", "ABILITY_TERAVOLT", "ABILITY_TURBOBLAZE"),
+    ("ABILITY_MOXIE", "ABILITY_CHILLINGNEIGH"),
+    ("ABILITY_STALWART", "ABILITY_PROPELLERTAIL"),
+    ("ABILITY_PROTEAN", "ABILITY_LIBERO"),
+    ("ABILITY_RECEIVER", "ABILITY_POWEROFALCHEMY"),
+    ("ABILITY_ROUGHSKIN", "ABILITY_IRONBARBS"),
+    ("ABILITY_WIMPOUT", "ABILITY_EMERGENCYEXIT"),
+]
+
 
 def GetMonAbility(pokemon):
     if pokemon["hiddenAbility"] != 0 and BaseStatsDict[pokemon["species"]]["hiddenAbility"] != "ABILITY_NONE":
@@ -42,3 +60,11 @@ def CalculateLevel(species, experience):
             return level - 1
 
     return 1
+
+
+def IsCloneAbility(ability1, ability2):
+    for clones in CloneAbilities:
+        if ability1 in clones and ability2 in clones:
+            return True
+
+    return False

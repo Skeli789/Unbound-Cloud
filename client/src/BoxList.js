@@ -21,15 +21,17 @@ export class BoxList extends Component
 
         this.state =
         {
-            boxType: this.props.boxType,
-            boxes: this.props.boxes,
-            titles: this.props.titles,
-            boxCount: this.props.boxCount,
-            currentBoxes: this.props.currentBoxes,
-            selectedMonPos: this.props.selectedMonPos,
-            viewingMon: this.props.viewingMon,
-            setParentState: this.props.updateParentState,
-            searchCriteria: this.props.searchCriteria,
+            boxType: props.boxType,
+            boxSlot: props.boxSlot,
+            boxes: props.boxes,
+            titles: props.titles,
+            boxCount: props.boxCount,
+            currentBoxes: props.currentBoxes,
+            selectedMonPos: props.selectedMonPos,
+            viewingMon: props.viewingMon,
+            setParentState: props.updateParentState,
+            searchCriteria: props.searchCriteria,
+            isSameBoxBothSides: props.isSameBoxBothSides,
         };
     }
 
@@ -39,9 +41,9 @@ export class BoxList extends Component
         var selectedMonPos = this.state.selectedMonPos;
         var viewingMon = this.state.viewingMon;
 
-        currentBoxes[this.state.boxType] = boxId;
-        selectedMonPos[this.state.boxType] = CreateSingleBlankSelectedPos(); //Wipe 
-        viewingMon[this.state.boxType] = null; //Wipe
+        currentBoxes[this.state.boxSlot] = boxId;
+        selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos(); //Wipe 
+        viewingMon[this.state.boxSlot] = null; //Wipe
     
         this.setState({
             currentBoxes: currentBoxes,
@@ -58,9 +60,10 @@ export class BoxList extends Component
 
     createBoxView(boxId)
     {
+        var title;
         var icons = [];
         var startIndex = boxId * MONS_PER_BOX;
-        var title;
+        var disabledBox = false;
 
         for (let i = startIndex, key = 0; i < startIndex + MONS_PER_BOX; ++i, ++key)
         {
@@ -82,14 +85,17 @@ export class BoxList extends Component
             icons.push(icon);
         }
 
-        title = <h4 className={"mini-box-title" + (this.state.currentBoxes[this.state.boxType] === boxId ? " mini-box-current-box-title" : "")}>
+        title = <h4 className={"mini-box-title" + (this.state.currentBoxes[this.state.boxSlot] === boxId ? " mini-box-current-box-title" : "")}>
                     {this.state.titles[boxId]}
                 </h4>
 
+        if (this.state.isSameBoxBothSides && this.state.currentBoxes[this.state.boxSlot ^ 1] === boxId) //Other box has this
+            disabledBox = true; //Prevent jumping to this box since the other box is already showing it
+
         return(
             <div className="mini-box-with-title" key={boxId}>
-                <div className={"mini-box " + (this.state.boxType === BOX_HOME ? "home-box" : "save-box")}
-                     onClick={this.jumpToBox.bind(this, boxId)}>
+                <div className={"mini-box " + (disabledBox ? "disabled-box" : this.state.boxType === BOX_HOME ? "home-box" : "save-box")}
+                     onClick={disabledBox ? null : this.jumpToBox.bind(this, boxId)}>
                     {icons}
                 </div>
                 {title}

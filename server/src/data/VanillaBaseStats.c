@@ -36625,7 +36625,7 @@ const struct BaseStats gBaseStats[] =
 		.ability1 = ABILITY_SWIFTSWIM,
 		.ability2 = ABILITY_NONE,
 		.safariZoneFleeRate = 0,
-		.hiddenAbility = ABILITY_PROPELLORTAIL,
+		.hiddenAbility = ABILITY_PROPELLERTAIL,
 		.noFlip = TRUE,
 	},
 	
@@ -36658,7 +36658,7 @@ const struct BaseStats gBaseStats[] =
 		.ability1 = ABILITY_SWIFTSWIM,
 		.ability2 = ABILITY_NONE,
 		.safariZoneFleeRate = 0,
-		.hiddenAbility = ABILITY_PROPELLORTAIL,
+		.hiddenAbility = ABILITY_PROPELLERTAIL,
 		.noFlip = TRUE,
 	},
 	

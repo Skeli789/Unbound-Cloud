@@ -3,10 +3,42 @@
 */
 
 import React, {Component} from 'react';
-import {GetMonLevel, GetMonAbility, GetMonNature, GetMonGender, GetVisibleStats, GetVisibleEVs, GetVisibleIVs,
+import {GetMonLevel, GetMonAbility, GetMonNature, GetMonGender, GetVisibleStats, /*GetVisibleEVs, GetVisibleIVs,*/
+        GetMonOTName, GetMonOTGender, GetMonVisibleOTId,
         GetMoveName, GetAbilityName, GetNatureName} from "./PokemonUtil";
 
 import "./stylesheets/PokemonSummary.css";
+
+const NATURE_STAT_TABLE =
+[
+    // Atk Def Spd Sp.Atk Sp.Def
+    [    0,  0,  0,     0,     0], // Hardy
+    [   +1, -1,  0,     0,     0], // Lonely
+    [   +1,  0, -1,     0,     0], // Brave
+    [   +1,  0,  0,    -1,     0], // Adamant
+    [   +1,  0,  0,     0,    -1], // Naughty
+    [   -1, +1,  0,     0,     0], // Bold
+    [    0,  0,  0,     0,     0], // Docile
+    [    0, +1, -1,     0,     0], // Relaxed
+    [    0, +1,  0,    -1,     0], // Impish
+    [    0, +1,  0,     0,    -1], // Lax
+    [   -1,  0, +1,     0,     0], // Timid
+    [    0, -1, +1,     0,     0], // Hasty
+    [    0,  0,  0,     0,     0], // Serious
+    [    0,  0, +1,    -1,     0], // Jolly
+    [    0,  0, +1,     0,    -1], // Naive
+    [   -1,  0,  0,    +1,     0], // Modest
+    [    0, -1,  0,    +1,     0], // Mild
+    [    0,  0, -1,    +1,     0], // Quiet
+    [    0,  0,  0,     0,     0], // Bashful
+    [    0,  0,  0,    +1,    -1], // Rash
+    [   -1,  0,  0,     0,    +1], // Calm
+    [    0, -1,  0,     0,    +1], // Gentle
+    [    0,  0, -1,     0,    +1], // Sassy
+    [    0,  0,  0,    -1,    +1], // Careful
+    [    0,  0,  0,     0,     0], // Quirky
+];
+
 
 export class PokemonSummary extends Component
 {
@@ -23,26 +55,35 @@ export class PokemonSummary extends Component
     {
         var key = 0;
         var statNames = ["HP", "Attack", "Defense", "Sp. Atk", "Sp. Def", "Speed"];
+        var visibleStatIdToStatId = [0, 1, 2, 4, 5, 3];
         var stats = GetVisibleStats(this.state.pokemon);
-        var evs = GetVisibleEVs(this.state.pokemon);
-        var ivs = GetVisibleIVs(this.state.pokemon);
+        var nature = GetMonNature(this.state.pokemon);
+        /*var evs = GetVisibleEVs(this.state.pokemon);
+        var ivs = GetVisibleIVs(this.state.pokemon);*/
         var printableStats = [];
 
-        for (let statId = 0; statId < stats.length; ++statId)
+        for (let visibleStatId = 0; visibleStatId < stats.length; ++visibleStatId)
         {
+            let natureColour;
+            let realStatId = visibleStatIdToStatId[visibleStatId];
+
+            if (realStatId > 0) //Not HP
+                natureColour = NATURE_STAT_TABLE[nature][realStatId - 1] === 1 ? "red"
+                             : NATURE_STAT_TABLE[nature][realStatId  - 1] === -1 ? "cornflowerblue" : "";
+
             printableStats.push(
                 <span className="summary-stat-title" key={key++}>
-                    {statNames[statId]}
+                    {statNames[visibleStatId]}
                 </span>
             );
 
             printableStats.push(
-                    <span className="summary-stat-value" key={key++}>
-                        {stats[statId]}
+                    <span className={"summary-stat-value"} style={{color: natureColour}} key={key++}>
+                        {stats[visibleStatId]}
                     </span>
             );
 
-            printableStats.push(
+            /*printableStats.push(
                     <span className="summary-stat-ev" key={key++}>
                         {evs[statId]}
                     </span>
@@ -52,7 +93,7 @@ export class PokemonSummary extends Component
                     <span className="summary-stat-iv" key={key++}>
                         {ivs[statId]}
                     </span>
-            );
+            );*/
         }
 
         return (
@@ -114,6 +155,12 @@ export class PokemonSummary extends Component
                     <span className="summary-level">
                         Lv. {level}
                     </span>
+                </div>
+                <div className="summary-ot-container">
+                    <span className={GetMonOTGender(this.state.pokemon) === "M" ? "summary-male-ot" : "summary-female-ot"}>
+                        {GetMonOTName(this.state.pokemon)}
+                    </span>
+                    : {GetMonVisibleOTId(this.state.pokemon)}
                 </div>
                 <div className="summary-ability">
                     Ability: {ability}

@@ -40,6 +40,7 @@ export class Search extends Component
             moveNameList: this.createMoveNameList(),
             natureNameList: this.createNatureNameList(),
             boxType: this.props.boxType,
+            boxSlot: this.props.boxSlot,
             parent: this.props.parent,
             mainPage: this.props.mainPage,
         };
@@ -244,7 +245,7 @@ export class Search extends Component
         if (Object.keys(criteria).length === 0) //Nothing specified
             criteria = null;
 
-        searchCriteria[this.state.boxType] = criteria;
+        searchCriteria[this.state.boxSlot] = criteria;
         this.state.mainPage.setState({searchCriteria: searchCriteria});
         this.state.parent.setState({searching: false});
     }
