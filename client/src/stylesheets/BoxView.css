@@ -1,0 +1,165 @@
+/*.box-view
+{
+}*/
+
+.box-title-no-edit
+{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.box-title-edit
+{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    max-height: 50px;
+}
+
+.box-name
+{
+    display: flex; /*Keeps the edit icon next to the title*/
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.box-name-text
+{
+    font-size: 25px !important;
+    text-align: center;
+    margin-bottom: 0px;
+    cursor: pointer;
+}
+
+.box-name-input
+{
+    position: relative;
+    top: 1.5px;
+    left: 3px;
+    margin-bottom: 11px;
+    max-width: 250px;
+    cursor: initial !important;
+}
+
+.box-name-living-dex-icon
+{
+    margin-left: 1px;
+    margin-right: 5px;
+    cursor: pointer;
+    user-select: none; /*Prevent text highlighting when button is clicked*/
+}
+
+.box-name-edit-icon
+{
+    margin-left: 10px;
+    cursor: pointer;
+    user-select: none; /*Prevent text highlighting when button is clicked*/
+}
+
+.box-name-cancel-icon
+{
+    position: relative;
+    right: 8px;
+    bottom: 6px;
+    cursor: pointer;
+    user-select: none; /*Prevent text highlighting when button is clicked*/
+}
+
+.box-name-save-icon
+{
+    position: relative;
+    left: 5px;
+    bottom: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.box-change-arrow
+{
+    cursor: pointer;
+    user-select: none;
+}
+
+.box
+{
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto;
+    padding: 10px;
+    width: fit-content;
+    margin-bottom: 2%;
+}
+
+.save-box
+{
+    background-color: var(--save-box-color);
+}
+
+.home-box
+{
+    background-color: var(--home-box-color);
+}
+
+.box-icon
+{
+    display: table;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    width: 68px;
+    min-height: 56px;
+    user-select: none;
+}
+
+.box-icon:hover
+{
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    cursor: pointer;
+}
+
+.selected-box-icon
+{
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.box-icon-image
+{
+    width: 100%;
+    height: auto;
+    max-height: 54px; /*Minus the 2 for the borders*/
+}
+
+.living-dex-icon, .box-icon-faded
+{
+    opacity: 0.3;
+}
+
+.fix-living-dex-button-container
+{
+    display: flex;
+    justify-content: center;
+}
+
+.no-multi-move-space-error
+{
+    color: red;
+    text-align: center;
+}
+
+.box-lower-icons
+{
+    margin-bottom: 2%;
+}
+
+.box-lower-icon
+{
+    cursor: pointer;
+    user-select: none; /*Prevent text highlighting when button is clicked*/
+    height: 36px;
+    margin-right: 5%;
+}
+
+.green-icon
+{
+    color: #21f391;
+}

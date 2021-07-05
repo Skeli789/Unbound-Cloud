@@ -1,0 +1,22 @@
+.showdown-export
+{
+    width: 100%;
+}
+
+#showdown-textarea
+{
+    resize: none;
+    height: 225px;
+
+    /*Ripped from Showdown*/
+    width: 100%;
+    text-align: left;
+    font-size: inherit;
+    font-family: inherit;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    padding: 2px 3px;
+    box-shadow: inset 0 1px 2px #ccc, 1px 1px 0 rgb(255 255 255 / 60%);
+    background: #f8fbfd;
+    color: #000;
+}

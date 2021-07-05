@@ -1,0 +1,27 @@
+/*Counteract imported stylesheet for dropdown*/
+
+h1, h2, h3, h4, h5
+{
+    font-family: "open sans", arial, sans-serif !important; /* Font + fallbacks */
+    line-height: initial !important;
+    margin: initial !important;
+    font-weight: initial !important;
+    padding: initial !important;
+}
+
+body
+{
+    font-family: "open sans", arial, sans-serif !important; /* Font + fallbacks */
+    background: var(--main-background-color) !important;
+}
+
+input[type=email], input[type=password], input[type=search], input[type=text]
+{
+    -webkit-appearance: auto !important;
+}
+
+button, input, optgroup, select, textarea
+{
+    font-family: "open sans", arial, sans-serif !important; /* Font + fallbacks */
+    line-height: initial !important;
+}

@@ -1,0 +1,87 @@
+.main-page-title
+{
+    text-align: center;
+    margin-top: 1%;
+    margin-bottom: 2%;
+}
+
+.main-page-upload-instructions
+{
+    display: flex;
+    flex-direction: column; /*Top to bottom rows*/
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 75vh;
+}
+
+.choose-file-label-button
+{
+    margin-bottom: 0px !important;
+}
+
+.main-page-home-create-new-button
+{
+    margin-left: 100px;
+}
+
+.main-page-choice-buttons
+{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
+    height: 75vh;
+}
+
+.main-page-boxes
+{
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    height: 100%;
+}
+
+.main-page-boxes-mobile
+{
+    display: inline-flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.top-bar-buttons
+{
+    background-color: lightgrey;
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    margin-bottom: 1%;
+    height: 56px;
+}
+
+.top-bar-button
+{
+    width: 50%;
+    font-size: 24px;
+}
+
+.dragging-image
+{
+    position: absolute;
+    opacity: 0.7;
+    visibility: hidden; /*Changed when dragging*/
+    pointer-events: none; /*Allows clicking through it*/
+}
+
+.scroll-container
+{
+    position: absolute;
+    top: 56px;
+    bottom: 0;
+    width: 100%;
+    overflow-y: scroll;
+    min-width: 428px;
+}

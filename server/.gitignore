@@ -1,0 +1,7 @@
+/node_modules
+/logs
+/temp
+.ipynb_checkpoints/
+.idea/
+__pycache__/
+.env
