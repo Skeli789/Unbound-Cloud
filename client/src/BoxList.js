@@ -54,7 +54,7 @@ export class BoxList extends Component
             selectedMonPos: selectedMonPos,
             viewingMon: viewingMon,
             viewingBoxList: -1, //No more viewing box list
-            multiMoveError: [false, false],
+            errorMessage: ["", ""],
         });
     }
 

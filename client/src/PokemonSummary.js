@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import {GetMonLevel, GetMonAbility, GetMonNature, GetMonGender, GetVisibleStats, /*GetVisibleEVs, GetVisibleIVs,*/
         GetMonOTName, GetMonOTGender, GetMonVisibleOTId, CanMonGigantamax,
-        GetMoveName, GetAbilityName, GetNatureName} from "./PokemonUtil";
+        GetMoveName, GetAbilityName, GetNatureName, IsMonEgg} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetItemName, GetItemIconLink} from "./Util";
 import MoveData from "./data/MoveData.json";
 
@@ -217,6 +217,28 @@ export class PokemonSummary extends Component
         var maxFriendship = 255;
         var heartFriendship = 220;
 
+        var summaryOT =
+            <div className="summary-ot-container">
+                <span className={GetMonOTGender(this.state.pokemon) === "M" ? "summary-male-ot" : "summary-female-ot"}>
+                    {GetMonOTName(this.state.pokemon)}
+                </span>
+                : {GetMonVisibleOTId(this.state.pokemon)}
+            </div>
+
+        if (IsMonEgg(this.state.pokemon))
+        {
+            //Limited view for Eggs
+            return (
+                <div className="pokemon-summary-container">
+                    <div className="summary-name-level-container">
+                        <span>Egg</span>
+                    </div>
+                    {summaryOT}
+                    {this.printBallAndItemIcon()}
+                </div>
+            );
+        }
+
         return (
             <div className="pokemon-summary-container">
                 <div className="summary-name-level-container">
@@ -244,12 +266,7 @@ export class PokemonSummary extends Component
                             ""
                     }
                 </div>
-                <div className="summary-ot-container">
-                    <span className={GetMonOTGender(this.state.pokemon) === "M" ? "summary-male-ot" : "summary-female-ot"}>
-                        {GetMonOTName(this.state.pokemon)}
-                    </span>
-                    : {GetMonVisibleOTId(this.state.pokemon)}
-                </div>
+                {summaryOT}
                 <div className="summary-ability">
                     Ability: {ability}
                 </div>

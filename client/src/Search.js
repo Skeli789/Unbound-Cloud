@@ -4,7 +4,7 @@ import {Dropdown} from 'semantic-ui-react'
 
 import {BOX_HOME} from './MainPage';
 import {GetMonNature, GetMonGender, GetMonAbility, GetMonLevel, IsMonShiny,
-        GetSpeciesName, GetAbilityName} from './PokemonUtil';
+        GetSpeciesName, GetAbilityName, IsMonEgg} from './PokemonUtil';
 import {GetItemName} from "./Util";
 
 import AbilityNames from "./data/AbilityNames.json";
@@ -62,8 +62,7 @@ export class Search extends Component
 
         for (let speciesId of Object.keys(UnboundSpecies))
         {
-            if (speciesId === "SPECIES_NONE"
-            || speciesId === "SPECIES_BAD_EGG")
+            if (speciesId === "SPECIES_NONE")
                 continue;
 
             var name = GetSpeciesName(speciesId);
@@ -449,10 +448,12 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     if (searchCriteria === null || searchCriteria === {})
         return false; //No search criteria
 
+    var isEgg = IsMonEgg(pokemon);
+
     //Check Wanted Species
     if ("species" in searchCriteria)
     {
-        let name = GetSpeciesName(pokemon["species"]);
+        let name = isEgg ? "Egg" : GetSpeciesName(pokemon["species"]);
         if (!searchCriteria["species"].includes(name))
             return false;
     }
@@ -461,6 +462,9 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     if ("move" in searchCriteria)
     {
         let i;
+
+        if (isEgg)
+            return false;
 
         for (i = 0; i < pokemon["moves"].length; ++i)
         {
@@ -475,6 +479,9 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Has Ability
     if ("ability" in searchCriteria)
     {
+        if (isEgg)
+            return false;
+
         if (!searchCriteria["ability"].includes(GetMonAbility(pokemon)))
             return false;
     }
@@ -482,6 +489,9 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Holds Item
     if ("item" in searchCriteria)
     {
+        if (isEgg)
+            return false;
+
         if (!searchCriteria["item"].includes(pokemon["item"]))
             return false;
     }
@@ -489,6 +499,9 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Has Nature
     if ("nature" in searchCriteria)
     {
+        if (isEgg)
+            return false;
+
         if (!searchCriteria["nature"].includes(GetMonNature(pokemon)))
             return false;
     }
@@ -496,12 +509,18 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check correct level range
     if ("levelStart" in searchCriteria)
     {
+        if (isEgg)
+            return false;
+
         if (GetMonLevel(pokemon) < searchCriteria["levelStart"])
             return false;
     }
 
     if ("levelEnd" in searchCriteria)
     {
+        if (isEgg)
+            return false;
+
         if (GetMonLevel(pokemon) > searchCriteria["levelEnd"])
             return false;
     }
@@ -509,6 +528,9 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Matches Gender
     if ("gender" in searchCriteria)
     {
+        if (isEgg)
+            return false;
+
         if (!searchCriteria["gender"].includes(GetMonGender(pokemon)))
             return false;
 
@@ -517,6 +539,9 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Matches Shiny
     if ("shiny" in searchCriteria)
     {
+        if (isEgg)
+            return false;
+
         if (IsMonShiny(pokemon) !== searchCriteria["shiny"])
             return false;
     }

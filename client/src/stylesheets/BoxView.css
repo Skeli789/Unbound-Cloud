@@ -143,10 +143,11 @@
     justify-content: center;
 }
 
-.no-multi-move-space-error
+.error-message
 {
     color: red;
     text-align: center;
+    font-size: 20px;
 }
 
 .box-lower-icons
@@ -182,4 +183,11 @@
     bottom: -4px;
     left: 0px;
     z-index: 1;
+}
+
+.lower-icon-message
+{
+    text-align: center;
+    height: 36px;
+    font-size: 20px;
 }

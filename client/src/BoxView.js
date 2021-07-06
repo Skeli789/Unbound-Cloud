@@ -9,7 +9,7 @@ import withReactContent from 'sweetalert2-react-content'
 
 import {BOX_HOME, BOX_SAVE, BOX_SLOT_LEFT, BOX_SLOT_RIGHT} from './MainPage';
 import {PokemonSummary} from "./PokemonSummary";
-import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsBlankMon, GetSpeciesName, IsMonShiny} from "./PokemonUtil";
+import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsBlankMon, GetSpeciesName, IsMonShiny, IsMonEgg} from "./PokemonUtil";
 import {Search, MatchesSearchCriteria} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos} from "./Util";
@@ -85,6 +85,11 @@ export class BoxView extends Component
     shouldFilterSearchResults()
     {
         return this.getParentState().searchCriteria[this.state.boxSlot] !== null;
+    }
+
+    isSaving()
+    {
+        return this.getParentState().savingMessage !== "";
     }
 
     getParentState()
@@ -195,6 +200,24 @@ export class BoxView extends Component
         return MatchesSearchCriteria(pokemon, searchCriteria);
     }
 
+    canViewShowdownExportButton()
+    {
+        if (this.state.viewingShowdown)
+            return true; //Can always close the view
+
+        for (let i = 0; i < MONS_PER_BOX; ++i)
+        {
+            if (this.getParentState().selectedMonPos[this.state.boxSlot][i]) //Selected
+            {
+                let pokemon = this.getMonInCurrentBoxAt(i);
+                if (!IsMonEgg(pokemon))
+                    return true; //At least one viewable Pokemon
+            }
+        }
+
+        return false;
+    }
+
     setCurrentBox(boxNum)
     {
         var currentBoxes = this.getParentState().currentBox;
@@ -244,6 +267,9 @@ export class BoxView extends Component
 
     handleSelection(boxPos, pokemon)
     {
+        if (this.isSaving())
+            return; //Don't allow selections while saving
+
         var swapMons = false;
         var multiSwap = false;
         var boxSlot = this.state.boxSlot;
@@ -298,8 +324,8 @@ export class BoxView extends Component
     
     handleStartDragging(allBoxesPos, boxPos, icon, imgUrl, pokemon)
     {
-        if (isMobile)
-            return; //No dragging on a touch screen
+        if (isMobile || this.isSaving())
+            return; //No dragging on a touch screen or while prepping a save
 
         if (icon === "")
             return; //No dragging empty cell
@@ -331,6 +357,9 @@ export class BoxView extends Component
     handleSelectMonForViewing(e, boxPos, pokemon)
     {
         e.preventDefault(); //Prevent context menu from popping up
+
+        if (this.isSaving())
+            return; //Don't allow selections while saving
 
         var speciesName = GetIconSpeciesName(pokemon);
         if (speciesName !== "none" && speciesName !== "unknown") //Don't change when clicking on a blank spot
@@ -407,7 +436,7 @@ export class BoxView extends Component
         this.state.parent.setState({
             viewingMon: viewingMon,
             selectedMonPos: selectedMonPos,
-            multiMoveError: [false, false],
+            errorMessage: ["", ""],
         });
 
         this.setState({searching: true, viewingShowdown: false});
@@ -592,11 +621,15 @@ export class BoxView extends Component
                 icon = "";
             else
             {
+                var matchesSearchCriteria = true;
                 var className = "box-icon-image";
                 var alt = pokemon["nickname"];
 
                 if (!this.matchesSearchCriteria(pokemon))
+                {
+                    matchesSearchCriteria = false;
                     className += " box-icon-faded";
+                }
 
                 icon = <img src={link} alt={alt} aria-label={alt} className={className}
                             onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
@@ -604,13 +637,14 @@ export class BoxView extends Component
                 if (pokemon["item"] !== "ITEM_NONE")
                 {
                     heldItemIcon = <img src={BASE_GFX_LINK + "held_item.png"} alt="I" aria-label="Holds Item"
-                                        className="box-icon-item-icon"
+                                        className={"box-icon-item-icon" + (!matchesSearchCriteria ? " box-icon-faded" : "")}
                                         onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
                 }
 
                 if (IsMonShiny(pokemon))
                 {
-                    shinyIcon = <span className="box-icon-shiny-icon" aria-label="Shiny">★</span>
+                    shinyIcon = <span className={"box-icon-shiny-icon" + (!matchesSearchCriteria ? " box-icon-faded" : "")}
+                                      aria-label="Shiny">★</span>
                 }
             }
 
@@ -659,7 +693,11 @@ export class BoxView extends Component
                 for (let i = 0; i < MONS_PER_BOX; ++i)
                 {
                     if (this.getParentState().selectedMonPos[this.state.boxSlot][i]) //Selected
-                        pokemonList.push(this.getMonInCurrentBoxAt(i));
+                    {
+                        pokemon = this.getMonInCurrentBoxAt(i);
+                        if (!IsMonEgg(pokemon))
+                            pokemonList.push(pokemon);
+                    }
                 }
 
                 return(<ShowdownExport pokemonList={pokemonList} key={this.state.viewingMonKey}/>);
@@ -736,6 +774,48 @@ export class BoxView extends Component
             titleContainerClass = "box-title-no-edit";
         }
 
+        var lowerIcons = 
+            <div className="box-lower-icons">
+                <BiSearchAlt2 size={34} aria-label="Search" className={"box-lower-icon" + (this.shouldFilterSearchResults() ? " green-icon" : "")}
+                        onClick={this.startSearching.bind(this)}/>
+                <GrMultiple size={28} aria-label="Select All" className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
+                {
+                    //Save Icon
+                    this.getParentState().changeWasMade[this.state.boxType] ?
+                        <AiOutlineSave size={36} aria-label="Save" className="box-lower-icon" onClick={() => this.state.parent.saveAndExit(this.state.boxSlot)}/>
+                    :
+                        ""
+                }
+                {
+                    //Fix Living Dex Icon
+                    this.state.livingDexState !== LIVING_DEX_NONE && !this.state.fixingLivingDex && this.isHomeBox() ?
+                        <AiOutlineTool size={36} aria-label="Fix Living Dex" className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
+                    :
+                        ""
+                }
+                {
+                    //Release & Showdown Icons
+                    this.areAnyPokemonSelectedInCurrentBox() ?
+                        <>
+                            <GrTrash size={28} aria-label="Release" className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
+                            {
+                                this.canViewShowdownExportButton() ?
+                                    <CgExport size={30} aria-label="Showdown" className="box-lower-icon"
+                                              onClick = {this.viewShowdownExport.bind(this)}/>
+                                :
+                                    ""
+                            }
+                        </>
+                    :
+                        ""
+                }
+            </div>
+
+        if (this.state.fixingLivingDex)
+            lowerIcons = <p className="lower-icon-message box-lower-icons">Please Wait...</p>
+        else if (this.isSaving())
+            lowerIcons = <p className="lower-icon-message box-lower-icons">{this.getParentState().savingMessage}</p>
+
         return (
             <div className="box-view">
                 <div className={titleContainerClass}>
@@ -747,45 +827,17 @@ export class BoxView extends Component
                     </span>
                     <AiOutlineArrowRight size={42} aria-label="Next Box" onClick={this.handleChangeBox.bind(this, 1)} className="box-change-arrow" />
                 </div>
+
                 <div className={"box " + (this.isHomeBox() ? "home-box" : "save-box")}>
                     {icons}
                 </div>
-                <div className="box-lower-icons">
-                    <BiSearchAlt2 size={34} aria-label="Search" className={"box-lower-icon" + (this.shouldFilterSearchResults() ? " green-icon" : "")}
-                              onClick={this.startSearching.bind(this)}/>
-                    <GrMultiple size={28} aria-label="Select All" className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
-                    {
-                        //Save Icon
-                        this.getParentState().changeWasMade[this.state.boxType] ?
-                            <AiOutlineSave size={36} aria-label="Save" className="box-lower-icon" onClick={() => this.state.parent.saveAndExit()}/>
-                        :
-                            ""
-                    }
-                    {
-                        //Fix Living Dex Icon
-                        this.state.livingDexState !== LIVING_DEX_NONE && !this.state.fixingLivingDex && this.isHomeBox() ?
-                            <AiOutlineTool size={36} aria-label="Fix Living Dex" className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
-                        :
-                            ""
-                    }
-                    {
-                        //Release & Showdown Icons
-                        this.areAnyPokemonSelectedInCurrentBox() ?
-                            <>
-                                <GrTrash size={28} aria-label="Release" className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
-                                <CgExport size={30} aria-label="Showdown" className="box-lower-icon" onClick = {this.viewShowdownExport.bind(this)}/>
-                            </>
-                        :
-                            ""
-                    }
-                </div>
+
+                {lowerIcons}
+
                 {
-                    this.state.fixingLivingDex
+                    this.getParentState().errorMessage[this.state.boxSlot] !== ""
                     ?
-                        <p>Please Wait...</p>
-                    : this.getParentState().multiMoveError[this.state.boxSlot]
-                    ?
-                        <p className="no-multi-move-space-error">Not enough space for the move.</p>
+                        <p className="error-message">{this.getParentState().errorMessage[this.state.boxSlot]}</p>
                     :
                         monToView
                 }
