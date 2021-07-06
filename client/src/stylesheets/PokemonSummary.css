@@ -5,6 +5,7 @@
     grid-template-columns: 45% auto;
     width: 100%;
     margin-bottom: 1%;
+    row-gap: 2px;
 
     /*Ripped from Showdown*/
     border: 1px solid #aaa;

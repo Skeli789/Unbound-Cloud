@@ -6,12 +6,10 @@ import React, {Component} from 'react';
 import {GetMonLevel, GetMonAbility, GetMonNature, GetMonGender, GetVisibleStats, /*GetVisibleEVs, GetVisibleIVs,*/
         GetMonOTName, GetMonOTGender, GetMonVisibleOTId, CanMonGigantamax,
         GetMoveName, GetAbilityName, GetNatureName} from "./PokemonUtil";
+import {BASE_GFX_LINK, GetItemName, GetItemIconLink} from "./Util";
 import MoveData from "./data/MoveData.json";
 
 import "./stylesheets/PokemonSummary.css";
-import { GiVampireCape } from 'react-icons/gi';
-
-const BASE_GFX_LINK = "images/";
 
 const NATURE_STAT_TABLE =
 [
@@ -64,14 +62,24 @@ export class PokemonSummary extends Component
         return Math.min(Math.floor(basePP + ((basePP * 20 * ((PP_BONUS_MASK[moveIndex] & ppBonuses) >> (2 * moveIndex))) / 100), 99));
     }
 
-    printBallIcon()
+    printBallAndItemIcon()
     {
         var ballType = this.state.pokemon["pokeBall"];
         var ballName = ballType.split("BALL_TYPE_")[1].split("_BALL")[0].toLowerCase();
         ballName = ballName.charAt(0).toUpperCase() + ballName.slice(1) + " Ball";
 
+        var item = this.state.pokemon["item"];
+        var itemName = GetItemName(item);
+        var itemLink = GetItemIconLink(item);
+
         return (
             <div className="summary-ball-icon-container">
+                {
+                    itemLink !== "" ?
+                        <img src={itemLink} alt="" aria-label={itemName}/>
+                    :
+                        ""
+                }
                 <img src={BASE_GFX_LINK + ballType + ".png"} alt="" aria-label={ballName}/>
             </div>
         )
@@ -166,8 +174,7 @@ export class PokemonSummary extends Component
                     //Print Move Split
                     var moveSplit = MoveData[move]["split"];
                     var splitName = moveSplit.toLowerCase().charAt(6).toUpperCase() + moveSplit.toLowerCase().slice(7); //Start after SPLIT_
-                    var alt = typeName.slice(0, 2);
-                    moves.push(<img src={BASE_GFX_LINK + moveSplit + ".png"} alt={alt} aria-label={splitName} className="summary-move-split" key={key++} />)
+                    moves.push(<img src={BASE_GFX_LINK + moveSplit + ".png"} alt={typeName.slice(0, 2)} aria-label={splitName} className="summary-move-split" key={key++} />)
                 }
                 else
                 {
@@ -249,7 +256,7 @@ export class PokemonSummary extends Component
                 <div className="summary-nature">
                     Nature: {nature}
                 </div>
-                {this.printBallIcon()}
+                {this.printBallAndItemIcon()}
                 {this.printStats()}
                 {this.printMoves()}
             </div>

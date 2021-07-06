@@ -2,7 +2,8 @@
 import React, {Component} from 'react';
 
 import {GetMonAbility, GetMonNature, GetVisibleIVs, GetVisibleEVs, IsMonShiny, GetMonGender, CanMonGigantamax,
-        GetSpeciesName, GetNatureName, GetAbilityName, GetMoveName, GetItemName, GetMonLevel} from './PokemonUtil';
+        GetSpeciesName, GetNatureName, GetAbilityName, GetMoveName, GetMonLevel} from './PokemonUtil';
+import {GetItemName} from "./Util";
 
 import "./stylesheets/ShowdownExport.css";
 
