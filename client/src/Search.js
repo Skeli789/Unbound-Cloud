@@ -119,10 +119,10 @@ export class Search extends Component
 
         for (let itemId of Object.keys(ItemNames))
         {
-            if (itemId == "ITEM_NONE")
+            if (itemId === "ITEM_NONE")
                 continue;
 
-            items.push({key: itemId, text: ItemNames[itemId]["name"], value: itemId});
+            items.push({key: itemId, text: GetItemName(itemId), value: itemId});
         }
 
         items.sort((a, b) => (a.text > b.text) ? 1 : -1);

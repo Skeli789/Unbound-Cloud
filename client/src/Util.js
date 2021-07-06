@@ -19,7 +19,7 @@ export function GetItemName(item)
 
 export function GetItemIconLink(item)
 {
-    if (item in ItemNames)
+    if (item in ItemNames && item !== "ITEM_NONE")
     {
         if ("link" in ItemNames[item])
             return `https://raw.githubusercontent.com/msikma/pokesprite/master/items/${ItemNames[item]["link"]}.png`;

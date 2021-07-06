@@ -8,8 +8,6 @@ import NatureNames from "./data/NatureNames.json";
 import SpeciesNames from "./data/SpeciesNames.json";
 import SpeciesDefines from "./data/UnboundSpecies.json";
 
-const SHINY_ODDS = 16; //Actual probability is SHINY_ODDS/65536
-
 const SPECIES_FORMS_ICON_NAMES =
 {
     "SPECIES_PIKACHU_CAP_ORIGINAL": "pikachu-original-cap",
