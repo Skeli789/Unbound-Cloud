@@ -2,8 +2,9 @@
     A class for the main page.
 */
 
-import React, {Component} from 'react'
+import React, {Component} from 'react';
 import {Button} from "react-bootstrap";
+import {isMobile} from "react-device-detect";
 //import {StatusCode} from "status-code-enum";
 import axios from "axios";
 import {config} from "./config";
@@ -38,7 +39,7 @@ export default class MainPage extends Component {
         super(props);
         this.state = //Set test data
         {
-            editState: STATE_MOVING_POKEMON, //STATE_UPLOAD_SAVE,
+            editState: STATE_UPLOAD_SAVE, //STATE_MOVING_POKEMON,
             uploadProgress: 0,
             selectedSaveFile: null,
             selectedHomeFile: null,
@@ -54,16 +55,17 @@ export default class MainPage extends Component {
             draggingFromBox: 0,
             draggingToBox: 0,
             viewingBoxList: -1,
-            multiMoveError: [false, false],
+            errorMessage: ["", ""],
             searchCriteria: [null, null],
             changeWasMade: [false, false],
+            savingMessage: "",
 
             saveBoxes: SaveData["boxes"],
             saveTitles: SaveData["titles"],
             homeBoxes: this.generateBlankHomeBoxes(),
             homeTitles: this.generateBlankHomeTitles(),
             fileDownloadUrl: null,
-            saveFileData: [],
+            saveFileData: {"data": []},
             saveFileNumber: 0,
         };
 
@@ -186,7 +188,7 @@ export default class MainPage extends Component {
             //Some error occurred
             var newState;
             console.log("An error occurred uploading the file.");
-            console.log(res);
+            console.log(error["response"]["data"]);
 
             if (isSaveFile)
                 newState = STATE_UPLOAD_SAVE;
@@ -375,10 +377,10 @@ export default class MainPage extends Component {
                 {
                     //Only deselect clicked on spot
                     var selectedMonPos = this.state.selectedMonPos;
-                    var multiMoveError = this.state.multiMoveError;
+                    var errorMessage = this.state.errorMessage;
                     selectedMonPos[multiTo] = CreateSingleBlankSelectedPos();
-                    multiMoveError[multiTo] = true;
-                    this.setState({selectedMonPos: selectedMonPos, multiMoveError: multiMoveError});
+                    errorMessage[multiTo] = "Not enough space for the move.";
+                    this.setState({selectedMonPos: selectedMonPos, errorMessage: errorMessage});
                     return;
                 }
             }
@@ -389,7 +391,7 @@ export default class MainPage extends Component {
             saveBoxes: (leftBoxType === BOX_SAVE) ? leftBoxes : (rightBoxType === BOX_SAVE) ? rightBoxes : this.state.saveBoxes,
             homeBoxes: (leftBoxType === BOX_HOME) ? leftBoxes : (rightBoxType === BOX_HOME) ? rightBoxes : this.state.homeBoxes,
             changeWasMade: changeWasMade,
-            multiMoveError: [false, false],
+            errorMessage: ["", ""],
         })
     }
 
@@ -421,7 +423,7 @@ export default class MainPage extends Component {
             selectedMonPos: selectedMonPos,
             viewingMon: viewingMon,
             changeWasMade: changeWasMade,
-            multiMoveError: [false, false],
+            errorMessage: ["", ""],
             saveBoxes: (fromBoxType === BOX_SAVE) ? fromBoxes : (toBoxType === BOX_SAVE) ? toBoxes : this.state.saveBoxes,
             homeBoxes: (fromBoxType === BOX_HOME) ? fromBoxes : (toBoxType === BOX_HOME) ? toBoxes : this.state.homeBoxes,
         })
@@ -459,7 +461,7 @@ export default class MainPage extends Component {
             selectedMonPos: selectedMonPos,
             viewingMon: viewingMon,
             changeWasMade: changeWasMade,
-            multiMoveError: [false, false],
+            errorMessage: ["", ""],
         })
     }
 
@@ -545,7 +547,7 @@ export default class MainPage extends Component {
         return titles;
     }
 
-    async downloadSaveFileAndHomeData()
+    async downloadSaveFileAndHomeData(boxSlot)
     {
         var route = `${config.dev_server}/getUpdatedSaveFile`;
         var homeData = JSON.stringify({
@@ -559,36 +561,53 @@ export default class MainPage extends Component {
         formData.append("fileIdNumber", JSON.stringify(this.state.saveFileNumber));
         formData.append("homeData", homeData);
 
-        await axios.post(route, formData,
+        let res;
+        try
         {
-        })
-        .then(res =>
+            this.setState({errorMessage: ["", ""], savingMessage: "Preparing save data..."});
+            res = await axios.post(route, formData, {});
+        }
+        catch (error)
         {
-            var name;
-            var dataBuffer = res.data.newSaveFileData;
-            var encryptedHomeData = res.data.newHomeData;
+            console.log(error["response"]["data"]);
 
-            if (this.state.selectedSaveFile === null)
-                name = "savefile.sav";
-            else
-                name = this.state.selectedSaveFile.name; //Same name as original file
+            var errorMessage = this.state.errorMessage;
+            errorMessage[boxSlot] = error["response"]["data"];
+            this.setState({savingMessage: "", errorMessage: errorMessage});
+            return;
+        }
 
-            var output = []
-            for (let byte of dataBuffer["data"])
-            {
-                let newArray = new Uint8Array(1);
-                newArray[0] = byte;
-                output.push(newArray);
-            }
+        //No error occurred good to proceed
+        var name;
+        var dataBuffer = res.data.newSaveFileData;
+        var encryptedHomeData = res.data.newHomeData;
 
-            //Download the Save File
+        if (this.state.selectedSaveFile === null)
+            name = "savefile.sav";
+        else
+            name = this.state.selectedSaveFile.name; //Same name as original file
+
+        var output = []
+        for (let byte of dataBuffer["data"])
+        {
+            let newArray = new Uint8Array(1);
+            newArray[0] = byte;
+            output.push(newArray);
+        }
+
+        //Download the Save File
+        if (this.state.changeWasMade[BOX_SAVE])
+        {
             var element = document.createElement("a");
             var file = new Blob(output, {type: 'application/octet-stream'});
             element.href = URL.createObjectURL(file);
             element.download = name;
             document.body.appendChild(element); //Required for this to work in FireFox
             element.click();
+        }
 
+        if (this.state.changeWasMade[BOX_HOME])
+        {
             //Download the Home Data
             element = document.createElement("a");
             file = new Blob([encryptedHomeData], {type: 'text/plain'});
@@ -596,12 +615,14 @@ export default class MainPage extends Component {
             element.download = "home.dat";
             document.body.appendChild(element); // Required for this to work in FireFox
             element.click();
-        });
+        }
+
+        this.setState({savingMessage: "", changeWasMade: [false, false]});
     }
 
-    async saveAndExit()
+    async saveAndExit(boxSlot)
     {
-        await this.downloadSaveFileAndHomeData();
+        await this.downloadSaveFileAndHomeData(boxSlot);
     }
 
     changeBoxView(newState)
@@ -645,7 +666,7 @@ export default class MainPage extends Component {
                 currentBox: currentBoxes,
                 viewingBoxList: -1,
                 draggingMon: -1,
-                multiMoveError: [false, false],
+                errorMessage: ["", ""],
             });
         }
     }
@@ -867,7 +888,7 @@ export default class MainPage extends Component {
                 this.state.viewingBoxList >= 0 ?
                     this.boxListScreen()
                 :
-                    <div className={!this.areBoxViewsVertical() ? "scroll-container" : ""}>
+                    <div className={!isMobile ? "scroll-container" : ""}>
                         <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
                                 {homeBoxView1}
                                 {homeBoxView2}
@@ -895,7 +916,7 @@ export default class MainPage extends Component {
                 this.state.viewingBoxList >= 0 ?
                     this.boxListScreen()
                 :
-                    <div className={!this.areBoxViewsVertical() ? "scroll-container" : ""}>
+                    <div className={!isMobile ? "scroll-container" : ""}>
                         <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
                                 {saveBoxView1}
                                 {saveBoxView2}
@@ -923,7 +944,7 @@ export default class MainPage extends Component {
                     this.state.viewingBoxList >= 0 ?
                         this.boxListScreen()
                     :
-                        <div className={!this.areBoxViewsVertical() ? "scroll-container" : ""}>
+                        <div className={!isMobile ? "scroll-container" : ""}>
                             <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
                                 {homeBoxView}
                                 {saveBoxView}
