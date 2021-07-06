@@ -76,23 +76,9 @@ const BASE_FORMS_OF_BANNED_SPECIES = //All forms that can't exist outside of bat
 };
 
 
-function Getu32HighHalf(num)
-{
-    return (num & 0xFFFF0000) >> 16;
-}
-
-function Getu32LowHalf(num)
-{
-    return num & 0xFFFF;
-}
-
 export function IsMonShiny(pokemon)
 {
-    var shinyValue = new Uint32Array([0]); //Must be done this way to be unsigned
-    shinyValue[0] = Getu32HighHalf(pokemon["otId"]) ^ Getu32LowHalf(pokemon["otId"])
-                  ^ Getu32HighHalf(pokemon["personality"]) ^ Getu32LowHalf(pokemon["personality"]);
-
-    return shinyValue[0] < SHINY_ODDS;
+    return pokemon["shiny"];
 }
 
 export function IsBlankMon(pokemon)
@@ -351,7 +337,7 @@ export function GetVisibleIVs(pokemon)
 
 export function CanMonGigantamax(pokemon)
 {
-    return ((pokemon["metInfo"] & 0x800) !== 0);
+    return pokemon["gigantamax"];
 }
 
 export function GetSpeciesName(species)
@@ -387,12 +373,4 @@ export function GetNatureName(nature)
         return NatureNames[nature];
 
     return "Unknown Nature";
-}
-
-export function GetItemName(item)
-{
-    //TODO
-
-    if (typeof(item) === "string")
-        return item.split("ITEM_")[1].replace("_", " ").replace(/(?:^|\s)\S/g, function(a) {return a.toUpperCase();}); //Capitalize first words
 }

@@ -5,7 +5,10 @@ import {Dropdown} from 'semantic-ui-react'
 import {BOX_HOME} from './MainPage';
 import {GetMonNature, GetMonGender, GetMonAbility, GetMonLevel, IsMonShiny,
         GetSpeciesName, GetAbilityName} from './PokemonUtil';
+import {GetItemName} from "./Util";
+
 import AbilityNames from "./data/AbilityNames.json";
+import ItemNames from "./data/ItemNames.json";
 import MoveNames from "./data/MoveNames.json";
 import NatureNames from "./data/NatureNames.json";
 import UnboundSpecies from "./data/UnboundSpecies.json";
@@ -38,6 +41,7 @@ export class Search extends Component
             speciesNameList: this.createSpeciesNameList(),
             abilityNameList: this.createAbilityNameList(),
             moveNameList: this.createMoveNameList(),
+            itemNameList: this.createItemNameList(),
             natureNameList: this.createNatureNameList(),
             boxType: this.props.boxType,
             boxSlot: this.props.boxSlot,
@@ -74,6 +78,22 @@ export class Search extends Component
         return species;
     }
 
+    createAbilityNameList()
+    {
+        var abilities = [];
+
+        for (let abilityId of Object.keys(AbilityNames))
+        {
+            if (abilityId === "ABILITY_NONE")
+                continue;
+
+            abilities.push({key: abilityId, text: GetAbilityName(abilityId), value: abilityId});
+        }
+
+        abilities.sort((a, b) => (a.text > b.text) ? 1 : -1);
+        return abilities;
+    }
+
     createMoveNameList()
     {
         var moves = [];
@@ -93,20 +113,20 @@ export class Search extends Component
         return moves;
     }
 
-    createAbilityNameList()
+    createItemNameList()
     {
-        var abilities = [];
+        var items = [];
 
-        for (let abilityId of Object.keys(AbilityNames))
+        for (let itemId of Object.keys(ItemNames))
         {
-            if (abilityId === "ABILITY_NONE")
+            if (itemId == "ITEM_NONE")
                 continue;
 
-            abilities.push({key: abilityId, text: GetAbilityName(abilityId), value: abilityId});
+            items.push({key: itemId, text: ItemNames[itemId]["name"], value: itemId});
         }
 
-        abilities.sort((a, b) => (a.text > b.text) ? 1 : -1);
-        return abilities;
+        items.sort((a, b) => (a.text > b.text) ? 1 : -1);
+        return items;
     }
 
     createNatureNameList()
@@ -210,6 +230,9 @@ export class Search extends Component
         if (this.state.abilityIds.length > 0)
             criteria["ability"] = this.state.abilityIds;
 
+        if (this.state.itemIds.length > 0)
+            criteria["item"] = this.state.itemIds;
+
         if (this.state.natureIds.length > 0)
             criteria["nature"] = this.state.natureIds.map((move) => parseInt(move));
 
@@ -294,20 +317,6 @@ export class Search extends Component
                         />
                     </Form.Group>
 
-                    {/* Item Input */}
-                    {/*<Form.Group controlId="formItem">
-                        <Form.Label>Item</Form.Label>
-                        <Dropdown
-                            placeholder='-'
-                            fluid
-                            multiple
-                            search
-                            selection
-                            options={this.state.itemNameList}
-                            onChange={(e, data) => this.setState({itemIds: data.value})}
-                        />
-                        </Form.Group>*/}
-
                     {/* Moves Input */}
                     <Form.Group controlId="formMoves">
                         <Form.Label>Moves</Form.Label>
@@ -321,6 +330,20 @@ export class Search extends Component
                             onChange={(e, data) => this.setState({moveIds: data.value})}
                         />
                     </Form.Group>
+
+                    {/* Item Input */}
+                    {<Form.Group controlId="formItem">
+                        <Form.Label>Item</Form.Label>
+                        <Dropdown
+                            placeholder='-'
+                            fluid
+                            multiple
+                            search
+                            selection
+                            options={this.state.itemNameList}
+                            onChange={(e, data) => this.setState({itemIds: data.value})}
+                        />
+                        </Form.Group>}
 
                     {/* Nature Input */}
                     <Form.Group controlId="formNature">
@@ -453,6 +476,13 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     if ("ability" in searchCriteria)
     {
         if (!searchCriteria["ability"].includes(GetMonAbility(pokemon)))
+            return false;
+    }
+
+    //Check Holds Item
+    if ("item" in searchCriteria)
+    {
+        if (!searchCriteria["item"].includes(pokemon["item"]))
             return false;
     }
 

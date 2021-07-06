@@ -9,10 +9,10 @@ import withReactContent from 'sweetalert2-react-content'
 
 import {BOX_HOME, BOX_SAVE, BOX_SLOT_LEFT, BOX_SLOT_RIGHT} from './MainPage';
 import {PokemonSummary} from "./PokemonSummary";
-import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsBlankMon, GetSpeciesName} from "./PokemonUtil";
+import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsBlankMon, GetSpeciesName, IsMonShiny} from "./PokemonUtil";
 import {Search, MatchesSearchCriteria} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
-import {CreateSingleBlankSelectedPos} from "./Util";
+import {BASE_GFX_LINK, CreateSingleBlankSelectedPos} from "./Util";
 import LivingDexOrder from "./data/LivingDexOrder.json"
 
 import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
@@ -585,6 +585,8 @@ export class BoxView extends Component
             let species = GetIconSpeciesName(pokemon);
             let link = GetIconSpeciesLink(pokemon);
             let livingDexIcon = "";
+            let heldItemIcon = ""
+            let shinyIcon = ""
 
             if (species === "none")
                 icon = "";
@@ -598,6 +600,18 @@ export class BoxView extends Component
 
                 icon = <img src={link} alt={alt} aria-label={alt} className={className}
                             onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
+                
+                if (pokemon["item"] !== "ITEM_NONE")
+                {
+                    heldItemIcon = <img src={BASE_GFX_LINK + "held_item.png"} alt="I" aria-label="Holds Item"
+                                        className="box-icon-item-icon"
+                                        onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
+                }
+
+                if (IsMonShiny(pokemon))
+                {
+                    shinyIcon = <span className="box-icon-shiny-icon" aria-label="Shiny">★</span>
+                }
             }
 
             if (addLivingDexIcon)
@@ -624,7 +638,7 @@ export class BoxView extends Component
                                 onMouseEnter = {this.handleSetDraggingOver.bind(this, i)}
                                 onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
                                 onContextMenu={(e) => this.handleSelectMonForViewing(e, key, pokemon)}
-                                key={key}>{icon}
+                                key={key}>{shinyIcon} {icon} {heldItemIcon}
                             </span>);
             }
         }

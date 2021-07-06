@@ -111,6 +111,7 @@
     width: 68px;
     min-height: 56px;
     user-select: none;
+    position: relative; /*Allows the item icon to position properly*/
 }
 
 .box-icon-hoverable:hover
@@ -164,4 +165,21 @@
 .green-icon
 {
     color: #21f391;
+}
+
+.box-icon-item-icon
+{
+    position: absolute;
+    bottom: 1px;
+    right: 0px;
+    z-index: 1;
+}
+
+.box-icon-shiny-icon
+{
+    color: goldenrod;
+    position: absolute;
+    bottom: -4px;
+    left: 0px;
+    z-index: 1;
 }
