@@ -603,7 +603,7 @@ export class BoxView extends Component
         let icon = <img src={link} alt={alt} aria-label={alt} className="box-icon-image living-dex-icon"
                         onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
 
-        if (link === monInSlotLink)
+        if (link === monInSlotLink.replace("shiny/", "regular/")) //Links are for same species
             return ""; //Display full colour image instead
 
         return icon;
