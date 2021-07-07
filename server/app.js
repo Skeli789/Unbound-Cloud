@@ -148,6 +148,17 @@ app.post('/uploadHomeData', async (req, res) =>
     }
 });
 
+app.post('/encryptHomeData', (req, res) =>
+{
+    console.log("Encrypting home data...");
+    var homeData = req.body.homeDataP1 + req.body.homeDataP2 + req.body.homeDataP3 + req.body.homeDataP4; //Split into 4 parts so it can will be sent over guaranteed
+
+    //Get the data for the encrypted home data
+    homeData = CryptoJS.AES.encrypt(JSON.stringify(homeData), gSecretKey).toString();
+
+    result = res.status(StatusCode.SuccessOK).json({newHomeData: homeData});
+});
+
 /*
     Endpoint: /getUpdatedSaveFile
     returns as the response: the path to the updated save file
@@ -157,7 +168,6 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
     var result;
     var saveFileData = JSON.parse(req.body.saveFileData);
     var newBoxes = req.body.newBoxes;
-    var homeData = req.body.homeData;
     var fileIdNumber = req.body.fileIdNumber;
     var saveFileName = `temp/savefile_${fileIdNumber}.sav`;
     var newBoxesName = `temp/newBoxes_${fileIdNumber}.json`;
@@ -179,9 +189,6 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
     fs.writeFileSync(newBoxesName, newBoxes);
     console.log("New boxes saved to server.");
 
-    //Get the data for the encrypted home data
-    homeData = CryptoJS.AES.encrypt(JSON.stringify(homeData), gSecretKey).toString();
-
     //Create the updated save file
     try
     {
@@ -201,7 +208,7 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
             const newSaveDataBuffer = fs.readFileSync(newSavePath);
 
             //Return both
-            result = res.status(StatusCode.SuccessOK).json({newSaveFileData: newSaveDataBuffer, newHomeData: homeData});
+            result = res.status(StatusCode.SuccessOK).json({newSaveFileData: newSaveDataBuffer});
         }
     }
     catch (err)

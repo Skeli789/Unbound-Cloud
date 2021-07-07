@@ -783,7 +783,7 @@
 	},
 	"ITEM_LIGHT_BALL": {
 		"name": "Light Ball",
-		"link": "ball/light"
+		"link": "hold-item/light-ball"
 	},
 	"ITEM_SOFT_SAND": {
 		"name": "Soft Sand",
