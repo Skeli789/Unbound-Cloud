@@ -7,6 +7,7 @@ import MoveNames from "./data/MoveNames.json";
 import NatureNames from "./data/NatureNames.json";
 import SpeciesNames from "./data/SpeciesNames.json";
 import SpeciesDefines from "./data/UnboundSpecies.json";
+import {BASE_GFX_LINK} from "./Util";
 
 const SPECIES_FORMS_ICON_NAMES =
 {
@@ -20,12 +21,14 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_PICHU_SPIKY": "pichu-spiky-eared",
     "SPECIES_HIPPOPOTAS_F": "female/hippopotas",
     "SPECIES_HIPPOWDON_F": "female/hippowdon",
+    "SPECIES_ARCEUS_FIGHT": "arceus-fighting",
     "SPECIES_UNFEZANT_F": "female/unfezant",
     "SPECIES_BASCULIN_RED": "basculin",
     "SPECIES_BASCULIN_BLUE": "basculin-blue-striped",
     "SPECIES_FRILLISH_F": "female/frillish",
     "SPECIES_JELLICENT_F": "female/jellicent",
     "SPECIES_PYROAR_F": "female/pyroar",
+    "SPECIES_FURFROU_PHAROAH": "furfrou-pharaoh",
     "SPECIES_MEOWSTIC_FEMALE": "female/meowstic",
     "SPECIES_PUMPKABOO": "pumpkaboo-small",
     "SPECIES_PUMPKABOO_XL": "pumpkaboo-super",
@@ -231,9 +234,16 @@ export function GetIconSpeciesName(pokemon)
 
 export function GetIconSpeciesLinkByIconSpeciesName(iconSpeciesName, isShiny, isGen8)
 {
-    var baseLink = "https://raw.githubusercontent.com/msikma/pokesprite/master/";
-    var colouration = iconSpeciesName === "unknown" || iconSpeciesName === "egg" || iconSpeciesName === "egg-manaphy" ? "" : isShiny ? "shiny/" : "regular/";
-    var gen = isGen8 ? "pokemon-gen8/" : "pokemon-gen7x/";
+    if (iconSpeciesName === "pikachu-surfing")
+        return BASE_GFX_LINK + "SPECIES_PIKACHU_SURFING.png";
+    else if (iconSpeciesName === "pikachu-flying")
+        return BASE_GFX_LINK + "SPECIES_PIKACHU_FLYING.png";
+    else
+    {
+        var baseLink = "https://raw.githubusercontent.com/msikma/pokesprite/master/";
+        var colouration = iconSpeciesName === "unknown" || iconSpeciesName === "egg" || iconSpeciesName === "egg-manaphy" ? "" : isShiny ? "shiny/" : "regular/";
+        var gen = isGen8 ? "pokemon-gen8/" : "pokemon-gen7x/";
+    }
 
     return baseLink + gen + colouration + iconSpeciesName + ".png";
 }
