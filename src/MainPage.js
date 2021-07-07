@@ -370,18 +370,21 @@ export default class MainPage extends Component {
                     for (j = 0; j < width; ++j)
                     {
                         let col = toLeftCol + j;
+                        let movingPokemon = this.getMonAtBoxPos(multiFrom, this.state.selectedMonBox[multiFrom] * MONS_PER_BOX + (topRow + i) * MONS_PER_ROW + (leftCol + j));
 
                         if (row >= MONS_PER_BOX / MONS_PER_ROW) //5 Rows
                         {
                             possible = false; //Outside of bounds
-                            impossibleFrom[topRow + i][leftCol + j] = true;
+                            if (!IsBlankMon(movingPokemon)) //Only highlight actual Pokemon
+                                impossibleFrom[topRow + i][leftCol + j] = true;
                             continue;
                         }
-                        
+
                         if (col >= MONS_PER_ROW) //6 Colums
                         {
                             possible = false; //Outside of bounds
-                            impossibleFrom[topRow + i][leftCol + j] = true;
+                            if (!IsBlankMon(movingPokemon))
+                                impossibleFrom[topRow + i][leftCol + j] = true;
                             continue;
                         }
 
