@@ -125,6 +125,11 @@
     background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
+.error-box-icon
+{
+    background-color: red !important;
+}
+
 .box-icon-image
 {
     width: 100%;

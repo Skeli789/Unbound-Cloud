@@ -11,7 +11,7 @@ import axios from "axios";
 import {config} from "./config";
 
 import {BoxList} from "./BoxList";
-import {BoxView, HIGHEST_HOME_BOX_NUM, HIGHEST_SAVE_BOX_NUM, MONS_PER_BOX, MONS_PER_ROW} from "./BoxView";
+import {BoxView, HIGHEST_HOME_BOX_NUM, HIGHEST_SAVE_BOX_NUM, MONS_PER_BOX, MONS_PER_ROW, MONS_PER_COL} from "./BoxView";
 import {IsBlankMon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from "./Util";
 import SaveData from "./data/Test Output.json"
@@ -60,6 +60,7 @@ export default class MainPage extends Component {
             draggingToBox: 0,
             viewingBoxList: -1,
             errorMessage: ["", ""],
+            impossibleMovement: null,
             searchCriteria: [null, null],
             changeWasMade: [false, false],
             savingMessage: "",
@@ -146,6 +147,14 @@ export default class MainPage extends Component {
     getMonAtBoxPos(boxSlot, boxPos)
     {
         return this.getBoxesByBoxSlot(boxSlot)[boxPos];
+    }
+
+    wipeErrorMessage()
+    {
+        return this.setState({
+            errorMessage: ["", ""],
+            impossibleMovement: null,
+        })
     }
 
     chooseSaveFile(e)
@@ -349,25 +358,31 @@ export default class MainPage extends Component {
                 var possible = true;
                 var width = (rightCol - leftCol) + 1;
                 var height = (bottomRow - topRow) + 1;
+                var impossibleFrom = Array.apply(null, Array(MONS_PER_COL)).map(function () {return Array.apply(null, Array(MONS_PER_ROW)).map(function () {return false})});
+                var impossibleTo = Array.apply(null, Array(MONS_PER_COL)).map(function () {return Array.apply(null, Array(MONS_PER_ROW)).map(function () {return false})});
                 toTopRow = Math.floor(multiTopLeftPos / MONS_PER_ROW);
                 toLeftCol = multiTopLeftPos % MONS_PER_ROW;
 
                 for (i = 0; i < height; ++i)
                 {
                     let row = toTopRow + i;
-                    if (row >= MONS_PER_BOX / MONS_PER_ROW) //5 Rows
-                    {
-                        possible = false; //Outside of bounds
-                        break;
-                    }
 
                     for (j = 0; j < width; ++j)
                     {
                         let col = toLeftCol + j;
+
+                        if (row >= MONS_PER_BOX / MONS_PER_ROW) //5 Rows
+                        {
+                            possible = false; //Outside of bounds
+                            impossibleFrom[topRow + i][leftCol + j] = true;
+                            continue;
+                        }
+                        
                         if (col >= MONS_PER_ROW) //6 Colums
                         {
                             possible = false; //Outside of bounds
-                            break;
+                            impossibleFrom[topRow + i][leftCol + j] = true;
+                            continue;
                         }
 
                         if (!this.state.selectedMonPos[multiFrom][topRow * MONS_PER_ROW + i * MONS_PER_ROW + leftCol + j])
@@ -377,12 +392,10 @@ export default class MainPage extends Component {
                         if (!IsBlankMon(pokemon))
                         {
                             possible = false; //There's a Pokemon at this spot
-                            break;
+                            impossibleFrom[topRow + i][leftCol + j] = true;
+                            impossibleTo[row][col] = true;
                         }
                     }
-
-                    if (!possible)
-                        break;
                 }
 
                 //Move Pokemon
@@ -408,12 +421,21 @@ export default class MainPage extends Component {
                 }
                 else
                 {
+                    //Update impossible highlighting
+                    var impossibleMovement = [null, null];
+                    impossibleMovement[multiFrom] = impossibleFrom;
+                    impossibleMovement[multiTo] = impossibleTo;
+
                     //Only deselect clicked on spot
                     var selectedMonPos = this.state.selectedMonPos;
                     var errorMessage = this.state.errorMessage;
                     selectedMonPos[multiTo] = CreateSingleBlankSelectedPos();
                     errorMessage[multiTo] = "Not enough space for the move.";
-                    this.setState({selectedMonPos: selectedMonPos, errorMessage: errorMessage});
+                    this.setState({
+                        selectedMonPos: selectedMonPos,
+                        errorMessage: errorMessage,
+                        impossibleMovement: impossibleMovement,
+                    });
                     return;
                 }
             }
@@ -424,8 +446,9 @@ export default class MainPage extends Component {
             saveBoxes: (leftBoxType === BOX_SAVE) ? leftBoxes : (rightBoxType === BOX_SAVE) ? rightBoxes : this.state.saveBoxes,
             homeBoxes: (leftBoxType === BOX_HOME) ? leftBoxes : (rightBoxType === BOX_HOME) ? rightBoxes : this.state.homeBoxes,
             changeWasMade: changeWasMade,
-            errorMessage: ["", ""],
         })
+
+        this.wipeErrorMessage();
     }
 
     swapDraggingBoxPokemon()
@@ -456,10 +479,11 @@ export default class MainPage extends Component {
             selectedMonPos: selectedMonPos,
             viewingMon: viewingMon,
             changeWasMade: changeWasMade,
-            errorMessage: ["", ""],
             saveBoxes: (fromBoxType === BOX_SAVE) ? fromBoxes : (toBoxType === BOX_SAVE) ? toBoxes : this.state.saveBoxes,
             homeBoxes: (fromBoxType === BOX_HOME) ? fromBoxes : (toBoxType === BOX_HOME) ? toBoxes : this.state.homeBoxes,
         })
+
+        this.wipeErrorMessage();
     }
 
     releaseSelectedPokemon(boxSlot, boxType)
@@ -494,8 +518,9 @@ export default class MainPage extends Component {
             selectedMonPos: selectedMonPos,
             viewingMon: viewingMon,
             changeWasMade: changeWasMade,
-            errorMessage: ["", ""],
         })
+
+        this.wipeErrorMessage();
     }
 
     async fixLivingDex(speciesList)
@@ -586,7 +611,8 @@ export default class MainPage extends Component {
         var errorMessage = this.state.errorMessage;
         var homeRoute = `${config.dev_server}/encryptHomeData`;
         var saveRoute = `${config.dev_server}/getUpdatedSaveFile`;        
-        this.setState({errorMessage: ["", ""], savingMessage: "Preparing save data..."});
+        this.setState({savingMessage: "Preparing save data..."});
+        this.wipeErrorMessage();
 
         //Get Encrypted Home File
         var homeData = JSON.stringify({
@@ -625,7 +651,8 @@ export default class MainPage extends Component {
 
         try
         {
-            this.setState({errorMessage: ["", ""], savingMessage: "Preparing save data..."});
+            this.setState({savingMessage: "Preparing save data..."});
+            this.wipeErrorMessage();
             res = await axios.post(saveRoute, formData, {});
         }
         catch (error)
@@ -745,8 +772,9 @@ export default class MainPage extends Component {
                 currentBox: currentBoxes,
                 viewingBoxList: -1,
                 draggingMon: -1,
-                errorMessage: ["", ""],
             });
+
+            this.wipeErrorMessage();
         }
     }
 

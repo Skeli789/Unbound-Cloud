@@ -26,8 +26,9 @@ import "./stylesheets/BoxView.css";
 
 export const HIGHEST_SAVE_BOX_NUM = 25;
 export const HIGHEST_HOME_BOX_NUM = 100;
-export const MONS_PER_ROW = 6;
 export const MONS_PER_BOX = 30;
+export const MONS_PER_ROW = 6;
+export const MONS_PER_COL = MONS_PER_BOX / MONS_PER_ROW;
 
 const LIVING_DEX_NONE = 0;
 const LIVING_DEX_NO_FORMS = 1;
@@ -110,6 +111,20 @@ export class BoxView extends Component
     {
         return this.getParentState().selectedMonBox[this.state.boxSlot] === this.getCurrentBox()
             && this.getParentState().selectedMonPos[this.state.boxSlot][boxPos];
+    }
+
+    shouldShowIconImpossibleMovewarning(boxPos)
+    {
+        if (this.getParentState().impossibleMovement !== null)
+        {
+            var impossibleMovement = this.getParentState().impossibleMovement[this.state.boxSlot];
+            var row = Math.floor(boxPos / MONS_PER_ROW);
+            var col = boxPos % MONS_PER_ROW;
+
+            return impossibleMovement[row][col];
+        }
+
+        return false;
     }
 
     areAnyPokemonSelectedInCurrentBox()
@@ -272,6 +287,7 @@ export class BoxView extends Component
         }
 
         this.setCurrentBox(boxNum);
+        this.state.parent.wipeErrorMessage();
     }
 
     handleSelection(boxPos, pokemon)
@@ -445,9 +461,9 @@ export class BoxView extends Component
         this.state.parent.setState({
             viewingMon: viewingMon,
             selectedMonPos: selectedMonPos,
-            errorMessage: ["", ""],
         });
 
+        this.state.parent.wipeErrorMessage();
         this.setState({searching: true, viewingShowdown: false});
     }
 
@@ -509,6 +525,7 @@ export class BoxView extends Component
         selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos(); //Wipe 
         viewingMon[this.state.boxSlot] = null; //Wipe
         this.state.parent.setState({selectedMonPos: selectedMonPos, viewingMon: viewingMon});
+        this.state.parent.wipeErrorMessage();
     }
 
     async fixLivingDex()
@@ -664,7 +681,10 @@ export class BoxView extends Component
                     icon = livingDexIcon;
             }
 
-            let spanClassName = "box-icon" + (!isMobile ? " box-icon-hoverable" : "") + (this.isMonSelected(key) ? " selected-box-icon" : "");
+            let spanClassName = "box-icon"
+                              + (!isMobile ? " box-icon-hoverable" : "")
+                              + (this.isMonSelected(key) ? " selected-box-icon" : "")
+                              + (this.shouldShowIconImpossibleMovewarning(key) ? " error-box-icon" : "");
 
             if (addLivingDexIcon && livingDexIcon !== "") //Can't click on this
             {
