@@ -72,8 +72,8 @@
 .box-name-save-icon
 {
     position: relative;
-    left: 5px;
-    bottom: 6px;
+    left: 6px;
+    bottom: 4px;
     cursor: pointer;
     user-select: none;
 }

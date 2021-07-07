@@ -16,10 +16,10 @@ import {ShowdownExport} from "./ShowdownExport";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos} from "./Util";
 import LivingDexOrder from "./data/LivingDexOrder.json"
 
-import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
+import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCheckCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
 import {BiSearchAlt2} from "react-icons/bi";
 import {CgPokemon, CgExport} from "react-icons/cg";
-import {GiCancel} from "react-icons/gi"
+import {ImCancelCircle} from "react-icons/im"
 import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
 
 import "./stylesheets/BoxView.css";
@@ -779,7 +779,7 @@ export class BoxView extends Component
                 title =
                     <div>
                         <OverlayTrigger placement="top" overlay={cancelTooltip}>
-                            <GiCancel size={editIconSize  + 10}
+                            <ImCancelCircle size={editIconSize  + 9}
                                   onClick={this.cancelEditingTitle.bind(this)} className="box-name-cancel-icon" />
                         </OverlayTrigger>
                         <input type="text" className="box-name-text box-name-input"
@@ -787,7 +787,7 @@ export class BoxView extends Component
                                             onKeyDown={(event) => event.keyCode === 13 ? this.renameTitle() : {}}
                                             value={this.state.titleInput}/>
                         <OverlayTrigger placement="top" overlay={saveTooltip}>
-                            <AiOutlineSave size={editIconSize + 10}
+                            <AiOutlineCheckCircle size={editIconSize + 14}
                                         onClick={this.renameTitle.bind(this)} className="box-name-save-icon" />
                         </OverlayTrigger>
                     </div>

@@ -36,6 +36,10 @@ const STATE_EDITING_HOME_BOXES = 6;
 const STATE_EDITING_SAVE_FILE = 7;
 const STATE_MOVING_POKEMON = 8;
 
+//TODO: Drag and drop file upload
+//TODO: Dragging mon outside the screen keeps it on the mouse
+
+
 export default class MainPage extends Component {
     constructor(props)
     {

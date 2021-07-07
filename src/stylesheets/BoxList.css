@@ -68,11 +68,20 @@
 
 .mini-box-cell
 {
+    background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid rgb(0, 0, 0);
     width: 15px;
     height: 15px;
     -webkit-user-select: none;
     user-select: none;
+    position: relative; /*For the "absolute" below*/
+}
+
+.mini-box-filling
+{
+    position: absolute;
+    left: -0.5px;
+    top: -0.5px;
 }
 
 .mini-box-title
@@ -82,7 +91,7 @@
 
 .mini-box-current-box-title
 {
-    color: red;
+    color: goldenrod;
 }
 
 .disabled-box

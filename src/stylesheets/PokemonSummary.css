@@ -21,6 +21,11 @@
     grid-column: 1;
 }
 
+.summary-name
+{
+    font-weight: bold;
+}
+
 .summary-level
 {
     margin-left: 10px;
