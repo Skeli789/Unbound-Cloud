@@ -58,6 +58,17 @@ function RunCommand(command) {
 }
 
 /*
+    Creates a directory "temp/" if it doesn't already exist.
+*/
+function MakeTempFolder()
+{
+    var dir = "temp/"
+
+    if (!fs.existsSync(dir))
+        fs.mkdirSync(dir);
+}
+
+/*
     Endpoint: /uploadSaveFile
     returns as the response: the boxes
 */
@@ -82,6 +93,7 @@ app.post('/uploadSaveFile', async (req, res) =>
         saveFileName = `temp/savefile_${fileIdNumber}.sav`;
     } while(fs.existsSync(saveFileName));
 
+    MakeTempFolder();
     fs.writeFileSync(saveFileName, saveFileData);
     console.log(`Temp save file saved to server as ${saveFileName}.`);
 
@@ -182,10 +194,12 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
     }
 
     //Save the original save file back to the server
+    MakeTempFolder();
     fs.writeFileSync(saveFileName, Buffer.from(saveFileData));
     console.log(`Temp save file saved to server as ${saveFileName}.`);
 
     //Save the updated boxes to the server
+    MakeTempFolder();
     fs.writeFileSync(newBoxesName, newBoxes);
     console.log("New boxes saved to server.");
 
