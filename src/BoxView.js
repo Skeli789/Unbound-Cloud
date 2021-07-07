@@ -8,7 +8,7 @@ import {isMobile} from "react-device-detect";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-import {BOX_HOME, BOX_SAVE, BOX_SLOT_LEFT, BOX_SLOT_RIGHT} from './MainPage';
+import {BOX_HOME, BOX_SAVE} from './MainPage';
 import {PokemonSummary} from "./PokemonSummary";
 import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsBlankMon, GetSpeciesName, IsMonShiny, IsMonEgg} from "./PokemonUtil";
 import {Search, MatchesSearchCriteria} from "./Search";
@@ -148,18 +148,13 @@ export class BoxView extends Component
 
     canSelectMonAtPos(boxPos)
     {
-        var rightSelectionActive = this.getParentState().selectedMonPos[BOX_SLOT_RIGHT].some((x) => x); //At least one mon selected
-        var leftSelectionActive = this.getParentState().selectedMonPos[BOX_SLOT_LEFT].some((x) => x); //At least one mon selected
+        var currSelectionActive = this.areAnyPokemonSelectedInCurrentBox();
+        var otherSelectionActive = this.getParentState().selectedMonPos[this.state.boxSlot ^ 1].some((x) => x); //At least one mon selected in the other box
         var speciesNameSelected = this.getSpeciesNameInCurrentBoxAt(boxPos);
         var selectedNullSpecies = (speciesNameSelected === "none" || speciesNameSelected === "unknown");
 
-        if (selectedNullSpecies
-        && ((this.state.boxSlot === BOX_SLOT_LEFT && !rightSelectionActive)
-         || (this.state.boxSlot === BOX_SLOT_RIGHT && !leftSelectionActive)))
+        if (selectedNullSpecies && !currSelectionActive && !otherSelectionActive)
             return false; //Clicking on a blank spot doesn't nothing if no other Pokemon has been selected yet
-
-        if (!leftSelectionActive && !rightSelectionActive && selectedNullSpecies) //A home mon hasn't been selected yet
-            return false; //Can't select a blank spot
 
         //The blank spot can be chosen to deselect the currently selected mon or move the other selected mon to
         return true;
@@ -167,13 +162,12 @@ export class BoxView extends Component
 
     doesClickingSpotDeselectChoice(boxPos)
     {
-        var saveSelectionActive = this.getParentState().selectedMonPos[BOX_SLOT_RIGHT].some((x) => x); //At least one mon selected
-        var homeSelectionActive = this.getParentState().selectedMonPos[BOX_SLOT_LEFT].some((x) => x); //At least one mon selected
+        var otherSelectionActive = this.getParentState().selectedMonPos[this.state.boxSlot ^ 1].some((x) => x); //At least one mon selected in the other box
         var speciesNameSelected = this.getSpeciesNameInCurrentBoxAt(boxPos);
         var selectedNullSpecies = (speciesNameSelected === "none" || speciesNameSelected === "unknown");
-    
-        if (selectedNullSpecies && !homeSelectionActive && !saveSelectionActive)
-            return true; //Clicking a blank spot deselects the current choice in the same box
+
+        if (selectedNullSpecies && !otherSelectionActive)
+            return true; //Clicking a blank spot deselects the current choice in the same box. Otherwise it'll move the Pokemon
 
         if (this.isMonSelected(boxPos)
         && this.getParentState().draggingMon !== boxPos + this.getCurrentBox() * MONS_PER_BOX) //Isn't currently being dragged
