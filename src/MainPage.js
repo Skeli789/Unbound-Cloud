@@ -678,7 +678,7 @@ export default class MainPage extends Component {
         if (this.state.changeWasMade[BOX_HOME])
         {
             //Download the Home Data
-            file = new Blob([encryptedHomeData], {type: 'text/plain'});
+            file = new Blob([encryptedHomeData], {type: 'application/octet-stream'});
             element = document.createElement("a");
             element.href = URL.createObjectURL(file);
             element.download = "home.dat";
