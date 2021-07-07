@@ -269,7 +269,7 @@ export class PokemonSummary extends Component
         return (
             <div className="pokemon-summary-container">
                 <div className="summary-name-level-container">
-                    <span>
+                    <span className="summary-name">
                         {this.state.pokemon["nickname"]}
                     </span>
                     <span>
