@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.21.1",
     "bootstrap": "^4.5.2",
+    "file-saver": "^2.0.5",
     "overlayscrollbars-react": "^0.2.3",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",

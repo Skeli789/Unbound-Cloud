@@ -7,6 +7,7 @@ import {Button} from "react-bootstrap";
 import {isMobile} from "react-device-detect";
 //import {StatusCode} from "status-code-enum";
 import axios from "axios";
+//import {saveAs} from "file-saver";
 import {config} from "./config";
 
 import {BoxList} from "./BoxList";
@@ -15,7 +16,7 @@ import {IsBlankMon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from "./Util";
 import SaveData from "./data/Test Output.json"
 
-import {FaHome, FaGamepad} from "react-icons/fa";
+import {FaHome, FaGamepad, FaArrowAltCircleRight, FaUpload} from "react-icons/fa";
 
 import "./stylesheets/MainPage.css";
 
@@ -25,21 +26,23 @@ export const BOX_SAVE = 1;
 export const BOX_SLOT_LEFT = 0;
 export const BOX_SLOT_RIGHT = 1;
 
-const STATE_UPLOAD_SAVE = 0;
-const STATE_UPLOADING_SAVE_FILE = 1;
-const STATE_UPLOAD_HOME_FILE = 2;
-const STATE_UPLOADING_HOME_FILE = 3;
-const STATE_EDITING_HOME_BOXES = 4;
-const STATE_EDITING_SAVE_FILE = 5;
-const STATE_MOVING_POKEMON = 6;
+const STATE_INSTRUCTIONS = 0
+const STATE_UPLOAD_HOME_FILE = 1;
+const STATE_UPLOADING_HOME_FILE = 2;
+const STATE_UPLOAD_SAVE_FILE = 3;
+const STATE_UPLOADING_SAVE_FILE = 4;
+const STATE_EDITING_HOME_BOXES = 5;
+const STATE_EDITING_SAVE_FILE = 6;
+const STATE_MOVING_POKEMON = 7;
 
 export default class MainPage extends Component {
     constructor(props)
     {
         super(props);
+
         this.state = //Set test data
         {
-            editState: STATE_UPLOAD_SAVE, //STATE_MOVING_POKEMON,
+            editState: (localStorage.visitedBefore ? STATE_UPLOAD_HOME_FILE : STATE_INSTRUCTIONS), //STATE_MOVING_POKEMON,
             uploadProgress: 0,
             selectedSaveFile: null,
             selectedHomeFile: null,
@@ -74,6 +77,7 @@ export default class MainPage extends Component {
 
     componentDidMount()
     {
+        //localStorage.clear(); //For debugging
         window.addEventListener('beforeunload', this.beforeUnload.bind(this));
     }
 
@@ -151,7 +155,7 @@ export default class MainPage extends Component {
         || file.size !== 131072) //128 kb
             this.setState({fileUploadError: true});
         else
-            this.setState({selectedSaveFile: file});
+            this.setState({selectedSaveFile: file, fileUploadError: false});
     }
 
     chooseHomeFile(e)
@@ -191,7 +195,7 @@ export default class MainPage extends Component {
             console.log(error["response"]["data"]);
 
             if (isSaveFile)
-                newState = STATE_UPLOAD_SAVE;
+                newState = STATE_UPLOAD_SAVE_FILE;
             else
                 newState = STATE_UPLOAD_HOME_FILE;
 
@@ -209,20 +213,22 @@ export default class MainPage extends Component {
             console.log("Save file upload successful.");
 
             this.setState({
-                editState: STATE_UPLOAD_HOME_FILE,
+                editState: STATE_MOVING_POKEMON,
                 saveBoxes: res.data.boxes,
                 saveTitles: res.data.titles,
                 saveFileNumber: res.data.fileIdNumber,
                 saveFileData: res.data.saveFileData,
                 fileUploadError: false,
             });
+
+            localStorage.visitedBefore = true; //Set cookie now
         }
         else //Home File
         {
             console.log("Home file upload successful.");
 
             this.setState({
-                editState: STATE_MOVING_POKEMON,
+                editState: STATE_UPLOAD_SAVE_FILE,
                 homeBoxes: res.data.boxes,
                 homeTitles: res.data.titles,
                 fileUploadError: false,
@@ -549,29 +555,56 @@ export default class MainPage extends Component {
 
     async downloadSaveFileAndHomeData(boxSlot)
     {
-        var route = `${config.dev_server}/getUpdatedSaveFile`;
+        var res, formData;
+        var errorMessage = this.state.errorMessage;
+        var homeRoute = `${config.dev_server}/encryptHomeData`;
+        var saveRoute = `${config.dev_server}/getUpdatedSaveFile`;        
+        this.setState({errorMessage: ["", ""], savingMessage: "Preparing save data..."});
+
+        //Get Encrypted Home File
         var homeData = JSON.stringify({
             titles: this.state.homeTitles,
             boxes: this.state.homeBoxes,
         });
-    
-        const formData = new FormData(); //formData contains the image to be uploaded
+
+        formData = new FormData(); //formData contains the home data split into four parts to guarantee it'll all be sent
+        for (let i = 0; i < 4; ++i)
+        {
+            if (i + 1 >= 4)
+                formData.append(`homeDataP${i + 1}`, homeData.slice((homeData.length / 4) * i, homeData.length));
+            else
+                formData.append(`homeDataP${i + 1}`, homeData.slice((homeData.length / 4) * i, (homeData.length / 4) * (i + 1)));
+        }
+
+        try
+        {
+            res = await axios.post(homeRoute, formData, {});
+        }
+        catch (error)
+        {
+            console.log(error["response"]["data"]);
+            errorMessage[boxSlot] = error["response"]["data"];
+            this.setState({savingMessage: "", errorMessage: errorMessage});
+            return;
+        }
+
+        var encryptedHomeData = res.data.newHomeData;
+
+        //Get Updated Save File
+        formData = new FormData(); //formData contains the data to send to the server
         formData.append("newBoxes", JSON.stringify(this.state.saveBoxes));
         formData.append("saveFileData", JSON.stringify(this.state.saveFileData["data"]));
         formData.append("fileIdNumber", JSON.stringify(this.state.saveFileNumber));
-        formData.append("homeData", homeData);
 
-        let res;
         try
         {
             this.setState({errorMessage: ["", ""], savingMessage: "Preparing save data..."});
-            res = await axios.post(route, formData, {});
+            res = await axios.post(saveRoute, formData, {});
         }
         catch (error)
         {
             console.log(error["response"]["data"]);
 
-            var errorMessage = this.state.errorMessage;
             errorMessage[boxSlot] = error["response"]["data"];
             this.setState({savingMessage: "", errorMessage: errorMessage});
             return;
@@ -580,7 +613,6 @@ export default class MainPage extends Component {
         //No error occurred good to proceed
         var name;
         var dataBuffer = res.data.newSaveFileData;
-        var encryptedHomeData = res.data.newHomeData;
 
         if (this.state.selectedSaveFile === null)
             name = "savefile.sav";
@@ -598,23 +630,43 @@ export default class MainPage extends Component {
         //Download the Save File
         if (this.state.changeWasMade[BOX_SAVE])
         {
-            var element = document.createElement("a");
             var file = new Blob(output, {type: 'application/octet-stream'});
+            var element = document.createElement("a");
             element.href = URL.createObjectURL(file);
             element.download = name;
             document.body.appendChild(element); //Required for this to work in FireFox
             element.click();
+
+            /*try
+            {
+                saveAs(file, name);
+            }
+            catch(error)
+            {
+                console.log("Error downloading the new save file.");
+                console.log(error);
+            }*/
         }
 
         if (this.state.changeWasMade[BOX_HOME])
         {
             //Download the Home Data
-            element = document.createElement("a");
             file = new Blob([encryptedHomeData], {type: 'text/plain'});
+            element = document.createElement("a");
             element.href = URL.createObjectURL(file);
             element.download = "home.dat";
             document.body.appendChild(element); // Required for this to work in FireFox
             element.click();
+
+            /*try
+            {
+                saveAs(file, "home.dat");
+            }
+            catch(error)
+            {
+                console.log("Error downloading the home data file.");
+                console.log(error);
+            }*/
         }
 
         this.setState({savingMessage: "", changeWasMade: [false, false]});
@@ -772,7 +824,73 @@ export default class MainPage extends Component {
         );
     }
 
-    printUploadSaveFile()
+    printInstructions(title)
+    {
+        return (
+            <div className="main-page-upload-instructions fade-in">
+                {title}
+                <FaArrowAltCircleRight aria-label="Next" className="main-page-purple-icon-button"
+                        size={48}
+                        onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE})} />
+            </div>
+        )
+    }
+
+    printUploadHomeFile(title)
+    {
+        return (
+            <div className="main-page-upload-instructions">
+                <h2>Upload your home data.</h2>
+                <h3>It should be a file called home.dat</h3>
+                <div>
+                    <label className="btn btn-primary btn-lg choose-file-label-button">
+                        Choose File
+                        <input type="file" hidden onChange={(e) => this.chooseHomeFile(e)} />
+                    </label>
+                    
+                    <Button size="lg" onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE, fileUploadError: false})}
+                            className="main-page-home-create-new-button">
+                        Create New
+                    </Button>
+                </div>
+
+                {
+                    this.state.selectedHomeFile !== null
+                        ? <p>{this.state.selectedHomeFile.name}</p>
+                    :
+                        ""
+                }
+
+                {
+                    this.state.selectedHomeFile !== null
+                        ? <FaUpload size={48} className="main-page-purple-icon-button"
+                                    onClick={this.handleUpload.bind(this, false)} />
+                        : ""
+                }
+
+                {
+                    this.state.fileUploadError
+                    ? <div>
+                        <p>There was a problem with the data file chosen.</p>
+                        <p>Please make sure it was a correct data file with no corruption.</p>
+                    </div>
+                    :
+                        ""
+                }
+            </div>
+        )
+    }
+
+    printUploadingHomeFile(title)
+    {
+        return (
+            <div className="main-page-upload-instructions">
+                Uploading {this.state.uploadProgress}
+            </div>
+        )
+    }
+
+    printUploadSaveFile(title)
     {
         return (
             <div className="main-page-upload-instructions">
@@ -792,7 +910,8 @@ export default class MainPage extends Component {
 
                 {
                     this.state.selectedSaveFile !== null
-                        ? <Button size="lg" onClick={this.handleUpload.bind(this, true)}>Upload</Button>
+                        ? <FaUpload size={48} className="main-page-purple-icon-button"
+                                    onClick={this.handleUpload.bind(this, true)} />
                         : ""
                 }
 
@@ -809,60 +928,7 @@ export default class MainPage extends Component {
         )
     }
 
-    printUploadingSaveFile()
-    {
-        return (
-            <div className="main-page-upload-instructions">
-                Uploading {this.state.uploadProgress}
-            </div>
-        )
-    }
-
-    printUploadHomeFile()
-    {
-        return (
-            <div className="main-page-upload-instructions">
-                <h2>Upload your home data.</h2>
-                <h3>It should be a file called home.dat</h3>
-                <div>
-                    <label className="btn btn-primary btn-lg choose-file-label-button">
-                        Choose File
-                        <input type="file" hidden onChange={(e) => this.chooseHomeFile(e)} />
-                    </label>
-                    
-                    <Button size="lg" onClick={() => this.setState({editState: STATE_MOVING_POKEMON})}
-                            className="main-page-home-create-new-button">
-                        Create New
-                    </Button>
-                </div>
-
-                {
-                    this.state.selectedHomeFile !== null
-                        ? <p>{this.state.selectedHomeFile.name}</p>
-                    :
-                        ""
-                }
-
-                {
-                    this.state.selectedHomeFile !== null
-                        ? <Button size="lg" onClick={this.handleUpload.bind(this, false)}>Upload</Button>
-                        : ""
-                }
-
-                {
-                    this.state.fileUploadError
-                    ? <div>
-                        <p>There was a problem with the data file chosen.</p>
-                        <p>Please make sure it was a correct data file with no corruption.</p>
-                    </div>
-                    :
-                        ""
-                }
-            </div>
-        )
-    }
-
-    printUploadingHomeFile()
+    printUploadingSaveFile(title)
     {
         return (
             <div className="main-page-upload-instructions">
@@ -960,34 +1026,34 @@ export default class MainPage extends Component {
     */
     render()
     {
-        var title = <h1 className="main-page-title">Unbound Home</h1>;
+        var title = <h1 className="main-page-title">Welcome to Unbound Home</h1>;
         var page, draggingImg;
 
         switch (this.state.editState)
         {
-            case STATE_UPLOAD_SAVE:
-                page = this.printUploadSaveFile();
-                break;
-            case STATE_UPLOADING_SAVE_FILE:
-                page = this.printUploadingSaveFile();
+            case STATE_INSTRUCTIONS:
+                page = this.printInstructions(title);
                 break;
             case STATE_UPLOAD_HOME_FILE:
-                page = this.printUploadHomeFile();
+                page = this.printUploadHomeFile(title);
                 break;
             case STATE_UPLOADING_HOME_FILE:
-                page = this.printUploadingHomeFile();
+                page = this.printUploadingHomeFile(title);
+                break;
+            case STATE_UPLOAD_SAVE_FILE:
+                page = this.printUploadSaveFile(title);
+                break;
+            case STATE_UPLOADING_SAVE_FILE:
+                page = this.printUploadingSaveFile(title);
                 break;
             case STATE_EDITING_HOME_BOXES:
-                title = ""; //Don't display title
-                page = this.printEditingHomeBoxes();
+                page = this.printEditingHomeBoxes(); //Don't display title
                 break;
             case STATE_EDITING_SAVE_FILE:
-                title = ""; //Don't display title
-                page = this.printEditingSaveBoxes();
+                page = this.printEditingSaveBoxes(); //Don't display title
                 break;
             case STATE_MOVING_POKEMON:
-                title = ""; //Don't display title
-                page = this.printMovingPokemon();
+                page = this.printMovingPokemon(); //Don't display title
                 break;
             default:
                 page = "";
@@ -1003,7 +1069,6 @@ export default class MainPage extends Component {
             <div style={{minWidth: "428px"}}
                          onMouseMove={(e) => this.moveDraggingMonIcon(e)}
                          onMouseUp={() => this.handleReleaseDragging()}>
-                {title}
                 {page}
                 {draggingImg}
             </div>
