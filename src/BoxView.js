@@ -530,9 +530,12 @@ export class BoxView extends Component
 
     async fixLivingDex()
     {
+        var speciesList = (this.state.livingDexState === LIVING_DEX_ALL) ? LivingDexOrder["allSpecies"] : LivingDexOrder["noAltForms"];
+        var boxCount = Math.ceil(speciesList.length / MONS_PER_BOX);
+
         PopUp.fire(
         {
-            title: 'This will rearrange all of the Pokemon in your boxes! Are you sure you want to do this?',
+            title: `This will rearrange the Pokemon in your first ${boxCount} boxes and may move Pokemon out of others! Are you sure you want to do this?`,
             confirmButtonText: `Do It`,
             cancelButtonText: `Cancel`,
             showCancelButton: true,
@@ -541,8 +544,6 @@ export class BoxView extends Component
         {
             if (result.isConfirmed)
             {
-                let speciesList = (this.state.livingDexState === LIVING_DEX_ALL) ? LivingDexOrder["allSpecies"] : LivingDexOrder["noAltForms"];
-
                 this.setState({fixingLivingDex: true});
 
                 await this.state.parent.fixLivingDex(speciesList).then(newBoxes =>
