@@ -43,7 +43,7 @@ export default class MainPage extends Component {
 
         this.state = //Set test data
         {
-            editState: STATE_MOVING_POKEMON, //(localStorage.visitedBefore ? STATE_UPLOAD_HOME_FILE : STATE_WELCOME), //STATE_MOVING_POKEMON,
+            editState: (localStorage.visitedBefore ? STATE_UPLOAD_HOME_FILE : STATE_WELCOME), //STATE_MOVING_POKEMON,
             uploadProgress: "0%",
             selectedSaveFile: null,
             selectedHomeFile: null,
@@ -525,16 +525,26 @@ export default class MainPage extends Component {
 
     async fixLivingDex(speciesList)
     {
+        var i;
         var newBoxes = this.generateBlankHomeBoxes();
         var speciesIndexDict = {};
         var freeSlot = speciesList.length;
 
-        for (let i = 0; i < speciesList.length; ++i)
+        //First build a hash table for quick access
+        for (i = 0; i < speciesList.length; ++i)
             speciesIndexDict[speciesList[i]] = i;
 
-        for (let pokemon of this.state.homeBoxes)
+        //Then move any Pokemon that are already placed after where the living dex would end
+        //This ensures those Pokemon at least may remain in their positions
+        for (i = speciesList.length; i < this.state.homeBoxes.length; ++i)
+            newBoxes[i] = this.state.homeBoxes[i];
+
+        //Then move the Pokemon that are in the living dex area
+        for (i = 0; i < speciesList.length; ++i)
         {
+            let pokemon = this.state.homeBoxes[i]
             let species = pokemon["species"];
+
             if (species in speciesIndexDict)
             {
                 let index = speciesIndexDict[species];
@@ -546,7 +556,6 @@ export default class MainPage extends Component {
             else
                 newBoxes[freeSlot] = pokemon;
 
-            ++freeSlot;
             if (freeSlot >= newBoxes.length)
                 freeSlot = 0;
 
@@ -554,6 +563,25 @@ export default class MainPage extends Component {
             && newBoxes[freeSlot]["species"] !== 0
             && newBoxes[freeSlot]["species"] !== "SPECIES_NONE")
                 ++freeSlot; //Increment until a free slot is found
+        }
+
+        //And finally try moving the Pokemon moved earlier
+        for (i = speciesList.length; i < newBoxes.length; ++i)
+        {
+            let pokemon = newBoxes[i];
+            let species = pokemon["species"];
+    
+            if (species in speciesIndexDict)
+            {
+                let index = speciesIndexDict[species];
+                if (newBoxes[index]["species"] === "") //Free spot
+                {
+                    //"Swap" them
+                    let blank = newBoxes[index];
+                    newBoxes[index] = pokemon;
+                    newBoxes[i] = blank;
+                }
+            }
         }
 
         this.state.homeBoxes = newBoxes;
