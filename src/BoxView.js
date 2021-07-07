@@ -3,6 +3,7 @@
 */
 
 import React, {Component} from 'react';
+import {OverlayTrigger, Tooltip} from "react-bootstrap";
 import {isMobile} from "react-device-detect";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
@@ -34,7 +35,15 @@ const LIVING_DEX_ALL = 2;
 
 const PopUp = withReactContent(Swal);
 
-//TODO: Visible stats on the summary view.
+const renameTooltip = props => (<Tooltip {...props}>Rename</Tooltip>);
+const saveTooltip = props => (<Tooltip {...props}>Save</Tooltip>);
+const cancelTooltip = props => (<Tooltip {...props}>Cancel</Tooltip>);
+const livingDexTooltip = props => (<Tooltip {...props}>Living Dex</Tooltip>);
+const searchTooltip = props => (<Tooltip {...props}>Search</Tooltip>);
+const selectAllTooltip = props => (<Tooltip {...props}>Select All</Tooltip>);
+const showdownTooltip = props => (<Tooltip {...props}>Showdown</Tooltip>);
+const releaseTooltip = props => (<Tooltip {...props}>Release</Tooltip>);
+const fixLivingDexTooltip = props => (<Tooltip {...props}>Fix Living Dex</Tooltip>);
 
 
 export class BoxView extends Component
@@ -703,7 +712,8 @@ export class BoxView extends Component
                 return(<ShowdownExport pokemonList={pokemonList} key={this.state.viewingMonKey}/>);
             }
             else
-                return(<PokemonSummary pokemon={pokemon} key={this.state.viewingMonKey}/>);
+                return(<PokemonSummary pokemon={pokemon} areBoxViewsVertical={this.state.parent.areBoxViewsVertical()}
+                                       key={this.state.viewingMonKey}/>);
         }
         else
             return "";
@@ -729,33 +739,42 @@ export class BoxView extends Component
             return this.printSearchView();
 
         if (this.isHomeBox() && !this.state.editingTitle)
-            livingDexIcon = <CgPokemon size={editIconSize  + 10} onClick={this.changeLivingDexView.bind(this)}
-                                       aria-label="Living Dex View"
-                                       className="box-name-living-dex-icon" style={{color: this.state.livingDexState === LIVING_DEX_NO_FORMS ? "violet"
-                                                                                         : this.state.livingDexState === LIVING_DEX_ALL ? "lightseagreen"
-                                                                                         : "black"}} />;
+            livingDexIcon =
+                <OverlayTrigger placement="top" overlay={livingDexTooltip}>
+                    <CgPokemon size={editIconSize  + 10} onClick={this.changeLivingDexView.bind(this)}
+                                    className="box-name-living-dex-icon" style={{color: this.state.livingDexState === LIVING_DEX_NO_FORMS ? "violet"
+                                                                                    : this.state.livingDexState === LIVING_DEX_ALL ? "lightseagreen"
+                                                                                    : "black"}} />
+                </OverlayTrigger>;
 
         if (this.state.titles != null)
         {
             
             title = this.state.titles[this.getCurrentBox()];
             titleEditIcon = this.state.editingTitle ? ""
-                          : this.isHomeBox() ? <GrEdit size={editIconSize} aria-label="Edit Title"
-                                                onClick={this.startEditingTitle.bind(this)} className="box-name-edit-icon" />
+                          : this.isHomeBox() ?
+                                <OverlayTrigger placement="top" overlay={renameTooltip}>
+                                    <GrEdit size={editIconSize}
+                                            onClick={this.startEditingTitle.bind(this)} className="box-name-edit-icon" />
+                                </OverlayTrigger>
                           : "";
-            
+
             if (this.state.editingTitle)
             {
                 title =
                     <div>
-                        <GiCancel size={editIconSize  + 10} aria-label="Cancel Editing"
+                        <OverlayTrigger placement="top" overlay={cancelTooltip}>
+                            <GiCancel size={editIconSize  + 10}
                                   onClick={this.cancelEditingTitle.bind(this)} className="box-name-cancel-icon" />
+                        </OverlayTrigger>
                         <input type="text" className="box-name-text box-name-input"
                                             onChange={(event) => this.updateTitleNameInput(event.target.value)}
                                             onKeyDown={(event) => event.keyCode === 13 ? this.renameTitle() : {}}
                                             value={this.state.titleInput}/>
-                        <AiOutlineSave size={editIconSize + 10} aria-label="Save Title"
-                                       onClick={this.renameTitle.bind(this)} className="box-name-save-icon" />
+                        <OverlayTrigger placement="top" overlay={saveTooltip}>
+                            <AiOutlineSave size={editIconSize + 10}
+                                        onClick={this.renameTitle.bind(this)} className="box-name-save-icon" />
+                        </OverlayTrigger>
                     </div>
 
                 titleEditIcon = "";
@@ -776,20 +795,28 @@ export class BoxView extends Component
 
         var lowerIcons = 
             <div className="box-lower-icons">
-                <BiSearchAlt2 size={34} aria-label="Search" className={"box-lower-icon" + (this.shouldFilterSearchResults() ? " green-icon" : "")}
-                        onClick={this.startSearching.bind(this)}/>
-                <GrMultiple size={28} aria-label="Select All" className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
+                <OverlayTrigger placement="bottom" overlay={searchTooltip}>
+                    <BiSearchAlt2 size={34} className={"box-lower-icon" + (this.shouldFilterSearchResults() ? " green-icon" : "")}
+                            onClick={this.startSearching.bind(this)}/>
+                </OverlayTrigger>
+                <OverlayTrigger placement="bottom" overlay={selectAllTooltip}>
+                    <GrMultiple size={28} className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
+                </OverlayTrigger>
                 {
                     //Save Icon
                     this.getParentState().changeWasMade[this.state.boxType] ?
-                        <AiOutlineSave size={36} aria-label="Save" className="box-lower-icon" onClick={() => this.state.parent.saveAndExit(this.state.boxSlot)}/>
+                        <OverlayTrigger placement="bottom" overlay={saveTooltip}>
+                            <AiOutlineSave size={36} className="box-lower-icon" onClick={() => this.state.parent.saveAndExit(this.state.boxSlot)}/>
+                        </OverlayTrigger>
                     :
                         ""
                 }
                 {
                     //Fix Living Dex Icon
                     this.state.livingDexState !== LIVING_DEX_NONE && !this.state.fixingLivingDex && this.isHomeBox() ?
-                        <AiOutlineTool size={36} aria-label="Fix Living Dex" className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
+                        <OverlayTrigger placement="bottom" overlay={fixLivingDexTooltip}>
+                            <AiOutlineTool size={36} className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
+                        </OverlayTrigger>
                     :
                         ""
                 }
@@ -797,11 +824,15 @@ export class BoxView extends Component
                     //Release & Showdown Icons
                     this.areAnyPokemonSelectedInCurrentBox() ?
                         <>
-                            <GrTrash size={28} aria-label="Release" className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
+                            <OverlayTrigger placement="bottom" overlay={releaseTooltip}>
+                                <GrTrash size={28} className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
+                            </OverlayTrigger>
                             {
                                 this.canViewShowdownExportButton() ?
-                                    <CgExport size={30} aria-label="Showdown" className="box-lower-icon"
-                                              onClick = {this.viewShowdownExport.bind(this)}/>
+                                    <OverlayTrigger placement="bottom" overlay={showdownTooltip}>
+                                        <CgExport size={30} className="box-lower-icon"
+                                                onClick = {this.viewShowdownExport.bind(this)}/>
+                                    </OverlayTrigger>
                                 :
                                     ""
                             }

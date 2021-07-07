@@ -16,7 +16,7 @@ import {IsBlankMon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from "./Util";
 import SaveData from "./data/Test Output.json"
 
-import {FaHome, FaGamepad, FaArrowAltCircleRight, FaUpload} from "react-icons/fa";
+import {FaHome, FaGamepad, FaArrowAltCircleRight} from "react-icons/fa";
 
 import "./stylesheets/MainPage.css";
 
@@ -43,7 +43,7 @@ export default class MainPage extends Component {
 
         this.state = //Set test data
         {
-            editState: (localStorage.visitedBefore ? STATE_UPLOAD_HOME_FILE : STATE_WELCOME), //STATE_MOVING_POKEMON,
+            editState: STATE_MOVING_POKEMON, //(localStorage.visitedBefore ? STATE_UPLOAD_HOME_FILE : STATE_WELCOME), //STATE_MOVING_POKEMON,
             uploadProgress: "0%",
             selectedSaveFile: null,
             selectedHomeFile: null,
@@ -828,8 +828,12 @@ export default class MainPage extends Component {
 
     navBarButtons()
     {
+        //Appear above everything when boxes are side by side
+        //Otherwise scroll with everything else if possible
+
         return (
-            <div className="top-bar-buttons">
+            <div className="top-bar-buttons" style={{zIndex: this.areBoxViewsVertical() ? -1 : 100,
+                                                     position: this.areBoxViewsVertical() ? "unset" : "sticky"}}>
                 {this.editOnlyHomePokemonButton()}
                 {this.transferPokemonButton()}
                 {this.editOnlySavePokemonButton()}

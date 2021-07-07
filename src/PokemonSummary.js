@@ -3,6 +3,8 @@
 */
 
 import React, {Component} from 'react';
+import {OverlayTrigger, Tooltip} from "react-bootstrap";
+
 import {GetMonLevel, GetMonAbility, GetMonNature, GetMonGender, GetVisibleStats, /*GetVisibleEVs, GetVisibleIVs,*/
         GetMonOTName, GetMonOTGender, GetMonVisibleOTId, CanMonGigantamax,
         GetMoveName, GetAbilityName, GetNatureName, IsMonEgg} from "./PokemonUtil";
@@ -52,6 +54,7 @@ export class PokemonSummary extends Component
         this.state = //Set test data
         {
             pokemon: props.pokemon,
+            areBoxViewsVertical :props.areBoxViewsVertical,
         };
     }
 
@@ -67,20 +70,26 @@ export class PokemonSummary extends Component
         var ballType = this.state.pokemon["pokeBall"];
         var ballName = ballType.split("BALL_TYPE_")[1].split("_BALL")[0].toLowerCase();
         ballName = ballName.charAt(0).toUpperCase() + ballName.slice(1) + " Ball";
+        var ballNameTooltip = props => (<Tooltip {...props}>{ballName}</Tooltip>);
 
         var item = this.state.pokemon["item"];
         var itemName = GetItemName(item);
         var itemLink = GetItemIconLink(item);
+        var itemTooltip = props => (<Tooltip {...props}>{itemName}</Tooltip>);
 
         return (
             <div className="summary-ball-icon-container">
                 {
                     itemLink !== "" ?
-                        <img src={itemLink} alt="" aria-label={itemName}/>
+                        <OverlayTrigger placement="top" overlay={itemTooltip}>
+                            <img src={itemLink} alt="" onMouseDown={(e) => e.preventDefault()}/>
+                        </OverlayTrigger>
                     :
                         ""
                 }
-                <img src={BASE_GFX_LINK + ballType + ".png"} alt="" aria-label={ballName}/>
+                <OverlayTrigger placement="top" overlay={ballNameTooltip}>
+                    <img src={BASE_GFX_LINK + ballType + ".png"} alt="" onMouseDown={(e) => e.preventDefault()}/>
+                </OverlayTrigger>
             </div>
         )
     }
@@ -141,6 +150,8 @@ export class PokemonSummary extends Component
     {
         var moves = [];
         var key = 0;
+        var typeNames = ["", "", "", ""];
+        var splitNames = ["", "", "", ""];
 
         if (this.state.pokemon !== null && this.state.pokemon["moves"] !== null)
         {
@@ -152,9 +163,15 @@ export class PokemonSummary extends Component
                 if (move in MoveData)
                 {
                     var moveType = MoveData[move]["type"];
-                    var typeName = moveType.toLowerCase().charAt(5).toUpperCase() + moveType.toLowerCase().slice(6); //Start after TYPE_
-                    var alt = typeName.slice(0, 2);
-                    moves.push(<img src={BASE_GFX_LINK + moveType + ".png"} alt={alt} aria-label={typeName} className="summary-move-type" key={key++} />)
+                    typeNames[i] = moveType.toLowerCase().charAt(5).toUpperCase() + moveType.toLowerCase().slice(6); //Start after TYPE_
+                    var alt = typeNames[i].slice(0, 2);
+                    var typeNameTooltip = props => (<Tooltip {...props}>{typeNames[i]}</Tooltip>);
+
+                    moves.push(
+                        <OverlayTrigger placement="left" overlay={typeNameTooltip} key={key++}>
+                            <img src={BASE_GFX_LINK + moveType + ".png"} alt={alt} className="summary-move-type" />
+                        </OverlayTrigger>
+                    )
                 }
                 else
                 {
@@ -173,8 +190,14 @@ export class PokemonSummary extends Component
 
                     //Print Move Split
                     var moveSplit = MoveData[move]["split"];
-                    var splitName = moveSplit.toLowerCase().charAt(6).toUpperCase() + moveSplit.toLowerCase().slice(7); //Start after SPLIT_
-                    moves.push(<img src={BASE_GFX_LINK + moveSplit + ".png"} alt={typeName.slice(0, 2)} aria-label={splitName} className="summary-move-split" key={key++} />)
+                    splitNames[i] = moveSplit.toLowerCase().charAt(6).toUpperCase() + moveSplit.toLowerCase().slice(7); //Start after SPLIT_
+                    var splitNameTooltip = props => (<Tooltip {...props}>{splitNames[i]}</Tooltip>);
+
+                    moves.push(
+                        <OverlayTrigger placement={this.state.areBoxViewsVertical ? "top" : "right"} overlay={splitNameTooltip} key={key++}>
+                            <img src={BASE_GFX_LINK + moveSplit + ".png"} alt={splitNames[i].slice(0, 2)} className="summary-move-split"/>
+                        </OverlayTrigger>
+                    );
                 }
                 else
                 {
@@ -217,6 +240,10 @@ export class PokemonSummary extends Component
         var maxFriendship = 255;
         var heartFriendship = 220;
 
+        var heartTooltipText = (friendship >= maxFriendship) ? "Trusts you completely." : "Trusts you a lot.";
+        var heartTooltip = props => (<Tooltip {...props}>{heartTooltipText}</Tooltip>);
+        var gigantamaxTooltip = props => (<Tooltip {...props}>Gigantamax</Tooltip>);
+
         var summaryOT =
             <div className="summary-ot-container">
                 <span className={GetMonOTGender(this.state.pokemon) === "M" ? "summary-male-ot" : "summary-female-ot"}>
@@ -253,15 +280,19 @@ export class PokemonSummary extends Component
                     </span>
                     {
                         friendship >= heartFriendship ?
-                            <span className="summary-heart" style={{color: (friendship >= maxFriendship) ? "red" : "grey"}}>
-                                ♥
-                            </span>
+                            <OverlayTrigger placement="top" overlay={heartTooltip}>
+                                <span className="summary-heart" style={{color: (friendship >= maxFriendship) ? "red" : "grey"}}>
+                                        ♥
+                                </span>
+                            </OverlayTrigger>
                         :
                             ""
                     }
                     {
                         CanMonGigantamax(this.state.pokemon) ?
-                            <img src={BASE_GFX_LINK + "gigantamax.png"} alt={"Gigantamax"} aria-label="Can Gigantamax" className="summary-gigantamax"/>
+                            <OverlayTrigger placement="top" overlay={gigantamaxTooltip}>
+                                <img src={BASE_GFX_LINK + "gigantamax.png"} alt={"Gigantamax"} aria-label="Can Gigantamax" className="summary-gigantamax"/>
+                            </OverlayTrigger>
                         :
                             ""
                     }
