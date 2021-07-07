@@ -55,6 +55,7 @@ export class BoxList extends Component
             viewingMon: viewingMon,
             viewingBoxList: -1, //No more viewing box list
             errorMessage: ["", ""],
+            impossibleMovement: null,
         });
     }
 
