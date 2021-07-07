@@ -26,14 +26,15 @@ export const BOX_SAVE = 1;
 export const BOX_SLOT_LEFT = 0;
 export const BOX_SLOT_RIGHT = 1;
 
-const STATE_INSTRUCTIONS = 0
-const STATE_UPLOAD_HOME_FILE = 1;
-const STATE_UPLOADING_HOME_FILE = 2;
-const STATE_UPLOAD_SAVE_FILE = 3;
-const STATE_UPLOADING_SAVE_FILE = 4;
-const STATE_EDITING_HOME_BOXES = 5;
-const STATE_EDITING_SAVE_FILE = 6;
-const STATE_MOVING_POKEMON = 7;
+const STATE_WELCOME = 0
+const STATE_ASK_FIRST_TIME = 1;
+const STATE_UPLOAD_HOME_FILE = 2;
+const STATE_UPLOADING_HOME_FILE = 3;
+const STATE_UPLOAD_SAVE_FILE = 4;
+const STATE_UPLOADING_SAVE_FILE = 5;
+const STATE_EDITING_HOME_BOXES = 6;
+const STATE_EDITING_SAVE_FILE = 7;
+const STATE_MOVING_POKEMON = 8;
 
 export default class MainPage extends Component {
     constructor(props)
@@ -42,8 +43,8 @@ export default class MainPage extends Component {
 
         this.state = //Set test data
         {
-            editState: (localStorage.visitedBefore ? STATE_UPLOAD_HOME_FILE : STATE_INSTRUCTIONS), //STATE_MOVING_POKEMON,
-            uploadProgress: 0,
+            editState: (localStorage.visitedBefore ? STATE_UPLOAD_HOME_FILE : STATE_WELCOME), //STATE_MOVING_POKEMON,
+            uploadProgress: "0%",
             selectedSaveFile: null,
             selectedHomeFile: null,
             fileUploadError: false,
@@ -151,11 +152,16 @@ export default class MainPage extends Component {
     {
         var file = e.target.files[0];
 
-        if (!file.name.toLowerCase().endsWith(".sav")
+        if ((!file.name.toLowerCase().endsWith(".sav") && !file.name.toLowerCase().endsWith(".srm"))
         || file.size !== 131072) //128 kb
             this.setState({fileUploadError: true});
         else
-            this.setState({selectedSaveFile: file, fileUploadError: false});
+        {
+            this.setState({selectedSaveFile: file, fileUploadError: false}, () =>
+            {
+                this.handleUpload(true); //Upload immediately
+            });
+        }
     }
 
     chooseHomeFile(e)
@@ -165,7 +171,12 @@ export default class MainPage extends Component {
         if (!file.name.toLowerCase().endsWith(".dat"))
             this.setState({fileUploadError: true});
         else
-            this.setState({selectedHomeFile: file});
+        {
+            this.setState({selectedHomeFile: file, fileUploadError: false}, () =>
+            {
+                this.handleUpload(false); //Upload immediately
+            });
+        }
     }
 
     async handleUpload(isSaveFile)
@@ -177,14 +188,14 @@ export default class MainPage extends Component {
         const formData = new FormData(); //formData contains the image to be uploaded
         formData.append("file", file);
         formData.append("isSaveFile", isSaveFile);
-        this.setState({editState: STATE_UPLOADING_SAVE_FILE});
+        this.setState({editState: isSaveFile ? STATE_UPLOADING_SAVE_FILE : STATE_UPLOADING_HOME_FILE});
 
         let res;
         try
         {
             res = await axios.post(route, formData,
             {
-                onUploadProgress: (ProgressEvent) => this.updateUploadProgress(ProgressEvent)
+                onUploadProgress: (ProgressEvent) => this.updateUploadProgress(ProgressEvent, isSaveFile)
             });
         }
         catch (error)
@@ -240,11 +251,27 @@ export default class MainPage extends Component {
         Updates the upload status during a file upload.
         param progressEvent: An object containing the current state of the upload.
     */
-    updateUploadProgress(progressEvent) {
+    updateUploadProgress(progressEvent, isSaveFile)
+    {
         if (progressEvent.loaded <= 0 || progressEvent.total <= 0) //Faulty numbers
             return;
 
-        let progress = Math.round((progressEvent.loaded / progressEvent.total) * 100) + "%";
+        let progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+
+        if (progress >= 100)
+        {
+            var fileName;
+
+            if (isSaveFile)
+                fileName = this.state.selectedSaveFile.name;
+            else
+                fileName = this.state.selectedHomeFile.name;
+
+            progress = `Processing ${fileName}`;
+        }
+        else
+            progress = `Uploading ${progress}%`;
+
         this.setState({uploadProgress: progress});
     }
 
@@ -824,49 +851,63 @@ export default class MainPage extends Component {
         );
     }
 
-    printInstructions(title)
+    printWelcome(title)
     {
         return (
             <div className="main-page-upload-instructions fade-in">
                 {title}
                 <FaArrowAltCircleRight aria-label="Next" className="main-page-purple-icon-button"
                         size={48}
-                        onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE})} />
+                        onClick={() => this.setState({editState: STATE_ASK_FIRST_TIME})} />
             </div>
         )
     }
 
-    printUploadHomeFile(title)
+    printAskFirstTime()
     {
         return (
-            <div className="main-page-upload-instructions">
+            <div className="main-page-upload-instructions fade-in">
+                <h2>Is this your first time here?</h2>
+                <div>
+                    <div>
+                        <Button size="lg" variant="success" onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE})}
+                                className="choose-home-file-button">
+                            Yes
+                        </Button>
+                    </div>
+
+                    <div>
+                        <Button size="lg" variant="secondary" onClick={() => this.setState({editState: STATE_UPLOAD_HOME_FILE})}
+                                className="choose-home-file-button">
+                            No
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    printUploadHomeFile()
+    {
+        return (
+            <div className="main-page-upload-instructions fade-in">
                 <h2>Upload your home data.</h2>
                 <h3>It should be a file called home.dat</h3>
                 <div>
-                    <label className="btn btn-primary btn-lg choose-file-label-button">
-                        Choose File
-                        <input type="file" hidden onChange={(e) => this.chooseHomeFile(e)} />
-                    </label>
-                    
-                    <Button size="lg" onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE, fileUploadError: false})}
-                            className="main-page-home-create-new-button">
-                        Create New
-                    </Button>
+                    <div>
+                        <label className="btn btn-success btn-lg choose-home-file-button">
+                            Choose File
+                            <input type="file" hidden onChange={(e) => this.chooseHomeFile(e)} />
+                        </label>
+                    </div>
+
+                    <div>
+                        <Button size="lg" onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE, fileUploadError: false})}
+                                className="choose-home-file-button">
+                            Create New
+                        </Button>
+                    </div>
                 </div>
-
-                {
-                    this.state.selectedHomeFile !== null
-                        ? <p>{this.state.selectedHomeFile.name}</p>
-                    :
-                        ""
-                }
-
-                {
-                    this.state.selectedHomeFile !== null
-                        ? <FaUpload size={48} className="main-page-purple-icon-button"
-                                    onClick={this.handleUpload.bind(this, false)} />
-                        : ""
-                }
 
                 {
                     this.state.fileUploadError
@@ -881,39 +922,26 @@ export default class MainPage extends Component {
         )
     }
 
-    printUploadingHomeFile(title)
+    printUploadingHomeFile()
     {
         return (
-            <div className="main-page-upload-instructions">
-                Uploading {this.state.uploadProgress}
+            <div className="main-page-upload-instructions fade-in">
+                <h2>{this.state.uploadProgress}</h2>
+                <h3>Please wait...</h3>
             </div>
         )
     }
 
-    printUploadSaveFile(title)
+    printUploadSaveFile()
     {
         return (
-            <div className="main-page-upload-instructions">
+            <div className="main-page-upload-instructions fade-in">
                 <h2>Upload your save file.</h2>
-                <h3>It should be a file ending with .sav</h3>
-                <label className="btn btn-primary btn-lg">
+                <h3>It should be a file ending with .sav or .srm.</h3>
+                <label className="btn btn-success btn-lg choose-save-file-button">
                     Choose File
                     <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)} />
                 </label>
-
-                {
-                    this.state.selectedSaveFile !== null
-                        ? <p>{this.state.selectedSaveFile.name}</p>
-                    :
-                        ""
-                }
-
-                {
-                    this.state.selectedSaveFile !== null
-                        ? <FaUpload size={48} className="main-page-purple-icon-button"
-                                    onClick={this.handleUpload.bind(this, true)} />
-                        : ""
-                }
 
                 {
                     this.state.fileUploadError
@@ -928,11 +956,12 @@ export default class MainPage extends Component {
         )
     }
 
-    printUploadingSaveFile(title)
+    printUploadingSaveFile()
     {
         return (
-            <div className="main-page-upload-instructions">
-                Uploading {this.state.uploadProgress}
+            <div className="main-page-upload-instructions fade-in">
+                <h2>{this.state.uploadProgress}</h2>
+                <h3>Please wait...</h3>
             </div>
         )
     }
@@ -1031,20 +1060,23 @@ export default class MainPage extends Component {
 
         switch (this.state.editState)
         {
-            case STATE_INSTRUCTIONS:
-                page = this.printInstructions(title);
+            case STATE_WELCOME:
+                page = this.printWelcome(title);
+                break;
+            case STATE_ASK_FIRST_TIME:
+                page = this.printAskFirstTime();
                 break;
             case STATE_UPLOAD_HOME_FILE:
-                page = this.printUploadHomeFile(title);
+                page = this.printUploadHomeFile();
                 break;
             case STATE_UPLOADING_HOME_FILE:
-                page = this.printUploadingHomeFile(title);
+                page = this.printUploadingHomeFile();
                 break;
             case STATE_UPLOAD_SAVE_FILE:
-                page = this.printUploadSaveFile(title);
+                page = this.printUploadSaveFile();
                 break;
             case STATE_UPLOADING_SAVE_FILE:
-                page = this.printUploadingSaveFile(title);
+                page = this.printUploadingSaveFile();
                 break;
             case STATE_EDITING_HOME_BOXES:
                 page = this.printEditingHomeBoxes(); //Don't display title

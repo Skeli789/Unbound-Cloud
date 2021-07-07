@@ -18,7 +18,7 @@
     -moz-animation: fadeIn linear 1s;
     -o-animation: fadeIn linear 1s;
     -ms-animation: fadeIn linear 1s;
-  }
+}
   
 @keyframes fadeIn
 {
@@ -63,14 +63,15 @@
     width: 100%;
 }
 
-.choose-file-label-button
+.choose-home-file-button
 {
-    margin-bottom: 0px !important;
+    margin-top: 10%;
+    margin-bottom: 10%;
 }
 
-.main-page-home-create-new-button
+.choose-save-file-button
 {
-    margin-left: 100px;
+    margin-top: 1%;
 }
 
 .main-page-boxes
