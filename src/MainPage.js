@@ -768,7 +768,7 @@ export default class MainPage extends Component {
 
     changeBoxView(newState)
     {
-        if (newState !== this.state.editState)
+        if (newState !== this.state.editState || this.state.viewingBoxList >= 0) //Can use this to get out of box list
         {
             var oldState = this.state.editState;
             var currentBoxes = this.state.currentBox;
