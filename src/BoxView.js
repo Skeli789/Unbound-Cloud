@@ -302,7 +302,10 @@ export class BoxView extends Component
         if (this.canSelectMonAtPos(boxPos))
         {
             if (this.doesClickingSpotDeselectChoice(boxPos))
+            {
                 newSelectedMonPos[boxSlot] = CreateSingleBlankSelectedPos(); //Deselect all
+                this.state.parent.wipeErrorMessage();
+            }
             else
                 newSelectedMonPos[boxSlot][boxPos] = true;
 
