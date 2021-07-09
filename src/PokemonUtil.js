@@ -43,6 +43,7 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_ORICORIO_P": "oricorio-pau",
     "SPECIES_ORICORIO_S": "oricorio-sensu",
     "SPECIES_LYCANROC_N": "lycanroc-midnight",
+    "SPECIES_SILVALLY_FIGHT": "silvally-fighting",
     "SPECIES_NECROZMA_DUSK_MANE": "necrozma-dusk",
     "SPECIES_NECROZMA_DAWN_WINGS": "necrozma-dawn",
     "SPECIES_MAGEARNA_P": "magearna-original",
@@ -110,8 +111,7 @@ export function IsMonGen8(pokemon)
 
 export function IsMonFemale(pokemon)
 {
-    //TODO
-    return false;
+    return GetMonGender(pokemon) === "F";
 }
 
 export function IsMonEgg(pokemon)
@@ -296,6 +296,14 @@ export function GetMonOTGender(pokemon)
 export function GetMonVisibleOTId(pokemon)
 {
     return pokemon["otId"] & 0xFFFF; //Lower half
+}
+
+export function GetMonNickname(pokemon)
+{
+    if (IsMonEgg(pokemon))
+        return "Egg";
+
+    return pokemon["nickname"];
 }
 
 export function GetVisibleStats(pokemon)

@@ -14,13 +14,15 @@ import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsB
 import {Search, MatchesSearchCriteria} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos} from "./Util";
+import {WonderTrade} from "./WonderTrade";
 import LivingDexOrder from "./data/LivingDexOrder.json"
 
 import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCheckCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
 import {BiSearchAlt2} from "react-icons/bi";
-import {CgPokemon, CgExport} from "react-icons/cg";
+import {CgPokemon} from "react-icons/cg";
 import {ImCancelCircle} from "react-icons/im"
 import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
+import {RiBoxingLine} from "react-icons/ri";
 
 import "./stylesheets/BoxView.css";
 
@@ -113,6 +115,20 @@ export class BoxView extends Component
             && this.getParentState().selectedMonPos[this.state.boxSlot][boxPos];
     }
 
+    isMonInWonderTrade(boxPos)
+    {
+        var wonderTradeData = this.getParentState().wonderTradeData;
+
+        if (wonderTradeData !== null)
+        {
+            return this.getCurrentBox() === wonderTradeData.boxNum
+                && boxPos === wonderTradeData.boxPos
+                && this.state.boxType === wonderTradeData.boxType;
+        }
+
+        return false;
+    }
+
     shouldShowIconImpossibleMovewarning(boxPos)
     {
         if (this.getParentState().impossibleMovement !== null)
@@ -127,7 +143,50 @@ export class BoxView extends Component
         return false;
     }
 
-    areAnyPokemonSelectedInCurrentBox()
+    areAnyPokemonSelectedInCurrentBox(countEggs)
+    {
+        var startIndex = this.getCurrentBox() * MONS_PER_BOX;
+        var selectedMonPos = this.getParentState().selectedMonPos;
+        var selectedMonBox = this.getParentState().selectedMonBox;
+
+        if (selectedMonBox[this.state.boxSlot] === this.getCurrentBox())
+        {
+            for (let i = 0; i < MONS_PER_BOX; ++i)
+            {
+                if (!IsBlankMon(this.state.allPokemon[i + startIndex]) //Ignore blank slots
+                && (countEggs || !IsMonEgg(this.state.allPokemon[i + startIndex]))
+                && selectedMonPos[this.state.boxSlot][i])
+                    return true; //At least one mon selected
+            }
+        }
+
+        return false;
+    }
+
+    isOnlyOnePokemonSelectedInCurrentBox()
+    {
+        var startIndex = this.getCurrentBox() * MONS_PER_BOX;
+        var selectedMonPos = this.getParentState().selectedMonPos;
+        var selectedMonBox = this.getParentState().selectedMonBox;
+        var numSelected = 0;
+
+        if (selectedMonBox[this.state.boxSlot] === this.getCurrentBox())
+        {
+            for (let i = 0; i < MONS_PER_BOX; ++i)
+            {
+                if (!IsBlankMon(this.state.allPokemon[i + startIndex]) //Ignore blank slots
+                && selectedMonPos[this.state.boxSlot][i])
+                {
+                    if (++numSelected >= 2)
+                        return false;
+                }
+            }
+        }
+
+        return numSelected === 1;
+    }
+
+    getOnlySelectedPos()
     {
         var startIndex = this.getCurrentBox() * MONS_PER_BOX;
         var selectedMonPos = this.getParentState().selectedMonPos;
@@ -139,16 +198,26 @@ export class BoxView extends Component
             {
                 if (!IsBlankMon(this.state.allPokemon[i + startIndex]) //Ignore blank slots
                 && selectedMonPos[this.state.boxSlot][i])
-                    return true; //At least one mon selected
+                    return i;
             }
         }
 
-        return false;
+        return -1; 
+    }
+
+    getPokemonAtOnlySelectedPos()
+    {
+        var pos = this.getOnlySelectedPos();
+
+        if (pos < 0)
+            return null;
+
+        return this.getMonInCurrentBoxAt(pos);
     }
 
     canSelectMonAtPos(boxPos)
     {
-        var currSelectionActive = this.areAnyPokemonSelectedInCurrentBox();
+        var currSelectionActive = this.areAnyPokemonSelectedInCurrentBox(true);
         var otherSelectionActive = this.getParentState().selectedMonPos[this.state.boxSlot ^ 1].some((x) => x); //At least one mon selected in the other box
         var speciesNameSelected = this.getSpeciesNameInCurrentBoxAt(boxPos);
         var selectedNullSpecies = (speciesNameSelected === "none" || speciesNameSelected === "unknown");
@@ -168,6 +237,9 @@ export class BoxView extends Component
 
         if (selectedNullSpecies && !otherSelectionActive)
             return true; //Clicking a blank spot deselects the current choice in the same box. Otherwise it'll move the Pokemon
+
+        if (this.isMonInWonderTrade(boxPos) && !otherSelectionActive)
+            return true; //Treat like a blank spot
 
         if (this.isMonSelected(boxPos)
         && this.getParentState().draggingMon !== boxPos + this.getCurrentBox() * MONS_PER_BOX) //Isn't currently being dragged
@@ -194,7 +266,10 @@ export class BoxView extends Component
 
     getViewingMon()
     {
-        return this.getParentState().viewingMon[this.state.boxSlot];
+        if (this.getParentState().viewingMon[this.state.boxSlot] === null)
+            return null;
+
+        return this.getParentState().viewingMon[this.state.boxSlot].pokemon;
     }
 
     getMonInCurrentBoxAt(boxPos)
@@ -218,20 +293,17 @@ export class BoxView extends Component
         return MatchesSearchCriteria(pokemon, searchCriteria);
     }
 
-    canViewShowdownExportButton()
+    canViewShowdownButton()
     {
         if (this.state.viewingShowdown)
             return true; //Can always close the view
 
-        for (let i = 0; i < MONS_PER_BOX; ++i)
-        {
-            if (this.getParentState().selectedMonPos[this.state.boxSlot][i]) //Selected
-            {
-                let pokemon = this.getMonInCurrentBoxAt(i);
-                if (!IsMonEgg(pokemon))
-                    return true; //At least one viewable Pokemon
-            }
-        }
+        if (this.areAnyPokemonSelectedInCurrentBox(false)) //Don't count Eggs
+            return true; //Will view of the selected mons
+
+        if (this.getViewingMon() !== null
+        && !IsMonEgg(this.getViewingMon()))
+            return true; //Will view of the summary
 
         return false;
     }
@@ -322,7 +394,7 @@ export class BoxView extends Component
         else if (selectedNullSpecies)
             newViewingMon[boxSlot] = null; //Deselected
         else
-            newViewingMon[boxSlot] = pokemon;        
+            newViewingMon[boxSlot] = {pokemon: pokemon, boxNum: this.getCurrentBox(), boxPos};        
 
         //Check for multi swap
         if (swapMons && this.doingMultiSwap())
@@ -353,7 +425,7 @@ export class BoxView extends Component
             return; //No dragging empty cell
 
         var viewingMon = this.getParentState().viewingMon;
-        viewingMon[this.state.boxSlot] = pokemon;
+        viewingMon[this.state.boxSlot] = {pokemon: pokemon, boxNum: this.getCurrentBox(), boxPos: boxPos};
     
         this.state.parent.setState({
             draggingMon: allBoxesPos,
@@ -387,7 +459,7 @@ export class BoxView extends Component
         if (speciesName !== "none" && speciesName !== "unknown") //Don't change when clicking on a blank spot
         {
             var newViewingMon = this.getParentState().viewingMon;
-            newViewingMon[this.state.boxSlot] = pokemon;
+            newViewingMon[this.state.boxSlot] = {pokemon: pokemon, boxNum: this.getCurrentBox(), boxPos: boxPos};
             this.state.parent.setState({viewingMon: newViewingMon});
             this.setState({viewingMonKey: boxPos, viewingShowdown: false});
         }
@@ -408,6 +480,7 @@ export class BoxView extends Component
             for (i = 0; i < MONS_PER_BOX; ++i)
             {
                 if (!IsBlankMon(this.state.allPokemon[i + startIndex]) //Ignore blank slots
+                && !this.isMonInWonderTrade(i) //Can't select this mon
                 && !selectedMonPos[this.state.boxSlot][i])
                     break; //At least one mon not selected
             }
@@ -426,6 +499,7 @@ export class BoxView extends Component
             for (let i = 0; i < MONS_PER_BOX; ++i)
             {
                 if (!IsBlankMon(this.state.allPokemon[i + startIndex]) //Don't select blank slots
+                && !this.isMonInWonderTrade(i)
                 && this.matchesSearchCriteria(this.state.allPokemon[i + startIndex]))
                     selectedMonPos[this.state.boxSlot][i] = true;
             }
@@ -563,9 +637,24 @@ export class BoxView extends Component
 
     releaseSelectedPokemon()
     {
+        var title, pokemonName;
+        var areAnyPokemonSelected = this.areAnyPokemonSelectedInCurrentBox(true);
+        var viewingMon = this.getViewingMon();
+
+        if (!areAnyPokemonSelected && viewingMon !== null)
+        {
+            pokemonName = viewingMon.nickname;
+            title = `Release ${viewingMon.nickname}?`
+        }
+        else
+        {
+            pokemonName = "Pokémon";
+            title = "Release selected Pokémon?";
+        }
+
         PopUp.fire(
         {
-            title: 'Release selected Pokémon?',
+            title: title,
             showConfirmButton: false,
             showCancelButton: true,
             showDenyButton: true,
@@ -576,8 +665,12 @@ export class BoxView extends Component
         {
             if (result.isDenied) //Denied means released because it's the red button
             {
-                this.state.parent.releaseSelectedPokemon(this.state.boxSlot, this.state.boxType);
-                PopUp.fire('Bye-bye, Pokémon!', '', 'success')
+                if (!areAnyPokemonSelected && viewingMon !== null)
+                    this.state.parent.releaseSelectedPokemon(this.state.boxSlot, this.state.boxType, true); //Release the viewing mon
+                else
+                    this.state.parent.releaseSelectedPokemon(this.state.boxSlot, this.state.boxType, false);
+
+                PopUp.fire(`Bye-bye, ${pokemonName}!`, '', 'success')
             }
         })
     }
@@ -592,13 +685,13 @@ export class BoxView extends Component
             shouldView = false;
 
             if (viewingMon[this.state.boxSlot] === null 
-            || Object.keys(viewingMon[this.state.boxSlot]).length === 0) //Wasn't viewing any mon before
+            || Object.keys(viewingMon[this.state.boxSlot].pokemon).length === 0) //Wasn't viewing any mon before
                 viewingMon[this.state.boxSlot] = null;  //Don't show the summary after the showdown box closes
         }
         else //Start viewing
         {
             if (viewingMon[this.state.boxSlot] === null)
-                viewingMon[this.state.boxSlot] = {}; //Not actually viewing but allow the showdown data to appear
+                viewingMon[this.state.boxSlot] = {pokemon: {}, boxNum: 0, boxPos: 0}; //Not actually viewing but allow the showdown data to appear
         }
 
         this.setState({viewingShowdown: shouldView});
@@ -634,6 +727,7 @@ export class BoxView extends Component
         for (let i = startIndex, key = 0; i < startIndex + MONS_PER_BOX; ++i, ++key)
         {
             let icon;
+            var isInWonderTrade = false;
             let pokemon = this.state.allPokemon[i];
             let species = GetIconSpeciesName(pokemon);
             let link = GetIconSpeciesLink(pokemon);
@@ -653,6 +747,12 @@ export class BoxView extends Component
                 {
                     matchesSearchCriteria = false;
                     className += " box-icon-faded";
+                }
+
+                if (this.isMonInWonderTrade(key))
+                {
+                    isInWonderTrade = true;
+                    className += " box-icon-greyscale";
                 }
 
                 icon = <img src={link} alt={alt} aria-label={alt} className={className}
@@ -682,6 +782,7 @@ export class BoxView extends Component
             let spanClassName = "box-icon"
                               + (!isMobile ? " box-icon-hoverable" : "")
                               + (this.isMonSelected(key) ? " selected-box-icon" : "")
+                              + (isInWonderTrade ? " wonder-trade-box-icon" : "")
                               + (this.shouldShowIconImpossibleMovewarning(key) ? " error-box-icon" : "");
 
             if (addLivingDexIcon && livingDexIcon !== "") //Can't click on this
@@ -690,6 +791,16 @@ export class BoxView extends Component
                     onMouseEnter = {this.handleSetDraggingOver.bind(this, i)}
                     onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
                     key={key}>{icon}</span>);
+            }
+            else if (isInWonderTrade) //Can't click on this
+            {
+                icons.push(<span className={spanClassName}
+                                onClick={this.handleSelection.bind(this, key, pokemon)}
+                                onMouseEnter = {this.handleSetDraggingOver.bind(this, i)}
+                                onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
+                                onContextMenu={(e) => this.handleSelectMonForViewing(e, key, pokemon)}
+                                key={key}>{shinyIcon} {icon} {heldItemIcon}
+                            </span>);
             }
             else
             {
@@ -717,13 +828,21 @@ export class BoxView extends Component
             {
                 var pokemonList = [];
 
-                for (let i = 0; i < MONS_PER_BOX; ++i)
+                if (!this.areAnyPokemonSelectedInCurrentBox(false))
                 {
-                    if (this.getParentState().selectedMonPos[this.state.boxSlot][i]) //Selected
+                    //Just view the mon who's summary is currently being displayed
+                    pokemonList.push(this.getViewingMon());
+                }
+                else
+                {
+                    for (let i = 0; i < MONS_PER_BOX; ++i)
                     {
-                        pokemon = this.getMonInCurrentBoxAt(i);
-                        if (!IsMonEgg(pokemon))
-                            pokemonList.push(pokemon);
+                        if (this.getParentState().selectedMonPos[this.state.boxSlot][i]) //Selected
+                        {
+                            pokemon = this.getMonInCurrentBoxAt(i);
+                            if (!IsMonEgg(pokemon))
+                                pokemonList.push(pokemon);
+                        }
                     }
                 }
 
@@ -742,16 +861,38 @@ export class BoxView extends Component
         return <Search boxType={this.state.boxType} boxSlot={this.state.boxSlot} parent={this} mainPage={this.state.parent}/>;
     }
 
+    printWonderTradeIcon(boxName)
+    {
+        var viewingMon = this.getParentState().viewingMon[this.state.boxSlot];
+
+        if (viewingMon !== null)
+        {
+            var isMonInWonderTrade = this.isMonInWonderTrade(viewingMon.boxPos);
+            var key = viewingMon.boxNum * MONS_PER_BOX + viewingMon.boxPos + (isMonInWonderTrade ? 10000 : 0); //Forces often rerender
+
+            return (
+                <WonderTrade pokemon={viewingMon.pokemon} boxName={boxName}
+                             boxNum={viewingMon.boxNum} boxPos={viewingMon.boxPos}
+                             boxType={this.state.boxType} boxSlot={this.state.boxSlot}
+                             isMonInWonderTrade={isMonInWonderTrade} globalState={this.state.parent}
+                             setGlobalState={this.state.parent.setState.bind(this.state.parent)}
+                             finishWonderTrade={this.state.parent.finishWonderTrade.bind(this.state.parent)}
+                             key={key}/>
+            );
+        }
+    }
+
     /*
         Prints the box view page.
     */
     render()
     {
-        var title, titleEditIcon, titleContainerClass;
+        var boxName, title, titleEditIcon, titleContainerClass;
         var icons = this.getPokemonIconsToShow();
         var monToView = !this.isViewingMonSummary() ? "" : this.printMonToView();
         var editIconSize = 28;
         var livingDexIcon = "";
+        var viewingMon = this.getViewingMon();
 
         if (this.state.searching)
             return this.printSearchView();
@@ -768,7 +909,7 @@ export class BoxView extends Component
         if (this.state.titles != null)
         {
             
-            title = this.state.titles[this.getCurrentBox()];
+            boxName = this.state.titles[this.getCurrentBox()];
             titleEditIcon = this.state.editingTitle ? ""
                           : this.isHomeBox() ?
                                 <OverlayTrigger placement="top" overlay={renameTooltip}>
@@ -800,13 +941,14 @@ export class BoxView extends Component
             }
             else
             {
-                title = <h2 className={"box-name-text"} onClick={this.viewBoxList.bind(this)}>{title}</h2>
+                title = <h2 className={"box-name-text"} onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
                 titleContainerClass = "box-title-no-edit";
             }
         }
         else
         {
-            title = <h2 className="box-name-text">{"Box " + (this.getCurrentBox() + 1)}</h2>
+            boxName = "Box " + (this.getCurrentBox() + 1);
+            title = <h2 className="box-name-text">{boxName}</h2>
             titleEditIcon = "";
             titleContainerClass = "box-title-no-edit";
         }
@@ -840,15 +982,15 @@ export class BoxView extends Component
                 }
                 {
                     //Release & Showdown Icons
-                    this.areAnyPokemonSelectedInCurrentBox() ?
+                    this.areAnyPokemonSelectedInCurrentBox(true) || viewingMon !== null ?
                         <>
                             <OverlayTrigger placement="bottom" overlay={releaseTooltip}>
                                 <GrTrash size={28} className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
                             </OverlayTrigger>
                             {
-                                this.canViewShowdownExportButton() ?
+                                this.canViewShowdownButton() ?
                                     <OverlayTrigger placement="bottom" overlay={showdownTooltip}>
-                                        <CgExport size={30} className="box-lower-icon"
+                                        <RiBoxingLine size={32} className="box-lower-icon"
                                                 onClick = {this.viewShowdownExport.bind(this)}/>
                                     </OverlayTrigger>
                                 :
@@ -857,6 +999,10 @@ export class BoxView extends Component
                         </>
                     :
                         ""
+                }
+                {
+                    //Wonder Trade Icon
+                    this.printWonderTradeIcon(boxName)
                 }
             </div>
 

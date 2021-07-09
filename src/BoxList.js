@@ -12,6 +12,7 @@ import "./stylesheets/BoxList.css";
 
 const PokeBallIconInterior = <g clipPath="url(#cPath)"><g><circle cx="0" cy="0" r="90" transform="matrix(1,0,0,-1,0,0)" /*fill="rgba(0,0,0,1)"*/ fillOpacity="1"></circle><circle cx="0" cy="0" r="27" transform="matrix(1,0,0,-1,0,0)" fill="none" strokeWidth="18" stroke="rgba(255,255,255,1)" strokeOpacity="1"></circle></g><g><defs><mask id="c1"><g><rect x="-96" y="-64" width="192" height="128" transform="matrix(1,0,0,-1,0,0)" fill="rgba(0,0,0,1)" fillOpacity="1"></rect><g><circle cx="0" cy="0" r="90" transform="matrix(1,0,0,-1,0,0)" fill="rgba(255,255,255,1)" fillOpacity="1"></circle><circle cx="0" cy="0" r="27" transform="matrix(1,0,0,-1,0,0)" fill="rgba(255,255,255,1)" fillOpacity="1" strokeWidth="18" stroke="rgba(255,255,255,1)" strokeOpacity="1"></circle></g></g></mask></defs><g mask="url(#c1)"><g><rect x="-31.5" y="-9" width="63" height="18" transform="matrix(1,0,0,-1,63,0)" fill="rgba(255,255,255,1)" fillOpacity="1"></rect><rect x="-31.5" y="-9" width="63" height="18" transform="matrix(1,0,0,-1,-63,0)" fill="rgba(255,255,255,1)" fillOpacity="1"></rect></g></g></g></g>;
 
+
 export class BoxList extends Component
 {
     constructor(props)
