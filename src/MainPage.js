@@ -12,7 +12,7 @@ import {config} from "./config";
 
 import {BoxList} from "./BoxList";
 import {BoxView, HIGHEST_HOME_BOX_NUM, HIGHEST_SAVE_BOX_NUM, MONS_PER_BOX, MONS_PER_ROW, MONS_PER_COL} from "./BoxView";
-import {IsBlankMon} from "./PokemonUtil";
+import {IsBlankMon, PokemonAreDuplicates} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from "./Util";
 import SaveData from "./data/Test Output.json"
 
@@ -38,6 +38,11 @@ const STATE_MOVING_POKEMON = 8;
 
 //TODO: Drag and drop file upload
 //TODO: Dragging mon outside the screen keeps it on the mouse
+//TODO: Progress bar during upload
+//TODO: Back button on list view
+//TODO: Standardize check and cancel icons
+//TODO: Add "Can't Wonder Trade" field to mon data that's cleared upon sending to save file or encrypting the home data
+//TODO: Retrieve type and ball icons from same place as mon icons, not server
 
 
 export default class MainPage extends Component {
@@ -170,6 +175,31 @@ export default class MainPage extends Component {
             && this.state.wonderTradeData.boxPos === boxPos;
     }
 
+    monAlreadyExistsInBoxes(pokemon, boxes, boxCount, ignoreOffset)
+    {
+        if (IsBlankMon(pokemon))
+            return -1; //Don't waste time
+
+        for (let boxNum = 0; boxNum < boxCount; ++boxNum)
+        {
+            for (let boxPos = 0; boxPos < MONS_PER_BOX; ++boxPos)
+            {
+                var offset = boxNum * MONS_PER_BOX + boxPos;
+
+                if (offset === ignoreOffset) //This is the mon being moved
+                    continue;
+                
+                if (IsBlankMon(boxes[offset]))
+                    continue;
+
+                if (PokemonAreDuplicates(pokemon, boxes[offset]))
+                    return {boxNum: boxNum, offset: offset};
+            }
+        }
+
+        return {boxNum: -1, offset: -1};
+    }
+
     wipeErrorMessage()
     {
         return this.setState({
@@ -178,7 +208,7 @@ export default class MainPage extends Component {
         })
     }
 
-    chooseSaveFile(e)
+    async chooseSaveFile(e)
     {
         var file = e.target.files[0];
 
@@ -194,7 +224,7 @@ export default class MainPage extends Component {
         }
     }
 
-    chooseHomeFile(e)
+    async chooseHomeFile(e)
     {
         var file = e.target.files[0];
 
@@ -207,6 +237,76 @@ export default class MainPage extends Component {
                 this.handleUpload(false); //Upload immediately
             });
         }
+    }
+
+    async useLastSavedHomeFile()
+    {
+        const formData = new FormData(); //formData contains the home data split into four parts to guarantee it'll all be sent
+        var homeData = localStorage.lastSavedHomeData;
+        var route = `${config.dev_server}/uploadLastHomeData`;
+
+        for (let i = 0; i < 4; ++i)
+        {
+            if (i + 1 >= 4)
+                formData.append(`homeDataP${i + 1}`, homeData.slice((homeData.length / 4) * i, homeData.length));
+            else
+                formData.append(`homeDataP${i + 1}`, homeData.slice((homeData.length / 4) * i, (homeData.length / 4) * (i + 1)));
+        }
+
+        this.setState({
+            editState: STATE_UPLOADING_HOME_FILE,
+            uploadProgress: "Uploading 0%", //Update here in case the connection has been lost
+            selectedHomeFile: {"name": "last saved home data"},
+        });
+
+        let res;
+        try
+        {
+            res = await axios.post(route, formData,
+            {
+                onUploadProgress: (ProgressEvent) => this.updateUploadProgress(ProgressEvent, false)
+            });
+        }
+        catch (error)
+        {
+            //Some error occurred
+            var newState = STATE_UPLOAD_HOME_FILE;
+            console.log("An error occurred uploading the file.");
+
+            if (error.message === "Network Error")
+            {
+                console.log("Could not connect to the server.");
+
+                this.setState({
+                    editState: newState,
+                    fileUploadError: false,
+                    serverConnectionError: true,
+                });
+            }
+            else
+            {
+                console.log(error["response"]["data"]);
+
+                this.setState({
+                    editState: newState,
+                    fileUploadError: true,
+                    serverConnectionError: false,
+                });
+            }
+
+            return;
+        }
+
+        //Accepted, no error occurred
+        console.log("Last home file upload successful.");
+
+        this.setState({
+            editState: STATE_UPLOAD_SAVE_FILE,
+            homeBoxes: res.data.boxes,
+            homeTitles: res.data.titles,
+            fileUploadError: false,
+            serverConnectionError: false,
+        });
     }
 
     async handleUpload(isSaveFile)
@@ -332,6 +432,35 @@ export default class MainPage extends Component {
         boxes2[boxesOffset2] = temp;
     }
 
+    setDuplicatePokemonSwappingError(fromBoxSlot, fromOffset, toBoxSlot, duplicateData)
+    {
+        var errorMessage = ["", ""];
+        var impossibleTo =   this.generateBlankImpossibleMovementArray();
+        var impossibleFrom = this.generateBlankImpossibleMovementArray();
+        var impossibleMovement = [null, null];
+
+        var boxName = this.getTitlesByBoxSlot(toBoxSlot)[duplicateData.boxNum];
+        impossibleFrom[Math.floor(fromOffset / MONS_PER_ROW)][fromOffset % MONS_PER_ROW] = true;
+        if (duplicateData.boxNum === this.state.currentBox[toBoxSlot]) //Only display red if that box is being viewing
+            impossibleTo[Math.floor(duplicateData.offset / MONS_PER_ROW)][duplicateData.offset % MONS_PER_ROW] = true;
+
+        impossibleMovement[toBoxSlot] = impossibleTo;
+        impossibleMovement[fromBoxSlot] = impossibleFrom;
+        errorMessage[toBoxSlot] = `A duplicate is in ${boxName}.`;
+
+        if (impossibleMovement[0] === null)
+            impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
+        else if (impossibleMovement[1] === null)
+            impossibleMovement[1] = this.generateBlankImpossibleMovementArray();
+
+
+        this.setState({
+            selectedMonPos: this.generateBlankSelectedPos(),
+            errorMessage: errorMessage,
+            impossibleMovement: impossibleMovement,
+        });
+    }
+
     swapDifferentBoxSlotPokemon(multiSwap)
     {
         var leftBoxes = this.getBoxesByBoxSlot(BOX_SLOT_LEFT);
@@ -351,9 +480,35 @@ export default class MainPage extends Component {
                 if (!this.isMonInWonderTrade(this.getBoxTypeByBoxSlot(BOX_SLOT_LEFT), leftOffset)
                 &&  !this.isMonInWonderTrade(this.getBoxTypeByBoxSlot(BOX_SLOT_RIGHT), rightOffset))
                 {
-                    this.swapBoxedPokemon(leftBoxes, rightBoxes, leftOffset, rightOffset);
-                    changeWasMade[leftBoxType] = true;
-                    changeWasMade[rightBoxType] = true;
+                    //Check if mon already exists in the right boxes
+                    let alreadyExistsRet =
+                        this.monAlreadyExistsInBoxes(leftBoxes[leftOffset], rightBoxes, this.getBoxAmountByBoxSlot(BOX_SLOT_RIGHT),
+                                                    (leftBoxType === rightBoxType) ? leftOffset : -1); //Ignore the mon being moved
+
+                    if (alreadyExistsRet.boxNum >= 0)
+                    {
+                        this.setDuplicatePokemonSwappingError(BOX_SLOT_LEFT, leftOffset, BOX_SLOT_RIGHT, alreadyExistsRet);
+                        return;
+                    }
+                    else
+                    {
+                        //Check if mon already exists in the left boxes
+                        alreadyExistsRet =
+                            this.monAlreadyExistsInBoxes(rightBoxes[rightOffset], leftBoxes, this.getBoxAmountByBoxSlot(BOX_SLOT_LEFT),
+                                                        (leftBoxType === rightBoxType) ? rightOffset : -1); //Ignore the mon being moved
+
+                        if (alreadyExistsRet.boxNum >= 0)
+                        {
+                            this.setDuplicatePokemonSwappingError(BOX_SLOT_RIGHT, rightOffset, BOX_SLOT_LEFT, alreadyExistsRet);
+                            return;                                
+                        }
+                        else
+                        {
+                            this.swapBoxedPokemon(leftBoxes, rightBoxes, leftOffset, rightOffset);
+                            changeWasMade[leftBoxType] = true;
+                            changeWasMade[rightBoxType] = true;
+                        }
+                    }
                 }
             }
             else
@@ -375,6 +530,28 @@ export default class MainPage extends Component {
                     multiFrom = BOX_SLOT_LEFT;
                     multiTo = BOX_SLOT_RIGHT;
                     multiTopLeftPos = this.state.selectedMonPos[BOX_SLOT_RIGHT].indexOf(true);
+                }
+
+                var fromBoxes = this.getBoxesByBoxSlot(multiFrom);
+                var toBoxes = this.getBoxesByBoxSlot(multiTo);
+
+                //Confirm no mons selected are duplicates
+                for (i = 0; i < MONS_PER_BOX; ++i)
+                {
+                    if (this.state.selectedMonPos[multiFrom][i])
+                    {
+                        let offset = this.state.selectedMonBox[multiFrom] * MONS_PER_BOX + i;
+                        let pokemon = this.getMonAtBoxPos(multiFrom, offset);
+                        let alreadyExistsRet =
+                            this.monAlreadyExistsInBoxes(pokemon, toBoxes, this.getBoxAmountByBoxSlot(multiTo),
+                                                        (leftBoxType === rightBoxType) ? offset : -1); //Ignore the mon being moved
+
+                        if (alreadyExistsRet.boxNum >= 0)
+                        {
+                            this.setDuplicatePokemonSwappingError(multiFrom, offset, multiTo, alreadyExistsRet);
+                            return;
+                        }
+                    }
                 }
 
                 //Get area of moving mons
@@ -403,11 +580,12 @@ export default class MainPage extends Component {
                 var possible = true;
                 var width = (rightCol - leftCol) + 1;
                 var height = (bottomRow - topRow) + 1;
-                var impossibleFrom = Array.apply(null, Array(MONS_PER_COL)).map(function () {return Array.apply(null, Array(MONS_PER_ROW)).map(function () {return false})});
-                var impossibleTo = Array.apply(null, Array(MONS_PER_COL)).map(function () {return Array.apply(null, Array(MONS_PER_ROW)).map(function () {return false})});
+                var impossibleFrom = this.generateBlankImpossibleMovementArray();
+                var impossibleTo = this.generateBlankImpossibleMovementArray();
                 toTopRow = Math.floor(multiTopLeftPos / MONS_PER_ROW);
                 toLeftCol = multiTopLeftPos % MONS_PER_ROW;
 
+                
                 for (i = 0; i < height; ++i)
                 {
                     let row = toTopRow + i;
@@ -460,7 +638,7 @@ export default class MainPage extends Component {
 
                             let fromOffset = this.state.selectedMonBox[multiFrom] * MONS_PER_BOX + i;
                             let toOffset = this.state.selectedMonBox[multiTo] * MONS_PER_BOX + toRow * MONS_PER_ROW + toCol;
-                            this.swapBoxedPokemon(this.getBoxesByBoxSlot(multiFrom), this.getBoxesByBoxSlot(multiTo), fromOffset, toOffset);
+                            this.swapBoxedPokemon(fromBoxes, toBoxes, fromOffset, toOffset);
                         }
                     }
 
@@ -515,12 +693,26 @@ export default class MainPage extends Component {
         && (this.state.draggingFromBox !== this.state.draggingToBox || fromOffset !== toOffset) //Make sure different Pokemon are being swapped
         && !this.isMonInWonderTrade(this.getBoxTypeByBoxSlot(this.state.draggingToBox), toOffset))
         {
-            this.swapBoxedPokemon(fromBoxes, toBoxes, fromOffset, toOffset);
-            selectedMonPos = this.generateBlankSelectedPos(); //Only remove if swap was made
-            viewingMon = [null, null];
-            changeWasMade[fromBoxType] = true;
-            changeWasMade[toBoxType] = true;
+            let alreadyExistsRet =
+                this.monAlreadyExistsInBoxes(fromBoxes[fromOffset], toBoxes, this.getBoxAmountByBoxSlot(this.state.draggingToBox),
+                                            (fromBoxType === toBoxType) ? fromOffset : -1); //Ignore the mon being moved
+
+            if (alreadyExistsRet.boxNum >= 0)
+            {
+                this.setDuplicatePokemonSwappingError(this.state.draggingFromBox, fromOffset, this.state.draggingToBox, alreadyExistsRet);
+            }
+            else
+            {
+                this.swapBoxedPokemon(fromBoxes, toBoxes, fromOffset, toOffset);
+                selectedMonPos = this.generateBlankSelectedPos(); //Only remove if swap was made
+                viewingMon = [null, null];
+                changeWasMade[fromBoxType] = true;
+                changeWasMade[toBoxType] = true;
+                this.wipeErrorMessage();
+            }
         }
+        else
+            this.wipeErrorMessage();
 
         this.setState({
             draggingMon: -1,
@@ -531,8 +723,6 @@ export default class MainPage extends Component {
             saveBoxes: (fromBoxType === BOX_SAVE) ? fromBoxes : (toBoxType === BOX_SAVE) ? toBoxes : this.state.saveBoxes,
             homeBoxes: (fromBoxType === BOX_HOME) ? fromBoxes : (toBoxType === BOX_HOME) ? toBoxes : this.state.homeBoxes,
         })
-
-        this.wipeErrorMessage();
     }
 
     releaseMonAtBoxPos(boxes, boxNum, boxPos)
@@ -590,17 +780,33 @@ export default class MainPage extends Component {
 
     finishWonderTrade(newPokemon, boxType, boxNum, boxPos)
     {
+        var boxSlot = -1;
         var boxes = this.getBoxesByBoxType(boxType);
         var offset = boxNum * MONS_PER_BOX + boxPos;
         var changeWasMade = this.state.changeWasMade;
+        var viewingMon = [null, null];
         changeWasMade[boxType] = true;
         boxes[offset] = newPokemon;
 
-        this.setState({
-            saveBoxes: (boxType === BOX_SAVE) ? boxes : this.state.saveBoxes,
-            homeBoxes: (boxType === BOX_HOME) ? boxes : this.state.homeBoxes,
-            changeWasMade: changeWasMade,
-            wonderTradeData: null,
+        if (this.getBoxTypeByBoxSlot(BOX_SLOT_LEFT) === boxType)
+            boxSlot = BOX_SLOT_LEFT;
+        else if (this.getBoxTypeByBoxSlot(BOX_SLOT_RIGHT) === boxType)
+            boxSlot = BOX_SLOT_RIGHT;
+
+        this.setState({viewingMon: viewingMon}, () => //Force rerender first
+        {
+            if (boxSlot >= 0)
+                viewingMon[boxSlot] = {pokemon: newPokemon, boxNum: boxNum, boxPos};
+
+            this.setState({
+                saveBoxes: (boxType === BOX_SAVE) ? boxes : this.state.saveBoxes,
+                homeBoxes: (boxType === BOX_HOME) ? boxes : this.state.homeBoxes,
+                viewingMon: viewingMon,
+                selectedMonBox: [0, 0],
+                selectedMonPos: this.generateBlankSelectedPos(),
+                changeWasMade: changeWasMade,
+                wonderTradeData: null,
+            });
         });
     }
 
@@ -672,6 +878,11 @@ export default class MainPage extends Component {
     generateBlankSelectedPos()
     {
         return [CreateSingleBlankSelectedPos(), CreateSingleBlankSelectedPos()];
+    }
+
+    generateBlankImpossibleMovementArray()
+    {
+        return Array.apply(null, Array(MONS_PER_COL)).map(function () {return Array.apply(null, Array(MONS_PER_ROW)).map(function () {return false})});
     }
 
     generateBlankMonObject()
@@ -837,6 +1048,8 @@ export default class MainPage extends Component {
                 console.log("Error downloading the home data file.");
                 console.log(error);
             }*/
+
+            localStorage.lastSavedHomeData = encryptedHomeData;
         }
 
         this.setState({savingMessage: "", changeWasMade: [false, false]});
@@ -1042,9 +1255,21 @@ export default class MainPage extends Component {
                 <h2>Upload your home data.</h2>
                 <h3>It should be a file called home.dat</h3>
                 <div>
+                    {
+                        "lastSavedHomeData" in localStorage && localStorage.lastSavedHomeData !== null && localStorage.lastSavedHomeData !== "" ?
+                            <div>
+                                <Button size="lg" variant="info" onClick={() => this.useLastSavedHomeFile()}
+                                        className="choose-home-file-button">
+                                    Last Saved
+                                </Button>
+                            </div>
+                        :
+                            ""
+                    }
+
                     <div>
                         <label className="btn btn-success btn-lg choose-home-file-button">
-                            Choose File
+                            Upload File
                             <input type="file" hidden onChange={(e) => this.chooseHomeFile(e)} />
                         </label>
                     </div>
@@ -1092,7 +1317,7 @@ export default class MainPage extends Component {
                 <h2>Upload your save file.</h2>
                 <h3>It should be a file ending with .sav or .srm.</h3>
                 <label className="btn btn-success btn-lg choose-save-file-button">
-                    Choose File
+                    Upload File
                     <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)} />
                 </label>
 

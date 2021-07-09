@@ -293,6 +293,11 @@ export function GetMonOTGender(pokemon)
     return "M";
 }
 
+export function GetMonMetLevel(pokemon)
+{
+    return pokemon["metInfo"] & 0x7F; //Bottom 7 bits
+}
+
 export function GetMonVisibleOTId(pokemon)
 {
     return pokemon["otId"] & 0xFFFF; //Lower half
@@ -349,6 +354,19 @@ export function GetVisibleIVs(pokemon)
         pokemon["ivs"][5], //Sp. Def
         pokemon["ivs"][3], //Speed
     ]);
+}
+
+export function PokemonAreDuplicates(pokemon1, pokemon2)
+{
+    //Arranged in order to do as few checks as posisble
+
+    return pokemon1.species === pokemon2.species
+        && pokemon1.personality === pokemon2.personality
+        && pokemon1.otId === pokemon2.otId
+        && pokemon1.metLocation === pokemon2.metLocation
+        && GetMonMetLevel(pokemon1) === GetMonMetLevel(pokemon2)
+        && pokemon1.otName === pokemon2.otName //Most likely matches if the otId is the same
+        && GetMonOTGender(pokemon1) === GetMonOTGender(pokemon2); //Most likely matches if the otId is the same
 }
 
 export function CanMonGigantamax(pokemon)
