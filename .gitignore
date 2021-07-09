@@ -17,6 +17,7 @@ __pycache__/
 # production
 /build
 package-lock.json
+*lock
 
 # misc
 .DS_Store

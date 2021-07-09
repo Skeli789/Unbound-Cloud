@@ -269,6 +269,8 @@ export class WonderTrade extends Component
         socket.close();
         console.log(`Receieved ${GetMonNickname(newPokemon)}`);
         thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
+        var backupTitle = document.title;
+        document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
 
         PopUp.fire(
         {
@@ -276,6 +278,9 @@ export class WonderTrade extends Component
             confirmButtonText: `Hooray!`,
             imageUrl: GetIconSpeciesLink(newPokemon),
             imageAlt: "",
+        }).then(() =>
+        {
+            document.title = backupTitle;
         });
     }
 
