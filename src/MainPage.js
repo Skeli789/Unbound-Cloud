@@ -68,6 +68,7 @@ export default class MainPage extends Component {
             searchCriteria: [null, null],
             changeWasMade: [false, false],
             savingMessage: "",
+            wonderTradeData: null,
 
             saveBoxes: SaveData["boxes"],
             saveTitles: SaveData["titles"],
@@ -100,7 +101,7 @@ export default class MainPage extends Component {
             e.returnValue = true; //Display pop-up warning
         }
     }
-    
+
     areBoxViewsVertical()
     {
         return window.innerWidth < 865; //px
@@ -132,12 +133,17 @@ export default class MainPage extends Component {
             return this.state.saveTitles;
     }
 
-    getBoxesByBoxSlot(boxSlot)
+    getBoxesByBoxType(boxType)
     {
-        if (this.getBoxTypeByBoxSlot(boxSlot) === BOX_HOME)
+        if (boxType === BOX_HOME)
             return this.state.homeBoxes;
         else
             return this.state.saveBoxes;
+    }
+
+    getBoxesByBoxSlot(boxSlot)
+    {
+        return this.getBoxesByBoxType(this.getBoxTypeByBoxSlot(boxSlot));
     }
 
     getBoxAmountByBoxSlot(boxSlot)
@@ -151,6 +157,17 @@ export default class MainPage extends Component {
     getMonAtBoxPos(boxSlot, boxPos)
     {
         return this.getBoxesByBoxSlot(boxSlot)[boxPos];
+    }
+
+    isMonInWonderTrade(boxType, boxOffset)
+    {
+        var boxNum = Math.floor(boxOffset / MONS_PER_BOX);
+        var boxPos = boxOffset % MONS_PER_BOX;
+
+        return this.state.wonderTradeData !== null
+            && this.state.wonderTradeData.boxType === boxType
+            && this.state.wonderTradeData.boxNum === boxNum
+            && this.state.wonderTradeData.boxPos === boxPos;
     }
 
     wipeErrorMessage()
@@ -311,9 +328,13 @@ export default class MainPage extends Component {
                 var leftOffset = this.state.selectedMonBox[BOX_SLOT_LEFT] * MONS_PER_BOX + this.state.selectedMonPos[BOX_SLOT_LEFT].indexOf(true);
                 var rightOffset = this.state.selectedMonBox[BOX_SLOT_RIGHT] * MONS_PER_BOX + this.state.selectedMonPos[BOX_SLOT_RIGHT].indexOf(true);
 
-                this.swapBoxedPokemon(leftBoxes, rightBoxes, leftOffset, rightOffset);
-                changeWasMade[leftBoxType] = true;
-                changeWasMade[rightBoxType] = true;
+                if (!this.isMonInWonderTrade(this.getBoxTypeByBoxSlot(BOX_SLOT_LEFT), leftOffset)
+                &&  !this.isMonInWonderTrade(this.getBoxTypeByBoxSlot(BOX_SLOT_RIGHT), rightOffset))
+                {
+                    this.swapBoxedPokemon(leftBoxes, rightBoxes, leftOffset, rightOffset);
+                    changeWasMade[leftBoxType] = true;
+                    changeWasMade[rightBoxType] = true;
+                }
             }
             else
             {
@@ -471,7 +492,8 @@ export default class MainPage extends Component {
         var toBoxType = this.getBoxTypeByBoxSlot(this.state.draggingToBox);
 
         if (fromOffset >= 0 && toOffset >= 0
-        && (this.state.draggingFromBox !== this.state.draggingToBox || fromOffset !== toOffset)) //Make sure different Pokemon are being swapped
+        && (this.state.draggingFromBox !== this.state.draggingToBox || fromOffset !== toOffset) //Make sure different Pokemon are being swapped
+        && !this.isMonInWonderTrade(this.getBoxTypeByBoxSlot(this.state.draggingToBox), toOffset))
         {
             this.swapBoxedPokemon(fromBoxes, toBoxes, fromOffset, toOffset);
             selectedMonPos = this.generateBlankSelectedPos(); //Only remove if swap was made
@@ -493,31 +515,47 @@ export default class MainPage extends Component {
         this.wipeErrorMessage();
     }
 
-    releaseSelectedPokemon(boxSlot, boxType)
+    releaseMonAtBoxPos(boxes, boxNum, boxPos)
+    {
+        let offset = boxNum * MONS_PER_BOX + boxPos;
+        boxes[offset] = this.generateBlankMonObject();
+    }
+
+    releaseSelectedPokemon(boxSlot, boxType, releaseViewingMon)
     {
         var boxes = this.getBoxesByBoxSlot(boxSlot);
         var selectedMonPos = this.state.selectedMonPos;
         var viewingMon = this.state.viewingMon;
         var changeWasMade = this.state.changeWasMade;
-        viewingMon[boxSlot] = null;
-
-        if (this.state.selectedMonBox[boxSlot] >= 0
+    
+        if (releaseViewingMon)
+        {
+            if (viewingMon[boxSlot] !== null
+            && viewingMon[boxSlot].boxNum >= 0
+            && viewingMon[boxSlot].boxNum < this.getBoxAmountByBoxSlot(boxSlot)
+            && viewingMon[boxSlot].boxPos >= 0
+            && viewingMon[boxSlot].boxNum < MONS_PER_BOX)
+            {
+                this.releaseMonAtBoxPos(boxes, viewingMon[boxSlot].boxNum, viewingMon[boxSlot].boxPos);
+                changeWasMade[boxType] = true;
+            }
+        }
+        else if (this.state.selectedMonBox[boxSlot] >= 0
         && this.state.selectedMonBox[boxSlot] < this.getBoxAmountByBoxSlot(boxSlot))
         {
-            var startIndex = this.state.selectedMonBox[boxSlot] * MONS_PER_BOX;
-
+            //Release selected Pokemon
             for (let i = 0; i < MONS_PER_BOX; ++i)
             {
                 if (this.state.selectedMonPos[boxSlot][i])
                 {
-                    let offset =  startIndex + i;
-                    boxes[offset] = this.generateBlankMonObject();
+                    this.releaseMonAtBoxPos(boxes, this.state.selectedMonBox[boxSlot], i);
                     changeWasMade[boxType] = true;
                 }
             }
         }
 
         selectedMonPos[boxSlot] = CreateSingleBlankSelectedPos();
+        viewingMon[boxSlot] = null;
 
         this.setState({
             saveBoxes: (boxType === BOX_SAVE) ? boxes : this.state.saveBoxes,
@@ -528,6 +566,22 @@ export default class MainPage extends Component {
         })
 
         this.wipeErrorMessage();
+    }
+
+    finishWonderTrade(newPokemon, boxType, boxNum, boxPos)
+    {
+        var boxes = this.getBoxesByBoxType(boxType);
+        var offset = boxNum * MONS_PER_BOX + boxPos;
+        var changeWasMade = this.state.changeWasMade;
+        changeWasMade[boxType] = true;
+        boxes[offset] = newPokemon;
+
+        this.setState({
+            saveBoxes: (boxType === BOX_SAVE) ? boxes : this.state.saveBoxes,
+            homeBoxes: (boxType === BOX_HOME) ? boxes : this.state.homeBoxes,
+            changeWasMade: changeWasMade,
+            wonderTradeData: null,
+        });
     }
 
     async fixLivingDex(speciesList)

@@ -125,6 +125,11 @@
     background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
+.wonder-trade-box-icon, .wonder-trade-box-icon:hover
+{
+    background-color: grey !important;
+}
+
 .error-box-icon
 {
     background-color: red !important;
@@ -140,6 +145,11 @@
 .living-dex-icon, .box-icon-faded
 {
     opacity: 0.3;
+}
+
+.box-icon-greyscale
+{
+    filter: grayscale(100%);
 }
 
 .fix-living-dex-button-container
