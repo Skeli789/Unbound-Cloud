@@ -59,7 +59,6 @@ export class BoxView extends Component
         {
             editingTitle: false,
             titleInput: "",
-            viewingMonKey: 0,
             livingDexState: LIVING_DEX_NONE,
             fixingLivingDex: false,
             searching: false,
@@ -272,6 +271,16 @@ export class BoxView extends Component
         return this.getParentState().viewingMon[this.state.boxSlot].pokemon;
     }
 
+    getViewingMonKey()
+    {
+        var viewingMon = this.getParentState().viewingMon[this.state.boxSlot];
+
+        if (viewingMon === null)
+            return -1;
+
+        return viewingMon.boxNum * MONS_PER_BOX + viewingMon.boxPos;
+    }
+
     getMonInCurrentBoxAt(boxPos)
     {
         var offset = this.getCurrentBox() * MONS_PER_BOX + boxPos;
@@ -410,10 +419,7 @@ export class BoxView extends Component
                 this.state.parent.swapDifferentBoxSlotPokemon(multiSwap);
         });
 
-        this.setState({
-            viewingMonKey: this.getCurrentBox() * MONS_PER_BOX + boxPos,
-            viewingShowdown: false,
-        });
+        this.setState({viewingShowdown: false});
     }
     
     handleStartDragging(allBoxesPos, boxPos, icon, imgUrl, pokemon)
@@ -434,7 +440,7 @@ export class BoxView extends Component
             viewingMon: viewingMon,
         });
 
-        this.setState({viewingMonKey: boxPos, viewingShowdown: false});
+        this.setState({viewingShowdown: false});
     }
 
     handleSetDraggingOver(allBoxesPos)
@@ -461,7 +467,7 @@ export class BoxView extends Component
             var newViewingMon = this.getParentState().viewingMon;
             newViewingMon[this.state.boxSlot] = {pokemon: pokemon, boxNum: this.getCurrentBox(), boxPos: boxPos};
             this.state.parent.setState({viewingMon: newViewingMon});
-            this.setState({viewingMonKey: boxPos, viewingShowdown: false});
+            this.setState({viewingShowdown: false});
         }
     }
 
@@ -846,11 +852,11 @@ export class BoxView extends Component
                     }
                 }
 
-                return(<ShowdownExport pokemonList={pokemonList} key={this.state.viewingMonKey}/>);
+                return(<ShowdownExport pokemonList={pokemonList} key={this.getViewingMonKey()}/>);
             }
             else
                 return(<PokemonSummary pokemon={pokemon} areBoxViewsVertical={this.state.parent.areBoxViewsVertical()}
-                                       key={this.state.viewingMonKey}/>);
+                                       key={this.getViewingMonKey()}/>);
         }
         else
             return "";

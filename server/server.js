@@ -218,6 +218,27 @@ app.post('/uploadHomeData', async (req, res) =>
     }
 });
 
+app.post("/uploadLastHomeData", async (req, res) =>
+{
+    //Finish the upload of the home data file
+    var homeData = req.body.homeDataP1 + req.body.homeDataP2 + req.body.homeDataP3 + req.body.homeDataP4; //Split into 4 parts so it can will be sent over guaranteed
+
+    //Decrypt the data
+    try
+    {
+        var bytes = CryptoJS.AES.decrypt(homeData, gSecretKey);
+        var data = JSON.parse(JSON.parse(bytes.toString(CryptoJS.enc.Utf8))); //Decrypted
+        console.log("The home file has been successfully decrypted.");
+        return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"]});
+    }
+    catch (err)
+    {
+        console.log("An error occurred processing the last saved home data file.");
+        console.log(err);
+        return res.status(StatusCode.ClientErrorBadRequest).json(err);
+    }
+});
+
 app.post('/encryptHomeData', (req, res) =>
 {
     console.log("Encrypting home data...");
