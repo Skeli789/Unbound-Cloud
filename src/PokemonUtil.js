@@ -27,7 +27,7 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_BASCULIN_BLUE": "basculin-blue-striped",
     "SPECIES_FRILLISH_F": "female/frillish",
     "SPECIES_JELLICENT_F": "female/jellicent",
-    "SPECIES_PYROAR_F": "female/pyroar",
+    "SPECIES_PYROAR_FEMALE": "female/pyroar",
     "SPECIES_FURFROU_PHAROAH": "furfrou-pharaoh",
     "SPECIES_MEOWSTIC_FEMALE": "female/meowstic",
     "SPECIES_PUMPKABOO": "pumpkaboo-small",
