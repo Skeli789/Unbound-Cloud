@@ -68,14 +68,16 @@ export class PokemonSummary extends Component
     printBallAndItemIcon()
     {
         var ballType = this.state.pokemon["pokeBall"];
-        var ballName = ballType.split("BALL_TYPE_")[1].split("_BALL")[0].toLowerCase();
-        ballName = ballName.charAt(0).toUpperCase() + ballName.slice(1) + " Ball";
+        var baseBallName = ballType.split("BALL_TYPE_")[1].split("_BALL")[0].toLowerCase();
+        var ballName = baseBallName.charAt(0).toUpperCase() + baseBallName.slice(1) + " Ball";
         var ballNameTooltip = props => (<Tooltip {...props}>{ballName}</Tooltip>);
 
         var item = this.state.pokemon["item"];
         var itemName = GetItemName(item);
         var itemLink = GetItemIconLink(item);
         var itemTooltip = props => (<Tooltip {...props}>{itemName}</Tooltip>);
+
+        let ballBaseLink = "https://raw.githubusercontent.com/msikma/pokesprite/master/items/ball/";
 
         return (
             <div className="summary-ball-icon-container">
@@ -88,7 +90,7 @@ export class PokemonSummary extends Component
                         ""
                 }
                 <OverlayTrigger placement="top" overlay={ballNameTooltip}>
-                    <img src={BASE_GFX_LINK + ballType + ".png"} alt="" onMouseDown={(e) => e.preventDefault()}/>
+                    <img src={ballBaseLink + baseBallName + ".png"} alt="" onMouseDown={(e) => e.preventDefault()}/>
                 </OverlayTrigger>
             </div>
         )
@@ -155,6 +157,9 @@ export class PokemonSummary extends Component
 
         if (this.state.pokemon !== null && this.state.pokemon["moves"] !== null)
         {
+            let baseTypeIconLink = "https://raw.githubusercontent.com/msikma/pokesprite/master/misc/types/gen8/";
+            let splitBaseLink = "https://raw.githubusercontent.com/msikma/pokesprite/master/misc/seals/home/move-";
+
             for (let i = 0; i < this.state.pokemon["moves"].length; ++i)
             {
                 let move = this.state.pokemon["moves"][i];
@@ -169,7 +174,7 @@ export class PokemonSummary extends Component
 
                     moves.push(
                         <OverlayTrigger placement="left" overlay={typeNameTooltip} key={key++}>
-                            <img src={BASE_GFX_LINK + moveType + ".png"} alt={alt} className="summary-move-type" />
+                            <img src={baseTypeIconLink + typeNames[i].toLowerCase() + ".png"} alt={alt} className="summary-move-type" />
                         </OverlayTrigger>
                     )
                 }
@@ -195,7 +200,7 @@ export class PokemonSummary extends Component
 
                     moves.push(
                         <OverlayTrigger placement={this.state.areBoxViewsVertical ? "top" : "right"} overlay={splitNameTooltip} key={key++}>
-                            <img src={BASE_GFX_LINK + moveSplit + ".png"} alt={splitNames[i].slice(0, 2)} className="summary-move-split"/>
+                            <img src={splitBaseLink + splitNames[i].toLowerCase() + ".png"} alt={splitNames[i].slice(0, 2)} className="summary-move-split"/>
                         </OverlayTrigger>
                     );
                 }

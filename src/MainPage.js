@@ -42,7 +42,6 @@ const STATE_MOVING_POKEMON = 8;
 //TODO: Back button on list view
 //TODO: Standardize check and cancel icons
 //TODO: Add "Can't Wonder Trade" field to mon data that's cleared upon sending to save file or encrypting the home data
-//TODO: Retrieve type and ball icons from same place as mon icons, not server
 
 
 export default class MainPage extends Component {
