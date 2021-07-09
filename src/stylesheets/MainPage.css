@@ -74,6 +74,11 @@
     margin-top: 1%;
 }
 
+.error-text
+{
+    color: red;
+}
+
 .main-page-boxes
 {
     display: flex;

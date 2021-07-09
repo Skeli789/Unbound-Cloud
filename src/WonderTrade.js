@@ -249,6 +249,7 @@ export class WonderTrade extends Component
                         if (!socket.connected)
                         {
                             socket.close();
+                            this.setGlobalState({wonderTradeData: null});
                             PopUp.fire(
                             {
                                 title: "Couldn't connect!\nPlease try again later.",

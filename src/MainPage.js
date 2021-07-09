@@ -52,7 +52,7 @@ export default class MainPage extends Component {
             selectedSaveFile: null,
             selectedHomeFile: null,
             fileUploadError: false,
-            homeFileUploadError: false,
+            serverConnectionError: false,
             currentBox: [0, 0],
             selectedMonBox: [0, 0],
             selectedMonPos: this.generateBlankSelectedPos(),
@@ -184,10 +184,10 @@ export default class MainPage extends Component {
 
         if ((!file.name.toLowerCase().endsWith(".sav") && !file.name.toLowerCase().endsWith(".srm"))
         || file.size !== 131072) //128 kb
-            this.setState({fileUploadError: true});
+            this.setState({fileUploadError: true, serverConnectionError: false});
         else
         {
-            this.setState({selectedSaveFile: file, fileUploadError: false}, () =>
+            this.setState({selectedSaveFile: file, fileUploadError: false, serverConnectionError: false}, () =>
             {
                 this.handleUpload(true); //Upload immediately
             });
@@ -199,10 +199,10 @@ export default class MainPage extends Component {
         var file = e.target.files[0];
 
         if (!file.name.toLowerCase().endsWith(".dat"))
-            this.setState({fileUploadError: true});
+            this.setState({fileUploadError: true, serverConnectionError: false});
         else
         {
-            this.setState({selectedHomeFile: file, fileUploadError: false}, () =>
+            this.setState({selectedHomeFile: file, fileUploadError: false, serverConnectionError: false}, () =>
             {
                 this.handleUpload(false); //Upload immediately
             });
@@ -218,7 +218,10 @@ export default class MainPage extends Component {
         const formData = new FormData(); //formData contains the image to be uploaded
         formData.append("file", file);
         formData.append("isSaveFile", isSaveFile);
-        this.setState({editState: isSaveFile ? STATE_UPLOADING_SAVE_FILE : STATE_UPLOADING_HOME_FILE});
+        this.setState({
+            editState: isSaveFile ? STATE_UPLOADING_SAVE_FILE : STATE_UPLOADING_HOME_FILE,
+            uploadProgress: "Uploading 0%", //Update here in case the connection has been lost
+        });
 
         let res;
         try
@@ -233,17 +236,32 @@ export default class MainPage extends Component {
             //Some error occurred
             var newState;
             console.log("An error occurred uploading the file.");
-            console.log(error["response"]["data"]);
 
             if (isSaveFile)
                 newState = STATE_UPLOAD_SAVE_FILE;
             else
                 newState = STATE_UPLOAD_HOME_FILE;
 
-            this.setState({
-                editState: newState,
-                fileUploadError: true
-            });
+            if (error.message === "Network Error")
+            {
+                console.log("Could not connect to the server.");
+
+                this.setState({
+                    editState: newState,
+                    fileUploadError: false,
+                    serverConnectionError: true,
+                });
+            }
+            else
+            {
+                console.log(error["response"]["data"]);
+
+                this.setState({
+                    editState: newState,
+                    fileUploadError: true,
+                    serverConnectionError: false,
+                });
+            }
 
             return;
         }
@@ -260,6 +278,7 @@ export default class MainPage extends Component {
                 saveFileNumber: res.data.fileIdNumber,
                 saveFileData: res.data.saveFileData,
                 fileUploadError: false,
+                serverConnectionError: false,
             });
 
             localStorage.visitedBefore = true; //Set cookie now
@@ -273,6 +292,7 @@ export default class MainPage extends Component {
                 homeBoxes: res.data.boxes,
                 homeTitles: res.data.titles,
                 fileUploadError: false,
+                serverConnectionError: false,
             });
         }
     }
@@ -723,9 +743,13 @@ export default class MainPage extends Component {
             res = await axios.post(homeRoute, formData, {});
         }
         catch (error)
-        {
-            console.log(error["response"]["data"]);
-            errorMessage[boxSlot] = error["response"]["data"];
+        {            
+            if (error.message === "Network Error")
+                errorMessage[boxSlot] = <span>Could not connect to the server.<br/>DO NOT RELOAD THE PAGE!</span>;
+            else
+                errorMessage[boxSlot] = error.response.data;
+
+            console.log(errorMessage[boxSlot]);
             this.setState({savingMessage: "", errorMessage: errorMessage});
             return;
         }
@@ -746,9 +770,12 @@ export default class MainPage extends Component {
         }
         catch (error)
         {
-            console.log(error["response"]["data"]);
+            if (error.message === "Network Error")
+                errorMessage[boxSlot] = <span>Could not connect to the server.<br/>DO NOT RELOAD THE PAGE!</span>;
+            else
+                errorMessage[boxSlot] = error.response.data;
 
-            errorMessage[boxSlot] = error["response"]["data"];
+            console.log(errorMessage[boxSlot]);
             this.setState({savingMessage: "", errorMessage: errorMessage});
             return;
         }
@@ -1023,7 +1050,7 @@ export default class MainPage extends Component {
                     </div>
 
                     <div>
-                        <Button size="lg" onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE, fileUploadError: false})}
+                        <Button size="lg" onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE, fileUploadError: false, serverConnectionError: false})}
                                 className="choose-home-file-button">
                             Create New
                         </Button>
@@ -1031,11 +1058,16 @@ export default class MainPage extends Component {
                 </div>
 
                 {
-                    this.state.fileUploadError
-                    ? <div>
-                        <p>There was a problem with the data file chosen.</p>
-                        <p>Please make sure it was a correct data file with no corruption.</p>
-                    </div>
+                    this.state.fileUploadError ?
+                        <div className="error-text">
+                            <p>There was a problem with the data file chosen.</p>
+                            <p>Please make sure it was a correct data file with no corruption.</p>
+                        </div>
+                    : this.state.serverConnectionError ?
+                        <div className="error-text">
+                            <p>Could not connect to the server.</p>
+                            <p>Please try again later.</p>
+                        </div>
                     :
                         ""
                 }
@@ -1066,10 +1098,16 @@ export default class MainPage extends Component {
 
                 {
                     this.state.fileUploadError
-                    ? <div>
-                        <p>There was a problem with the save file chosen.</p>
-                        <p>Please make sure it was a correct 128 kb save file with no corruption.</p>
-                    </div>
+                    ?
+                        <div className="error-text">
+                            <p>There was a problem with the save file chosen.</p>
+                            <p>Please make sure it was a correct 128 kb save file with no corruption.</p>
+                        </div>
+                    : this.state.serverConnectionError ?
+                        <div className="error-text">
+                            <p>Could not connect to the server.</p>
+                            <p>Please try again later.</p>
+                        </div>
                     :
                         ""
                 }

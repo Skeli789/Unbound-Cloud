@@ -9,7 +9,6 @@ const path = require('path');
 const fs = require('fs');
 const CryptoJS = require("crypto-js");
 const {StatusCode} = require('status-code-enum');
-const { post } = require('./app');
 
 const gSecretKey = "blah blah blacksheep";
 const PORT = process.env.PORT || 3001;

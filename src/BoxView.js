@@ -1009,7 +1009,12 @@ export class BoxView extends Component
         if (this.state.fixingLivingDex)
             lowerIcons = <p className="lower-icon-message box-lower-icons">Please Wait...</p>
         else if (this.isSaving())
-            lowerIcons = <p className="lower-icon-message box-lower-icons">{this.getParentState().savingMessage}</p>
+        {
+            if (this.getParentState().changeWasMade[this.state.boxType])
+                lowerIcons = <p className="lower-icon-message box-lower-icons">{this.getParentState().savingMessage}</p>
+            else
+                lowerIcons = <p/>; //Show no options
+        }
 
         return (
             <div className="box-view">
