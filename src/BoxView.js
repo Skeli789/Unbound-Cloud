@@ -10,7 +10,7 @@ import withReactContent from 'sweetalert2-react-content'
 
 import {BOX_HOME, BOX_SAVE} from './MainPage';
 import {PokemonSummary} from "./PokemonSummary";
-import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsBlankMon, GetSpeciesName, IsMonShiny, IsMonEgg} from "./PokemonUtil";
+import {GetIconSpeciesName, GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, IsBlankMon, GetMonNickname, GetSpeciesName, IsMonShiny, IsMonEgg} from "./PokemonUtil";
 import {Search, MatchesSearchCriteria} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos} from "./Util";
@@ -300,6 +300,19 @@ export class BoxView extends Component
         var searchCriteria = this.getParentState().searchCriteria[this.state.boxSlot];
 
         return MatchesSearchCriteria(pokemon, searchCriteria);
+    }
+
+    canViewReleaseButton()
+    {
+        var viewingMon = this.getParentState().viewingMon[this.state.boxSlot];
+
+        if (viewingMon !== null)
+        {
+            if (this.isMonInWonderTrade(viewingMon.boxPos))
+                return false; //Can't release a Pokemon on the net
+        }
+
+        return true;
     }
 
     canViewShowdownButton()
@@ -645,12 +658,20 @@ export class BoxView extends Component
     {
         var title, pokemonName;
         var areAnyPokemonSelected = this.areAnyPokemonSelectedInCurrentBox(true);
+        var onlyOnePokemonSelected = this.isOnlyOnePokemonSelectedInCurrentBox();
         var viewingMon = this.getViewingMon();
 
-        if (!areAnyPokemonSelected && viewingMon !== null)
+        if ((!areAnyPokemonSelected && viewingMon !== null)
+        || onlyOnePokemonSelected) //Display the only name for consistency
         {
-            pokemonName = viewingMon.nickname;
-            title = `Release ${viewingMon.nickname}?`
+            let nickname;
+            if (onlyOnePokemonSelected)
+                nickname = GetMonNickname(this.getPokemonAtOnlySelectedPos());
+            else
+                nickname = GetMonNickname(viewingMon);
+
+            pokemonName = nickname;
+            title = `Release ${nickname}?`
         }
         else
         {
@@ -747,7 +768,7 @@ export class BoxView extends Component
             {
                 var matchesSearchCriteria = true;
                 var className = "box-icon-image";
-                var alt = pokemon["nickname"];
+                var alt = GetMonNickname(pokemon);
 
                 if (!this.matchesSearchCriteria(pokemon))
                 {
@@ -990,9 +1011,14 @@ export class BoxView extends Component
                     //Release & Showdown Icons
                     this.areAnyPokemonSelectedInCurrentBox(true) || viewingMon !== null ?
                         <>
-                            <OverlayTrigger placement="bottom" overlay={releaseTooltip}>
-                                <GrTrash size={28} className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
-                            </OverlayTrigger>
+                            {
+                                this.canViewReleaseButton() ?
+                                    <OverlayTrigger placement="bottom" overlay={releaseTooltip}>
+                                        <GrTrash size={28} className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
+                                    </OverlayTrigger>
+                                :
+                                    ""
+                            }
                             {
                                 this.canViewShowdownButton() ?
                                     <OverlayTrigger placement="bottom" overlay={showdownTooltip}>
