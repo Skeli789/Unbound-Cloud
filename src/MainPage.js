@@ -16,6 +16,7 @@ import {IsBlankMon, PokemonAreDuplicates} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from "./Util";
 import SaveData from "./data/Test Output.json"
 
+import {BiArrowBack} from "react-icons/bi";
 import {FaHome, FaGamepad, FaArrowAltCircleRight} from "react-icons/fa";
 
 import "./stylesheets/MainPage.css";
@@ -40,7 +41,6 @@ const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} 
 
 //TODO: Drag and drop file upload
 //TODO: Dragging mon outside the screen keeps it on the mouse
-//TODO: Back button on list view
 
 
 export default class MainPage extends Component {
@@ -1194,14 +1194,37 @@ export default class MainPage extends Component {
         );
     }
 
+    backToMainViewButton()
+    {
+        var size = window.innerWidth < 500 ? 28 : 42;
+        var paddingRight = window.innerWidth < 500 ? "0%" : "90%";
+
+        return (
+            <BiArrowBack size={size} className="top-bar-back-button" style={{paddingRight: paddingRight}}
+                         aria-label="Back" onClick={() => this.setState({viewingBoxList: -1})}/>
+        );
+    }
+
     navBarButtons()
     {
         //Appear above everything when boxes are side by side
         //Otherwise scroll with everything else if possible
 
+        var viewingBoxList = this.state.viewingBoxList >= 0;
+        var sticky = viewingBoxList || !this.areBoxViewsVertical();
+
+        if (viewingBoxList)
+        {
+            return (
+                <div className="top-bar-buttons" style={{zIndex: 100, position: "sticky"}}>
+                    {this.backToMainViewButton()}
+                </div>
+            );
+        }
+
         return (
-            <div className="top-bar-buttons" style={{zIndex: this.areBoxViewsVertical() ? -1 : 100,
-                                                     position: this.areBoxViewsVertical() ? "unset" : "sticky"}}>
+            <div className="top-bar-buttons" style={{zIndex: !sticky ? -1 : 100,
+                                                     position: !sticky ? "unset" : "sticky"}}>
                 {this.editOnlyHomePokemonButton()}
                 {this.transferPokemonButton()}
                 {this.editOnlySavePokemonButton()}

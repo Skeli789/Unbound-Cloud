@@ -127,6 +127,18 @@
     border-color: mediumpurple !important;
 }
 
+.top-bar-back-button
+{
+    color: white;
+    background-color: rebeccapurple !important;
+    border-color: rebeccapurple !important;
+    box-shadow: unset !important;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
 .dragging-image
 {
     position: absolute;
