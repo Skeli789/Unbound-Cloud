@@ -80,6 +80,11 @@
     color: red;
 }
 
+.upload-progress-bar
+{
+    width: 50vw;
+}
+
 .main-page-boxes
 {
     display: flex;

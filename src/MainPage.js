@@ -3,7 +3,7 @@
 */
 
 import React, {Component} from 'react';
-import {Button} from "react-bootstrap";
+import {Button, ProgressBar} from "react-bootstrap";
 import {isMobile} from "react-device-detect";
 //import {StatusCode} from "status-code-enum";
 import axios from "axios";
@@ -36,6 +36,8 @@ const STATE_EDITING_HOME_BOXES = 6;
 const STATE_EDITING_SAVE_FILE = 7;
 const STATE_MOVING_POKEMON = 8;
 
+const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} label={"0%"} />;
+
 //TODO: Drag and drop file upload
 //TODO: Dragging mon outside the screen keeps it on the mouse
 //TODO: Progress bar during upload
@@ -52,7 +54,7 @@ export default class MainPage extends Component {
         this.state = //Set test data
         {
             editState: (localStorage.visitedBefore ? STATE_UPLOAD_HOME_FILE : STATE_WELCOME), //STATE_MOVING_POKEMON,
-            uploadProgress: "0%",
+            uploadProgress: BLANK_PROGRESS_BAR,
             selectedSaveFile: null,
             selectedHomeFile: null,
             fileUploadError: false,
@@ -254,7 +256,7 @@ export default class MainPage extends Component {
 
         this.setState({
             editState: STATE_UPLOADING_HOME_FILE,
-            uploadProgress: "Uploading 0%", //Update here in case the connection has been lost
+            uploadProgress: BLANK_PROGRESS_BAR, //Update here in case the connection has been lost
             selectedHomeFile: {"name": "last saved home data"},
         });
 
@@ -319,7 +321,7 @@ export default class MainPage extends Component {
         formData.append("isSaveFile", isSaveFile);
         this.setState({
             editState: isSaveFile ? STATE_UPLOADING_SAVE_FILE : STATE_UPLOADING_HOME_FILE,
-            uploadProgress: "Uploading 0%", //Update here in case the connection has been lost
+            uploadProgress: BLANK_PROGRESS_BAR, //Update here in case the connection has been lost
         });
 
         let res;
@@ -419,7 +421,7 @@ export default class MainPage extends Component {
             progress = `Processing ${fileName}`;
         }
         else
-            progress = `Uploading ${progress}%`;
+            progress = <ProgressBar className="upload-progress-bar" now={progress} label={`${progress}%`} />;
 
         this.setState({uploadProgress: progress});
     }
@@ -1312,11 +1314,22 @@ export default class MainPage extends Component {
         )
     }
 
-    printUploadingHomeFile()
+    printUploadingFile()
     {
+        var uploadProgress;
+
+        if (typeof(this.state.uploadProgress) === "string" && this.state.uploadProgress.startsWith("Processing"))
+            uploadProgress = <h2>{this.state.uploadProgress}</h2>;
+        else
+            uploadProgress =
+                <>
+                    <h2>Uploading</h2>
+                    {this.state.uploadProgress}
+                </>;
+
         return (
             <div className="main-page-upload-instructions fade-in">
-                <h2>{this.state.uploadProgress}</h2>
+                {uploadProgress}
                 <h3>Please wait...</h3>
             </div>
         )
@@ -1348,16 +1361,6 @@ export default class MainPage extends Component {
                     :
                         ""
                 }
-            </div>
-        )
-    }
-
-    printUploadingSaveFile()
-    {
-        return (
-            <div className="main-page-upload-instructions fade-in">
-                <h2>{this.state.uploadProgress}</h2>
-                <h3>Please wait...</h3>
             </div>
         )
     }
@@ -1466,13 +1469,13 @@ export default class MainPage extends Component {
                 page = this.printUploadHomeFile();
                 break;
             case STATE_UPLOADING_HOME_FILE:
-                page = this.printUploadingHomeFile();
+                page = this.printUploadingFile();
                 break;
             case STATE_UPLOAD_SAVE_FILE:
                 page = this.printUploadSaveFile();
                 break;
             case STATE_UPLOADING_SAVE_FILE:
-                page = this.printUploadingSaveFile();
+                page = this.printUploadingFile();
                 break;
             case STATE_EDITING_HOME_BOXES:
                 page = this.printEditingHomeBoxes(); //Don't display title
