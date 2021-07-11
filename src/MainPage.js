@@ -437,11 +437,13 @@ export default class MainPage extends Component {
         var impossibleTo =   this.generateBlankImpossibleMovementArray();
         var impossibleFrom = this.generateBlankImpossibleMovementArray();
         var impossibleMovement = [null, null];
+        var fromPos = fromOffset % MONS_PER_BOX;
+        var toPos = duplicateData.offset % MONS_PER_BOX;
 
         var boxName = this.getTitlesByBoxSlot(toBoxSlot)[duplicateData.boxNum];
-        impossibleFrom[Math.floor(fromOffset / MONS_PER_ROW)][fromOffset % MONS_PER_ROW] = true;
+        impossibleFrom[Math.floor(fromPos / MONS_PER_ROW)][fromPos % MONS_PER_ROW] = true;
         if (duplicateData.boxNum === this.state.currentBox[toBoxSlot]) //Only display red if that box is being viewing
-            impossibleTo[Math.floor(duplicateData.offset / MONS_PER_ROW)][duplicateData.offset % MONS_PER_ROW] = true;
+            impossibleTo[Math.floor(toPos / MONS_PER_ROW)][toPos % MONS_PER_ROW] = true;
 
         impossibleMovement[toBoxSlot] = impossibleTo;
         impossibleMovement[fromBoxSlot] = impossibleFrom;
@@ -702,12 +704,23 @@ export default class MainPage extends Component {
             }
             else
             {
-                this.swapBoxedPokemon(fromBoxes, toBoxes, fromOffset, toOffset);
-                selectedMonPos = this.generateBlankSelectedPos(); //Only remove if swap was made
-                viewingMon = [null, null];
-                changeWasMade[fromBoxType] = true;
-                changeWasMade[toBoxType] = true;
-                this.wipeErrorMessage();
+                alreadyExistsRet =
+                    this.monAlreadyExistsInBoxes(toBoxes[toOffset], fromBoxes, this.getBoxAmountByBoxSlot(this.state.draggingToBox),
+                                                (fromBoxType === toBoxType) ? toOffset : -1); //Ignore the mon being moved
+
+                if (alreadyExistsRet.boxNum >= 0)
+                {
+                    this.setDuplicatePokemonSwappingError(this.state.draggingToBox, toOffset, this.state.draggingFromBox, alreadyExistsRet);
+                }
+                else
+                {
+                    this.swapBoxedPokemon(fromBoxes, toBoxes, fromOffset, toOffset);
+                    selectedMonPos = this.generateBlankSelectedPos(); //Only remove if swap was made
+                    viewingMon = [null, null];
+                    changeWasMade[fromBoxType] = true;
+                    changeWasMade[toBoxType] = true;
+                    this.wipeErrorMessage();
+                }
             }
         }
         else
