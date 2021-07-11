@@ -40,10 +40,8 @@ const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} 
 
 //TODO: Drag and drop file upload
 //TODO: Dragging mon outside the screen keeps it on the mouse
-//TODO: Progress bar during upload
 //TODO: Back button on list view
 //TODO: Standardize check and cancel icons
-//TODO: Add "Can't Wonder Trade" field to mon data that's cleared upon sending to save file or encrypting the home data
 
 
 export default class MainPage extends Component {

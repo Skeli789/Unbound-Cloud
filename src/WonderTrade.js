@@ -13,6 +13,7 @@ import {CgExport, CgImport} from "react-icons/cg";
 
 import "./stylesheets/WonderTrade.css";
 
+const WONDER_TRADE_COOLDOWN = 120000; //2 Minutes
 
 const PopUp = withReactContent(Swal);
 const wonderTradeTooltip = props => (<Tooltip {...props}>Wonder Trade</Tooltip>);
@@ -94,6 +95,29 @@ export class WonderTrade extends Component
         return true;
     }
 
+    getTimeToNextWonderTrade()
+    {
+        if ("wonderTradeTimestamp" in this.state.pokemon)
+        {
+            var timeSince = Date.now() - this.state.pokemon.wonderTradeTimestamp;
+
+            if (timeSince >= WONDER_TRADE_COOLDOWN)
+            {
+                delete this.state.pokemon.wonderTradeTimestamp; //Field is no longer required
+                return 0; //Can wonder trade now
+            }
+
+            return Math.ceil((WONDER_TRADE_COOLDOWN - timeSince) / 1000);
+        }
+
+        return 0;
+    }
+
+    needToWaitForWonderTrade()
+    {
+        return this.getTimeToNextWonderTrade() !== 0;
+    }
+
     tryStartWonderTrade()
     {
         var pokemon = this.state.pokemon;
@@ -122,6 +146,23 @@ export class WonderTrade extends Component
                 showCancelButton: true,
                 icon: 'error',
             });
+
+            return;
+        }
+
+        //Check need to wait
+        if (this.needToWaitForWonderTrade())
+        {
+            var timeRemaining = this.getTimeToNextWonderTrade();
+
+            PopUp.fire(
+                {
+                    title: `Please wait ${timeRemaining} seconds before trading this Pokémon.`,
+                    cancelButtonText: `Okay`,
+                    showConfirmButton: false,
+                    showCancelButton: true,
+                    icon: 'error',
+                });
 
             return;
         }
@@ -268,6 +309,7 @@ export class WonderTrade extends Component
     {
         socket.close();
         console.log(`Receieved ${GetMonNickname(newPokemon)}`);
+        newPokemon.wonderTradeTimestamp = Date.now();
         thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
         var backupTitle = document.title;
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
