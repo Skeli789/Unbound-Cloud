@@ -41,7 +41,6 @@ const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} 
 //TODO: Drag and drop file upload
 //TODO: Dragging mon outside the screen keeps it on the mouse
 //TODO: Back button on list view
-//TODO: Standardize check and cancel icons
 
 
 export default class MainPage extends Component {

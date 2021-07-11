@@ -17,10 +17,9 @@ import {BASE_GFX_LINK, CreateSingleBlankSelectedPos} from "./Util";
 import {WonderTrade} from "./WonderTrade";
 import LivingDexOrder from "./data/LivingDexOrder.json"
 
-import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCheckCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
+import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCloseCircle, AiOutlineCheckCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
 import {BiSearchAlt2} from "react-icons/bi";
 import {CgPokemon} from "react-icons/cg";
-import {ImCancelCircle} from "react-icons/im"
 import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
 import {RiBoxingLine} from "react-icons/ri";
 
@@ -950,7 +949,7 @@ export class BoxView extends Component
                 title =
                     <div>
                         <OverlayTrigger placement="top" overlay={cancelTooltip}>
-                            <ImCancelCircle size={editIconSize  + 9}
+                            <AiOutlineCloseCircle size={editIconSize  + 14}
                                   onClick={this.cancelEditingTitle.bind(this)} className="box-name-cancel-icon" />
                         </OverlayTrigger>
                         <input type="text" className="box-name-text box-name-input"
