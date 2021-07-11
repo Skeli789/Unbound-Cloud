@@ -212,5 +212,7 @@ class SaveBlocks:
         checksum = SaveBlocks.CalculateChecksum(list(newData), blockId)
         checksum = ConvertToReverseByteList(hex(checksum))
         checksum = list(int(x, 16) for x in checksum)
+        while len(checksum) < 2:
+            checksum.append(0)  # Make sure checksum is always 16-bit
         binaryFile.seek(offset + ChecksumOffset)
         binaryFile.write(bytes(checksum))

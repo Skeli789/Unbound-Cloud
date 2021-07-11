@@ -41,6 +41,7 @@ const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} 
 //TODO: Drag and drop file upload
 //TODO: Unbound Base Stats
 //TODO: More data fields like "Gigantamax" and "MapSec" (with like MAPSEC_BORRIUS_ROUTE_1) - use Met Game to advantage
+//TODO: Make sure Wonder Trading can't be hijacked
 
 
 export default class MainPage extends Component {
