@@ -5,7 +5,6 @@
 import React, {Component} from 'react';
 import {Button, ProgressBar} from "react-bootstrap";
 import {isMobile} from "react-device-detect";
-//import {StatusCode} from "status-code-enum";
 import axios from "axios";
 //import {saveAs} from "file-saver";
 import {config} from "./config";
@@ -40,7 +39,6 @@ const STATE_MOVING_POKEMON = 8;
 const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} label={"0%"} />;
 
 //TODO: Drag and drop file upload
-//TODO: Dragging mon outside the screen keeps it on the mouse
 
 
 export default class MainPage extends Component {
@@ -89,11 +87,13 @@ export default class MainPage extends Component {
     {
         //localStorage.clear(); //For debugging
         window.addEventListener('beforeunload', this.beforeUnload.bind(this));
+        window.addEventListener('mouseup', this.handleReleaseDragging.bind(this));
     }
 
     componentWillUnmount()
     {
         window.removeEventListener('beforeunload', this.beforeUnload.bind(this));
+        window.removeEventListener('mouseup', this.handleReleaseDragging.bind(this));
     }
 
     beforeUnload(e)
@@ -1517,9 +1517,7 @@ export default class MainPage extends Component {
                                onMouseDown={(e) => e.preventDefault()} id="moving-icon" className="dragging-image"/>;
 
         return (
-            <div style={{minWidth: "428px"}}
-                         onMouseMove={(e) => this.moveDraggingMonIcon(e)}
-                         onMouseUp={() => this.handleReleaseDragging()}>
+            <div style={{minWidth: "428px"}} onMouseMove={(e) => this.moveDraggingMonIcon(e)}>
                 {page}
                 {draggingImg}
             </div>

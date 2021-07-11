@@ -145,6 +145,7 @@
     opacity: 0.7;
     visibility: hidden; /*Changed when dragging*/
     pointer-events: none; /*Allows clicking through it*/
+    z-index: 200;
 }
 
 .scroll-container
