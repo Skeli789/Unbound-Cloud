@@ -5,11 +5,13 @@
 import React, {Component} from 'react';
 import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
-import {CanMonGigantamax, GetAbility, GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel,
+import {CanMonGigantamax, ChangeMarking, GetAbility, GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel, GetMarkings,
         GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleOTId, GetVisibleStats,
         /*GetVisibleEVs, GetVisibleIVs,*/ HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetAbilityName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName} from "./Util";
 import MoveData from "./data/MoveData.json";
+
+import {BsCircle, BsSquare, BsTriangle, BsHeart, BsCircleFill, BsSquareFill, BsTriangleFill, BsHeartFill} from "react-icons/bs";
 
 import "./stylesheets/PokemonSummary.css";
 
@@ -65,8 +67,27 @@ export class PokemonSummary extends Component
         this.state = //Set test data
         {
             pokemon: props.pokemon,
+            markings: GetMarkings(props.pokemon),
+            changeWasMade: props.changeWasMade,
+            boxType: props.boxType,
             areBoxViewsVertical: props.areBoxViewsVertical,
         };
+
+        this.setGlobalState = props.setGlobalState;
+    }
+
+    /**
+     * Changes one of the Pokemon's markings.
+     * @param {Number} i - The marking number to change.
+     */
+    changeMarking(i)
+    {
+        ChangeMarking(this.state.pokemon, i);
+        this.setState({markings: GetMarkings(this.state.pokemon)});
+
+        var changeWasMade = this.state.changeWasMade;
+        changeWasMade[this.state.boxType] = true;
+        this.setGlobalState({changeWasMade: changeWasMade});
     }
 
     /**
@@ -161,6 +182,32 @@ export class PokemonSummary extends Component
         );
     }
  
+    /**
+     * Prints Pokemon markings that can be edited.
+     * @returns {JSX} The container for the markings
+     */
+    printMarkings()
+    {
+        const markingsOutlined = [<BsCircle/>, <BsSquare/>, <BsTriangle/>, <BsHeart/>];
+        const markingsFilled = [<BsCircleFill/>, <BsSquareFill/>, <BsTriangleFill/>, <BsHeartFill/>];
+        var monMarkings = GetMarkings(this.state.pokemon);
+        var displayMarkings = [];
+
+        for (let i = 0; i < monMarkings.length; ++i)
+        {
+            let symbol = (monMarkings[i]) ? markingsFilled[i] : markingsOutlined[i];
+            displayMarkings.push(<span className="summary-marking" onClick={this.changeMarking.bind(this, i)}>{symbol}</span>);
+        }
+
+        return (
+            <OverlayTrigger placement="right" overlay={props => (<Tooltip {...props}>Markings</Tooltip>)}>
+                <span className="summary-markings">
+                    {displayMarkings}
+                </span>
+            </OverlayTrigger>
+        );
+    }
+ 
      /**
       * Prints the original Trainer's details.
       * @returns {JSX} An element containing the original Trainer's details.
@@ -176,9 +223,9 @@ export class PokemonSummary extends Component
                 </span>
                 : {String(GetVisibleOTId(this.state.pokemon)).padStart(5, "0") /*This is a colon, not an else*/}
             </div>
-    );
+        );
     }
- 
+
     /**
      * Prints the caught ball icon and held item icon.
      * @returns {JSX} The container for the caught ball and held item icons.
@@ -413,6 +460,9 @@ export class PokemonSummary extends Component
 
                 {/*Ball & Item in Corner*/}
                 {this.printBallAndItemIcon()}
+
+                {/*Markings Underneath Ball & Item*/}
+                {this.printMarkings()}
 
                 {/*Stats Column*/}
                 {this.printStats()}

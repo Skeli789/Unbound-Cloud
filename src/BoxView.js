@@ -1210,6 +1210,8 @@ export class BoxView extends Component
             }
             else
                 return(<PokemonSummary pokemon={pokemon} areBoxViewsVertical={this.state.parent.areBoxViewsVertical()}
+                                       boxType={this.state.boxType} changeWasMade={this.getParentState().changeWasMade}
+                                       setGlobalState={this.state.parent.setState.bind(this.state.parent)}
                                        key={this.getSummaryMonKey()}/>);
         }
         else

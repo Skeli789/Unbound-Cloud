@@ -692,6 +692,26 @@ export function GetMarkings(pokemon)
 }
 
 /**
+ * Marks or unmarks one of a Pokemon's markings.
+ * @param {Pokemon} pokemon - The Pokemon to mark.
+ * @param {Number} i - The symbole id to change the marking for.
+ */
+export function ChangeMarking(pokemon, i)
+{
+    let finalMarkings = 0;
+    let markings = GetMarkings(pokemon);
+    markings[i] = !markings[i];
+
+    for (let i = 0; i < markings.length; ++i)
+    {
+        if (markings[i])
+            finalMarkings |= (1 << i);
+    }
+
+    pokemon["markings"] = finalMarkings;
+}
+
+/**
  * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {Number} The letter id of the Pokemon's Unown letter.
  */

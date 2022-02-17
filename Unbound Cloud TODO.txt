@@ -4,7 +4,6 @@ New Features:
 -Pokedex
 -Trade evolutions
 -Give mon little exclamation mark in corner if has data that will disappear in game
--Pokemon Markings (put under item and Ball and make editable - outline for non marked, filled in for marked)
 -Friendship should be reset when trading
 -Add mute button on bottom taskbar and make wonder trade sound not play if muted and add to cookie
 
@@ -17,6 +16,7 @@ Feature Modifications:
 -Add tooltip over box names that shows its clickable to view other boxes (code is in but not working)
 -Make client side species defines use dex numbers?
 -Multi select should highlight where the selected mons would go in the other box, not where the mouse is
+-Display EV/IV when clicking on stats
 
 Server Changes:
 -Change the file signature for Unbound
