@@ -94,19 +94,16 @@ export class PokemonSummary extends Component
         var isMaxFriendship = friendship >= MAX_FRIENDSHIP;
         var heartTooltipText = `Friendship: ${isMaxFriendship ? "Max" : friendship}`;
         var heartTooltip = props => (<Tooltip {...props}>{heartTooltipText}</Tooltip>);
+        var heartSymbol = (friendship >= HEART_FRIENDSHIP) ? "♥" : "♡"; //Outline for less than gray heart
+        var heartColour = isMaxFriendship ? "red" : (friendship >= HEART_FRIENDSHIP) ? "grey" : "black";
 
-        if (friendship >= HEART_FRIENDSHIP)
-        {
-            return (
-                <OverlayTrigger placement="top" overlay={heartTooltip}>
-                    <span className="summary-heart" style={{color: isMaxFriendship ? "red" : "grey"}}>
-                        ♥
-                    </span>
-                </OverlayTrigger>
-            );
-        }
-
-        return "";
+        return (
+            <OverlayTrigger placement="top" overlay={heartTooltip}>
+                <span className="summary-heart" style={{color: heartColour}}>
+                    {heartSymbol}
+                </span>
+            </OverlayTrigger>
+        );
     }
  
      /**

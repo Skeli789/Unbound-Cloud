@@ -7,6 +7,7 @@ New Features:
 -Give mon little exclamation mark in corner if has data that will disappear in game
 -Pokemon Markings (put under item and Ball and make editable - outline for non marked, filled in for marked)
 -Play sound when Wonder Trade completes
+-Friendship should be reset when trading
 
 Feature Modifications:
 -Instead of banning pokemon with certain nicknames just remove the nickname
@@ -15,7 +16,6 @@ Feature Modifications:
 -Just dump entire base stats file on client side
 -Living dex view should stay active when jumping to a new box quickly
 -Add tooltip over box names that shows its clickable to view other boxes (code is in but not working)
--Outlined heart below grey heart (hovering over displays exact value)
 -Make client side species defines use dex numbers?
 -Multi select should highlight where the selected mons would go in the other box, not where the mouse is
 
