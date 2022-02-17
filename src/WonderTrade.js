@@ -1,3 +1,7 @@
+/**
+ * A class for handling the Wonder Trade functionality.
+ */
+
 import React, {Component} from 'react';
 import {OverlayTrigger, Tooltip} from "react-bootstrap";
 import io from 'socket.io-client';
@@ -5,7 +9,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
-import {GetIconSpeciesLink, IsMonEgg, GetMonNickname} from "./PokemonUtil";
+import {GetIconSpeciesLink, GetNickname, GetOTName, IsEgg, IsValidPokemon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from './Util';
 import BannedWords from "./data/BannedWords.json"
 
@@ -22,6 +26,9 @@ const cancelWonderTradeTooltip = props => (<Tooltip {...props}>Cancel Wonder Tra
 
 export class WonderTrade extends Component
 {
+    /**
+     * Sets up the state needed for Wonder Trading.
+     */
     constructor(props)
     {
         super(props);
@@ -42,19 +49,32 @@ export class WonderTrade extends Component
         this.finishWonderTrade = props.finishWonderTrade;
     }
 
+    /**
+     * Gets the state of MainPage.
+     * @returns {Object} The this.state object of MainPage.js.
+     */
     getGlobalState()
     {
         return this.state.globalState.state;
     }
 
+    /**
+     * Gets whether or not a Wonder Trade is already in progress.
+     * @returns {Boolean} True if a Pokemon is already up for Wonder Trade. False otherwise.
+     */
     isActive()
     {
-        if (this.getGlobalState().wonderTradeData === null)
+        if (this.getGlobalState().wonderTradeData == null)
             return false;
 
-        return this.getGlobalState().wonderTradeData.socket !== null;
+        return this.getGlobalState().wonderTradeData.socket != null;
     }
 
+    /**
+     * Checks if a piece of text has a bad word in it.
+     * @param {String} textToCheck - The text to check for the bad word.
+     * @returns {Boolean} True if the text contains a bad word. False otherwise.
+     */
     badWordInText(textToCheck)
     {
         textToCheck = textToCheck.toUpperCase();
@@ -81,20 +101,28 @@ export class WonderTrade extends Component
         return false;
     }
 
+    /**
+     * Checks if the selected Pokemon is eligible to be Wonder Traded.
+     * @returns {Boolean} - True if the selected Pokemon can be Wonder Traded. False otherwise.
+     */
     canBeWonderTraded()
     {
-        if (this.badWordInText(GetMonNickname(this.state.pokemon)))
+        if (this.badWordInText(GetNickname(this.state.pokemon)))
             return false;
 
-        if (this.badWordInText(this.state.pokemon["otName"]))
+        if (this.badWordInText(GetOTName(this.state.pokemon)))
             return false;
 
-        if (IsMonEgg(this.state.pokemon))
+        if (IsEgg(this.state.pokemon))
             return false;
 
         return true;
     }
 
+    /**
+     * Gets the time until another Wonder Trade can be performed for the selected Pokemon.
+     * @returns {Number} The time in seconds until another Wonder Trade can be performed for the selected Pokemon.
+     */
     getTimeToNextWonderTrade()
     {
         if ("wonderTradeTimestamp" in this.state.pokemon)
@@ -113,11 +141,18 @@ export class WonderTrade extends Component
         return 0;
     }
 
+    /**
+     * Checks if a Wonder Trade can't be started for the selected Pokemon too soon after a previous one.
+     * @returns {Boolean} True if it's too soon to begin another Wonder Trade for the selected Pokemon. False otherwise.
+     */
     needToWaitForWonderTrade()
     {
         return this.getTimeToNextWonderTrade() !== 0;
     }
 
+    /**
+     * Tries to start a Wonder Trade.
+     */
     tryStartWonderTrade()
     {
         var pokemon = this.state.pokemon;
@@ -138,9 +173,9 @@ export class WonderTrade extends Component
         //Check illegal mon
         if (!this.canBeWonderTraded())
         {
-            PopUp.fire(
-            {
-                title: `${GetMonNickname(pokemon)} can't be traded.`,
+            PopUp.fire
+            ({
+                title: `${GetNickname(pokemon)} can't be traded.`,
                 cancelButtonText: `Awww`,
                 showConfirmButton: false,
                 showCancelButton: true,
@@ -155,14 +190,14 @@ export class WonderTrade extends Component
         {
             var timeRemaining = this.getTimeToNextWonderTrade();
 
-            PopUp.fire(
-                {
-                    title: `Please wait ${timeRemaining} seconds before trading this Pokémon.`,
-                    cancelButtonText: `Okay`,
-                    showConfirmButton: false,
-                    showCancelButton: true,
-                    icon: 'error',
-                });
+            PopUp.fire
+            ({
+                title: `Please wait ${timeRemaining} seconds before trading this Pokémon.`,
+                cancelButtonText: `Okay`,
+                showConfirmButton: false,
+                showCancelButton: true,
+                icon: 'error',
+            });
 
             return;
         }
@@ -170,9 +205,9 @@ export class WonderTrade extends Component
         //Check Already doing a Wonder Trade
         if (this.isActive()) 
         {
-            PopUp.fire(
-            {
-                title: `A Wonder Trade is in progress!\nStart a new Wonder Trade with ${GetMonNickname(pokemon)} anyway?`,
+            PopUp.fire
+            ({
+                title: `A Wonder Trade is in progress!\nStart a new Wonder Trade with ${GetNickname(pokemon)} anyway?`,
                 confirmButtonText: `Stop the old one, let's trade!`,
                 cancelButtonText: `Keep the old one.`,
                 showCancelButton: true,
@@ -183,7 +218,7 @@ export class WonderTrade extends Component
                 if (result.isConfirmed)
                 {
                     //First end previous Wonder Trade
-                    if (this.getGlobalState().wonderTradeData !== null)
+                    if (this.getGlobalState().wonderTradeData != null)
                         this.getGlobalState().wonderTradeData.socket.close();
 
                     this.setGlobalState({wonderTradeData: null}, () =>
@@ -196,9 +231,9 @@ export class WonderTrade extends Component
         }
         else //No Wonder Trade in progress yet
         {
-            PopUp.fire(
-            {
-                title: `Start a Wonder Trade with ${GetMonNickname(pokemon)}?`,
+            PopUp.fire
+            ({
+                title: `Start a Wonder Trade with ${GetNickname(pokemon)}?`,
                 confirmButtonText: `Let's trade!`,
                 cancelButtonText: `Cancel`,
                 showCancelButton: true,
@@ -212,6 +247,9 @@ export class WonderTrade extends Component
         }
     }
 
+    /**
+     * Begins a Wonder Trade with the selected Pokemon.
+     */
     startWonderTrade()
     {
         var pokemon = this.state.pokemon;
@@ -220,7 +258,7 @@ export class WonderTrade extends Component
         var selectedMonPos = this.getGlobalState().selectedMonPos;
         selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos();
 
-        if (!this.state.isActive && pokemon !== null)
+        if (!this.state.isActive && IsValidPokemon(pokemon))
         {
             console.log("Connecting...");
             var socket = io(`${config.dev_server}`, {autoConnect: false});
@@ -238,6 +276,7 @@ export class WonderTrade extends Component
             {
                 let timerInterval;
 
+                //Function run after connection established
                 socket.on('connect', function()
                 {
                     //Other handler functions
@@ -255,18 +294,19 @@ export class WonderTrade extends Component
                     console.log("Pokemon sent!");
                     //thisObject.setState({isMonInWonderTrade: true}); //Not needed because state changes in BoxView
 
-                    PopUp.fire(
-                    {
-                        title: `${GetMonNickname(pokemon)} has been sent!\nPlease wait for your new Pokemon to arrive.`,
+                    PopUp.fire
+                    ({
+                        title: `${GetNickname(pokemon)} has been sent!\nPlease wait for your new Pokemon to arrive.`,
                         confirmButtonText: `Okay`,
                         imageUrl: GetIconSpeciesLink(pokemon),
                         imageAlt: "",
                     });
                 });
 
+                //Try to connect
                 socket.connect();
-                PopUp.fire(
-                {
+                PopUp.fire
+                ({
                     title: 'Connecting, please wait...',
                     timer: 5000,
                     timerProgressBar: true,
@@ -291,8 +331,8 @@ export class WonderTrade extends Component
                         {
                             socket.close();
                             this.setGlobalState({wonderTradeData: null});
-                            PopUp.fire(
-                            {
+                            PopUp.fire
+                            ({
                                 title: "Couldn't connect!\nPlease try again later.",
                                 cancelButtonText: `Awww`,
                                 showConfirmButton: false,
@@ -305,18 +345,24 @@ export class WonderTrade extends Component
         }
     }
 
+    /**
+     * Receives the new Pokemon and ends the Wonder Trade.
+     * @param {Object} thisObject - The "this" object for the Wonder Trade class.
+     * @param {Pokemon} newPokemon - The Pokemon received in the Wonder Trade.
+     * @param {WebSocket} socket - The socket used to connect to the server.
+     */
     endWonderTrade(thisObject, newPokemon, socket)
     {
         socket.close();
-        console.log(`Receieved ${GetMonNickname(newPokemon)}`);
-        newPokemon.wonderTradeTimestamp = Date.now();
+        console.log(`Receieved ${GetNickname(newPokemon)}`);
+        newPokemon.wonderTradeTimestamp = Date.now(); //Prevent this Pokemon from instantly being sent back
         thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
         var backupTitle = document.title;
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
 
-        PopUp.fire(
-        {
-            title: `${GetMonNickname(newPokemon)} has just arrived!\nIt was placed in "${this.state.boxName}".`,
+        PopUp.fire
+        ({
+            title: `${GetNickname(newPokemon)} has just arrived!\nIt was placed in "${this.state.boxName}".`,
             confirmButtonText: `Hooray!`,
             imageUrl: GetIconSpeciesLink(newPokemon),
             imageAlt: "",
@@ -326,6 +372,10 @@ export class WonderTrade extends Component
         });
     }
 
+    /**
+     * Handles ending the Wonder Trade during a connection error.
+     * @param {WebSocket} socket - The socket used to connect to the server.
+     */
     handleLostConnection(socket)
     {
         socket.close();
@@ -341,13 +391,16 @@ export class WonderTrade extends Component
         });
     }
 
+    /**
+     * Tries force ending a Wonder Trade.
+     */
     tryCancelWonderTrade()
     {
         var pokemon = this.state.pokemon;
 
-        PopUp.fire(
-        {
-            title: `Stop trying to Wonder Trade ${GetMonNickname(pokemon)}?`,
+        PopUp.fire
+        ({
+            title: `Stop trying to Wonder Trade ${GetNickname(pokemon)}?`,
             confirmButtonText: `No, keep it going.`,
             denyButtonText: `Cancel the trade.`,
             showDenyButton: true,
@@ -355,10 +408,10 @@ export class WonderTrade extends Component
             imageAlt: "",
         }).then((result) =>
         {
-            if (result.isDenied)
+            if (result.isDenied) //In this case it means agreed to cancel trade
             {
                 //End previous Wonder Trade
-                if (this.getGlobalState().wonderTradeData !== null)
+                if (this.getGlobalState().wonderTradeData != null)
                     this.getGlobalState().wonderTradeData.socket.close();
 
                 this.setState({isMonInWonderTrade: false}); //Not anymore
@@ -367,14 +420,19 @@ export class WonderTrade extends Component
         });
     }
 
+    /**
+     * Prints the Wonder Trade icon.
+     */
     render()
     {
+        var iconSize = 30;
+
         if (!this.state.isMonInWonderTrade)
         {
             return(
                 <OverlayTrigger placement="bottom" overlay={wonderTradeTooltip}>
                     {
-                        <CgExport size={30} className="box-lower-icon"
+                        <CgExport size={iconSize} className="box-lower-icon"
                                 onClick = {this.tryStartWonderTrade.bind(this)}/>
                     }
                 </OverlayTrigger>
@@ -385,7 +443,7 @@ export class WonderTrade extends Component
             return(
                 <OverlayTrigger placement="bottom" overlay={cancelWonderTradeTooltip}>
                     {
-                        <CgImport size={30} className="box-lower-icon cancel-wonder-trade-icon"
+                        <CgImport size={iconSize} className="box-lower-icon cancel-wonder-trade-icon"
                                 onClick = {this.tryCancelWonderTrade.bind(this)}/>
                     }
                 </OverlayTrigger>
