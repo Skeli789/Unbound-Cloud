@@ -14,6 +14,7 @@ import {CreateSingleBlankSelectedPos} from './Util';
 import BannedWords from "./data/BannedWords.json"
 
 import {CgExport, CgImport} from "react-icons/cg";
+import SfxTradeComplete from './audio/TradeComplete.mp3';
 
 import "./stylesheets/WonderTrade.css";
 
@@ -23,6 +24,7 @@ const PopUp = withReactContent(Swal);
 const wonderTradeTooltip = props => (<Tooltip {...props}>Wonder Trade</Tooltip>);
 const cancelWonderTradeTooltip = props => (<Tooltip {...props}>Cancel Wonder Trade</Tooltip>);
 
+const tradeCompleteSound = new Audio(SfxTradeComplete);
 
 export class WonderTrade extends Component
 {
@@ -359,6 +361,7 @@ export class WonderTrade extends Component
         thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
         var backupTitle = document.title;
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
+        tradeCompleteSound.play();
 
         PopUp.fire
         ({
