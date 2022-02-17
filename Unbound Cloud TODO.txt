@@ -6,8 +6,8 @@ New Features:
 -Trade evolutions
 -Give mon little exclamation mark in corner if has data that will disappear in game
 -Pokemon Markings (put under item and Ball and make editable - outline for non marked, filled in for marked)
--Play sound when Wonder Trade completes
 -Friendship should be reset when trading
+-Add mute button on bottom taskbar and make wonder trade sound not play if muted and add to cookie
 
 Feature Modifications:
 -Instead of banning pokemon with certain nicknames just remove the nickname
