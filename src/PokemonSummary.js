@@ -142,7 +142,7 @@ export class PokemonSummary extends Component
                                 : ""}>
                     {GetOTName(this.state.pokemon)}
                 </span>
-                : {GetVisibleOTId(this.state.pokemon) /*This is a colon, not an else*/}
+                : {String(GetVisibleOTId(this.state.pokemon)).padStart(5, "0") /*This is a colon, not an else*/}
             </div>
     );
     }
