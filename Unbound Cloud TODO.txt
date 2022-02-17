@@ -11,7 +11,6 @@ New Features:
 Feature Modifications:
 -Instead of banning pokemon with certain nicknames just remove the nickname
 -Gym Leader Trade personalities
--Trainer ids should be padded to 5 characters
 -Calc stats on client side and remove from data structure
 -Just dump entire base stats file on client side
 -Living dex view should stay active when jumping to a new box quickly
