@@ -7,8 +7,8 @@ import {Button, Form} from "react-bootstrap";
 import {Dropdown} from 'semantic-ui-react';
 
 import {BOX_HOME} from './MainPage';
-import {GetAbility, GetGender, GetItem, GetLevel, GetMoves,
-        GetNature, GetSpecies, IsEgg, IsShiny, MAX_LEVEL} from './PokemonUtil';
+import {GetAbility, GetGender, GetItem, GetLevel, GetMoves, GetNature,
+        GetSpecies, HasPokerus, IsEgg, IsShiny, MAX_LEVEL} from './PokemonUtil';
 import {GetAbilityName, GetItemName, GetSpeciesName} from "./Util";
 
 import AbilityNames from "./data/AbilityNames.json";
@@ -43,6 +43,7 @@ export class Search extends Component
             levelEnd: "",
             genders: [false, false, false],
             shiny: [false, false],
+            pokerus: [false, false],
             speciesNameList: this.createSpeciesNameList(),
             abilityNameList: this.createAbilityNameList(),
             moveNameList: this.createMoveNameList(),
@@ -233,7 +234,7 @@ export class Search extends Component
     /**
      * Adds a checkmark for a specific shiny selection.
      * @param {Object} e - The checkbox event.
-     * @param {Number} genderId - The number in the shiny selection to check off.
+     * @param {Number} shinyId - The number in the shiny selection to check off.
      */
     checkOffShinyChoice(e, shinyId)
     {
@@ -243,6 +244,21 @@ export class Search extends Component
         if (shinyId >= 0)
             shinyChoice[shinyId] = isChecked; //Max one choice at a time
         this.setState({shiny: shinyChoice});
+    }
+
+    /**
+     * Adds a checkmark for a specific Pokerus selection.
+     * @param {Object} e - The checkbox event.
+     * @param {Number} pokerusId - The number in the Pokerus selection to check off.
+     */
+    checkOffPokerusChoice(e, pokerusId)
+    {
+        var isChecked = e.target.checked;
+        var pokerusChoice = [false, false];
+
+        if (pokerusId >= 0)
+            pokerusChoice[pokerusId] = isChecked; //Max one choice at a time
+        this.setState({pokerus: pokerusChoice});
     }
 
     /**
@@ -306,6 +322,14 @@ export class Search extends Component
                 criteria["shiny"] = true; //Only Shinies
             else
                 criteria["shiny"] = false; //No Shinies
+        }
+
+        if (this.state.pokerus.some((x) => x)) //At least one Pokerus option selected
+        {
+            if (this.state.pokerus[0])
+                criteria["pokerus"] = true; //Only Pokerus
+            else
+                criteria["pokerus"] = false; //No Pokerus
         }
 
         if (Object.keys(criteria).length === 0) //Nothing specified
@@ -472,7 +496,36 @@ export class Search extends Component
                                         size="lg"
                                         onChange={e => this.checkOffShinyChoice(e, id)}
                                         checked={this.state.shiny[id]}
-                                        key={id}
+                                        key={"shiny-" + id}
+                                    />
+                            )
+                        }
+                    </Form.Group>
+
+                    {/* Pokerus Input */}
+                    <Form.Group>
+                        <Form.Label>Pokérus</Form.Label>
+                        <br/>
+                        <Form.Check
+                            inline
+                            type="radio"
+                            label="Either"
+                            size="lg"
+                            onChange={e => this.checkOffPokerusChoice(e, -1)}
+                            checked={!this.state.pokerus[0] && !this.state.pokerus[1]}
+                        />
+                        {
+                            ["Only", "Exclude"].map
+                            (
+                                (name, id) =>
+                                    <Form.Check
+                                        inline
+                                        type="radio"
+                                        label={name}
+                                        size="lg"
+                                        onChange={e => this.checkOffPokerusChoice(e, id)}
+                                        checked={this.state.pokerus[id]}
+                                        key={"pokerus-" + id}
                                     />
                             )
                         }
@@ -511,14 +564,14 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
             return false;
     }
 
+    if (isEgg)
+        return false; //From here down nothing is applicable to an Egg
+
     //Check Has Move
     if ("move" in searchCriteria)
     {
         let i;
         let moves = GetMoves(pokemon);
-
-        if (isEgg)
-            return false;
 
         for (i = 0; i < moves.length; ++i)
         {
@@ -533,9 +586,6 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Has Ability
     if ("ability" in searchCriteria)
     {
-        if (isEgg)
-            return false;
-
         if (!searchCriteria["ability"].includes(GetAbility(pokemon)))
             return false;
     }
@@ -543,9 +593,6 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Holds Item
     if ("item" in searchCriteria)
     {
-        if (isEgg)
-            return false;
-
         if (!searchCriteria["item"].includes(GetItem(pokemon)))
             return false;
     }
@@ -553,9 +600,6 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Has Nature
     if ("nature" in searchCriteria)
     {
-        if (isEgg)
-            return false;
-
         if (!searchCriteria["nature"].includes(GetNature(pokemon)))
             return false;
     }
@@ -563,18 +607,12 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check correct level range
     if ("levelStart" in searchCriteria)
     {
-        if (isEgg)
-            return false;
-
         if (GetLevel(pokemon) < searchCriteria["levelStart"])
             return false;
     }
 
     if ("levelEnd" in searchCriteria)
     {
-        if (isEgg)
-            return false;
-
         if (GetLevel(pokemon) > searchCriteria["levelEnd"])
             return false;
     }
@@ -582,9 +620,6 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Matches Gender
     if ("gender" in searchCriteria)
     {
-        if (isEgg)
-            return false;
-
         if (!searchCriteria["gender"].includes(GetGender(pokemon)))
             return false;
 
@@ -593,10 +628,14 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Matches Shiny
     if ("shiny" in searchCriteria)
     {
-        if (isEgg)
-            return false;
-
         if (IsShiny(pokemon) !== searchCriteria["shiny"])
+            return false;
+    }
+
+    //Check Matches Pokerus
+    if ("pokerus" in searchCriteria)
+    {
+        if (HasPokerus(pokemon) !== searchCriteria["pokerus"])
             return false;
     }
 

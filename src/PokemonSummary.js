@@ -7,7 +7,7 @@ import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 import {CanMonGigantamax, GetAbility, GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel,
         GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleOTId, GetVisibleStats,
-        /*GetVisibleEVs, GetVisibleIVs,*/ IsEgg, HEART_FRIENDSHIP, MAX_FRIENDSHIP} from "./PokemonUtil";
+        /*GetVisibleEVs, GetVisibleIVs,*/ HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetAbilityName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName} from "./Util";
 import MoveData from "./data/MoveData.json";
 
@@ -49,6 +49,8 @@ const NATURE_STAT_TABLE =
 const POKE_BALL_GFX_LINK = "https://raw.githubusercontent.com/msikma/pokesprite/master/items/ball/";
 const TYPE_ICON_GFX_LINK = "https://raw.githubusercontent.com/msikma/pokesprite/master/misc/types/gen8/";
 const CATEGORY_ICON_GFX_LINK = "https://raw.githubusercontent.com/msikma/pokesprite/master/misc/seals/home/move-";
+const POKERUS_INFECTED_LINK = "https://archives.bulbagarden.net/media/upload/3/33/Pok%C3%A9rusIC_IV_V.png";
+const POKERUS_CURED_LINK = "https://archives.bulbagarden.net/media/upload/c/c4/Pok%C3%A9rusIC_VII_cured.png";
 
 
 export class PokemonSummary extends Component
@@ -117,13 +119,46 @@ export class PokemonSummary extends Component
         if (CanMonGigantamax(this.state.pokemon))
         {
             return (
-                    <OverlayTrigger placement="top" overlay={gigantamaxTooltip}>
-                        <img src={BASE_GFX_LINK + "gigantamax.png"} alt={"Gigantamax"} aria-label="Can Gigantamax" className="summary-gigantamax"/>
-                    </OverlayTrigger>
+                <OverlayTrigger placement="top" overlay={gigantamaxTooltip}>
+                    <img src={BASE_GFX_LINK + "gigantamax.png"} alt={"Gigantamax"} aria-label="Can Gigantamax" className="summary-gigantamax"/>
+                </OverlayTrigger>
             );
         }
 
         return "";
+    }
+
+    /**
+      * Prints a visible symbol if the Pokemon is infected with or was cured from Pokerus.
+      * @returns {JSX} An element containing the Pokerus symbol.
+     */
+    printPokerusSymbol()
+    {
+        var tooltip, alt;
+        var iconLink = "";
+        var extraStyle = {}
+
+        if (HasPokerus(this.state.pokemon))
+        {
+            iconLink = POKERUS_INFECTED_LINK;
+            alt = "PKRS";
+            tooltip = "Has Pokerus";
+        }
+        else if (WasCuredOfPokerus(this.state.pokemon))
+        {
+            iconLink = POKERUS_CURED_LINK;
+            alt = ":|";
+            tooltip = "Cured of Pokerus";
+            extraStyle = {marginBottom: "1px"};
+        }
+        else //Never had Pokerus
+            return "";
+
+        return (
+            <OverlayTrigger placement="top" overlay={props => (<Tooltip {...props}>{tooltip}</Tooltip>)}>
+                <img src={iconLink} alt={alt} aria-label={tooltip} className="summary-pokerus" style={extraStyle}/>
+            </OverlayTrigger>
+        );
     }
  
      /**
@@ -358,6 +393,9 @@ export class PokemonSummary extends Component
 
                     {/*Gigantamax*/}
                     {this.printGigantamaxSymbol()}
+
+                    {/*Pokerus*/}
+                    {this.printPokerusSymbol()}
                 </div>
 
                 {/*OT Summary Row*/}

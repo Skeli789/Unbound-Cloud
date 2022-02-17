@@ -1,5 +1,4 @@
 New Features:
--PKRS symbol
 -Items such as Dream Mist, Bottle Caps, etc. cannot be placed in Home files (but can be moved around save files)
 -Ads
 -Pokedex
