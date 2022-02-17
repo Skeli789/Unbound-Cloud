@@ -1,12 +1,14 @@
+/**
+ * A page displaying a list of boxes.
+ */
 
 import React, {Component} from 'react';
 import {isMobile} from "react-device-detect";
 
 import {MONS_PER_BOX} from "./BoxView";
-import {BOX_HOME/*, BOX_SAVE*/} from './MainPage';
 import {GetIconSpeciesName} from "./PokemonUtil";
 import {MatchesSearchCriteria} from "./Search";
-import {CreateSingleBlankSelectedPos} from "./Util";
+import {CreateSingleBlankSelectedPos, GetBoxStartIndex, IsHomeBox, IsNullSpeciesName} from "./Util";
 
 import "./stylesheets/BoxList.css";
 
@@ -15,6 +17,9 @@ const PokeBallIconInterior = <g clipPath="url(#cPath)"><g><circle cx="0" cy="0" 
 
 export class BoxList extends Component
 {
+    /**
+     * Sets up the box listing page.
+    */
     constructor(props)
     {
         super(props);
@@ -22,50 +27,58 @@ export class BoxList extends Component
         this.state =
         {
             boxType: props.boxType,
-            boxSlot: props.boxSlot,
+            boxSlot: props.boxSlot, //Left or right
             boxes: props.boxes,
             titles: props.titles,
             boxCount: props.boxCount,
             currentBoxes: props.currentBoxes,
             selectedMonPos: props.selectedMonPos,
-            viewingMon: props.viewingMon,
+            summaryMon: props.summaryMon,
             setParentState: props.updateParentState,
             searchCriteria: props.searchCriteria,
             isSameBoxBothSides: props.isSameBoxBothSides,
         };
     }
 
+    /**
+     * Jumps to a specific box. If modified, also modify "setCurrentBox" in BoxView.js.
+     * @param {Number} boxId - The id number of the box to jump to.
+     */
     jumpToBox(boxId)
     {
         var currentBoxes = this.state.currentBoxes;
         var selectedMonPos = this.state.selectedMonPos;
-        var viewingMon = this.state.viewingMon;
+        var summaryMon = this.state.summaryMon;
 
         currentBoxes[this.state.boxSlot] = boxId;
         selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos(); //Wipe 
-        viewingMon[this.state.boxSlot] = null; //Wipe
+        summaryMon[this.state.boxSlot] = null; //Wipe
     
-        this.setState({
-            currentBoxes: currentBoxes,
-        });
+        this.setState({currentBoxes: currentBoxes});
 
         this.state.setParentState({
             currentBox: currentBoxes,
             selectedMonPos: selectedMonPos,
-            viewingMon: viewingMon,
-            viewingBoxList: -1, //No more viewing box list
+            summaryMon: summaryMon,
             errorMessage: ["", ""],
             impossibleMovement: null,
+            viewingBoxList: -1, //No more viewing box list
         });
     }
 
+    /**
+     * Creates the mini-image of a specific box.
+     * @param {Number} boxId - The id number of the box to make the image of.
+     * @returns {MiniBox} A mini box element.
+     */
     createBoxView(boxId)
     {
         var title;
         var icons = [];
-        var startIndex = boxId * MONS_PER_BOX;
+        var startIndex = GetBoxStartIndex(boxId);
         var disabledBox = false;
 
+        //Make little Poke Ball icons
         for (let i = startIndex, key = 0; i < startIndex + MONS_PER_BOX; ++i, ++key)
         {
             let icon;
@@ -73,12 +86,12 @@ export class BoxList extends Component
             let species = GetIconSpeciesName(pokemon);
             let colour = "rgba(0, 0, 0, 0.8)";
 
-            if (species === "none")
+            if (IsNullSpeciesName(species))
                 icon = <div className="mini-box-cell" key={key}></div>;
             else
             {
                 if (MatchesSearchCriteria(pokemon, this.state.searchCriteria))
-                    colour = "#f33d21"; //Red
+                    colour = "#f33d21"; //Highlight icon red
 
                 icon =
                     <div className="mini-box-cell" key={key}>
@@ -91,16 +104,20 @@ export class BoxList extends Component
             icons.push(icon);
         }
 
-        title = <h4 className={"mini-box-title" + (this.state.currentBoxes[this.state.boxSlot] === boxId ? " mini-box-current-box-title" : "")}>
-                    {this.state.titles[boxId]}
-                </h4>
+        //Make the box's title
+        title =
+            <h4 className={"mini-box-title" + (this.state.currentBoxes[this.state.boxSlot] === boxId ? " mini-box-current-box-title" : "")}>
+                {this.state.titles[boxId]}
+            </h4>
 
+        //Try disable jumping to a box already active (in a Home -> Home or Box -> Box view)
         if (this.state.isSameBoxBothSides && this.state.currentBoxes[this.state.boxSlot ^ 1] === boxId) //Other box has this
             disabledBox = true; //Prevent jumping to this box since the other box is already showing it
 
+        //Create the entire box
         return(
             <div className="mini-box-with-title" key={boxId}>
-                <div className={"mini-box " + (disabledBox ? "disabled-box" : this.state.boxType === BOX_HOME ? "home-box" : "save-box")}
+                <div className={"mini-box " + (disabledBox ? "disabled-box" : IsHomeBox(this.state.boxType) ? "home-box" : "save-box")}
                      onClick={disabledBox ? null : this.jumpToBox.bind(this, boxId)}>
                     {icons}
                 </div>
@@ -109,6 +126,10 @@ export class BoxList extends Component
         )
     }
 
+    /**
+     * Renders all of the boxes in the list.
+     * @returns {Array <MiniBox>} The mini boxes to be displayed.
+     */
     printBoxes()
     {
         var boxes = [];
@@ -119,6 +140,9 @@ export class BoxList extends Component
         return boxes;
     }
 
+    /**
+     * Renders the box list page.
+     */
     render()
     {
         return(

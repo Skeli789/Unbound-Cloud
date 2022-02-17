@@ -1,11 +1,15 @@
-import React, {Component} from 'react';
-import {Form, Button} from "react-bootstrap";
-import {Dropdown} from 'semantic-ui-react'
+/**
+ * A class for applying a search filter to Pokemon.
+ */
+
+import React, { Component } from 'react';
+import {Button, Form} from "react-bootstrap";
+import {Dropdown} from 'semantic-ui-react';
 
 import {BOX_HOME} from './MainPage';
-import {GetMonNature, GetMonGender, GetMonAbility, GetMonLevel, IsMonShiny,
-        GetSpeciesName, GetAbilityName, IsMonEgg} from './PokemonUtil';
-import {GetItemName} from "./Util";
+import {GetAbility, GetGender, GetItem, GetLevel, GetMoves,
+        GetNature, GetSpecies, IsEgg, IsShiny, MAX_LEVEL} from './PokemonUtil';
+import {GetAbilityName, GetItemName, GetSpeciesName} from "./Util";
 
 import AbilityNames from "./data/AbilityNames.json";
 import ItemNames from "./data/ItemNames.json";
@@ -18,11 +22,12 @@ import {ImCancelCircle} from "react-icons/im";
 import "./stylesheets/BoxView.css";
 import "./stylesheets/Search.css";
 
-const MAX_LEVEL = 100;
-
 
 export class Search extends Component
 {
+    /**
+     * Sets up the data fields needed for the search menu.
+     */
     constructor(props)
     {
         super(props);
@@ -50,11 +55,19 @@ export class Search extends Component
         };
     }
 
+    /**
+     * Gets whether or not the search filter is for Home storage boxes.
+     * @returns {Boolean} True if the search will be applied to a Home box. False otherwise.
+     */
     isHomeBox()
     {
         return this.state.boxType === BOX_HOME;
     }
 
+    /**
+     * Creates a list of species names that the user can search for.
+     * @returns {Array <Object>} A list of objects with the format {key: SPECIES_ID, text: Species Name, value: SPECIES_ID}.
+     */
     createSpeciesNameList()
     {
         var species = [];
@@ -77,6 +90,10 @@ export class Search extends Component
         return species;
     }
 
+    /**
+     * Creates a list of Ability names that the user can search for.
+     * @returns {Array <Object>} A list of objects with the format {key: ABILITY_ID, text: Ability Name, value: ABILITY_ID}.
+     */
     createAbilityNameList()
     {
         var abilities = [];
@@ -93,6 +110,10 @@ export class Search extends Component
         return abilities;
     }
 
+    /**
+     * Creates a list of move names that the user can search for.
+     * @returns {Array <Object>} A list of objects with the format {key: MOVE_ID, text: Move Name, value: MOVE_ID}.
+     */
     createMoveNameList()
     {
         var moves = [];
@@ -112,6 +133,10 @@ export class Search extends Component
         return moves;
     }
 
+    /**
+     * Creates a list of item names that the user can search for.
+     * @returns {Array <Object>} A list of objects with the format {key: ITEM_ID, text: Item Name, value: ITEM_ID}.
+     */
     createItemNameList()
     {
         var items = [];
@@ -128,6 +153,10 @@ export class Search extends Component
         return items;
     }
 
+    /**
+     * Creates a list of nature names that the user can search for.
+     * @returns {Array <Object>} A list of objects with the format {key: NATURE_NUMBER, text: Nature Name, value: NATURE_NUMBER}.
+     */
     createNatureNameList()
     {
         var natures = [];
@@ -139,14 +168,9 @@ export class Search extends Component
         return natures;
     }
 
-    setMoveInput(id, input)
-    {
-        var moves = this.state.moveIds;
-
-        moves[id] = input;
-        this.setState({moveIds: moves});
-    }
-
+    /**
+     * Makes it so the user's starting level input is always valid.
+     */
     fixLevelStart()
     {
         var levelStart = this.state.levelStart.trim();
@@ -168,6 +192,9 @@ export class Search extends Component
         this.setState({levelStart: levelStart, levelEnd: levelEnd});
     }
 
+    /**
+     * Makes it so the user's ending level input is always valid.
+     */
     fixLevelEnd()
     {
         var levelEnd = this.state.levelEnd.trim();
@@ -189,6 +216,11 @@ export class Search extends Component
         this.setState({levelEnd: levelEnd, levelStart: levelStart});
     }
 
+    /**
+     * Adds a checkmark for a specific gender selection.
+     * @param {Object} e - The checkbox event.
+     * @param {Number} genderId - The number in the gender selection to check off.
+     */
     checkOffGender(e, genderId)
     {
         var isChecked = e.target.checked;
@@ -198,6 +230,11 @@ export class Search extends Component
         this.setState({genders: genders});
     }
 
+    /**
+     * Adds a checkmark for a specific shiny selection.
+     * @param {Object} e - The checkbox event.
+     * @param {Number} genderId - The number in the shiny selection to check off.
+     */
     checkOffShinyChoice(e, shinyId)
     {
         var isChecked = e.target.checked;
@@ -208,11 +245,18 @@ export class Search extends Component
         this.setState({shiny: shinyChoice});
     }
 
+    /**
+     * Closes a search menu without searching.
+     */
     cancelSearch()
     {
         this.state.parent.setState({searching: false});
     }
 
+    /**
+     * Starts searching for Pokemon matching the user's criteria.
+     * @param {Object} e - The form submission event.
+     */
     updateSearchCriteria(e)
     {
         e.preventDefault(); //Prevent page reload
@@ -272,6 +316,9 @@ export class Search extends Component
         this.state.parent.setState({searching: false});
     }
 
+    /**
+     * Prints the search menu.
+     */
     render()
     {
         return(
@@ -443,17 +490,23 @@ export class Search extends Component
     }
 }
 
+/**
+ * Checks if a Pokemon matches a given search criteria.
+ * @param {Pokemon} pokemon - The Pokemon to check.
+ * @param {Object} searchCriteria - The search criteria to check against.
+ * @returns True if the Pokemon matches the given search criteria. False otherwise.
+ */
 export function MatchesSearchCriteria(pokemon, searchCriteria)
 {
     if (searchCriteria === null || searchCriteria === {})
         return false; //No search criteria
 
-    var isEgg = IsMonEgg(pokemon);
+    var isEgg = IsEgg(pokemon);
 
     //Check Wanted Species
     if ("species" in searchCriteria)
     {
-        let name = isEgg ? "Egg" : GetSpeciesName(pokemon["species"]);
+        let name = isEgg ? "Egg" : GetSpeciesName(GetSpecies(pokemon));
         if (!searchCriteria["species"].includes(name))
             return false;
     }
@@ -462,17 +515,18 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     if ("move" in searchCriteria)
     {
         let i;
+        let moves = GetMoves(pokemon);
 
         if (isEgg)
             return false;
 
-        for (i = 0; i < pokemon["moves"].length; ++i)
+        for (i = 0; i < moves.length; ++i)
         {
-            if (searchCriteria["move"].includes(pokemon["moves"][i]))
+            if (searchCriteria["move"].includes(moves[i]))
                 break; //Has at least one requested move
         }
 
-        if (i >= pokemon["moves"].length)
+        if (i >= moves.length)
             return false; //Didn't have needed move
     }
 
@@ -482,7 +536,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
         if (isEgg)
             return false;
 
-        if (!searchCriteria["ability"].includes(GetMonAbility(pokemon)))
+        if (!searchCriteria["ability"].includes(GetAbility(pokemon)))
             return false;
     }
 
@@ -492,7 +546,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
         if (isEgg)
             return false;
 
-        if (!searchCriteria["item"].includes(pokemon["item"]))
+        if (!searchCriteria["item"].includes(GetItem(pokemon)))
             return false;
     }
 
@@ -502,7 +556,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
         if (isEgg)
             return false;
 
-        if (!searchCriteria["nature"].includes(GetMonNature(pokemon)))
+        if (!searchCriteria["nature"].includes(GetNature(pokemon)))
             return false;
     }
 
@@ -512,7 +566,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
         if (isEgg)
             return false;
 
-        if (GetMonLevel(pokemon) < searchCriteria["levelStart"])
+        if (GetLevel(pokemon) < searchCriteria["levelStart"])
             return false;
     }
 
@@ -521,7 +575,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
         if (isEgg)
             return false;
 
-        if (GetMonLevel(pokemon) > searchCriteria["levelEnd"])
+        if (GetLevel(pokemon) > searchCriteria["levelEnd"])
             return false;
     }
 
@@ -531,7 +585,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
         if (isEgg)
             return false;
 
-        if (!searchCriteria["gender"].includes(GetMonGender(pokemon)))
+        if (!searchCriteria["gender"].includes(GetGender(pokemon)))
             return false;
 
     }
@@ -542,7 +596,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
         if (isEgg)
             return false;
 
-        if (IsMonShiny(pokemon) !== searchCriteria["shiny"])
+        if (IsShiny(pokemon) !== searchCriteria["shiny"])
             return false;
     }
 
