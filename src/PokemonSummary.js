@@ -7,16 +7,13 @@ import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 import {CanMonGigantamax, ChangeMarking, GetAbility, GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel, GetMarkings,
         GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleOTId, GetVisibleStats,
-        /*GetVisibleEVs, GetVisibleIVs,*/ HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP} from "./PokemonUtil";
+        GetEVs, GetIVs, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetAbilityName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName} from "./Util";
 import MoveData from "./data/MoveData.json";
 
 import {BsCircle, BsSquare, BsTriangle, BsHeart, BsCircleFill, BsSquareFill, BsTriangleFill, BsHeartFill} from "react-icons/bs";
 
 import "./stylesheets/PokemonSummary.css";
-
-//TODO: Clicking a button by the stats swaps to IV/EV view.
-//TODO: Change nature highlighting to red arrow and blue arrow.
 
 const NATURE_STAT_TABLE =
 [
@@ -48,6 +45,10 @@ const NATURE_STAT_TABLE =
     [    0,  0,  0,     0,     0], // Quirky
 ];
 
+const IV_LETTERS = ["E", "D", "C", "B", "A", "S"];
+const IV_SIGNS = ["-", "-", "", "", "+", "+"];
+const IV_COLOURS = ["red", "orangered", "darkorange", "olivedrab", "dodgerblue", "blueviolet"]
+
 const POKE_BALL_GFX_LINK = "https://raw.githubusercontent.com/msikma/pokesprite/master/items/ball/";
 const TYPE_ICON_GFX_LINK = "https://raw.githubusercontent.com/msikma/pokesprite/master/misc/types/gen8/";
 const CATEGORY_ICON_GFX_LINK = "https://raw.githubusercontent.com/msikma/pokesprite/master/misc/seals/home/move-";
@@ -71,6 +72,7 @@ export class PokemonSummary extends Component
             changeWasMade: props.changeWasMade,
             boxType: props.boxType,
             areBoxViewsVertical: props.areBoxViewsVertical,
+            viewingEVsIVs: false,
         };
 
         this.setGlobalState = props.setGlobalState;
@@ -196,7 +198,8 @@ export class PokemonSummary extends Component
         for (let i = 0; i < monMarkings.length; ++i)
         {
             let symbol = (monMarkings[i]) ? markingsFilled[i] : markingsOutlined[i];
-            displayMarkings.push(<span className="summary-marking" onClick={this.changeMarking.bind(this, i)}>{symbol}</span>);
+            displayMarkings.push(<span className="summary-marking" key={i}
+                                       onClick={this.changeMarking.bind(this, i)}>{symbol}</span>);
         }
 
         return (
@@ -274,8 +277,9 @@ export class PokemonSummary extends Component
         var visibleStatIdToStatId = [0, 1, 2, 4, 5, 3];
         var stats = GetVisibleStats(this.state.pokemon);
         var nature = GetNature(this.state.pokemon);
-        /*var evs = GetVisibleEVs(this.state.pokemon);
-        var ivs = GetVisibleIVs(this.state.pokemon);*/
+        var evs = GetEVs(this.state.pokemon);
+        var ivs = GetIVs(this.state.pokemon);
+        var titlesNature = [];
         var printableStats = [];
 
         for (let visibleStatId = 0; visibleStatId < stats.length; ++visibleStatId)
@@ -283,38 +287,93 @@ export class PokemonSummary extends Component
             let natureColour = "";
             let realStatId = visibleStatIdToStatId[visibleStatId];
 
-            if (realStatId > 0) //Not HP
-                natureColour = NATURE_STAT_TABLE[nature][realStatId - 1] === 1 ? "red"
-                             : NATURE_STAT_TABLE[nature][realStatId  - 1] === -1 ? "cornflowerblue" : "";
-
-            printableStats.push(
+            //Add Stat Name
+            titlesNature.push(
                 <span className="summary-stat-title" key={key++}>
                     {statNames[visibleStatId]}
                 </span>
             );
 
-            printableStats.push(
-                    <span className={"summary-stat-value"} style={{color: natureColour}} key={key++}>
+            //Add Nature Arrow
+            if (realStatId > 0) //Not HP
+                natureColour = NATURE_STAT_TABLE[nature][realStatId - 1] === 1 ? "red"
+                             : NATURE_STAT_TABLE[nature][realStatId  - 1] === -1 ? "cornflowerblue" : "";
+
+            if (natureColour !== "") //Nature has effect
+            {
+                let symbol = natureColour == "red" ? "▲" : "▼";
+
+                titlesNature.push(
+                    <span className="summary-stat-nature-arrow" style={{color: natureColour}} key={key++}>
+                        {symbol}
+                    </span>
+                );
+            }
+
+            //Add Stat Values
+            if (!this.state.viewingEVsIVs) //Normal stats
+            {
+                let ivLetterId = Math.floor(ivs[visibleStatId] / 2 / (IV_LETTERS.length / 2));
+                let ivLetter = IV_LETTERS[ivLetterId];
+                let ivSign = IV_SIGNS[ivs[visibleStatId] % IV_SIGNS.length];
+                let ivColour = IV_COLOURS[ivLetterId];
+
+                if (ivLetter === "S")
+                    ivSign = ""; //Only S, no S- or S+
+
+                //Add Raw Stat
+                printableStats.push(
+                    <span className={"summary-stat-value"} key={key++}>
                         {stats[visibleStatId]}
                     </span>
-            );
+                );
 
-            /*printableStats.push(
+                //Add IV Grading
+                printableStats.push(
+                    <span className="summary-stat-iv-grading" key={key++}
+                          style={{color: ivColour}}>
+                        {ivLetter}{ivSign}
+                    </span>
+                );
+            }
+            else //Viewing EVs in IVs
+            {
+                //Add EV
+                printableStats.push(
                     <span className="summary-stat-ev" key={key++}>
-                        {evs[statId]}
+                        {evs[visibleStatId]}
                     </span>
-            );
+                );
 
-            printableStats.push(
+                //Add IV
+                printableStats.push(
                     <span className="summary-stat-iv" key={key++}>
-                        {ivs[statId]}
+                        {ivs[visibleStatId]}
                     </span>
-            );*/
+                );
+            }
+        }
+
+        //Try put tooltip over EV/IV container
+        var statValuesContainer =
+            <div className="summary-stat-values-container"
+                 onClick={() => this.setState({viewingEVsIVs: !this.state.viewingEVsIVs})}>
+                {printableStats}
+            </div>    
+
+        if (this.state.viewingEVsIVs)
+        {
+            //Add tooltip to explain what the new values are
+            statValuesContainer =
+                <OverlayTrigger placement="bottom" overlay={props => (<Tooltip {...props}>EVs / IVs</Tooltip>)}>
+                    {statValuesContainer}
+                </OverlayTrigger>
         }
 
         return (
             <div className="summary-stats-container">
-                {printableStats}
+                {titlesNature}
+                {statValuesContainer}
             </div>
         );
     }
