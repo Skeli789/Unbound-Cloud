@@ -301,12 +301,15 @@ export class PokemonSummary extends Component
 
             if (natureColour !== "") //Nature has effect
             {
-                let symbol = natureColour == "red" ? "▲" : "▼";
+                let symbol = natureColour === "red" ? "▲" : "▼";
+                let tooltip = symbol === "▲" ? "Increased" : "Decreased";
 
                 titlesNature.push(
-                    <span className="summary-stat-nature-arrow" style={{color: natureColour}} key={key++}>
-                        {symbol}
-                    </span>
+                    <OverlayTrigger placement="left" overlay={props => (<Tooltip {...props}>{tooltip}</Tooltip>)} key={key++}>
+                        <span className="summary-stat-nature-arrow" style={{color: natureColour}}>
+                            {symbol}
+                        </span>
+                    </OverlayTrigger>
                 );
             }
 

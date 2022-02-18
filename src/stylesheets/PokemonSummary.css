@@ -93,6 +93,7 @@
 {
     grid-column: 2;
     text-align: left;
+    user-select: none;
 }
 
 .summary-stat-values-container
