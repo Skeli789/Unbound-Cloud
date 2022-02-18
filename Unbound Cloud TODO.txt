@@ -6,6 +6,7 @@ New Features:
 -Give mon little exclamation mark in corner if has data that will disappear in game
 -Friendship should be reset when trading
 -Add mute button on bottom taskbar and make wonder trade sound not play if muted and add to cookie
+-Support for nature mint
 
 Feature Modifications:
 -Instead of banning pokemon with certain nicknames just remove the nickname
@@ -16,7 +17,7 @@ Feature Modifications:
 -Add tooltip over box names that shows its clickable to view other boxes (code is in but not working)
 -Make client side species defines use dex numbers?
 -Multi select should highlight where the selected mons would go in the other box, not where the mouse is
--Display EV/IV when clicking on stats
+-When one Pokemon is selected, but a different mon's summary is being viewed because of a right click, prioritize the summary mon for release and showdown
 
 Server Changes:
 -Change the file signature for Unbound
