@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 
 import {CanMonGigantamax, GetAbility, GetEVs, GetFriendship, GetGender, GetItem, GetIVs,
-        GetLevel, GetMoves, GetNature, GetNickname, GetSpecies, IsShiny } from './PokemonUtil';
+        GetLevel, GetMoves, GetNickname, GetSpecies, GetVisibleNature, IsShiny} from './PokemonUtil';
 import {GetAbilityName, GetItemName, GetMoveName, GetNatureName, GetSpeciesName} from "./Util";
 
 import "./stylesheets/ShowdownExport.css";
@@ -46,7 +46,7 @@ export class ShowdownExport extends Component
         var shinyLine = "Shiny: " + (IsShiny(pokemon) ? "Yes" : "No");
         var gigantamaxLine = "";
         var friendshipLine = "Happiness: " + GetFriendship(pokemon);
-        var natureLine = GetNatureName(GetNature(pokemon)) + " Nature";
+        var natureLine = GetNatureName(GetVisibleNature(pokemon)) + " Nature";
         var evsLine = "EVs: ";
         var ivsLine = "IVs: ";
         var moveNames = [];

@@ -7,8 +7,8 @@ import {Button, Form} from "react-bootstrap";
 import {Dropdown} from 'semantic-ui-react';
 
 import {BOX_HOME} from './MainPage';
-import {GetAbility, GetGender, GetItem, GetLevel, GetMoves, GetNature,
-        GetSpecies, HasPokerus, IsEgg, IsShiny, MAX_LEVEL} from './PokemonUtil';
+import {GetAbility, GetGender, GetItem, GetLevel, GetNature, GetMoves, GetSpecies,
+        GetVisibleNature, HasPokerus, IsEgg, IsShiny, MAX_LEVEL} from './PokemonUtil';
 import {GetAbilityName, GetItemName, GetSpeciesName} from "./Util";
 
 import AbilityNames from "./data/AbilityNames.json";
@@ -600,7 +600,8 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Has Nature
     if ("nature" in searchCriteria)
     {
-        if (!searchCriteria["nature"].includes(GetNature(pokemon)))
+        if (!searchCriteria["nature"].includes(GetNature(pokemon))
+        && !searchCriteria["nature"].includes(GetVisibleNature(pokemon))) //Eg. Nature Mint
             return false;
     }
 

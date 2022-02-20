@@ -6,7 +6,7 @@ import React, {Component} from 'react';
 import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 import {CanMonGigantamax, ChangeMarking, GetAbility, GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel, GetMarkings,
-        GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleOTId, GetVisibleStats,
+        GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleNature, GetVisibleOTId, GetVisibleStats,
         GetEVs, GetIVs, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetAbilityName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName} from "./Util";
 import MoveData from "./data/MoveData.json";
@@ -276,7 +276,7 @@ export class PokemonSummary extends Component
         var statNames = ["HP", "Attack", "Defense", "Sp. Atk", "Sp. Def", "Speed"];
         var visibleStatIdToStatId = [0, 1, 2, 4, 5, 3];
         var stats = GetVisibleStats(this.state.pokemon);
-        var nature = GetNature(this.state.pokemon);
+        var nature = GetVisibleNature(this.state.pokemon);
         var evs = GetEVs(this.state.pokemon);
         var ivs = GetIVs(this.state.pokemon);
         var titlesNature = [];
@@ -463,6 +463,7 @@ export class PokemonSummary extends Component
         var level = GetLevel(this.state.pokemon);
         var ability = GetAbilityName(GetAbility(this.state.pokemon));
         var nature = GetNatureName(GetNature(this.state.pokemon));
+        var natureMint = GetNatureName(GetVisibleNature(this.state.pokemon));
 
         if (IsEgg(this.state.pokemon))
         {
@@ -517,7 +518,7 @@ export class PokemonSummary extends Component
 
                 {/*Nature Row*/}
                 <div className="summary-nature">
-                    Nature: {nature}
+                    Nature: {nature} {nature !== natureMint ? `(${natureMint} Mint)` : ""}
                 </div>
 
                 {/*Ball & Item in Corner*/}
