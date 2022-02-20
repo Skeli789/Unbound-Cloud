@@ -37,7 +37,17 @@ export class BoxList extends Component
             setParentState: props.updateParentState,
             searchCriteria: props.searchCriteria,
             isSameBoxBothSides: props.isSameBoxBothSides,
+            loaded: false,
         };
+    }
+
+    /**
+     * Starts changing the screen from "Loading..." when the loading screen is displayed.
+     */
+    async componentDidMount()
+    {
+        await new Promise(r => setTimeout(r, 10)); //Allows the loading screen to render
+        this.setState({loaded: true});
     }
 
     /**
@@ -145,10 +155,21 @@ export class BoxList extends Component
      */
     render()
     {
-        return(
-            <div className={"mini-boxes" + (!isMobile ? " scroll-container" : "")}>
-                {this.printBoxes()}
-            </div>
-        )
+        if (!this.state.loaded)
+        {
+            return (
+                <div className="box-list-loading-screen">
+                    Loading...
+                </div>
+            );
+        }
+        else
+        {
+            return(
+                <div className={"mini-boxes" + (!isMobile ? " scroll-container" : "")}>
+                    {this.printBoxes()}
+                </div>
+            )
+        }
     }
 }
