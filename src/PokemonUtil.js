@@ -265,6 +265,25 @@ export function GetNature(pokemon)
 
 /**
  * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {Number} The Pokemon's nature number that affects its stats (eg. after Nature Mint).
+ */
+ export function GetVisibleNature(pokemon)
+ {
+     let dataMember = "natureMint";
+ 
+     if (IsValidPokemon(pokemon) && dataMember in pokemon)
+     {
+         let nature = pokemon[dataMember];
+ 
+         if (IsValidNatureNumber(nature))
+             return nature;
+     }
+ 
+     return GetNature(pokemon);
+ }
+
+/**
+ * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {String} The Pokemon's Ability id.
  */
 export function GetAbility(pokemon)

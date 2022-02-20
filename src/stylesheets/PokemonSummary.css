@@ -72,6 +72,7 @@
 .summary-nature
 {
     grid-column: 1;
+    width: 125%; /*Allows space for Nature Mint*/
 }
 
 .summary-stats-container

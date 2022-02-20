@@ -33,6 +33,7 @@
 		"gender": "M",
 		"level": 100,
 		"nature": 5,
+		"natureMint": 7,
 		"rawStats": [301, 180, 222, 196, 236, 236]
 	}, {
 		"personality": 100007695,
