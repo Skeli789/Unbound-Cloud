@@ -205,7 +205,9 @@ export class BoxView extends Component
     */
     isMonAtPosBeingDragged(boxPos)
     {
-        return this.getParentState().draggingMon === boxPos + this.getBoxStartIndex();
+        return this.getParentState().draggedAtLeastOnce //Icon is attached to mouse
+            && this.getParentState().draggingMon === boxPos + this.getBoxStartIndex()
+            && this.getParentState().draggingFromBox === this.state.boxSlot;
     }
 
     /**
@@ -1084,7 +1086,8 @@ export class BoxView extends Component
             let heldItemIcon = ""
             let shinyIcon = ""
 
-            if (species === "none")
+            if (species === "none"
+            || this.isMonAtPosBeingDragged(i - startIndex)) //Hide a mon that's being dragged (attached to mouse instead)
                 icon = "";
             else
             {

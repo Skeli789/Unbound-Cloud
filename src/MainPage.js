@@ -91,6 +91,7 @@ export default class MainPage extends Component
             draggingOver: -1,
             draggingFromBox: 0,
             draggingToBox: 0,
+            draggedAtLeastOnce: false,
 
             //Actual Stoage System
             saveBoxes: SaveData["boxes"],
@@ -933,11 +934,12 @@ export default class MainPage extends Component
     {
         let icon = document.getElementById('moving-icon');
 
-        if (icon !== null)
+        if (icon != null)
         {
             icon.style.visibility = "initial";
             icon.style.left = e.pageX - (68 / 2) + 'px'; //Follow the mouse
             icon.style.top = e.pageY - (56 / 2) + 'px';
+            this.setState({draggedAtLeastOnce: true}); //Icon is now attached to mouse
         }
     }
 
@@ -1028,6 +1030,7 @@ export default class MainPage extends Component
         this.setState({
             draggingMon: -1,
             draggingImg: "",
+            draggedAtLeastOnce: false,
             selectedMonPos: selectedMonPos,
             summaryMon: summaryMon,
             changeWasMade: changeWasMade,
