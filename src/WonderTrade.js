@@ -9,7 +9,8 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
-import {GetBaseFriendship, GetIconSpeciesLink, GetNickname, GetOTName, IsEgg, IsValidPokemon} from "./PokemonUtil";
+import {GetBaseFriendship, GetIconSpeciesLink, GetNickname, GetOTName, GetSpecies, IsEgg,
+        IsValidPokemon, TryActivateTradeEvolution} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from './Util';
 import BannedWords from "./data/BannedWords.json"
 
@@ -286,7 +287,7 @@ export class WonderTrade extends Component
                     socket.on('connect_error', thisObject.handleLostConnection.bind(thisObject, socket));
                     socket.on('message', function(data)
                     {
-                        endWonderTrade(thisObject, data, socket);
+                        endWonderTrade(thisObject, data, GetSpecies(pokemon), socket);
                     });
 
                     //Send Pokemon for trade
@@ -351,14 +352,16 @@ export class WonderTrade extends Component
      * Receives the new Pokemon and ends the Wonder Trade.
      * @param {Object} thisObject - The "this" object for the Wonder Trade class.
      * @param {Pokemon} newPokemon - The Pokemon received in the Wonder Trade.
+     * @param {String} tradedSpecies - The species id traded away.
      * @param {WebSocket} socket - The socket used to connect to the server.
      */
-    endWonderTrade(thisObject, newPokemon, socket)
+    endWonderTrade(thisObject, newPokemon, tradedSpecies, socket)
     {
         socket.close();
         console.log(`Receieved ${GetNickname(newPokemon)}`);
         newPokemon.wonderTradeTimestamp = Date.now(); //Prevent this Pokemon from instantly being sent back
         newPokemon.friendship = GetBaseFriendship(newPokemon); //Reset after being traded
+        TryActivateTradeEvolution(newPokemon, tradedSpecies);
         thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
         var backupTitle = document.title;
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab

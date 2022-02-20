@@ -7,6 +7,7 @@ import ItemNames from "./data/ItemNames.json";
 import MoveData from "./data/MoveData.json";
 import NatureNames from "./data/NatureNames.json";
 import SpeciesDefines from "./data/UnboundSpecies.json";
+import TradeEvolutions from "./data/TradeEvolutions.json";
 import {BASE_GFX_LINK, GetSpeciesName} from "./Util";
 
 const SPECIES_FORMS_ICON_NAMES =
@@ -1079,4 +1080,54 @@ export function GetIconSpeciesLink(pokemon)
 {
     var iconSpeciesName = GetIconSpeciesName(pokemon);
     return GetIconSpeciesLinkByIconSpeciesName(iconSpeciesName, IsShiny(pokemon), IsMonGen8(pokemon))
+}
+
+/**
+ * Tries to evolve a Pokemon after it was traded.
+ * @param {Pokemon} pokemon - The Pokemon to evolve.
+ * @param {String} tradedWithSpecies - The original species it was traded with.
+ */
+export function TryActivateTradeEvolution(pokemon, tradedWithSpecies)
+{
+    var newSpecies = "";
+    var monSpecies = GetSpecies(pokemon);
+    var removeItemPostEvo = false;
+
+    for (let species of Object.keys(TradeEvolutions))
+    {
+        if (species === monSpecies)
+        {
+            for (let method of TradeEvolutions[species])
+            {
+                if ("item" in method)
+                {
+                    if (GetItem(pokemon) !== method.item) //Not holding required item
+                        continue;
+                    
+                    removeItemPostEvo = true;
+                }
+                else if ("withSpecies" in method)
+                {
+                    if (tradedWithSpecies !== method.withSpecies) //Not traded with the correct species for evolution
+                        continue;
+                }
+
+                newSpecies = method.toSpecies;
+                break;
+            }
+
+            break;
+        }
+    }
+
+    if (newSpecies !== "") //Pokemon evolves via trading it
+    {
+        pokemon.species = newSpecies;
+
+        if (GetNickname(pokemon) === GetSpeciesName(monSpecies)) //Using default name
+            pokemon.nickname = GetSpeciesName(newSpecies); //Give evolution's default name
+
+        if (removeItemPostEvo)
+            pokemon.item = "ITEM_NONE";
+    }
 }
