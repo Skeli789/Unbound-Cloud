@@ -14,7 +14,6 @@ Feature Modifications:
 -Make client side species defines use dex numbers?
 -Multi select should highlight where the selected mons would go in the other box, not where the mouse is
 -When one Pokemon is selected, but a different mon's summary is being viewed because of a right click, prioritize the summary mon for release and showdown
--Add loading screen for box list
 
 Server Changes:
 -Change the file signature for Unbound
