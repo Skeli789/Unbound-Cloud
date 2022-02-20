@@ -1,7 +1,6 @@
 New Features:
 -Items such as Dream Mist, Bottle Caps, etc. cannot be placed in Home files (but can be moved around save files)
 -Ads
--Trade evolutions
 -Give mon little exclamation mark in corner if has data that will disappear in game
 -Add mute button on bottom taskbar and make wonder trade sound not play if muted and add to cookie
 
@@ -15,6 +14,7 @@ Feature Modifications:
 -Make client side species defines use dex numbers?
 -Multi select should highlight where the selected mons would go in the other box, not where the mouse is
 -When one Pokemon is selected, but a different mon's summary is being viewed because of a right click, prioritize the summary mon for release and showdown
+-Add loading screen for box list
 
 Server Changes:
 -Change the file signature for Unbound
