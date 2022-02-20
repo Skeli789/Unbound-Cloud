@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
-import {GetIconSpeciesLink, GetNickname, GetOTName, IsEgg, IsValidPokemon} from "./PokemonUtil";
+import {GetBaseFriendship, GetIconSpeciesLink, GetNickname, GetOTName, IsEgg, IsValidPokemon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from './Util';
 import BannedWords from "./data/BannedWords.json"
 
@@ -358,6 +358,7 @@ export class WonderTrade extends Component
         socket.close();
         console.log(`Receieved ${GetNickname(newPokemon)}`);
         newPokemon.wonderTradeTimestamp = Date.now(); //Prevent this Pokemon from instantly being sent back
+        newPokemon.friendship = GetBaseFriendship(newPokemon); //Reset after being traded
         thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
         var backupTitle = document.title;
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab

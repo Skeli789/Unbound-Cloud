@@ -2,6 +2,7 @@
  * Various utility functions related to Pokemon data.
  */
 
+import BaseFriendship from "./data/BaseFriendship.json";
 import ItemNames from "./data/ItemNames.json";
 import MoveData from "./data/MoveData.json";
 import NatureNames from "./data/NatureNames.json";
@@ -433,6 +434,10 @@ export function GetMetLevel(pokemon)
     return 0;
 }
 
+/**
+ * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {Number} The current friendship level of the Pokemon
+ */
 export function GetFriendship(pokemon)
 {
     let dataMember = "friendship";
@@ -446,6 +451,19 @@ export function GetFriendship(pokemon)
     }
 
     return 0;
+}
+
+/**
+ * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {Number} The base friendship value for Pokemon of the same species. 
+ */
+export function GetBaseFriendship(pokemon)
+{
+    var species = GetSpecies(pokemon);
+    if (species in BaseFriendship)
+        return BaseFriendship[species];
+
+    return 50; //Default value
 }
 
 /**

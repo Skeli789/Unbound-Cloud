@@ -1,12 +1,9 @@
 New Features:
 -Items such as Dream Mist, Bottle Caps, etc. cannot be placed in Home files (but can be moved around save files)
 -Ads
--Pokedex
 -Trade evolutions
 -Give mon little exclamation mark in corner if has data that will disappear in game
--Friendship should be reset when trading
 -Add mute button on bottom taskbar and make wonder trade sound not play if muted and add to cookie
--Support for nature mint
 
 Feature Modifications:
 -Instead of banning pokemon with certain nicknames just remove the nickname
