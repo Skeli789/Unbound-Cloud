@@ -9,8 +9,8 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
-import {GetBaseFriendship, GetIconSpeciesLink, GetNickname, GetOTName, GetSpecies, IsEgg,
-        IsValidPokemon, TryActivateTradeEvolution} from "./PokemonUtil";
+import {GetBaseFriendship, GetIconSpeciesLink, GetNickname, GetOTName, GetSpecies, GivePokemonSpeciesName,
+        IsEgg, IsValidPokemon, SetOTName, TryActivateTradeEvolution} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from './Util';
 import BannedWords from "./data/BannedWords.json"
 
@@ -110,12 +110,6 @@ export class WonderTrade extends Component
      */
     canBeWonderTraded()
     {
-        if (this.badWordInText(GetNickname(this.state.pokemon)))
-            return false;
-
-        if (this.badWordInText(GetOTName(this.state.pokemon)))
-            return false;
-
         if (IsEgg(this.state.pokemon))
             return false;
 
@@ -151,6 +145,29 @@ export class WonderTrade extends Component
     needToWaitForWonderTrade()
     {
         return this.getTimeToNextWonderTrade() !== 0;
+    }
+
+    /**
+     * Gives the received Pokemon its species name as a nickname if its current nickname has a bad word in it.
+     * @param {Pokemon} newPokemon - The Pokemmon received in the trade.
+     */
+    replaceNicknameWithSpeciesNameIfNeeded(newPokemon)
+    {
+        if (this.badWordInText(GetNickname(newPokemon)))
+            GivePokemonSpeciesName(newPokemon);
+    }
+
+    /**
+     * Gives the received Pokemon a generic OT name as a nickname if its current OT name has a bad word in it.
+     * @param {Pokemon} newPokemon - The Pokemmon received in the trade.
+     */
+    replaceOTNameWithGenericNameIfNeeded(newPokemon)
+    {
+        if (this.badWordInText(GetOTName(newPokemon)))
+        {
+            let replacementOTNames = ["Red", "Blue", "Green", "Yellow", "Gold", "Silver", "Crystal", "Ruby", "Emerald", "Diamond", "Pearl", "Black", "White"];
+            SetOTName(newPokemon, replacementOTNames[Math.floor(Math.random() * replacementOTNames.length)]);
+        }
     }
 
     /**
@@ -362,6 +379,8 @@ export class WonderTrade extends Component
         newPokemon.wonderTradeTimestamp = Date.now(); //Prevent this Pokemon from instantly being sent back
         newPokemon.friendship = GetBaseFriendship(newPokemon); //Reset after being traded
         TryActivateTradeEvolution(newPokemon, tradedSpecies);
+        this.replaceNicknameWithSpeciesNameIfNeeded(newPokemon);
+        this.replaceOTNameWithGenericNameIfNeeded(newPokemon);
         thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
         var backupTitle = document.title;
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab

@@ -612,6 +612,26 @@ export function GetNickname(pokemon)
 }
 
 /**
+ * Changes a Pokemon's nickname
+ * @param {Pokemon} pokemon - The Pokemon to process.
+ * @param {String} newNickname - The new nickname to give the Pokemon.
+ */
+export function SetPokemonNickname(pokemon, newNickname)
+{
+    if (IsValidPokemon(pokemon))
+        pokemon.nickname = newNickname.substring(0, 10); //Max 10 characters
+}
+
+/**
+ * Changes a Pokemon's nickname to match its species name.
+ * @param {Pokemon} pokemon - The Pokemon to process.
+ */
+export function GivePokemonSpeciesName(pokemon)
+{
+    SetPokemonNickname(pokemon, GetSpeciesName(GetSpecies(pokemon)))
+}
+
+/**
  * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {String} The Pokemon's original Trainer's name.
  */
@@ -628,6 +648,17 @@ export function GetOTName(pokemon)
     }
 
     return "Unknown";
+}
+
+/**
+ * Changes a Pokemon's original Trainer name.
+ * @param {Pokemon} pokemon - The Pokemon to process.
+ * @param {String} newOTName - The new name to give for the original Trainer.
+ */
+export function SetOTName(pokemon, newOTName)
+{
+    if (IsValidPokemon(pokemon))
+        pokemon.otName = newOTName.substring(0, 7); //Max 7 characters
 }
 
 /**
@@ -1125,7 +1156,7 @@ export function TryActivateTradeEvolution(pokemon, tradedWithSpecies)
         pokemon.species = newSpecies;
 
         if (GetNickname(pokemon) === GetSpeciesName(monSpecies)) //Using default name
-            pokemon.nickname = GetSpeciesName(newSpecies); //Give evolution's default name
+            GivePokemonSpeciesName(pokemon); //Give evolution's default name
 
         if (removeItemPostEvo)
             pokemon.item = "ITEM_NONE";
