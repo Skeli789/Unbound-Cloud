@@ -10,7 +10,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 import {PokemonSummary} from "./PokemonSummary";
 import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, GetNickname, IsBlankMon,
-        IsEgg, IsMonHoldingItem, IsShiny} from "./PokemonUtil";
+        IsEgg, IsMonHoldingItem, IsShiny, IsValidPokemon} from "./PokemonUtil";
 import {MatchesSearchCriteria, Search} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxStartIndex, GetSpeciesName, IsHomeBox,
@@ -497,7 +497,8 @@ export class BoxView extends Component
     isViewingMonSummary()
     {
         return this.getParentState().summaryMon[this.state.boxSlot] != null
-            && this.getParentState().summaryMon[this.state.boxSlot].pokemon != null;
+            && IsValidPokemon(this.getParentState().summaryMon[this.state.boxSlot].pokemon)
+            && Object.keys(this.getParentState().summaryMon[this.state.boxSlot].pokemon).length > 0; //Not viewing fake Showdown mon
     }
 
     /**
@@ -543,6 +544,9 @@ export class BoxView extends Component
     canViewReleaseButton()
     {
         var summaryMonObj = this.getRawSummaryMon();
+
+        if (this.areAnyPokemonSelectedInCurrentBox(true))
+            return true; //Release selected Pokemon
 
         if (summaryMonObj == null)
             return false; //Can't release a non existent summary mon
@@ -975,12 +979,15 @@ export class BoxView extends Component
         var areAnyPokemonSelected = this.areAnyPokemonSelectedInCurrentBox(true);
         var onlyOnePokemonSelected = this.isOnlyOnePokemonSelectedInCurrentBox();
         var summaryMon = this.getSummaryMon();
-        var summaryOfNonSelectedMonShown = !areAnyPokemonSelected && this.isViewingMonSummary();
+        var noSelectedMonOnlySummaryMon = !areAnyPokemonSelected && this.isViewingMonSummary();
+        var summaryOfNonSelectedMonShown = onlyOnePokemonSelected && this.isViewingMonSummary();  //Handles the case where one Pokemon is selected but another's summary is being viewed
 
-        if (summaryOfNonSelectedMonShown //No Pokemon are selected, but a summary is being shown
-        || onlyOnePokemonSelected) //Display the only selected mon for consistency
+        if (noSelectedMonOnlySummaryMon //No Pokemon are selected, but a summary is being shown
+        || summaryOfNonSelectedMonShown //One Pokemon is selected, but a summary is being shown for a different Pokemon
+        || onlyOnePokemonSelected) //Release the only selected mon for consistency
         {
-            pokemonName = (onlyOnePokemonSelected) ? GetNickname(this.getPokemonAtOnlySelectedPos()) : GetNickname(summaryMon);
+            pokemonName = (onlyOnePokemonSelected && !summaryOfNonSelectedMonShown) ? //Summary mon would take priority
+                            GetNickname(this.getPokemonAtOnlySelectedPos()) : GetNickname(summaryMon);
             title = `Release ${pokemonName}?`;
         }
         else
@@ -1002,12 +1009,13 @@ export class BoxView extends Component
         {
             if (result.isDenied) //Denied means released because it's the red button
             {
-                if (summaryOfNonSelectedMonShown)
+                if (noSelectedMonOnlySummaryMon || summaryOfNonSelectedMonShown)
                     this.state.parent.releaseSelectedPokemon(this.state.boxSlot, this.state.boxType, true); //Release the summary mon
                 else
                     this.state.parent.releaseSelectedPokemon(this.state.boxSlot, this.state.boxType, false);
 
                 PopUp.fire(`Bye-bye, ${pokemonName}!`, '', 'success');
+                this.setState({viewingShowdown: false});
             }
         });
     }
@@ -1185,7 +1193,7 @@ export class BoxView extends Component
     {
         var pokemon = this.getSummaryMon();
 
-        if (pokemon != null)
+        if (pokemon != null || this.state.viewingShowdown)
         {
             if (this.state.viewingShowdown)
             {
@@ -1195,6 +1203,11 @@ export class BoxView extends Component
                 {
                     //Just view the mon who's summary is currently being displayed
                     pokemonList.push(this.getSummaryMon());
+                }
+                else if (this.isOnlyOnePokemonSelectedInCurrentBox() //Handles the case of selecting one Pokemon, but viewing another with right-click
+                && this.isViewingMonSummary())
+                {
+                    pokemonList.push(this.getSummaryMon()); //Override the selected mon with the summary mon
                 }
                 else
                 {
@@ -1260,7 +1273,7 @@ export class BoxView extends Component
     {
         var boxName, title, titleEditIcon, titleContainerClass;
         var icons = this.getPokemonIconsToShow();
-        var monToView = !this.isViewingMonSummary() ? "" : this.printMonToView();
+        var monToView = this.printMonToView();
         var editIconSize = 28;
         var livingDexIcon = "";
         var summaryMon = this.getSummaryMon();
@@ -1364,29 +1377,25 @@ export class BoxView extends Component
                 }
 
                 { /*Release & Showdown Icons*/
-                    
-                    this.areAnyPokemonSelectedInCurrentBox(true) || summaryMon != null ?
-                        <>
-                            {
-                                this.canViewReleaseButton() ?
-                                    <OverlayTrigger placement="bottom" overlay={releaseTooltip}>
-                                        <GrTrash size={28} className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
-                                    </OverlayTrigger>
-                                :
-                                    ""
-                            }
-                            {
-                                this.canViewShowdownButton() ?
-                                    <OverlayTrigger placement="bottom" overlay={showdownTooltip}>
-                                        <RiBoxingLine size={32} className="box-lower-icon"
-                                                onClick = {this.viewShowdownExport.bind(this)}/>
-                                    </OverlayTrigger>
-                                :
-                                    ""
-                            }
-                        </>
-                    :
-                        ""
+                    <>
+                        {
+                            this.canViewReleaseButton() ?
+                                <OverlayTrigger placement="bottom" overlay={releaseTooltip}>
+                                    <GrTrash size={28} className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
+                                </OverlayTrigger>
+                            :
+                                ""
+                        }
+                        {
+                            this.canViewShowdownButton() ?
+                                <OverlayTrigger placement="bottom" overlay={showdownTooltip}>
+                                    <RiBoxingLine size={32} className="box-lower-icon"
+                                            onClick = {this.viewShowdownExport.bind(this)}/>
+                                </OverlayTrigger>
+                            :
+                                ""
+                        }
+                    </>
                 }
     
                 { /*Wonder Trade Icon*/
