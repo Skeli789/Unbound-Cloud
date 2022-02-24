@@ -75,6 +75,7 @@ export default class MainPage extends Component
             //Box Side Data
             currentBox: [0, 0],
             selectedMonBox: [0, 0],
+            livingDexState: [0, 0],
             selectedMonPos: this.generateBlankSelectedPos(),
             summaryMon: [null, null],
             searchCriteria: [null, null],
