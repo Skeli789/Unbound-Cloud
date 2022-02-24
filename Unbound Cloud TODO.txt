@@ -8,14 +8,13 @@ Feature Modifications:
 -Gym Leader Trade personalities
 -Calc stats on client side and remove from data structure
 -Just dump entire base stats file on client side
--Add tooltip over box names that shows its clickable to view other boxes (code is in but not working)
 -Make client side species defines use dex numbers?
 -Multi select should highlight where the selected mons would go in the other box, not where the mouse is
 
 Server Changes:
 -Change the file signature for Unbound
 -Unbound can only load saves with FR or Unbound file signature
--Mons have internal checksum to prevent modification when sent to the site
+-Mons have internal checksum to prevent modification when sent to the site. If checksum fails, then Pokemon is wiped completely.
 -Save file with no backup save doesn't work
 -FLAG_USED_DEBUG_MENU shouldn't be allowed to use it
 -Add met game to data structure when in Unbound Home. If none assume Unbound
