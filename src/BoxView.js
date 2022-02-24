@@ -40,7 +40,7 @@ const LIVING_DEX_ALL = 2;
 const PopUp = withReactContent(Swal);
 
 //Tooltips
-const boxListTooltip = props => (<Tooltip {...props}>Box List</Tooltip>);
+const boxListTooltip = props => (<Tooltip {...props}>See Other Boxes</Tooltip>);
 const renameTooltip = props => (<Tooltip {...props}>Rename</Tooltip>);
 const saveTooltip = props => (<Tooltip {...props}>Save</Tooltip>);
 const cancelTooltip = props => (<Tooltip {...props}>Cancel</Tooltip>);
@@ -1304,7 +1304,7 @@ export class BoxView extends Component
                 </OverlayTrigger>;
 
         //Set Up Box Names
-        if (this.state.titles != null) //Home Boxes
+        if (this.state.titles != null) //Prevent errors from happening
         {
             boxName = this.state.titles[this.getCurrentBoxId()];
 
@@ -1336,7 +1336,10 @@ export class BoxView extends Component
             }
             else
             {
-                title = <h2 className={"box-name-text"} onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
+                title =
+                    <OverlayTrigger placement="top" overlay={boxListTooltip}>
+                        <h2 className={"box-name-text"} onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
+                    </OverlayTrigger>
                 titleContainerClass = "box-title-no-edit";
 
                 titleEditIcon = this.state.editingTitle ? ""
@@ -1350,8 +1353,12 @@ export class BoxView extends Component
         }
         else
         {
+            //Should never be reached
             boxName = "Box " + (this.getCurrentBoxId() + 1);
-            title = <OverlayTrigger placement="top" overlay={boxListTooltip}><h2 className="box-name-text">{boxName}</h2></OverlayTrigger>
+            title =
+                <OverlayTrigger placement="top" overlay={boxListTooltip}>
+                    <h2 className="box-name-text" onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
+                </OverlayTrigger>
             titleEditIcon = "";
             titleContainerClass = "box-title-no-edit";
         }
