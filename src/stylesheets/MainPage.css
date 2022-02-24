@@ -90,7 +90,7 @@
     display: flex;
     justify-content: space-evenly;
     flex-wrap: wrap;
-    height: 100%;
+    flex: 1 0 auto; /*Allows footer to stick at bottom*/
 }
 
 .main-page-boxes-mobile
@@ -139,6 +139,25 @@
     cursor: pointer;
 }
 
+.footer-buttons
+{
+    background-color: rebeccapurple;
+    height: 56px;
+    flex-shrink: 0; /*Allows footer to stick at bottom*/
+    display: flex; /*The contents of the footer*/
+    justify-content: center;
+}
+
+.footer-button
+{
+    background-color: rebeccapurple !important;
+    border-color: rebeccapurple !important;
+    box-shadow: unset !important;
+    font-size: 24px;
+    border-radius: 0px;
+    max-height: 56px;
+}
+
 .dragging-image
 {
     position: absolute;
@@ -156,4 +175,6 @@
     width: 100%;
     overflow-y: scroll;
     min-width: 428px;
+    display: flex; /*Allows footer to stick at bottom*/
+    flex-direction: column;
 }

@@ -166,7 +166,7 @@ export class BoxList extends Component
         else
         {
             return(
-                <div className={"mini-boxes" + (!isMobile ? " scroll-container" : "")}>
+                <div className={"mini-boxes" + (!isMobile ? " scroll-container-box-list" : "")}>
                     {this.printBoxes()}
                 </div>
             )

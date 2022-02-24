@@ -365,7 +365,9 @@ export class WonderTrade extends Component
         thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
         var backupTitle = document.title;
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
-        tradeCompleteSound.play();
+
+        if (!this.getGlobalState().muted)
+            tradeCompleteSound.play();
 
         PopUp.fire
         ({
