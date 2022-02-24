@@ -1289,7 +1289,6 @@ export class BoxView extends Component
         var monToView = this.printMonToView();
         var editIconSize = 28;
         var livingDexIcon = "";
-        var summaryMon = this.getSummaryMon();
 
         if (this.state.searching)
             return this.printSearchView();
