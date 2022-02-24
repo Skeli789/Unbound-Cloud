@@ -4,7 +4,6 @@ New Features:
 -Give mon little exclamation mark in corner if has data that will disappear in game
 
 Feature Modifications:
--Instead of banning pokemon with certain nicknames just remove the nickname
 -Gym Leader Trade personalities
 -Calc stats on client side and remove from data structure
 -Just dump entire base stats file on client side
