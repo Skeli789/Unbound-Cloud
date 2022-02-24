@@ -65,7 +65,6 @@ export class BoxView extends Component
         {
             editingTitle: false,
             titleInput: "",
-            livingDexState: LIVING_DEX_NONE,
             fixingLivingDex: false,
             searching: false,
             viewingShowdown: false,
@@ -132,10 +131,23 @@ export class BoxView extends Component
         return HIGHEST_SAVE_BOX_NUM;
     }
 
+    /**
+     * @returns {Numbers} The user's chosen living dex view type, if any.
+     */
     getLivingDexState()
     {
-        //TODO: Move to parent so it doesn't change when jumping boxes with the box list
-        return this.state.livingDexState;
+        return this.getParentState().livingDexState[this.state.boxSlot];
+    }
+
+    /**
+     * Updates the user's chosen living dex state.
+     * @param {Number} newState - The new living dex state to set for the current box.
+     */
+    setLivingDexState(newState)
+    {
+        var livingDexState = this.getParentState().livingDexState;
+        livingDexState[this.state.boxSlot] = newState;
+        this.state.parent.setState({livingDexState: livingDexState});
     }
 
     /**
@@ -922,13 +934,14 @@ export class BoxView extends Component
         else
             livingDexState = LIVING_DEX_NONE; //Wrap around
 
-        this.setState({livingDexState: livingDexState, viewingShowdown: false});
+        this.setState({viewingShowdown: false});
 
         //Adjust Parent State
         selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos(); //Wipe 
         summaryMon[this.state.boxSlot] = null; //Wipe
         this.state.parent.setState({selectedMonPos: selectedMonPos, summaryMon: summaryMon});
         this.state.parent.wipeErrorMessage();
+        this.setLivingDexState(livingDexState);
     }
 
     /**
@@ -1048,7 +1061,7 @@ export class BoxView extends Component
 
     /**
      * Gets the icon used to display a species in the Living Dex view.
-     * @param {Number} i - The position in the current box.
+     * @param {Number} i - The position in the entire state of boxes.
      * @param {String} monInSlotLink - The icon link for the mon already in the slot.
      * @returns {img} An img element for the icon.
      */

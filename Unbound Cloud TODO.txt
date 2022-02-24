@@ -9,7 +9,6 @@ Feature Modifications:
 -Gym Leader Trade personalities
 -Calc stats on client side and remove from data structure
 -Just dump entire base stats file on client side
--Living dex view should stay active when jumping to a new box quickly
 -Add tooltip over box names that shows its clickable to view other boxes (code is in but not working)
 -Make client side species defines use dex numbers?
 -Multi select should highlight where the selected mons would go in the other box, not where the mouse is
