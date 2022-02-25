@@ -1,10 +1,10 @@
 New Features:
--Items such as Dream Mist, Bottle Caps, etc. cannot be placed in Home files (but can be moved around save files)
--Ads
 -Give mon little exclamation mark in corner if has data that will disappear in game
+-P2P Trading
+-GTS
+-Ads
 
 Feature Modifications:
--Gym Leader Trade personalities
 -Calc stats on client side and remove from data structure
 -Just dump entire base stats file on client side
 -Make client side species defines use dex numbers?

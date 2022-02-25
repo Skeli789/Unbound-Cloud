@@ -321,9 +321,29 @@ export function GetItem(pokemon)
  * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {Boolean} True if the Pokemon is holding an item. False otherwise.
  */
-export function IsMonHoldingItem(pokemon)
+export function IsHoldingItem(pokemon)
 {
     return GetItem(pokemon) !== "ITEM_NONE";
+}
+
+/**
+ * 
+ * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {Boolean} True if the Pokemon is holding an item that can't be placed in the Home boxes. False otherwise.
+ */
+export function IsHoldingBannedItem(pokemon)
+{
+    var item = GetItem(pokemon);
+
+    return item === "ITEM_BOTTLE_CAP"
+        || item === "ITEM_GOLD_BOTTLE_CAP"
+        || item === "ITEM_DREAM_MIST"
+        || item === "ITEM_ABILITY_CAPSULE"
+        || item === "ITEM_ABILITY_PATCH"
+        || item === "ITEM_MAX_POWDER"
+        || item === "ITEM_WISHING_PIECE"
+        || item === "ITEM_MASTER_BALL"
+        || item === "ITEM_PARK_BALL";
 }
 
 /**
