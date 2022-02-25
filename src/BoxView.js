@@ -10,7 +10,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 import {PokemonSummary} from "./PokemonSummary";
 import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, GetNickname, IsBlankMon,
-        IsEgg, IsMonHoldingItem, IsShiny, IsValidPokemon} from "./PokemonUtil";
+        IsEgg, IsHoldingItem, IsShiny, IsValidPokemon} from "./PokemonUtil";
 import {MatchesSearchCriteria, Search} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxStartIndex, GetSpeciesName, IsHomeBox,
@@ -1131,7 +1131,7 @@ export class BoxView extends Component
                 icon = <img src={link} alt={alt} aria-label={alt} className={className}
                             onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
 
-                if (IsMonHoldingItem(pokemon))
+                if (IsHoldingItem(pokemon))
                 {
                     heldItemIcon = <img src={BASE_GFX_LINK + "held_item.png"} alt="I" aria-label="Holds Item"
                                         className={"box-icon-item-icon" + (!matchesSearchCriteria ? " box-icon-faded" : "")}

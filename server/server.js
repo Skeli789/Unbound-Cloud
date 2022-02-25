@@ -324,7 +324,7 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
         console.log(`Temp save file ${newBoxesName} deleted from server.`);
     }
 
-    if (newSavePath !== null && fs.existsSync(newSavePath))
+    if (newSavePath != null && fs.existsSync(newSavePath))
     {
         fs.unlinkSync(newSavePath);
         console.log(`Temp save file ${newSavePath} deleted from server.`);

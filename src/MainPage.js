@@ -10,8 +10,8 @@ import {isMobile} from "react-device-detect";
 import {config} from "./config";
 import {BoxList} from "./BoxList";
 import {BoxView, HIGHEST_HOME_BOX_NUM, HIGHEST_SAVE_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
-import {GetSpecies, IsBlankMon, PokemonAreDuplicates} from "./PokemonUtil";
-import {CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
+import {GetItem, GetSpecies, IsBlankMon, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
+import {CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow, GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
 
 import {BiArrowBack} from "react-icons/bi";
@@ -390,6 +390,17 @@ export default class MainPage extends Component
     }
 
     /**
+     * Checks if a Pokemon can't be placed in a box because it's holding an item that can't be placed in the cloud boxes.
+     * @param {Pokemon} pokemon - The Pokemon to check.
+     * @param {number} placedInBoxType - The box type the Pokemon is being placed in.
+     * @returns 
+     */
+    cantBePlacedInBoxBecauseOfBannedItem(pokemon, placedInBoxType)
+    {
+        return IsHoldingBannedItem(pokemon) && placedInBoxType === BOX_HOME;
+    }
+
+    /**
      * Checks if a Pokemon at a certain position is being Wonder Traded.
      * @param {Number} boxType - Either BOX_HOME or BOX_SAVE.
      * @param {Number} boxOffset - The position in the list of boxes to check.
@@ -400,7 +411,7 @@ export default class MainPage extends Component
         var boxNum = GetBoxNumFromBoxOffset(boxOffset);
         var boxPos = GetLocalBoxPosFromBoxOffset(boxOffset);
 
-        return this.state.wonderTradeData !== null
+        return this.state.wonderTradeData != null
             && this.state.wonderTradeData.boxType === boxType
             && this.state.wonderTradeData.boxNum === boxNum
             && this.state.wonderTradeData.boxPos === boxPos;
@@ -679,10 +690,10 @@ export default class MainPage extends Component
 
     /**
      * Sets the error message for a duplicate Pokemon being moved.
-     * @param {*} fromBoxSlot - The box slot of the box the Pokemon is being moved from.
-     * @param {*} fromOffset - The offset in the "from" set of boxes the Pokemon was being moved from.
-     * @param {*} toBoxSlot - The box slot of the box the Pokemon is being moved to.
-     * @param {*} duplicateData - The offset in the "to" set of boxes the Pokemon was being moved to.
+     * @param {Number} fromBoxSlot - The box slot of the box the Pokemon is being moved from.
+     * @param {Number} fromOffset - The offset in the "from" set of boxes the Pokemon was being moved from.
+     * @param {Number} toBoxSlot - The box slot of the box the Pokemon is being moved to.
+     * @param {Object} duplicateData - The offset in the "to" set of boxes the Pokemon was being moved to.
      */
     setDuplicatePokemonSwappingError(fromBoxSlot, fromOffset, toBoxSlot, duplicateData)
     {
@@ -690,25 +701,61 @@ export default class MainPage extends Component
         var impossibleTo =   this.generateBlankImpossibleMovementArray();
         var impossibleFrom = this.generateBlankImpossibleMovementArray();
         var impossibleMovement = [null, null];
+        var selectedMonPos = this.state.selectedMonPos;
         var fromPos = GetLocalBoxPosFromBoxOffset(fromOffset);
         var toPos = GetLocalBoxPosFromBoxOffset(duplicateData.offset);
 
         var boxName = this.getTitlesByBoxSlot(toBoxSlot)[duplicateData.boxNum];
         impossibleFrom[GetBoxPosBoxRow(fromPos)][GetBoxPosBoxColumn(fromPos)] = true;
-        if (duplicateData.boxNum === this.state.currentBox[toBoxSlot]) //Only display red if that box is being viewing
+        if (duplicateData.boxNum === this.state.currentBox[toBoxSlot]) //Only display red if that box is being viewed
             impossibleTo[GetBoxPosBoxRow(toPos)][GetBoxPosBoxColumn(toPos)] = true;
 
         impossibleMovement[toBoxSlot] = impossibleTo;
         impossibleMovement[fromBoxSlot] = impossibleFrom;
         errorMessage[toBoxSlot] = `A duplicate is in ${boxName}.`;
 
-        if (impossibleMovement[0] === null)
+        if (impossibleMovement[0] == null)
             impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
-        else if (impossibleMovement[1] === null)
+        else if (impossibleMovement[1] == null)
             impossibleMovement[1] = this.generateBlankImpossibleMovementArray();
 
+        selectedMonPos[toBoxSlot] = CreateSingleBlankSelectedPos(); //Undo selections just clicked on
+
         this.setState({
-            selectedMonPos: this.generateBlankSelectedPos(),
+            selectedMonPos: selectedMonPos,
+            errorMessage: errorMessage,
+            impossibleMovement: impossibleMovement,
+        });
+    }
+
+    /**
+     * Sets the error message for a Pokemon holding a banned item being moved to a Home box.
+     * @param {Pokemon} pokemon - The Pokemon holding the banned item.
+     * @param {Number} fromOffset - The offset in the "from" set of boxes the Pokemon was being moved from.
+     * @param {Number} fromBoxSlot - The box slot of the box the Pokemon is being moved from.
+     * @param {Number} toBoxSlot - The box slot of the box the Pokemon is being moved to.
+     */
+    setBannedItemError(pokemon, fromOffset, fromBoxSlot, toBoxSlot)
+    {
+        var errorMessage = ["", ""];
+        var impossibleFrom = this.generateBlankImpossibleMovementArray();
+        var impossibleMovement = [null, null];
+        var selectedMonPos = this.state.selectedMonPos;
+        var fromPos = GetLocalBoxPosFromBoxOffset(fromOffset);
+
+        impossibleFrom[GetBoxPosBoxRow(fromPos)][GetBoxPosBoxColumn(fromPos)] = true;
+        impossibleMovement[fromBoxSlot] = impossibleFrom;
+        errorMessage[fromBoxSlot] = `The ${GetItemName(GetItem(pokemon))} can't be stored.`;
+
+        if (impossibleMovement[0] == null)
+            impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
+        else if (impossibleMovement[1] == null)
+            impossibleMovement[1] = this.generateBlankImpossibleMovementArray();
+
+        selectedMonPos[toBoxSlot] = CreateSingleBlankSelectedPos(); //Undo selections just clicked on
+
+        this.setState({
+            selectedMonPos: selectedMonPos,
             errorMessage: errorMessage,
             impossibleMovement: impossibleMovement,
         });
@@ -743,10 +790,17 @@ export default class MainPage extends Component
                     let alreadyExistsRet =
                         this.monAlreadyExistsInBoxes(leftBoxes[leftOffset], rightBoxes, this.getBoxAmountByBoxSlot(BOX_SLOT_RIGHT),
                                                     (leftBoxType === rightBoxType) ? leftOffset : -1); //Ignore the mon being moved
+                    let holdingBannedItem =
+                        this.cantBePlacedInBoxBecauseOfBannedItem(leftBoxes[leftOffset], rightBoxType);
 
                     if (alreadyExistsRet.boxNum >= 0)
                     {
                         this.setDuplicatePokemonSwappingError(BOX_SLOT_LEFT, leftOffset, BOX_SLOT_RIGHT, alreadyExistsRet);
+                        return;
+                    }
+                    else if (holdingBannedItem)
+                    {
+                        this.setBannedItemError(leftBoxes[leftOffset], leftOffset, BOX_SLOT_LEFT, BOX_SLOT_RIGHT);
                         return;
                     }
                     else
@@ -755,10 +809,17 @@ export default class MainPage extends Component
                         alreadyExistsRet =
                             this.monAlreadyExistsInBoxes(rightBoxes[rightOffset], leftBoxes, this.getBoxAmountByBoxSlot(BOX_SLOT_LEFT),
                                                         (leftBoxType === rightBoxType) ? rightOffset : -1); //Ignore the mon being moved
+                        holdingBannedItem =
+                            this.cantBePlacedInBoxBecauseOfBannedItem(rightBoxes[rightOffset], leftBoxType);
 
                         if (alreadyExistsRet.boxNum >= 0)
                         {
                             this.setDuplicatePokemonSwappingError(BOX_SLOT_RIGHT, rightOffset, BOX_SLOT_LEFT, alreadyExistsRet);
+                            return;
+                        }
+                        else if (holdingBannedItem)
+                        {
+                            this.setBannedItemError(rightBoxes[rightOffset], rightOffset, BOX_SLOT_RIGHT, BOX_SLOT_LEFT);
                             return;
                         }
                         else
@@ -793,6 +854,8 @@ export default class MainPage extends Component
 
                 var fromBoxes = this.getBoxesByBoxSlot(multiFrom);
                 var toBoxes = this.getBoxesByBoxSlot(multiTo);
+                var fromBoxType = this.getBoxTypeByBoxSlot(multiFrom);
+                var toBoxType = this.getBoxTypeByBoxSlot(multiTo);
 
                 //Confirm no mons selected are duplicates
                 for (i = 0; i < MONS_PER_BOX; ++i)
@@ -804,10 +867,17 @@ export default class MainPage extends Component
                         let alreadyExistsRet =
                             this.monAlreadyExistsInBoxes(pokemon, toBoxes, this.getBoxAmountByBoxSlot(multiTo),
                                                         (leftBoxType === rightBoxType) ? offset : -1); //Ignore the mon being moved
+                        let holdingBannedItem =
+                            this.cantBePlacedInBoxBecauseOfBannedItem(pokemon, toBoxType);
 
                         if (alreadyExistsRet.boxNum >= 0)
                         {
                             this.setDuplicatePokemonSwappingError(multiFrom, offset, multiTo, alreadyExistsRet);
+                            return;
+                        }
+                        else if (holdingBannedItem)
+                        {
+                            this.setBannedItemError(pokemon, offset, multiFrom, multiTo);
                             return;
                         }
                     }
@@ -902,8 +972,8 @@ export default class MainPage extends Component
                         }
                     }
 
-                    changeWasMade[this.getBoxTypeByBoxSlot(multiTo)] = true;
-                    changeWasMade[this.getBoxTypeByBoxSlot(multiFrom)] = true;
+                    changeWasMade[toBoxType] = true;
+                    changeWasMade[fromBoxType] = true;
                 }
                 else
                 {
@@ -971,7 +1041,7 @@ export default class MainPage extends Component
         let y = e.touches[0].pageY;
 
         //Update icon coordinates
-        if (icon !== null)
+        if (icon != null)
         {
             icon.style.visibility = "initial";
             icon.style.left = x - (68 / 2) + 'px'; //Follow the finger
@@ -980,7 +1050,7 @@ export default class MainPage extends Component
 
         //Update hovering over
         var element = document.elementFromPoint(x, y);
-        if (element !== null && element.className !== undefined && !element.className.includes("box-icon"))
+        if (element != null && element.className !== undefined && !element.className.includes("box-icon"))
             this.setState({draggingOver: -1}); //No longer dragging over box cell
     }*/
 
@@ -1015,20 +1085,32 @@ export default class MainPage extends Component
             let alreadyExistsRet =
                 this.monAlreadyExistsInBoxes(fromBoxes[fromOffset], toBoxes, this.getBoxAmountByBoxSlot(this.state.draggingToBox),
                                             (fromBoxType === toBoxType) ? fromOffset : -1); //Ignore the mon being moved
+            let holdingBannedItem =
+                this.cantBePlacedInBoxBecauseOfBannedItem(fromBoxes[fromOffset], toBoxType);
 
             if (alreadyExistsRet.boxNum >= 0)
             {
                 this.setDuplicatePokemonSwappingError(this.state.draggingFromBox, fromOffset, this.state.draggingToBox, alreadyExistsRet);
+            }
+            else if (holdingBannedItem)
+            {
+                this.setBannedItemError(fromBoxes[fromOffset], fromOffset, this.state.draggingFromBox, this.state.draggingToBox);
             }
             else
             {
                 alreadyExistsRet =
                     this.monAlreadyExistsInBoxes(toBoxes[toOffset], fromBoxes, this.getBoxAmountByBoxSlot(this.state.draggingToBox),
                                                 (fromBoxType === toBoxType) ? toOffset : -1); //Ignore the mon being moved
+                holdingBannedItem =
+                    this.cantBePlacedInBoxBecauseOfBannedItem(toBoxes[toOffset], fromBoxType);
 
                 if (alreadyExistsRet.boxNum >= 0)
                 {
                     this.setDuplicatePokemonSwappingError(this.state.draggingToBox, toOffset, this.state.draggingFromBox, alreadyExistsRet);
+                }
+                else if (holdingBannedItem)
+                {
+                    this.setBannedItemError(toBoxes[toOffset], toOffset, this.state.draggingToBox, this.state.draggingFromBox);
                 }
                 else
                 {
@@ -1360,7 +1442,7 @@ export default class MainPage extends Component
 
         //No error occurred good to proceed
         var dataBuffer = res.data.newSaveFileData;
-        var name = (this.state.selectedSaveFile === null) ? "savefile.sav" : this.state.selectedSaveFile.name; //Same name as original file
+        var name = (this.state.selectedSaveFile == null) ? "savefile.sav" : this.state.selectedSaveFile.name; //Same name as original file
 
         var output = []
         for (let byte of dataBuffer["data"])
@@ -1532,7 +1614,6 @@ export default class MainPage extends Component
      */
     openGTSButton()
     {
-        var size = 42;
         var tooltip = props => (<Tooltip {...props}>Global Trade Station</Tooltip>);
 
         return (
@@ -1658,7 +1739,7 @@ export default class MainPage extends Component
                 <h3>It should be a file called {HOME_FILE_NAME}</h3>
                 <div>
                     {
-                        "lastSavedHomeData" in localStorage && localStorage.lastSavedHomeData !== null && localStorage.lastSavedHomeData !== "" ?
+                        "lastSavedHomeData" in localStorage && localStorage.lastSavedHomeData != null && localStorage.lastSavedHomeData !== "" ?
                             <div>
                                 <Button size="lg" variant="info" onClick={() => this.useLastSavedHomeFile()}
                                         className="choose-home-file-button">

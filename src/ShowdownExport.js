@@ -115,7 +115,7 @@ export class ShowdownExport extends Component
     {
         var elem = document.getElementById(TEXT_AREA_ID);
 
-        if (elem !== null)
+        if (elem != null)
         {
             elem.select(); //Select all text
             elem.setSelectionRange(0, 99999); //For mobile devices
