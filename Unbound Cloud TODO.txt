@@ -3,11 +3,11 @@ New Features:
 -P2P Trading
 -GTS
 -Ads
+-Alcremie colour
 
 Feature Modifications:
 -Calc stats on client side and remove from data structure
 -Just dump entire base stats file on client side
--Make client side species defines use dex numbers?
 -Multi select should highlight where the selected mons would go in the other box, not where the mouse is
 
 Server Changes:

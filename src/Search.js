@@ -15,7 +15,7 @@ import AbilityNames from "./data/AbilityNames.json";
 import ItemNames from "./data/ItemNames.json";
 import MoveNames from "./data/MoveNames.json";
 import NatureNames from "./data/NatureNames.json";
-import UnboundSpecies from "./data/UnboundSpecies.json";
+import SpeciesNames from "./data/SpeciesNames.json";
 
 import {ImCancelCircle} from "react-icons/im";
 
@@ -74,7 +74,7 @@ export class Search extends Component
         var species = [];
         var namesAdded = {};
 
-        for (let speciesId of Object.keys(UnboundSpecies))
+        for (let speciesId of Object.keys(SpeciesNames))
         {
             if (speciesId === "SPECIES_NONE")
                 continue;
