@@ -6,7 +6,7 @@ import BaseFriendship from "./data/BaseFriendship.json";
 import ItemNames from "./data/ItemNames.json";
 import MoveData from "./data/MoveData.json";
 import NatureNames from "./data/NatureNames.json";
-import SpeciesDefines from "./data/UnboundSpecies.json";
+import SpeciesNames from "./data/SpeciesNames.json";
 import TradeEvolutions from "./data/TradeEvolutions.json";
 import {BASE_GFX_LINK, GetSpeciesName} from "./Util";
 
@@ -19,6 +19,9 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_PIKACHU_CAP_KALOS": "pikachu-kalos-cap",
     "SPECIES_PIKACHU_CAP_ALOLA": "pikachu-alola-cap",
     "SPECIES_PIKACHU_CAP_PARTNER": "pikachu-partner-cap",
+    "SPECIES_PIKACHU_CAP_WORLD": "pikachu-world-cap",
+    "SPECIES_PIKACHU_STARTER": "pikachu-starter",
+    "SPECIES_EEVEE_STARTER": "eevee-starter",
     "SPECIES_PICHU_SPIKY": "pichu-spiky-eared",
     "SPECIES_HIPPOPOTAS_F": "female/hippopotas",
     "SPECIES_HIPPOWDON_F": "female/hippowdon",
@@ -68,11 +71,17 @@ const BASE_FORMS_OF_BANNED_SPECIES = //All forms that can't exist outside of bat
     "SPECIES_DARMANITANZEN": "SPECIES_DARMANITAN",
     "SPECIES_DARMANITAN_G_ZEN": "SPECIES_DARMANITAN_G",
     "SPECIES_MELOETTA_PIROUETTE": "SPECIES_MELOETTA",
-    "SPECIES_AEGISLASH_BLADE": "SPECIES_AEGISLASH",
     "SPECIES_ASHGRENINJA": "SPECIES_GRENINJA",
+    "SPECIES_AEGISLASH_BLADE": "SPECIES_AEGISLASH",
+    "SPECIES_XERNEAS_NATURAL": "SPECIES_XERNEAS", //Just an aesthetic species, should be SPECIES_XERNEAS always
+    "SPECIES_ZYGARDE_COMPLETE": "SPECIES_ZYGARDE",
+    "SPECIES_WISHIWASHI_S": "SPECIES_WISHIWASHI",
+    "SPECIES_MIMIKYU_BUSTED": "SPECIES_MIMIKYU",
+    "SPECIES_NECROZMA_ULTRA": "SPECIES_NECROZMA",
     "SPECIES_CRAMORANT_GULPING": "SPECIES_CRAMORANT",
     "SPECIES_CRAMORANT_GORGING": "SPECIES_CRAMORANT",
     "SPECIES_EISCUE_NOICE": "SPECIES_EISCUE",
+    "SPECIES_MORPEKO_HANGRY": "SPECIES_MORPEKO",
     "SPECIES_ZACIAN_CROWNED": "SPECIES_ZACIAN",
     "SPECIES_ZAMAZENTA_CROWNED": "SPECIES_ZAMAZENTA",
     "SPECIES_ETERNATUS_ETERNAMAX": "SPECIES_ETERNATUS",
@@ -160,10 +169,27 @@ function IsValidNatureNumber(nature)
  */
 function IsSpeciesGen8(species)
 {
-    if (species in SpeciesDefines)
-        return SpeciesDefines[species] >= SpeciesDefines["SPECIES_GROOKEY"];
-    else if (typeof(species) === "number")
-        return species >= SpeciesDefines["SPECIES_GROOKEY"];
+    var speciesIndex = 0;
+    let speciesIds = Object.keys(SpeciesNames);
+
+    if (typeof(species) === "number")
+    {
+        speciesIndex = species;
+    }
+    else if (typeof(species) === "string")
+    {
+        if (species.includes("PIKACHU"))
+            return true; //Get all the Pikachu forms from the Gen 8 repo
+
+        if (species in SpeciesNames)
+            speciesIndex = speciesIds.indexOf(species);
+    }
+
+    if (speciesIndex > 0)
+    {
+        return speciesIndex >= speciesIds.indexOf("SPECIES_GROOKEY")
+            /*&& speciesIndex < speciesIds.indexOf("SPECIES_GROWLITHE_H")*/;
+    }
 
     return false;
 }
@@ -985,6 +1011,10 @@ export function GetMonVisibleSpecies(pokemon)
     {
         if (species.endsWith("_MEGA")) //Can't exist outside of battle
             species = species.split("_MEGA")[0];
+        else if (species.endsWith("_MEGA_X")) //Can't exist outside of battle
+            species = species.split("_MEGA_X")[0];
+        else if (species.endsWith("_MEGA_Y")) //Can't exist outside of battle
+            species = species.split("_MEGA_Y")[0];
         else if (species.endsWith("GIGA")) //Can't exist outside of battle
             species = species.split("_GIGA")[0];
 
@@ -996,22 +1026,12 @@ export function GetMonVisibleSpecies(pokemon)
                 {
                     case 0:
                         break;
-                    case 26:
-                        species = "SPECIES_UNOWN_EXCLAMATION";
-                        break;
-                    case 27:
-                        species = "SPECIES_UNOWN_QUESTION";
-                        break;
                     default:
                         if (unownLetter < 0 || unownLetter >= NUM_UNOWN_FORMS)
                             break;
 
-                        species = SpeciesDefines["SPECIES_UNOWN_B"] + unownLetter - 1; //Convert to an int
-                        for (let key of Object.keys(SpeciesDefines))
-                        {
-                            if (SpeciesDefines[key] === species) //This is the correct unown species
-                                species = key; //Convert back to a string
-                        }
+                        let speciesIds = Object.keys(SpeciesNames);
+                        species = speciesIds[speciesIds.indexOf("SPECIES_UNOWN_B") + (unownLetter - 1)];
                         break;
                 }
                 break;
