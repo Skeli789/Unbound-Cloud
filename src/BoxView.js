@@ -20,7 +20,7 @@ import gLivingDexOrder from "./data/LivingDexOrder.json";
 
 import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
 import {BiSearchAlt2} from "react-icons/bi";
-import {CgPokemon} from "react-icons/cg";
+import {CgExport, CgPokemon} from "react-icons/cg";
 import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
 import {RiBoxingLine} from "react-icons/ri";
 
@@ -47,9 +47,11 @@ const cancelTooltip = props => (<Tooltip {...props}>Cancel</Tooltip>);
 const livingDexTooltip = props => (<Tooltip {...props}>Living Dex</Tooltip>);
 const searchTooltip = props => (<Tooltip {...props}>Search</Tooltip>);
 const selectAllTooltip = props => (<Tooltip {...props}>Select All</Tooltip>);
+const deselectAllTooltip = props => (<Tooltip {...props}>Deselect All</Tooltip>);
 const showdownTooltip = props => (<Tooltip {...props}>Showdown</Tooltip>);
 const releaseTooltip = props => (<Tooltip {...props}>Release</Tooltip>);
 const fixLivingDexTooltip = props => (<Tooltip {...props}>Fix Living Dex</Tooltip>);
+const tradeTooltip = props => (<Tooltip {...props}>Select For Trade</Tooltip>);
 
 
 export class BoxView extends Component
@@ -74,7 +76,9 @@ export class BoxView extends Component
             boxType: props.boxType,
             boxSlot: props.boxSlot, //Left or right
             isSameBoxTypeBothSides: props.isSameBoxBothSides,
+            inTrade: props.inTrade,
             parent: props.parent,
+            tradeParent: props.tradeParent,
         };
     }
 
@@ -171,10 +175,12 @@ export class BoxView extends Component
      */
     isTrading()
     {
-        //TODO
-        return false;
+        return this.state.inTrade;
     }
 
+    /**
+     * @returns {Object} The this.state of MainPage.js.
+     */
     getParentState()
     {
         return this.state.parent.state;
@@ -557,6 +563,9 @@ export class BoxView extends Component
     {
         var summaryMonObj = this.getRawSummaryMon();
 
+        if (this.isTrading())
+            return false;
+
         if (this.areAnyPokemonSelectedInCurrentBox(true))
             return true; //Release selected Pokemon
 
@@ -574,6 +583,9 @@ export class BoxView extends Component
      */
     canViewShowdownButton()
     {
+        if (this.isTrading())
+            return false;
+
         if (this.state.viewingShowdown)
             return true; //Can always close the view
 
@@ -689,6 +701,11 @@ export class BoxView extends Component
                 newSelectedMonPos[boxSlot][boxPos] = false; //No longer selected
                 deselectedSlot = true;
             }
+            else if (this.isTrading()) //Only one Pokemon can be selected
+            {
+                newSelectedMonPos[boxSlot] = CreateSingleBlankSelectedPos(); //Deselect all
+                newSelectedMonPos[boxSlot][boxPos] = true; //Then select the chosen mon
+            }
             else
                 newSelectedMonPos[boxSlot][boxPos] = true;
 
@@ -800,7 +817,7 @@ export class BoxView extends Component
         var selectedMonPos = this.getParentState().selectedMonPos;
         var selectedMonBox = this.getParentState().selectedMonBox;
 
-        if (this.areAnyPokemonSelectedInCurrentBox())
+        if (this.areAnyPokemonSelectedInCurrentBox(true))
             selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos(); //Deselect all
         else //At least one mon not selected
         {
@@ -959,6 +976,7 @@ export class BoxView extends Component
             cancelButtonText: `Cancel`,
             showCancelButton: true,
             icon: 'warning',
+            scrollbarPadding: false,
         }).then(async (result) =>
         {
             if (result.isConfirmed)
@@ -1018,6 +1036,7 @@ export class BoxView extends Component
             cancelButtonText: `Keep`,
             denyButtonText: `Release`,
             icon: 'warning',
+            scrollbarPadding: false,
         }).then((result) =>
         {
             if (result.isDenied) //Denied means released because it's the red button
@@ -1027,7 +1046,14 @@ export class BoxView extends Component
                 else
                     this.state.parent.releaseSelectedPokemon(this.state.boxSlot, this.state.boxType, false);
 
-                PopUp.fire(`Bye-bye, ${pokemonName}!`, '', 'success');
+                PopUp.fire
+                ({
+                    title: `Bye-bye, ${pokemonName}!`,
+                    confirmButtonText: `Done`,
+                    icon: 'success',
+                    scrollbarPadding: false,
+                });
+
                 this.setState({viewingShowdown: false});
             }
         });
@@ -1057,6 +1083,47 @@ export class BoxView extends Component
 
         this.setState({viewingShowdown: shouldView});
         this.state.parent.setState({summaryMon: summaryMon});
+    }
+
+    /**
+     * Prompts the user to confirm they want to trade the Pokemon they've selected
+     */
+    trySelectMonForTrade()
+    {
+        var pokemon = this.getPokemonAtOnlySelectedPos();
+
+        PopUp.fire
+        ({
+            title: `Trade ${GetNickname(pokemon)}?`,
+            confirmButtonText: `Let's trade!`,
+            cancelButtonText: `Cancel`,
+            showCancelButton: true,
+            imageUrl: GetIconSpeciesLink(pokemon),
+            imageAlt: "",
+            scrollbarPadding: false,
+        }).then((result) =>
+        {
+            if (result.isConfirmed)
+                this.selectMonForTrade(pokemon);
+        });
+    }
+
+    /**
+     * Chooses the selected mon for a trade.
+     */
+    selectMonForTrade(pokemon)
+    {
+        var tradeData = this.getParentState().tradeData;
+
+        if (tradeData == null)
+            tradeData = {};
+
+        tradeData.pokemon = pokemon;
+        tradeData.boxNum = this.getCurrentBoxId();
+        tradeData.boxPos = this.getOnlySelectedPos();
+
+        this.state.parent.setState({tradeData: tradeData});
+        this.state.tradeParent.offerPokemonToTrade(pokemon);
     }
 
     /**
@@ -1241,7 +1308,7 @@ export class BoxView extends Component
                 return(<PokemonSummary pokemon={pokemon} areBoxViewsVertical={this.state.parent.areBoxViewsVertical()}
                                        boxType={this.state.boxType} changeWasMade={this.getParentState().changeWasMade}
                                        setGlobalState={this.state.parent.setState.bind(this.state.parent)}
-                                       key={this.getSummaryMonKey()}/>);
+                                       key={this.getSummaryMonKey()} inTrade={this.isTrading()}/>);
         }
         else
             return "";
@@ -1261,7 +1328,7 @@ export class BoxView extends Component
      */
     printWonderTradeIcon(boxName)
     {
-        if (this.isViewingMonSummary())
+        if (this.isViewingMonSummary() && !this.isTrading())
         {
             var summaryMonObj = this.getRawSummaryMon()
             var isMonInWonderTrade = this.isMonAtPosInWonderTrade(summaryMonObj.boxPos);
@@ -1280,6 +1347,26 @@ export class BoxView extends Component
     }
 
     /**
+     * Prints the icon that appears when the user can choose a Pokemon to send in a link trade.
+     */
+    chooseForTradeIcon()
+    {
+        if (this.isTrading() && this.areAnyPokemonSelectedInCurrentBox(true))
+        {
+            var iconSize = 30;
+
+            return(
+                <OverlayTrigger placement="bottom" overlay={tradeTooltip}>
+                    {
+                        <CgExport size={iconSize} className="box-lower-icon" style={{color: "red"}}
+                                onClick = {this.trySelectMonForTrade.bind(this)}/>
+                    }
+                </OverlayTrigger>
+            )
+        }
+    }
+
+    /**
      * Prints the box view page.
      */
     render()
@@ -1294,7 +1381,7 @@ export class BoxView extends Component
             return this.printSearchView();
 
         //Set Up Living Dex Icon
-        if (this.isHomeBox() && !this.state.editingTitle)
+        if (this.isHomeBox() && !this.state.editingTitle && !this.isTrading())
             livingDexIcon =
                 <OverlayTrigger placement="top" overlay={livingDexTooltip}>
                     <CgPokemon size={editIconSize + 10} onClick={this.changeLivingDexView.bind(this)}
@@ -1342,7 +1429,7 @@ export class BoxView extends Component
                     </OverlayTrigger>
                 titleContainerClass = "box-title-no-edit";
 
-                titleEditIcon = this.state.editingTitle ? ""
+                titleEditIcon = this.state.editingTitle || this.isTrading() ? ""
                               : this.isHomeBox() ?
                                   <OverlayTrigger placement="top" overlay={renameTooltip}>
                                       <GrEdit size={editIconSize}
@@ -1372,13 +1459,17 @@ export class BoxView extends Component
                             onClick={this.startSearching.bind(this)}/>
                 </OverlayTrigger>
 
-                {/*Select/Deselect All Icon*/}
-                <OverlayTrigger placement="bottom" overlay={selectAllTooltip}>
-                    <GrMultiple size={28} className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
-                </OverlayTrigger>
+                { /*Select/Deselect All Icon*/
+                    !this.isTrading() ?
+                        <OverlayTrigger placement="bottom" overlay={this.areAnyPokemonSelectedInCurrentBox(true) ? deselectAllTooltip : selectAllTooltip}>
+                            <GrMultiple size={28} className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
+                        </OverlayTrigger>
+                    :
+                        ""
+                }
 
                 { /*Save Icon*/
-                    this.getParentState().changeWasMade[this.state.boxType] ?
+                    this.getParentState().changeWasMade[this.state.boxType] && !this.isTrading() ?
                         <OverlayTrigger placement="bottom" overlay={saveTooltip}>
                             <AiOutlineSave size={36} className="box-lower-icon" onClick={() => this.state.parent.saveAndExit(this.state.boxSlot)}/>
                         </OverlayTrigger>
@@ -1387,7 +1478,7 @@ export class BoxView extends Component
                 }
 
                 { /*Fix Living Dex Icon*/
-                    this.getLivingDexState() !== LIVING_DEX_NONE && !this.state.fixingLivingDex && this.isHomeBox() ?
+                    this.getLivingDexState() !== LIVING_DEX_NONE && !this.state.fixingLivingDex && this.isHomeBox() && !this.isTrading() ?
                         <OverlayTrigger placement="bottom" overlay={fixLivingDexTooltip}>
                             <AiOutlineTool size={36} className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
                         </OverlayTrigger>
@@ -1419,6 +1510,10 @@ export class BoxView extends Component
     
                 { /*Wonder Trade Icon*/
                     this.printWonderTradeIcon(boxName)
+                }
+
+                { /*Choose for Trade Icon*/
+                    this.chooseForTradeIcon()
                 }
             </div>
 

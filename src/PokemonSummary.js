@@ -72,6 +72,7 @@ export class PokemonSummary extends Component
             changeWasMade: props.changeWasMade,
             boxType: props.boxType,
             areBoxViewsVertical: props.areBoxViewsVertical,
+            inTrade: props.inTrade,
             viewingEVsIVs: false,
         };
 
@@ -84,12 +85,15 @@ export class PokemonSummary extends Component
      */
     changeMarking(i)
     {
-        ChangeMarking(this.state.pokemon, i);
-        this.setState({markings: GetMarkings(this.state.pokemon)});
+        if (!this.state.inTrade) //No editing marking during a trade
+        {
+            ChangeMarking(this.state.pokemon, i);
+            this.setState({markings: GetMarkings(this.state.pokemon)});
 
-        var changeWasMade = this.state.changeWasMade;
-        changeWasMade[this.state.boxType] = true;
-        this.setGlobalState({changeWasMade: changeWasMade});
+            var changeWasMade = this.state.changeWasMade;
+            changeWasMade[this.state.boxType] = true;
+            this.setGlobalState({changeWasMade: changeWasMade});
+        }
     }
 
     /**
@@ -199,6 +203,7 @@ export class PokemonSummary extends Component
         {
             let symbol = (monMarkings[i]) ? markingsFilled[i] : markingsOutlined[i];
             displayMarkings.push(<span className="summary-marking" key={i}
+                                       style={this.state.inTrade ? {cursor: "default"} : {}} //No editing marking during a trade
                                        onClick={this.changeMarking.bind(this, i)}>{symbol}</span>);
         }
 

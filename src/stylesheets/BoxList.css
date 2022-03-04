@@ -2,15 +2,26 @@
 {
     /*Centre in page*/
     display: flex;
-    flex-direction: column; /*Top to bottom rows*/
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    position: absolute;
-    bottom: 0;
+    position: relative;
+    top: 56px;
     height: 100%;
     width: 100%;
     font-size: 3rem;
+}
+
+.box-list-loading-screen-position
+{
+    position: absolute;
+    bottom: 0;
+}
+
+.box-list-loading-screen-position-mobile
+{
+    position: relative;
+    top: 56px;
 }
 
 .mini-boxes
@@ -116,4 +127,10 @@
     width: 100%;
     overflow-y: scroll;
     min-width: 428px;
+}
+
+.scroll-container-box-list-mobile
+{
+    position: relative;
+    top: 56px;
 }

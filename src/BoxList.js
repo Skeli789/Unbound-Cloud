@@ -74,6 +74,8 @@ export class BoxList extends Component
             impossibleMovement: null,
             viewingBoxList: -1, //No more viewing box list
         });
+
+        window.scrollTo(0, 0); //Undoes scroll offset on mobile devices caused by scrolling through box list
     }
 
     /**
@@ -158,7 +160,7 @@ export class BoxList extends Component
         if (!this.state.loaded)
         {
             return (
-                <div className="box-list-loading-screen">
+                <div className={"box-list-loading-screen box-list-loading-screen-position" + (isMobile ? "-mobile" : "")}>
                     Loading...
                 </div>
             );
@@ -166,7 +168,7 @@ export class BoxList extends Component
         else
         {
             return(
-                <div className={"mini-boxes" + (!isMobile ? " scroll-container-box-list" : "")}>
+                <div className={"mini-boxes scroll-container-box-list" + (isMobile ? "-mobile" : "")}>
                     {this.printBoxes()}
                 </div>
             )

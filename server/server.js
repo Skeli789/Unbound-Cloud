@@ -7,6 +7,7 @@ const fileUpload = require('express-fileupload');
 const {exec} = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const randomstring = require("randomstring");
 const CryptoJS = require("crypto-js");
 const {StatusCode} = require('status-code-enum');
 
@@ -20,51 +21,206 @@ app.use(express.static('./images'));
 var io = require('socket.io')(http, 
     {cors: {origin: PORT, methods: ["GET", "POST"], credentials: true}});
 
-const gClients = {};
+const gWonderTradeClients = {};
+const gFriendTradeClients = {};
+const gCodesInUse = {};
 
-// When a connection is made, loop forever sending randomly generated social 
-// media post content...
-io.on('connection', async function(socket)
+const FRIEND_TRADE_INITIAL = 0;
+const FRIEND_TRADE_CONNECTED = 1;
+const FRIEND_TRADE_NOTIFIED_CONNECTION = 2;
+const FRIEND_TRADE_ACCEPTED_TRADE = 3;
+const FRIEND_TRADE_ENDING_TRADE = 4;
+
+//TODO: Timeout if connection has gone on too long
+
+function CreateFriendCode()
 {
-    var id = 0;
+    var code;
+
+    do
+    {
+        code = randomstring.generate({length: 8, charset: "alphanumeric", capitalization: "lowercase"});
+    } while (code in gCodesInUse);
+
+    return code;
+}
+
+// When a connection is made, loop forever until a Wonder Trade is made
+io.on("connection", async function(socket)
+{
     var clientId = socket.id;
     console.log(`Client ${clientId} connected`);
 
-    socket.on("message", (data) =>
+    socket.on("tradeType", (data) =>
     {
-        var pokemonToSend = data;
-        var keys = Object.keys(gClients).filter((x) => x != clientId && gClients[x].tradedWith === 0);
-
-        if (keys.length !== 0)
+        if (data == "WONDER_TRADE")
         {
-            var pokemonToReceive = gClients[keys[0]].pokemon;
-            gClients[keys[0]] =  {pokemon: pokemonToSend, tradedWith: clientId}; //Immediately lock the data
-            gClients[clientId] = {pokemon: pokemonToReceive, tradedWith: keys[0]}; //Set this client as traded
-        }
-        else
-        {
-            if (!(clientId in gClients)) //Don't overwrite previously requested mon
-                gClients[clientId] = {pokemon: pokemonToSend, tradedWith: 0};
-        }
-    });
+            console.log(`WT-Client ${clientId} wants a Wonder Trade`);
 
-    socket.on('disconnect', () =>
-    {
-        delete gClients[clientId]; //Remove data so no one trades with it
-        console.log(`Client ${clientId} disconnected`);
+            socket.on("message", (data) =>
+            {
+                var pokemonToSend = data;
+                var keys = Object.keys(gWonderTradeClients).filter((x) => x != clientId && gWonderTradeClients[x].tradedWith === 0);
+        
+                if (keys.length !== 0)
+                {
+                    var pokemonToReceive = gWonderTradeClients[keys[0]].pokemon;
+                    gWonderTradeClients[keys[0]] =  {pokemon: pokemonToSend, tradedWith: clientId}; //Immediately lock the data
+                    gWonderTradeClients[clientId] = {pokemon: pokemonToReceive, tradedWith: keys[0]}; //Set this client as traded
+                }
+                else
+                {
+                    if (!(clientId in gWonderTradeClients)) //Don't overwrite previously requested mon
+                        gWonderTradeClients[clientId] = {pokemon: pokemonToSend, tradedWith: 0};
+                }
+            });
+
+            socket.on('disconnect', () =>
+            {
+                delete gWonderTradeClients[clientId]; //Remove data so no one trades with it
+                console.log(`WT-Client ${clientId} disconnected`);
+            });
+        }
+        else if (data == "FRIEND_TRADE")
+        {
+            console.log(`FT-Client ${clientId} wants a Friend Trade`);
+
+            socket.on("createCode", () =>
+            {
+                let code = CreateFriendCode();
+                socket.emit("createCode", code);
+                console.log(`FT-Client ${clientId} has created code "${code}"`);
+                gFriendTradeClients[clientId] = {code: code, friend: "", state: FRIEND_TRADE_INITIAL};
+                gCodesInUse[code] = true;
+            });
+
+            socket.on("checkCode", (code) =>
+            {
+                let partnerFound = false;
+                console.log(`FT-Client ${clientId} is looking for code "${code}"`);
+        
+                for (let otherClientId of Object.keys(gFriendTradeClients))
+                {
+                    if (gFriendTradeClients[otherClientId].friend === "" //Hasn't found a partner yet
+                    && gFriendTradeClients[otherClientId].code === code) //Code matches so this will be the partner
+                    {
+                        partnerFound = true;
+                        console.log(`FT-Client ${clientId} has matched with ${otherClientId}`);
+                        gFriendTradeClients[clientId] = {code: code, friend: otherClientId, state: FRIEND_TRADE_CONNECTED};
+                        gFriendTradeClients[otherClientId] = {code: code, friend: clientId, state: FRIEND_TRADE_CONNECTED};
+                    }
+                }
+
+                if (!partnerFound)
+                {
+                    console.log(`FT-Client ${clientId} could not find partner`);
+                    socket.emit("friendNotFound");
+                }
+            });
+
+            socket.on('tradeOffer', (pokemon) =>
+            {
+                if (clientId in gFriendTradeClients)
+                {
+                    if (pokemon != null && "species" in pokemon)
+                        console.log(`FT-Client ${clientId} is offering ${pokemon.species}`);
+                    else
+                        console.log(`FT-Client ${clientId} cancelled the trade offer`);
+
+                    gFriendTradeClients[clientId].offeringPokemon = pokemon;
+                    gFriendTradeClients[clientId].notifiedFriendOfOffer = false;
+                }
+            });
+
+            socket.on('acceptedTrade', () =>
+            {
+                gFriendTradeClients[clientId].acceptedTrade = true;
+            });
+
+            socket.on('cancelledTradeAcceptance', () =>
+            {
+                gFriendTradeClients[clientId].acceptedTrade = false;
+            });
+
+            socket.on('tradeAgain', () =>
+            {
+                console.log(`FT-Client ${clientId} wants to trade again`);
+                gFriendTradeClients[clientId].state = FRIEND_TRADE_NOTIFIED_CONNECTION;
+                gFriendTradeClients[clientId].offeringPokemon = null;
+                gFriendTradeClients[clientId].notifiedFriendOfOffer = false;
+                gFriendTradeClients[clientId].acceptedTrade = false;
+            });
+
+            socket.on('disconnect', () =>
+            {
+                if (clientId in gFriendTradeClients)
+                    delete gCodesInUse[gFriendTradeClients[clientId].code];
+                delete gFriendTradeClients[clientId]; //Remove data so no one trades with it
+                console.log(`FT-Client ${clientId} disconnected`);
+            });
+        }
     });
 
     while (true)
     {
-        if (clientId in gClients && gClients[clientId].tradedWith !== 0)
+        if (clientId in gWonderTradeClients && gWonderTradeClients[clientId].tradedWith !== 0)
         {
-            socket.send(gClients[clientId].pokemon);
-            console.log(`Client ${clientId} received Pokemon from ${gClients[clientId].tradedWith}`);
+            socket.send(gWonderTradeClients[clientId].pokemon);
+            console.log(`WT-Client ${clientId} received Pokemon from ${gWonderTradeClients[clientId].tradedWith}`);
             //Data deleted when client disconnects in case they don't receive this transmission
+        }
+        else if (clientId in gFriendTradeClients
+        && gFriendTradeClients[clientId].friend !== "")
+        {
+            let friend;
+
+            switch (gFriendTradeClients[clientId].state)
+            {
+                case FRIEND_TRADE_CONNECTED:
+                    console.log(`FT-Client ${clientId} has been notified of the friend connection`);
+                    gFriendTradeClients[clientId].state = FRIEND_TRADE_NOTIFIED_CONNECTION;
+                    socket.emit("friendFound");
+                    break;
+                case FRIEND_TRADE_NOTIFIED_CONNECTION:
+                    if (!(gFriendTradeClients[clientId].code in gCodesInUse)) //Partner disconnected
+                        socket.emit("partnerDisconnected");
+                    else
+                    {
+                        friend = gFriendTradeClients[clientId].friend;
+
+                        if (friend in gFriendTradeClients)
+                        {
+                            if ("offeringPokemon" in gFriendTradeClients[friend]
+                            && !gFriendTradeClients[friend].notifiedFriendOfOffer)
+                            {
+                                //Send the new offer
+                                let pokemon = gFriendTradeClients[friend].offeringPokemon;
+                                console.log(`FT-Client ${clientId} received offer for ${pokemon != null && "species" in pokemon ? pokemon.species : "SPECIES_NONE"}`);
+                                socket.emit("tradeOffer", pokemon); //Can be sent null (means partner cancelled offer)
+                                gFriendTradeClients[friend].notifiedFriendOfOffer = true;
+                            }
+                            else if ("acceptedTrade" in gFriendTradeClients[clientId]
+                            && gFriendTradeClients[clientId].acceptedTrade
+                            && "acceptedTrade" in gFriendTradeClients[friend]
+                            && gFriendTradeClients[friend].acceptedTrade)
+                            {
+                                gFriendTradeClients[clientId].state = FRIEND_TRADE_ACCEPTED_TRADE;
+                                gFriendTradeClients[friend].state = FRIEND_TRADE_ACCEPTED_TRADE;
+                            }
+                        }
+                    }
+                    break;
+                case FRIEND_TRADE_ACCEPTED_TRADE:
+                    socket.emit("acceptedTrade");
+                    gFriendTradeClients[clientId].state = FRIEND_TRADE_ENDING_TRADE;
+                    break;
+                default:
+                    break;
+            }
         }
 
         var nextLoopTime = 1000; //1 Second
-        await new Promise(r => setTimeout(r, nextLoopTime)).catch( error => console.error("error")); //Wait until checking again
+        await new Promise(r => setTimeout(r, nextLoopTime)).catch(error => console.error(`Timeout error: ${error}`)); //Wait until checking again
     }
 });
 

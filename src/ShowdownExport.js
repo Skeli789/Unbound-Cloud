@@ -119,7 +119,7 @@ export class ShowdownExport extends Component
         {
             elem.select(); //Select all text
             elem.setSelectionRange(0, 99999); //For mobile devices
-            //document.execCommand("copy"); //Copy the text inside the text field
+            navigator.clipboard.writeText(elem.value);
         }
     }
 

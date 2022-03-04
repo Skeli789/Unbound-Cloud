@@ -10,6 +10,7 @@ import {isMobile} from "react-device-detect";
 import {config} from "./config";
 import {BoxList} from "./BoxList";
 import {BoxView, HIGHEST_HOME_BOX_NUM, HIGHEST_SAVE_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
+import {FriendTrade} from "./FriendTrade";
 import {GetItem, GetSpecies, IsBlankMon, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow, GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
@@ -104,6 +105,8 @@ export default class MainPage extends Component
 
             //Other
             muted: ("muted" in localStorage && localStorage.muted === "true") ? true : false,
+            inFriendTrade: false,
+            tradeData: null,
         };
 
         this.updateState = this.updateState.bind(this);
@@ -243,6 +246,17 @@ export default class MainPage extends Component
         });
     }
 
+    /**
+     * Handles the functionality of pressing the navbar's back button.
+     */
+    navBackButtonPressed()
+    {
+        if (this.state.viewingBoxList >= 0)
+            this.setState({viewingBoxList: -1}); //Overrides Friend Trade because could be jumping boxes looking for a Pokemon
+        else if (this.state.inFriendTrade)
+            this.tryResetFriendTradeState();
+    }
+
 
     /**********************************
            Box Utility Functions       
@@ -255,6 +269,15 @@ export default class MainPage extends Component
     areBoxViewsVertical()
     {
         return window.innerWidth < 865; //px
+    }
+
+    /**
+     * Gets whether or not the screen needs to be zoomed out to see an entire box at once (mainly phones).
+     * @returns True if the screen needs to be shrunk to fit a box. False if the default size is fine.
+     */
+    isScreenLessThanBoxWidth()
+    {
+        return document.documentElement.clientWidth < 428; //px
     }
 
     /**
@@ -1249,6 +1272,59 @@ export default class MainPage extends Component
         });
     }
 
+    /**
+     * Either opens or closes the Friend Trade screen.
+     */
+    startFriendTrade()
+    {
+        if (this.state.inFriendTrade)
+            this.tryResetFriendTradeState();
+
+        this.setState({inFriendTrade: !this.state.inFriendTrade});
+        this.resetStateForStartingFriendTrade(false);
+        this.wipeErrorMessage();
+    }
+
+    /**
+     * Resets the state variables needed to be blank when starting a Friend Trade.
+     * @param {Boolean} keepOldTradeData - True if the tradeData state variable should be retained. False if it can be wiped too.
+     */
+    resetStateForStartingFriendTrade(keepOldTradeData)
+    {
+        var tradeData = (keepOldTradeData) ? this.state.tradeData : null;
+
+        this.setState
+        ({
+            selectedMonBox: [0, 0],
+            selectedMonPos: this.generateBlankSelectedPos(),
+            summaryMon: [null, null],
+            livingDexState: [0, 0],
+            searchCriteria: [null, null],
+            tradeData: tradeData,
+            viewingBoxList: -1,
+            draggingMon: -1,
+        });
+    }
+
+    /**
+     * Tries to disconnect from the Friend Trade socket and reset the state changed by it.
+     */
+    tryResetFriendTradeState()
+    {
+        if (this.state.tradeData != null)
+        {
+            this.state.tradeData.socket.off("disconnect"); //Prevents disconnected pop-up from showing
+            this.state.tradeData.socket.close();
+        }
+
+        this.setState
+        ({
+            inFriendTrade: false,
+            tradeData: null,
+            pokemonToTrade: null,
+        });
+    }
+
 
     /**********************************
           Living Pokedex Functions     
@@ -1554,7 +1630,7 @@ export default class MainPage extends Component
 
         return (
             <BiArrowBack size={size} className="top-bar-back-button" style={{paddingRight: paddingRight}}
-                         aria-label="Back" onClick={() => this.setState({viewingBoxList: -1})}/>
+                         aria-label="Back" onClick={this.navBackButtonPressed.bind(this)}/>
         );
     }
 
@@ -1567,20 +1643,20 @@ export default class MainPage extends Component
         //Appear above everything when boxes are side by side
         //Otherwise scroll with everything else if possible
 
-        var viewingBoxList = this.state.viewingBoxList >= 0;
-        var sticky = viewingBoxList || !this.areBoxViewsVertical();
+        var viewingNonBoxView = this.state.viewingBoxList >= 0 || this.state.inFriendTrade;
+        var sticky = viewingNonBoxView || !this.areBoxViewsVertical();
 
-        if (viewingBoxList)
+        if (viewingNonBoxView)
         {
             return (
-                <div className="top-bar-buttons" style={{zIndex: 100, position: "sticky"}}>
+                <div className={"top-bar-buttons " + (this.state.viewingBoxList >= 0 ? "fixed-navbar" : "sticky-navbar")}>
                     {this.backToMainViewButton()}
                 </div>
             );
         }
 
         return (
-            <div className="top-bar-buttons" style={{zIndex: !sticky ? -1 : 100,
+            <div className="top-bar-buttons" style={{zIndex: 100,
                                                      position: !sticky ? "unset" : "sticky"}}>
                 {this.homeToHomeButton()}
                 {this.homeToSaveButton()}
@@ -1596,12 +1672,16 @@ export default class MainPage extends Component
     startTradeButton()
     {
         var size = 42;
-        var tooltip = props => (<Tooltip {...props}>Friend Trade</Tooltip>);
+        const tooltip = props => (<Tooltip {...props}>Friend Trade</Tooltip>);
+
+        if (this.state.savingMessage !== "")
+            return ""; //Can't use while saving
 
         return (
             <OverlayTrigger placement="top" overlay={tooltip}>
                 <Button size="lg" className="footer-button"
-                        aria-label="Start Trade With a Friend">
+                        aria-label="Start Trade With a Friend"
+                        onClick={this.startFriendTrade.bind(this)}>
                     <MdSwapVert size={size} />
                 </Button>
             </OverlayTrigger>
@@ -1614,7 +1694,10 @@ export default class MainPage extends Component
      */
     openGTSButton()
     {
-        var tooltip = props => (<Tooltip {...props}>Global Trade Station</Tooltip>);
+        const tooltip = props => (<Tooltip {...props}>Global Trade Station</Tooltip>);
+
+        if (this.state.savingMessage !== "")
+            return ""; //Can't use while saving
 
         return (
             <Button size="lg" className="footer-button" style={{display: "contents"}} //Style needed to properly position svg
@@ -1637,7 +1720,7 @@ export default class MainPage extends Component
         var size = 42;
         var icon = (this.state.muted) ? <IoMdVolumeMute size={size} /> : <IoMdVolumeHigh size={size} />;
         var tooltipText = (this.state.muted) ? "Sounds Are Off" : "Sounds Are On";
-        var tooltip = props => (<Tooltip {...props}>{tooltipText}</Tooltip>);
+        const tooltip = props => (<Tooltip {...props}>{tooltipText}</Tooltip>);
 
         return (
             <OverlayTrigger placement="top" overlay={tooltip}>
@@ -1657,7 +1740,8 @@ export default class MainPage extends Component
     footerButtons()
     {
         return (
-            <div className="footer-buttons" style={isMobile ? {justifyContent: "space-evenly"} : {}}>
+            <div className={"footer-buttons" + (this.state.inFriendTrade && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}
+                 style={isMobile ? {justifyContent: "space-evenly"} : {}}>
                 {this.startTradeButton()}
                 {this.openGTSButton()}
                 {this.muteSoundsButton()}
@@ -1681,6 +1765,24 @@ export default class MainPage extends Component
                      isSameBoxBothSides={this.state.editState === STATE_EDITING_SAVE_FILE || this.state.editState === STATE_EDITING_HOME_BOXES}
                      updateParentState={this.updateState}/>
         );
+    }
+
+    /**
+     * Gets the screen shown when trying to trade directly with a friend.
+     * @returns {JSX} The friend trade page.
+     */
+    friendTradeScreen()
+    {
+        return (
+            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
+                <FriendTrade globalState={this}
+                            setGlobalState={this.setState.bind(this)}
+                            homeBoxes={this.state.homeBoxes}
+                            homeTitles={this.state.homeTitles}
+                            finishFriendTrade={this.finishWonderTrade.bind(this)}/>
+                {this.footerButtons()}
+            </div>
+        )
     }
 
     /**
@@ -1849,20 +1951,22 @@ export default class MainPage extends Component
     printEditingHomeBoxes()
     {
         var homeBoxView1 = <BoxView pokemonJSON={this.state.homeBoxes} titles={this.state.homeTitles}
-                                    parent={this} boxType={BOX_HOME} boxSlot={BOX_SLOT_LEFT}
+                                    parent={this} boxType={BOX_HOME} boxSlot={BOX_SLOT_LEFT} inTrade={false}
                                     isSameBoxBothSides={true} key={BOX_HOME + 3}/>; //The +3 forces a rerender by assigning a new key
         var homeBoxView2 = <BoxView pokemonJSON={this.state.homeBoxes} titles={this.state.homeTitles}
-                                    parent={this} boxType={BOX_HOME} boxSlot={BOX_SLOT_RIGHT}
+                                    parent={this} boxType={BOX_HOME} boxSlot={BOX_SLOT_RIGHT} inTrade={false}
                                     isSameBoxBothSides={true} key={BOX_HOME + 4}/>; //The +4 forces a rerender by assigning a new key
 
         return (
-            <div>         
-                {this.navBarButtons()}
+            <>
             {
                 this.state.viewingBoxList >= 0 ?
                     this.boxListScreen()
                 :
-                    <div className={!isMobile ? "scroll-container" : ""}>
+                this.state.inFriendTrade ?
+                    this.friendTradeScreen()
+                :
+                    <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
                         <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
                                 {homeBoxView1}
                                 {homeBoxView2}
@@ -1870,7 +1974,7 @@ export default class MainPage extends Component
                         {this.footerButtons()}
                     </div>
             }
-            </div>
+            </>
         )
     }
 
@@ -1881,20 +1985,22 @@ export default class MainPage extends Component
     printEditingSaveBoxes()
     {
         var saveBoxView1 = <BoxView pokemonJSON={this.state.saveBoxes} titles={this.state.saveTitles}
-                                    parent={this} boxType={BOX_SAVE} boxSlot={BOX_SLOT_LEFT}
+                                    parent={this} boxType={BOX_SAVE} boxSlot={BOX_SLOT_LEFT} inTrade={false}
                                     isSameBoxBothSides={true} key={BOX_SAVE + 5}/>; //The +5 forces a rerender by assigning a new key
         var saveBoxView2 = <BoxView pokemonJSON={this.state.saveBoxes} titles={this.state.saveTitles}
-                                    parent={this} boxType={BOX_SAVE} boxSlot={BOX_SLOT_RIGHT}
+                                    parent={this} boxType={BOX_SAVE} boxSlot={BOX_SLOT_RIGHT} inTrade={false}
                                     isSameBoxBothSides={true} key={BOX_SAVE + 6}/>; //The +6 forces a rerender by assigning a new key
 
         return (
-            <div>                
-                {this.navBarButtons()}
+            <>
             {
                 this.state.viewingBoxList >= 0 ?
                     this.boxListScreen()
                 :
-                    <div className={!isMobile ? "scroll-container" : ""}>
+                this.state.inFriendTrade ?
+                    this.friendTradeScreen()
+                :
+                    <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
                         <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
                                 {saveBoxView1}
                                 {saveBoxView2}
@@ -1902,7 +2008,7 @@ export default class MainPage extends Component
                         {this.footerButtons()}
                     </div>
             }
-            </div>
+            </>
         )
     }
 
@@ -1913,20 +2019,22 @@ export default class MainPage extends Component
     printMovingPokemon()
     {
         var homeBoxView = <BoxView pokemonJSON={this.state.homeBoxes} titles={this.state.homeTitles}
-                                   parent={this} boxType={BOX_HOME} boxSlot={BOX_SLOT_LEFT}
+                                   parent={this} boxType={BOX_HOME} boxSlot={BOX_SLOT_LEFT} inTrade={false}
                                    isSameBoxBothSides={false} key={BOX_HOME}/>;
         var saveBoxView = <BoxView pokemonJSON={this.state.saveBoxes} titles={this.state.saveTitles}
-                                   parent={this} boxType={BOX_SAVE} boxSlot={BOX_SLOT_RIGHT}
+                                   parent={this} boxType={BOX_SAVE} boxSlot={BOX_SLOT_RIGHT} inTrade={false}
                                    isSameBoxBothSides={false} key={BOX_SAVE}/>;
  
         return (
-            <div>
-                {this.navBarButtons()}
+            <>
                 {
                     this.state.viewingBoxList >= 0 ?
                         this.boxListScreen()
                     :
-                        <div className={!isMobile ? "scroll-container" : ""}>
+                    this.state.inFriendTrade ?
+                        this.friendTradeScreen()
+                    :
+                        <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
                             <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
                                 {homeBoxView}
                                 {saveBoxView}
@@ -1934,7 +2042,7 @@ export default class MainPage extends Component
                             {this.footerButtons()}
                         </div>
                 }
-            </div>
+            </>
         )
     }
 
@@ -1945,6 +2053,7 @@ export default class MainPage extends Component
     {
         var title = <h1 className="main-page-title">Welcome to Unbound Home</h1>;
         var page, draggingImg;
+        var navBar = false;
 
         switch (this.state.editState)
         {
@@ -1968,12 +2077,15 @@ export default class MainPage extends Component
                 break;
             case STATE_EDITING_HOME_BOXES:
                 page = this.printEditingHomeBoxes(); //Don't display title
+                navBar = true;
                 break;
             case STATE_EDITING_SAVE_FILE:
                 page = this.printEditingSaveBoxes(); //Don't display title
+                navBar = true;
                 break;
             case STATE_MOVING_POKEMON:
                 page = this.printMovingPokemon(); //Don't display title
+                navBar = true;
                 break;
             default:
                 page = "";
@@ -1986,7 +2098,9 @@ export default class MainPage extends Component
                                onMouseDown={(e) => e.preventDefault()} id="moving-icon" className="dragging-image"/>;
 
         return (
-            <div style={{minWidth: "428px"}} onMouseMove={(e) => this.moveDraggingMonIcon(e)}>
+            <div className={isMobile ? "main-page-mobile" : ""}
+                 onMouseMove={(e) => this.moveDraggingMonIcon(e)}>
+                {navBar ? this.navBarButtons() : ""}
                 {page}
                 {draggingImg}
             </div>

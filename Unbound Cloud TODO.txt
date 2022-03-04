@@ -1,6 +1,5 @@
 New Features:
 -Give mon little exclamation mark in corner if has data that will disappear in game
--P2P Trading
 -GTS
 -Ads
 -Alcremie colour
@@ -9,6 +8,10 @@ Feature Modifications:
 -Calc stats on client side and remove from data structure
 -Just dump entire base stats file on client side
 -Multi select should highlight where the selected mons would go in the other box, not where the mouse is
+-Search bar for box list page
+-Loading screen for search view
+-Timeout if friend trade connection has gone on too long
+-Force save before friend trade
 
 Server Changes:
 -Change the file signature for Unbound

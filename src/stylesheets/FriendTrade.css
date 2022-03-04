@@ -1,0 +1,159 @@
+.friend-trade-page
+{
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    flex: 1 0 auto;
+}
+
+body.swal2-height-auto /*Undoes pop up ruining mobile view*/
+{
+    height: 100% !important;
+}
+
+/*Code Choice Page*/
+
+.friend-trade-code-choice-page
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.friend-trade-code-choice-instructions
+{
+    margin-bottom: 1%;
+}
+
+.friend-trade-code-choice-title-container
+{
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.friend-trade-code-choice-title
+{
+    color: rebeccapurple;
+    font-weight: bold !important;
+    margin-left: 2% !important;
+    margin-right: 2% !important;
+}
+
+.friend-trade-code-choice-buttons
+{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/*Created Code Display Page*/
+
+.friend-trade-code-display-page
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.friend-trade-code-display-container
+{
+    display: flex;
+    justify-content: center;
+    margin-top: 2%;
+}
+
+.friend-trade-code-display-code
+{
+    color: #000;
+    background: #f8fbfd;
+    box-shadow: inset 0 1px 2px #ccc, 1px 1px 0 rgb(255 255 255 / 60%);
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    padding: 1.5%;
+    font-size: 1.5rem;
+    width: fit-content;
+    cursor: pointer;
+    user-select: none;
+}
+
+/*Code Input Page*/
+
+.friend-trade-code-input-page
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.friend-trade-code-input-container
+{
+    display: flex;
+}
+
+.friend-trade-code-input-button
+{
+    text-align: center;
+}
+
+
+/*Trade Offers Page*/
+
+.friend-trade-offers-container
+{
+    width: 100%;    
+}
+
+.friend-trade-offers
+{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin-bottom: 2%;
+}
+
+.friend-trade-offer
+{
+    min-width: 400px;
+}
+
+.friend-trade-offer-title-container
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+.friend-trade-offer-title
+{
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: auto;
+    padding-bottom: 10px;
+}
+
+.blank-placeholder-mon-icon
+{
+    width: 68px;
+    height: 56px;
+}
+
+.friend-trade-offer-buttons
+{
+    text-align: center;
+    margin-bottom: 2%;
+}
+
+.friend-trade-offer-button
+{
+    background-color: rebeccapurple !important;
+    border-color: rebeccapurple !important;
+    box-shadow: unset !important;
+    width: fit-content !important;
+    font-size: 24px;
+    margin-left: 1%;
+    margin-right: 1%;
+}
