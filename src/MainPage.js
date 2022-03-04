@@ -93,8 +93,8 @@ export default class MainPage extends Component
             draggingImg: "",
             draggingMon: -1,
             draggingOver: -1,
-            draggingFromBox: 0,
-            draggingToBox: 0,
+            draggingFromBox: -1,
+            draggingToBox: -1,
             draggedAtLeastOnce: false,
 
             //Actual Stoage System

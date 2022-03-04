@@ -114,9 +114,8 @@
     position: relative; /*Allows the item icon to position properly*/
 }
 
-.box-icon-hoverable:hover
+.box-icon-hoverable
 {
-    background-color: rgba(255, 255, 255, 0.9) !important;
     cursor: pointer;
 }
 

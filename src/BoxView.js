@@ -13,8 +13,8 @@ import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, Get
         IsEgg, IsHoldingItem, IsShiny, IsValidPokemon} from "./PokemonUtil";
 import {MatchesSearchCriteria, Search} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
-import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxStartIndex, GetSpeciesName, IsHomeBox,
-        IsNullSpeciesName, IsSaveBox} from "./Util";
+import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxPosBoxColumn, GetBoxPosBoxRow, GetBoxStartIndex,
+        GetLocalBoxPosFromBoxOffset, GetSpeciesName, IsHomeBox, IsNullSpeciesName, IsSaveBox} from "./Util";
 import {WonderTrade} from "./WonderTrade";
 import gLivingDexOrder from "./data/LivingDexOrder.json";
 
@@ -125,6 +125,14 @@ export class BoxView extends Component
     getBoxStartIndex()
     {
         return GetBoxStartIndex(this.getCurrentBoxId());
+    }
+
+    /**
+     * @returns {Number} The box slot of the box this isn't.
+     */
+    getOtherBoxSlot()
+    {
+        return this.state.boxSlot ^ 1;
     }
 
     /**
@@ -243,6 +251,74 @@ export class BoxView extends Component
             var col = boxPos % MONS_PER_ROW;
 
             return impossibleMovement[row][col];
+        }
+
+        return false;
+    }
+
+    /**
+     * Gets whether or not a box position should light up as it's hovered over.
+     * @param {Number} boxPos - The box position to check.
+     * @returns True if the position should be lit up. False otherwise.
+     */
+    shouldDisplayHoverOverPos(boxPos)
+    {
+        if (this.getParentState().draggingToBox === this.state.boxSlot //Not necessarily dragging, mouse is just over
+        && this.getParentState().draggingOver === this.getBoxStartIndex() + boxPos //Hovering over this spot
+        && !this.movingMultiplePokemonFromOtherBox()) //Spot may not be lit up because multi-select lighting takes priority
+            return true;
+
+        return this.isPosSpotForMultiDrop(boxPos);
+    }
+
+    /**
+     * Gets whether or not the current pos will have a Pokemon placed in it for a multi-select placement.
+     * @param {Number} boxPos - The box position to check.
+     * @returns {Boolean} True if the box position will have a Pokemon placed in it. False otherwise.
+     */
+    isPosSpotForMultiDrop(boxPos)
+    {
+        var dropTopLeftPos = GetLocalBoxPosFromBoxOffset(this.getParentState().draggingOver); //Top left position of the placement
+
+        if (dropTopLeftPos >= 0 //Mouse is over box
+        && this.getParentState().draggingToBox === this.state.boxSlot //Not necessarily dragging, mouse is just over
+        && this.movingMultiplePokemonFromOtherBox())
+        {
+            let currRow = GetBoxPosBoxRow(boxPos); //Of the spot to potentially be lit up
+            let currCol = GetBoxPosBoxColumn(boxPos); //Of the spot to potentially be lit up
+            let dropTopRow = GetBoxPosBoxRow(dropTopLeftPos); //Where the mouse is currently over
+            let dropLeftCol = GetBoxPosBoxColumn(dropTopLeftPos); //Where the mouse is currently over
+
+            if (currRow < dropTopRow || currCol < dropLeftCol) //Spot isn't even in range
+                return false;
+
+            let dropRowOffset = currRow - dropTopRow; //Rows away from where the mouse is
+            let dropColOffset = currCol - dropLeftCol; //Columns away from where the mouse is
+
+             //Determine the pickup area
+            let pickUpTopRow = Number.MAX_SAFE_INTEGER; //Top row of pickup area
+            let pickUpLeftCol = Number.MAX_SAFE_INTEGER; //Left column of pickup area
+            let otherBoxSelectedPos = this.getParentState().selectedMonPos[this.getOtherBoxSlot()]; //Where the mons are coming from
+            for (let i = 0; i < MONS_PER_BOX; ++i)
+            {
+                if (otherBoxSelectedPos[i])
+                {
+                    let row = GetBoxPosBoxRow(i);
+                    let col = GetBoxPosBoxColumn(i);
+
+                    if (row < pickUpTopRow)
+                        pickUpTopRow = row;
+
+                    if (col < pickUpLeftCol)
+                        pickUpLeftCol = col;
+                }
+            }
+
+            //Determine where in the pickup area boxPos (parameter) would correspond to
+            let checkPickUpRow = pickUpTopRow + dropRowOffset;
+            let checkPickUpCol = pickUpLeftCol + dropColOffset;
+            let checkPickUpPos = checkPickUpRow * MONS_PER_ROW + checkPickUpCol;
+            return otherBoxSelectedPos[checkPickUpPos];
         }
 
         return false;
@@ -433,7 +509,7 @@ export class BoxView extends Component
      */
     otherBoxHasSelection()
     {
-        return this.getParentState().selectedMonPos[this.state.boxSlot ^ 1].some((x) => x);
+        return this.getParentState().selectedMonPos[this.getOtherBoxSlot()].some((x) => x);
     }
 
     /**
@@ -502,6 +578,16 @@ export class BoxView extends Component
             return true;
 
         return false;
+    }
+
+    /**
+     * Gets whether or not multiple Pokemon are being moved at the same time from the other box.
+     * @returns {Boolean} True if more than one Pokemon are selected in the other box, False otherwise.
+     */
+    movingMultiplePokemonFromOtherBox()
+    {
+        //At least two mons selected in the other box
+        return this.getParentState().selectedMonPos[this.getOtherBoxSlot()].filter(x => x).length >= 2;
     }
 
 
@@ -654,7 +740,7 @@ export class BoxView extends Component
             else if (this.isHomeBox() && boxNum >= HIGHEST_HOME_BOX_NUM)
                 boxNum = 0; //Wrap around
 
-            if (this.isSameBoxTypeBothSides() && this.getParentState().currentBox[this.state.boxSlot ^ 1] === boxNum) //Same box on both sides
+            if (this.isSameBoxTypeBothSides() && this.getParentState().currentBox[this.getOtherBoxSlot()] === boxNum) //Same box on both sides
                 continue; //Force another increase so both boxes don't display the same mons
 
             break;
@@ -1227,7 +1313,8 @@ export class BoxView extends Component
             }
 
             let spanClassName = "box-icon"
-                              + (!isMobile ? " box-icon-hoverable" : "")
+                              + (!isMobile ? " box-icon-hoverable" : "") //Just changes cursor
+                              + (!isMobile && this.shouldDisplayHoverOverPos(key) ? " selected-box-icon" : "")
                               + (this.isMonAtPosSelected(key) ? " selected-box-icon" : "")
                               + (isInWonderTrade ? " wonder-trade-box-icon" : "")
                               + (this.shouldShowIconImpossibleMoveWarning(key) ? " error-box-icon" : "");
