@@ -6,7 +6,7 @@
 #showdown-textarea
 {
     resize: none;
-    height: 245px;
+    height: 213.875px; /*Matches summary view height*/
 
     /*Ripped from Showdown*/
     width: 100%;

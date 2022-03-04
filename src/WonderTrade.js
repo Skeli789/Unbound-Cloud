@@ -185,6 +185,7 @@ export class WonderTrade extends Component
                 title: "Please save everything before attempting to Wonder Trade.",
                 confirmButtonText: `Okay`,
                 icon: 'error',
+                scrollbarPadding: false,
             });
 
             return;
@@ -200,6 +201,7 @@ export class WonderTrade extends Component
                 showConfirmButton: false,
                 showCancelButton: true,
                 icon: 'error',
+                scrollbarPadding: false,
             });
 
             return;
@@ -217,6 +219,7 @@ export class WonderTrade extends Component
                 showConfirmButton: false,
                 showCancelButton: true,
                 icon: 'error',
+                scrollbarPadding: false,
             });
 
             return;
@@ -233,6 +236,7 @@ export class WonderTrade extends Component
                 showCancelButton: true,
                 imageUrl: GetIconSpeciesLink(pokemon),
                 imageAlt: "",
+                scrollbarPadding: false,
             }).then((result) =>
             {
                 if (result.isConfirmed)
@@ -259,6 +263,7 @@ export class WonderTrade extends Component
                 showCancelButton: true,
                 imageUrl: GetIconSpeciesLink(pokemon),
                 imageAlt: "",
+                scrollbarPadding: false,
             }).then((result) =>
             {
                 if (result.isConfirmed)
@@ -308,6 +313,7 @@ export class WonderTrade extends Component
                     });
 
                     //Send Pokemon for trade
+                    socket.emit("tradeType", "WONDER_TRADE");
                     console.log("Connection established.");
                     console.log("Sending pokemon...");
                     socket.send(pokemon);
@@ -320,6 +326,7 @@ export class WonderTrade extends Component
                         confirmButtonText: `Okay`,
                         imageUrl: GetIconSpeciesLink(pokemon),
                         imageAlt: "",
+                        scrollbarPadding: false,
                     });
                 });
 
@@ -331,6 +338,7 @@ export class WonderTrade extends Component
                     timer: 5000,
                     timerProgressBar: true,
                     allowOutsideClick: false,
+                    scrollbarPadding: false,
                     didOpen: () =>
                     {
                         if (!socket.connected)
@@ -358,6 +366,7 @@ export class WonderTrade extends Component
                                 showConfirmButton: false,
                                 showCancelButton: true,
                                 icon: 'error',
+                                scrollbarPadding: false,
                             });
                         }
                     });
@@ -394,6 +403,7 @@ export class WonderTrade extends Component
             confirmButtonText: `Hooray!`,
             imageUrl: GetIconSpeciesLink(newPokemon),
             imageAlt: "",
+            scrollbarPadding: false,
         }).then(() =>
         {
             document.title = backupTitle;
@@ -416,6 +426,7 @@ export class WonderTrade extends Component
             showConfirmButton: false,
             showCancelButton: true,
             icon: 'error',
+            scrollbarPadding: false,
         });
     }
 
@@ -434,6 +445,7 @@ export class WonderTrade extends Component
             showDenyButton: true,
             imageUrl: GetIconSpeciesLink(pokemon),
             imageAlt: "",
+            scrollbarPadding: false,
         }).then((result) =>
         {
             if (result.isDenied) //In this case it means agreed to cancel trade

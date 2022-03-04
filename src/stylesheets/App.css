@@ -15,6 +15,12 @@ body
     background: var(--main-background-color) !important;
 }
 
+body, html 
+{
+    height: 100% !important;
+    min-width: 428px;
+}
+
 input[type=email], input[type=password], input[type=search], input[type=text]
 {
     -webkit-appearance: auto !important;
@@ -24,4 +30,14 @@ button, input, optgroup, select, textarea
 {
     font-family: "open sans", arial, sans-serif !important; /* Font + fallbacks */
     line-height: initial !important;
+}
+
+.app
+{
+    height: 100% !important;
+}
+
+.tooltip
+{
+    z-index: 1050 !important; /*Just lower than the swal pop-up (normally 1060px)*/
 }
