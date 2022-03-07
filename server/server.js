@@ -322,7 +322,7 @@ app.post('/uploadSaveFile', async (req, res) =>
         let titles = data["titles"];
 
         if (boxes.length == 0 || titles.length == 0) //Bad save file
-            result = res.status(StatusCode.ClientErrorBadRequest).json("ERROR: The uploaded save file is not acceptable.");
+            result = res.status(StatusCode.ClientErrorBadRequest).json("ERROR: The uploaded save file is corrupt.");
         else
             result = res.status(StatusCode.SuccessOK).json({boxes: boxes, titles: titles, saveFileData: saveFileData, fileIdNumber: fileIdNumber});
     }

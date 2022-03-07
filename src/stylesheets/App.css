@@ -17,8 +17,9 @@ body
 
 body, html 
 {
+    --min-mobile-width: 428px;
     height: 100% !important;
-    min-width: 428px;
+    min-width: var(--min-mobile-width);
 }
 
 input[type=email], input[type=password], input[type=search], input[type=text]

@@ -11,6 +11,8 @@ Feature Modifications:
 -Loading screen for search view
 -Timeout if friend trade connection has gone on too long
 -Force save before friend trade
+-List supported hacks somewhere
+-Make back button work for pages that have a back arrow on them
 
 Server Changes:
 -Change the file signature for Unbound

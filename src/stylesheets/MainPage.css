@@ -57,10 +57,16 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    position: absolute;
-    bottom: 0;
     height: 100%;
     width: 100%;
+    min-width: var(--min-mobile-width);
+    overflow-y: auto;
+}
+
+.file-handle-page-mobile
+{
+    padding-left: 2%;
+    padding-right: 2%;
 }
 
 .choose-home-file-button
@@ -82,7 +88,39 @@
 
 .upload-progress-bar
 {
-    width: 50vw;
+    width: 90%;
+    max-width: 500px;
+}
+
+.main-page-save-file-dropdown
+{
+    margin-top: 2%;
+}
+
+.confirm-save-file-upload-button
+{
+    background-color: rebeccapurple !important;
+    border-color: rebeccapurple !important;
+    box-shadow: unset !important;
+    width: fit-content !important;
+    font-size: 24px;
+}
+
+.main-page-home-storage-example-container
+{
+    display: flex;
+    justify-content: center;
+    max-width: 350px;
+    height: 255px;
+    margin-bottom: 2%;
+}
+
+.main-page-home-storage-example
+{
+    height: 100%;
+    width: 100%;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 .main-page-mobile
@@ -118,6 +156,13 @@
     margin-bottom: 1%;
     height: 56px;
     width: 100%;
+}
+
+.navbar-blank
+{
+    background-color: rebeccapurple !important;
+    position: static;
+    margin-bottom: 0px;
 }
 
 .fixed-navbar
@@ -209,7 +254,7 @@
     top: 56px;
     bottom: 0;
     width: 100%;
-    min-width: 428px;
+    min-width: var(--min-mobile-width);
 }
 
 .scroll-container-mobile

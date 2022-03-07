@@ -126,7 +126,7 @@
     bottom: 0;
     width: 100%;
     overflow-y: scroll;
-    min-width: 428px;
+    min-width: var(--min-mobile-width);
 }
 
 .scroll-container-box-list-mobile
