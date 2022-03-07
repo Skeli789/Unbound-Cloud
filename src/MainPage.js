@@ -6,13 +6,17 @@ import axios from "axios";
 import React, {Component} from 'react';
 import {Button, ProgressBar, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {isMobile} from "react-device-detect";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
 import {BoxList} from "./BoxList";
 import {BoxView, HIGHEST_HOME_BOX_NUM, HIGHEST_SAVE_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
+import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {FriendTrade} from "./FriendTrade";
 import {GetItem, GetSpecies, IsBlankMon, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
-import {CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow, GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
+import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
+        GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
 
 import {BiArrowBack} from "react-icons/bi";
@@ -34,15 +38,19 @@ const STATE_UPLOAD_HOME_FILE = 2;
 const STATE_UPLOADING_HOME_FILE = 3;
 const STATE_UPLOAD_SAVE_FILE = 4;
 const STATE_UPLOADING_SAVE_FILE = 5;
-const STATE_EDITING_HOME_BOXES = 6;
-const STATE_EDITING_SAVE_FILE = 7;
-const STATE_MOVING_POKEMON = 8;
+const STATE_CHOOSE_HOME_FOLDER = 6;
+const STATE_CHOOSE_SAVE_HANDLE = 7;
+const STATE_EDITING_HOME_BOXES = 8;
+const STATE_EDITING_SAVE_FILE = 9;
+const STATE_MOVING_POKEMON = 10;
 
 const HOME_FILE_NAME = "cloud.dat";
 const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} label={"0%"} />;
 const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path fill="white" d="M254.777 93.275c-58.482 0-105.695 47.21-105.695 105.696 0 58.487 47.213 105.698 105.695 105.698 58.482 0 105.696-47.21 105.696-105.697 0-58.48-47.214-105.695-105.696-105.695zm-140.714 63.59C-40.9 155.67-21.26 276.118 227.043 357.748c225.954 74.28 319.04 10.624 239.48-69.973-.413-.55-.84-1.097-1.277-1.64-4.755 3.954-9.71 7.915-14.95 11.88 4.487 5.513 7.138 11.084 7.704 16.01.713 6.2-.9 11.8-6.986 17.977-5.84 5.927-16.25 11.98-32.307 16.49-24.074 5.698-58.427 5.6-102.287-2.656l.105-.04c-2.153-.38-4.3-.787-6.445-1.198-21.875-4.418-46.004-10.805-72.318-19.455-69.962-23-118.054-49.706-146.063-74.936.246-.19.48-.38.728-.568-.27.166-.532.333-.8.5-53.315-48.08-33.682-90.78 46.558-92.2-8.46-.665-16.502-1.016-24.124-1.075zm281.425 0c-7.62.06-15.663.41-24.123 1.076 80.24 1.42 99.86 44.115 46.537 92.193-.264-.165-.513-.33-.78-.494.244.184.472.368.712.553-26.017 23.434-69.357 48.144-131.455 69.973 21.19 5.413 42.82 9.363 64.815 11.64 34.83-15.125 63.025-30.916 84.91-46.554.01.007.02.014.032.02.522-.386 1.03-.773 1.547-1.16 90.502-65.565 69.686-128.11-42.196-127.247zM44.54 286.27c-74.364 73.55-5.467 133.668 176.683 89.125-22.844-7.563-44.89-15.83-65.84-24.194-25.396 2.316-46.41 1.29-62.842-2.346-16.802-4.544-27.613-10.765-33.61-16.852-6.086-6.176-7.697-11.776-6.985-17.977.56-4.88 3.17-10.395 7.582-15.86-5.253-3.968-10.22-7.935-14.986-11.894z"/></svg>;
 
-//TODO: Drag and drop file upload
+const PopUp = withReactContent(Swal);
+const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
+
 //TODO: Unbound Base Stats
 //TODO: More data fields like "Gigantamax" and "MapSec" (with like MAPSEC_BORRIUS_ROUTE_1) - use Met Game to advantage
 //TODO: Make sure Wonder Trading can't be hijacked
@@ -63,7 +71,7 @@ export default class MainPage extends Component
 
         this.state =
         {
-            editState: (localStorage.visitedBefore ? STATE_UPLOAD_HOME_FILE : STATE_WELCOME), //STATE_MOVING_POKEMON,
+            editState: GetInitialPageState(), //STATE_MOVING_POKEMON,
 
             //Uploading & Downloading Files
             uploadProgress: BLANK_PROGRESS_BAR,
@@ -73,7 +81,9 @@ export default class MainPage extends Component
             serverConnectionError: false,
             saveFileData: {"data": []}, //Also used in downloading
             saveFileNumber: 0, //Also used in downloading
-            fileDownloadUrl: null,
+            homeDirHandle: null,  //Modern file system API
+            saveFileHandle: null,
+            homeFileHandle: null,
 
             //Box Side Data
             currentBox: [0, 0],
@@ -114,12 +124,23 @@ export default class MainPage extends Component
 
     /**
      * Sets up event listeners for dragging Pokemon and trying to leave the page.
+     * Also loads cached Home data directory and save file handles from previous visit.
      */
-    componentDidMount()
+    async componentDidMount()
     {
         //localStorage.clear(); //For debugging
+        //ClearBrowserDB(); //For debugging
         window.addEventListener('beforeunload', this.tryPreventLeavingPage.bind(this));
         window.addEventListener('mouseup', this.handleReleaseDragging.bind(this));
+
+        if (CanUseFileHandleAPI())
+        {
+            this.setState
+            ({
+                homeDirHandle: await GetDBVal("cloudDirectory"),
+                saveFileHandle: await GetDBVal("saveFile"),
+            });
+        }
     }
 
     /**
@@ -161,6 +182,8 @@ export default class MainPage extends Component
         return this.setState({
             errorMessage: ["", ""],
             impossibleMovement: null,
+            fileUploadError: false,
+            serverConnectionError: false,
         });
     }
 
@@ -468,95 +491,106 @@ export default class MainPage extends Component
     }
 
     /**
+     * Checks if a file's possible to be a valid save file.
+     * @param {File} file - The save file to check.
+     * @returns {Boolean} - True if the save file could be valid. False otherwise.
+     */
+    isValidSaveFile(file)
+    {
+        return  file != null
+            /*&& this.isValidSaveFileName(file.name.toLowerCase())*/ //Extension doesn't matter because the user will be guided to pick the right one anyway
+            && file.size === 131072;
+    }
+
+    /**
      * Handles the user's choice of a save file.
      * @param {Object} e - The file upload event.
+     * @param {String} errorMsg - An error message to display in the pop-up if the upload fails due to a bad file.
      */
-    async chooseSaveFile(e)
+    async chooseSaveFile(e, errorMsg)
     {
         var file = e.target.files[0];
+        if (file == null) //Cancelled the file upload
+            return;
 
-        if (!this.isValidSaveFileName(file.name.toLowerCase()) || file.size !== 131072) //128 kb
-            this.setState({fileUploadError: true, serverConnectionError: false});
+        if (!(await this.handleChooseSaveFile(file)) && !this.state.serverConnectionError)
+        {
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "Problem With Save File",
+                html: errorMsg,
+                scrollbarPadding: false,
+            });
+        }
+    }
+
+    /**
+     * Handles uploading a save file to the server to check it.
+     * @param {File} file - The file to upload.
+     * @returns {Boolean} - True if the upload was a success. False if not.
+     */
+    async handleChooseSaveFile(file)
+    {
+        if (!this.isValidSaveFile(file))
+        {
+            await this.setState({fileUploadError: true, serverConnectionError: false});
+            return false;
+        }
         else
         {
-            this.setState({selectedSaveFile: file, fileUploadError: false, serverConnectionError: false}, () =>
-            {
-                this.handleUpload(true); //Upload immediately
-            });
+            await this.setState({selectedSaveFile: file, fileUploadError: false, serverConnectionError: false});
+            return await this.handleUpload(true);
         }
     }
 
     /**
      * Handles the user's choice of a Home data file.
      * @param {Object} e - The file upload event.
+     * @param {String} errorMsg - An error message to display in the pop-up if the upload fails due to a bad file.
      */
-    async chooseHomeFile(e)
+    async chooseHomeFile(e, errorMsg)
     {
         var file = e.target.files[0];
+        if (file == null) //Cancelled the file upload
+            return;
 
+        if (!(await this.handleChooseHomeFile(file)) && !this.state.serverConnectionError)
+        {
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "Problem With Cloud File",
+                html: errorMsg,
+                scrollbarPadding: false,
+            });
+        }
+    }
+
+    /**
+     * Handles uploading a Home data file to the server to check it.
+     * @param {File} file - The file to upload.
+     * @returns {Boolean} - True if the upload was a success. False if not.
+     */
+    async handleChooseHomeFile(file)
+    {
         if (!this.isValidHomeFileName(file.name.toLowerCase()))
-            this.setState({fileUploadError: true, serverConnectionError: false});
-        else
         {
-            this.setState({selectedHomeFile: file, fileUploadError: false, serverConnectionError: false}, () =>
-            {
-                this.handleUpload(false); //Upload immediately
-            });
-        }
-    }
-
-    /**
-     * Adds the Home boxes to form data for sending to the server.
-     * @param {*} homeData - The Home boxes to send to the server.
-     * @param {*} formData - The object used to send them to the server.
-     */
-    addHomeDataToFormData(homeData, formData)
-    {
-        //The data is split into four parts to guarantee it'll all be sent
-        for (let i = 0; i < 4; ++i)
-        {
-            if (i + 1 >= 4)
-                formData.append(`homeDataP${i + 1}`, homeData.slice((homeData.length / 4) * i, homeData.length));
-            else
-                formData.append(`homeDataP${i + 1}`, homeData.slice((homeData.length / 4) * i, (homeData.length / 4) * (i + 1)));
-        }
-    }
-
-    /**
-     * Prints an error to the console and updates the state after a failed file upload.
-     * @param {Object} error - The error object after the server request completed.
-     * @param {Number} newState - The new editState.
-     */
-    handleUploadError(error, newState)
-    {
-        console.log("An error occurred uploading the file.");
-
-        if (error.message === "Network Error")
-        {
-            console.log("Could not connect to the server.");
-
-            this.setState({
-                editState: newState,
-                fileUploadError: false,
-                serverConnectionError: true,
-            });
+            await this.setState({fileUploadError: true, serverConnectionError: false});
+            return false;
         }
         else
         {
-            console.log(error["response"]["data"]);
-
-            this.setState({
-                editState: newState,
-                fileUploadError: true,
-                serverConnectionError: false,
-            });
+            await this.setState({selectedHomeFile: file, fileUploadError: false, serverConnectionError: false});
+            return await this.handleUpload(false); //Upload immediately
         }
     }
 
     /**
      * Handles the user's choice to use the Home data file stored in the local storage.
+     * @param {String} errorMsg - An error message to display in the pop-up if the upload fails due to a bad file.
      */
-    async useLastSavedHomeFile()
+    async useLastSavedHomeFile(errorMsg)
     {
         const formData = new FormData(); //formData contains the Home boxes
         var homeData = localStorage.lastSavedHomeData;
@@ -575,14 +609,26 @@ export default class MainPage extends Component
         {
             res = await axios.post(route, formData,
             {
-                onUploadProgress: (ProgressEvent) => this.updateUploadProgress(ProgressEvent, false)
+                onUploadProgress: (progressEvent) => this.updateUploadProgress(progressEvent, false)
             });
         }
         catch (error)
         {
             //Some error occurred
             var newState = STATE_UPLOAD_HOME_FILE;
-            this.handleUploadError(error, newState);
+            await this.handleUploadError(error, newState);
+
+            if (!this.state.serverConnectionError) //Pop-up would have already played for this
+            {
+                PopUp.fire
+                ({
+                    icon: "error",
+                    title: "Problem With Last Cloud File",
+                    html: errorMsg,
+                    scrollbarPadding: false,
+                });
+            }
+
             return;
         }
 
@@ -600,18 +646,22 @@ export default class MainPage extends Component
 
     /**
      * Handles the user's upload of a save file or Home data file.
-     * @param {Boolean} isSaveFile - True if a save file is being upload, False if a Home data file is being uploaded.
+     * @param {Boolean} isSaveFile - True if a save file is being uploaded. False if a Home data file is being uploaded.
+     * @returns {Boolean} - True if the upload was a success. False if not.
      */
     async handleUpload(isSaveFile)
     {
         var file = isSaveFile ? this.state.selectedSaveFile : this.state.selectedHomeFile;
-        var route = isSaveFile ? "uploadSaveFile" : "uploadHomeData";
-        route = `${config.dev_server}/${route}`;
-        const formData = new FormData(); //formData contains the file to be sent to the server
+        var route = `${config.dev_server}/${isSaveFile ? "uploadSaveFile" : "uploadHomeData"}`;
+        var isUsingFileHandles = (isSaveFile && this.state.saveFileHandle != null)
+                             || (!isSaveFile && this.state.homeFileHandle != null); //Using modern FileSystem API
 
+        const formData = new FormData(); //formData contains the file to be sent to the server
         formData.append("file", file);
         formData.append("isSaveFile", isSaveFile);
-        this.setState({
+
+        this.setState
+        ({
             editState: isSaveFile ? STATE_UPLOADING_SAVE_FILE : STATE_UPLOADING_HOME_FILE,
             uploadProgress: BLANK_PROGRESS_BAR, //Update here in case the connection has been lost
         });
@@ -621,59 +671,121 @@ export default class MainPage extends Component
         {
             res = await axios.post(route, formData,
             {
-                onUploadProgress: (ProgressEvent) => this.updateUploadProgress(ProgressEvent, isSaveFile)
+                onUploadProgress: (progressEvent) => this.updateUploadProgress(progressEvent, isSaveFile)
             });
         }
         catch (error)
         {
             //Some error occurred
-            var newState = (isSaveFile) ? STATE_UPLOAD_SAVE_FILE : STATE_UPLOAD_HOME_FILE;
-            this.handleUploadError(error, newState);
-            return;
+            let errorShouldBlockUser = !isUsingFileHandles || isSaveFile; //Home file errors are ignored when using file handles
+
+            if (errorShouldBlockUser)
+            {
+                var newState = (isUsingFileHandles) ? STATE_CHOOSE_SAVE_HANDLE : (isSaveFile) ? STATE_UPLOAD_SAVE_FILE : STATE_UPLOAD_HOME_FILE;
+                await this.handleUploadError(error, newState);
+            }
+
+            if (isUsingFileHandles && !isSaveFile) //isHomeFileHandle
+                this.setState({homeFileHandle: null}); //Remove any if they were there already (since it's corrupt)
+
+            return false;
         }
 
         //Accepted, no error occurred
         if (isSaveFile)
         {
             console.log("Save file upload successful.");
+            await this.setSaveBoxesFromResponse(res);
 
-            this.setState({
-                editState: STATE_MOVING_POKEMON,
-                saveBoxes: res.data.boxes,
-                saveTitles: res.data.titles,
-                saveFileNumber: res.data.fileIdNumber,
-                saveFileData: res.data.saveFileData,
-                fileUploadError: false,
-                serverConnectionError: false,
-            });
+            if (isUsingFileHandles)
+            {
+                //Upload the standard name for a cloud file if it exists
+                //If it doesn't or there's an error, just use a blank new home file
+                try
+                {
+                    let homeFileHandle = await this.findFileHandleWithNameInDirHandle(HOME_FILE_NAME, this.state.homeDirHandle);
+                    if (homeFileHandle != null) //Home file has already been created
+                    {
+                        await this.setState({homeFileHandle: homeFileHandle});
+                        if (!(await this.handleChooseHomeFile(await homeFileHandle.getFile())))
+                        {
+                            //Site can still be used, but warn user
+                            PopUp.fire
+                            ({
+                                icon: "warning",
+                                title: "Cloud Data Corrupt",
+                                html: "The Cloud data found was corrupt. If you did not tamper with the file, please report this to Skeli at once.",
+                                scrollbarPadding: false,
+                            });
+                        }
+                    }
+                }
+                catch (e)
+                {
+                    //Site can't be used at all
+                    console.log(`Error uploading last Cloud directory: ${this.state.homeDirHandle.name} was not found.`);
+                    PopUp.fire
+                    ({
+                        icon: "error",
+                        title: "Last Cloud Folder Not Found",
+                        html: `The folder "${this.state.homeDirHandle.name}" has likely been moved or renamed since it was last used.`,
+                        scrollbarPadding: false,
+                    }).then(async () =>
+                    {
+                        await SetDBVal("cloudDirectory", null); //Prevent user from picking it again
+                        window.location.reload(); //Force a reload because normally wouldn't stop for a missing cloud file
+                    });
+                }
+            }
 
+            this.setState({editState: STATE_MOVING_POKEMON});
+            this.wipeErrorMessage();
             localStorage.visitedBefore = true; //Set cookie now
         }
         else //Home File
         {
             console.log("Home file upload successful.");
 
-            this.setState({
-                editState: STATE_UPLOAD_SAVE_FILE,
+            this.setState
+            ({
+                editState: (!isUsingFileHandles) ? STATE_UPLOAD_SAVE_FILE : this.state.editState, //Uploading a home file handle doesn't change the edit state (updated above in the call stack)
                 homeBoxes: res.data.boxes,
                 homeTitles: res.data.titles,
-                fileUploadError: false,
-                serverConnectionError: false,
             });
+            this.wipeErrorMessage();
+        }
+
+        return true;
+    }
+
+    /**
+     * Adds the Home boxes to form data for sending to the server.
+     * @param {Array} homeData - The Home boxes to send to the server.
+     * @param {Object} formData - The object used to send them to the server.
+     */
+    addHomeDataToFormData(homeData, formData)
+    {
+        //The data is split into four parts to guarantee it'll all be sent
+        for (let i = 0; i < 4; ++i)
+        {
+            if (i + 1 >= 4)
+                formData.append(`homeDataP${i + 1}`, homeData.slice((homeData.length / 4) * i, homeData.length));
+            else
+                formData.append(`homeDataP${i + 1}`, homeData.slice((homeData.length / 4) * i, (homeData.length / 4) * (i + 1)));
         }
     }
 
     /**
      * Updates the upload status during a file upload.
      * @param {Object} progressEvent - An object containing the current state of the upload.
-     * @param {Boolean} isSaveFile - True if a save file is being upload, False if a Home data file is being uploaded.
+     * @param {Boolean} isSaveFile - True if a save file is being uploaded. False if a Home data file is being uploaded.
      */
     updateUploadProgress(progressEvent, isSaveFile)
     {
         if (progressEvent.loaded <= 0 || progressEvent.total <= 0) //Faulty numbers
             return;
 
-        let progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+        var progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
 
         if (progress >= 100)
         {
@@ -690,6 +802,321 @@ export default class MainPage extends Component
             progress = <ProgressBar className="upload-progress-bar" now={progress} label={`${progress}%`} />;
 
         this.setState({uploadProgress: progress});
+    }
+
+    /**
+     * Sets the state of for the save Boxes after the server processes the save file.
+     * @param {Object} res - The response from the server.
+     */
+    async setSaveBoxesFromResponse(res)
+    {
+        await this.setState
+        ({
+            saveBoxes: res.data.boxes,
+            saveTitles: res.data.titles,
+            saveFileNumber: res.data.fileIdNumber,
+            saveFileData: res.data.saveFileData,
+        });
+    }
+
+    /**
+     * Displays an error pop-up and updates the state after a failed file upload.
+     * @param {Object} error - The error object after the server request completed.
+     * @param {Number} newState - The new editState.
+     */
+    async handleUploadError(error, newState)
+    {
+        var errorText;
+        console.log("An error occurred uploading the file.");
+
+        if (error.message === "Network Error")
+        {
+            console.log("Could not connect to the server.");
+
+            await this.setState({
+                editState: newState,
+                fileUploadError: false,
+                serverConnectionError: true,
+            });
+
+            errorText = "Couldn't connect!\nPlease try again later.";
+        }
+        else
+        {
+            console.log(error["response"]["data"]);
+
+            await this.setState({
+                editState: newState,
+                fileUploadError: true,
+                serverConnectionError: false,
+            });
+
+            errorText = "Server error!\nPlease try again later."; //Will usually be overwritten with a more specific error
+        }
+
+        PopUp.fire
+        ({
+            icon: 'error',
+            title: errorText,
+            scrollbarPadding: false,
+        });
+    }
+
+
+    /**********************************
+        Modern File Handle Functions   
+    **********************************/
+
+    /**
+     * Gets read/write permission for a given file or directory handle.
+     * @param {FileSystemHandle} handle - The file or directory handle to request read/write permission for.
+     * @returns {Boolean} True if the user gave permission. False otherwise.
+     */
+    async getFileHandlePermission(handle)
+    {
+        var opts = {mode: "readwrite"};
+        var granted = "granted";
+
+        return ((await handle.queryPermission(opts)) === granted)
+            || ((await handle.requestPermission(opts)) === granted);
+    }
+
+    /**
+     * Let's the user choose the directory where to save their Home data.
+     * Requires the modern FileSystem API to function.
+     */
+    async chooseHomeFileDirectory()
+    {
+        try
+        {
+            var dirHandle = await window.showDirectoryPicker({startIn: "documents"});
+
+            if (!(await this.getFileHandlePermission(dirHandle)))
+                throw(new Error("Home directory write permission denied by user."));
+
+            await SetDBVal("cloudDirectory", dirHandle); //Remember user's choice for the last used button
+            localStorage.mostRecentHomeDir = dirHandle.name;
+
+            this.wipeErrorMessage();
+            this.setState
+            ({
+                editState: STATE_CHOOSE_SAVE_HANDLE,
+                homeDirHandle: dirHandle,
+            });
+        }
+        catch (e)
+        {
+            console.log(`Failed to pick Home directory: ${e}`);
+
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "Cloud Folder Not Chosen",
+                html: `<p>If you already have a Cloud storage file, then pick the folder with the <b>${HOME_FILE_NAME}</b> file.</p>`,
+                scrollbarPadding: false,
+            });
+        }
+    }
+
+    /**
+     * Uses the user's previous choice of Home data directory.
+     * Requires the modern FileSystem API to function.
+     */
+    async useMostRecentHomeDirectoryHandle()
+    {
+        var dirHandle = this.state.homeDirHandle;
+
+        try
+        {
+            if (dirHandle == null)
+                throw(new Error("homeDirHandle is null.")); //Button shouldn't be shown anyway
+
+            if (!(await this.getFileHandlePermission(dirHandle)))
+                throw(new Error("Home directory read/write permission denied by user."));
+
+            this.wipeErrorMessage();
+            this.setState
+            ({
+                editState: STATE_CHOOSE_SAVE_HANDLE,
+                homeDirHandle: dirHandle,
+            });
+        }
+        catch (e)
+        {
+            var errorTitle, errorText;
+            console.log(`Failed to pick last Home directory: ${e}`);
+
+            if (e.message != null && e.message === "A requested file or directory could not be found at the time an operation was processed.")
+            {
+                errorTitle = "Cloud Folder Not Found";
+                errorText = `${dirHandle.name} could not be located.`;
+            }
+            else
+            {
+                errorTitle = "Permission Not Given";
+                errorText = "Make sure to give full permissions to view and edit your Cloud data file's folder.";
+            }
+
+            PopUp.fire
+            ({
+                icon: "error",
+                title: errorTitle,
+                text: errorText,
+                scrollbarPadding: false,
+            });
+        }
+    }
+
+    /**
+     * Let's the user pick their save file and requests full permissions over it.
+     * Requires the modern FileSystem API to function.
+     */
+    async chooseSaveFileHandle()
+    {
+        const saveFilePickerOptions =
+        {
+            types: [
+                {
+                    description: 'Save Files',
+                    accept: {
+                        "application/octet-stream": [".sav", ".srm", ".sa1"]
+                    },
+                },
+            ],
+            excludeAcceptAllOption: true, //Must match one of the given file types, but won't be enforced by the file picker
+        };
+
+        try
+        {
+            var [fileHandle] = await window.showOpenFilePicker(saveFilePickerOptions);
+
+            if (!(await this.getFileHandlePermission(fileHandle)))
+                throw(new Error("Save file write permission denied by user."));
+
+            await SetDBVal("saveFile", fileHandle); //Remember user's choice for the last used button
+            localStorage.mostRecentSaveFile = fileHandle.name;
+
+            await this.useSaveHandle(fileHandle);
+        }
+        catch (e)
+        {
+            console.log(`Failed to pick save file: ${e}`);
+
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "Save File Not Chosen",
+                text: "Choose your ROM's save file and make sure to give full permissions to view and edit it.",
+                scrollbarPadding: false,
+            });
+        }
+    }
+
+    /**
+     * Uses the user's previous choice of save file.
+     * Requires the modern FileSystem API to function.
+     */
+    async useMostRecentSaveHandle()
+    {
+        var fileHandle = this.state.saveFileHandle;
+
+        try
+        {
+            if (fileHandle == null)
+                throw(new Error("saveFileHandle is null.")); //This button shouldn't be visible anyway
+
+            if (!(await this.getFileHandlePermission(fileHandle)))
+                throw(new Error("Save file read/write permission denied by user."));
+
+            await this.useSaveHandle(fileHandle);
+        }
+        catch (e)
+        {
+            var errorTitle, errorText;
+            console.log(`Failed to pick last save file: ${e}`);
+
+            if (e.message != null && e.message === "A requested file or directory could not be found at the time an operation was processed.")
+            {
+                errorTitle = "Save File Not Found";
+                errorText = `${fileHandle.name} could not be located.`;
+            }
+            else
+            {
+                errorTitle = "Permission Not Given";
+                errorText = "Make sure to give full permissions to view and edit your save file.";
+            }
+
+            PopUp.fire
+            ({
+                icon: "error",
+                title: errorTitle,
+                text: errorText,
+                scrollbarPadding: false,
+            });
+        }
+    }
+
+    /**
+     * Uploads a save file handle's data to the server and sets the save data.
+     * @param {FileSystemFileHandle} fileHandle - The save file handle to use.
+     */
+    async useSaveHandle(fileHandle)
+    {
+        this.wipeErrorMessage(); //In preparation for uploading the file
+        await this.setState({saveFileHandle: fileHandle});
+        if (await this.uploadSaveFileHandle()) //True if file uploaded successfully
+            this.wipeErrorMessage();
+        else if (this.state.fileUploadError)
+        {
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "Unacceptable Save File",
+                text: "Make sure it's a save file for a supported hack and is not corrupted.",
+                scrollbarPadding: false,
+            });  
+        }
+    }
+
+    /**
+     * Uploads the state's save file handle's data to the server.
+     * @returns {Boolean} - True if the upload completed successfully. False otherwise.
+     */
+    async uploadSaveFileHandle()
+    {
+        var file = await this.state.saveFileHandle.getFile();
+
+        if (!this.isValidSaveFile(file))
+        {
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "Invalid Save File",
+                text: "Please upload an actual save file.",
+                scrollbarPadding: false,
+            });
+
+            return false;
+        }
+        else
+            return await this.handleChooseSaveFile(file);
+    }
+
+    /**
+     * Gets the file handle of a certain file in a directory.
+     * @param {String} name - The name of the file to look for.
+     * @param {FileSystemDirectoryHandle} dirHandle - The directory handle of the directory to search in.
+     * @returns {FileSystemFileHandle} - The file handle if found. Null otherwise.
+     */
+    async findFileHandleWithNameInDirHandle(name, dirHandle)
+    {
+        for await (const file of dirHandle.values())
+        {
+            if (file.name === name)
+                return file;
+        }
+
+        return null;
     }
 
 
@@ -1459,26 +1886,71 @@ export default class MainPage extends Component
     **********************************/
 
     /**
-     * Downloads the updated data for one of the box slots.
-     * @param {Number} boxSlot - The box slot to save and download.
+     * Downloads any updated data.
+     * @param {Number} boxSlot - The box slot that the download button was clicked from (used for error message).
      */
     async downloadSaveFileAndHomeData(boxSlot)
     {
-        var res, formData;
-        var errorMessage = this.state.errorMessage;
-        var homeRoute = `${config.dev_server}/encryptHomeData`;
-        var saveRoute = `${config.dev_server}/getUpdatedSaveFile`;
+        var encryptedHomeData = null;
+        var dataBuffer = null;
         var serverConnectionErrorMsg = <span>Could not connect to the server.<br/>DO NOT RELOAD THE PAGE!</span>;
-        this.setState({savingMessage: "Preparing save data..."});
         this.wipeErrorMessage();
 
         //Get Encrypted Home File
-        var homeData = JSON.stringify({
+        if (this.state.changeWasMade[BOX_HOME]) //Don't waste time if there's no updated version
+        {
+            this.setState({savingMessage: `Preparing Cloud data...`});
+            encryptedHomeData = await this.getEncryptedHomeFile(serverConnectionErrorMsg, boxSlot);
+            if (encryptedHomeData == null)
+                return;
+        }
+
+        //Get Updated Save File
+        if (this.state.changeWasMade[BOX_SAVE]) //Don't waste time if there's no updated version
+        {
+            this.setState({savingMessage: `Preparing Save data...`});
+            dataBuffer = await this.getUpdatedSaveFile(serverConnectionErrorMsg, boxSlot);
+            if (dataBuffer == null)
+                return;
+        }
+
+        //Download the Save Data (done first because more likely to be problematic)
+        if (this.state.changeWasMade[BOX_SAVE])
+        {
+            this.setState({savingMessage: `Downloading Save data...`});
+            if (!(await this.downloadSaveFile(dataBuffer, boxSlot))) //Couldn't save because file probably in use
+                return;
+        }
+
+        //Download the Home Data
+        if (this.state.changeWasMade[BOX_HOME])
+        {
+            this.setState({savingMessage: `Downloading Cloud data...`});
+            if (!(await this.downloadHomeData(encryptedHomeData, boxSlot))) //Couldn't save because file missing
+                return;
+        }
+
+        this.setState({savingMessage: "", changeWasMade: [false, false]});
+    }
+
+    /**
+     * Gets the encrypted version of the Home boxes from the server.
+     * @param {String} serverConnectionErrorMsg - The message to display if the server couldn't be connected to.
+     * @param {Number} boxSlot - The box slot to display any error messaged on.
+     * @returns {String} The encrypted Home data text.
+     */
+    async getEncryptedHomeFile(serverConnectionErrorMsg, boxSlot)
+    {
+        var res;
+        var homeRoute = `${config.dev_server}/encryptHomeData`;
+        var errorMessage = this.state.errorMessage;
+        var formData = new FormData(); //formData contains the home data split into four parts to guarantee it'll all be sent
+        var homeData = JSON.stringify
+        ({
             titles: this.state.homeTitles,
             boxes: this.state.homeBoxes,
         });
 
-        formData = new FormData(); //formData contains the home data split into four parts to guarantee it'll all be sent
         this.addHomeDataToFormData(homeData, formData);
 
         try
@@ -1488,22 +1960,63 @@ export default class MainPage extends Component
         catch (error)
         {
             errorMessage[boxSlot] = (error.message === "Network Error") ? serverConnectionErrorMsg : error.response.data;
-            console.log(errorMessage[boxSlot]);
+            console.log(`Error saving Home data: ${errorMessage[boxSlot]}`);
             this.setState({savingMessage: "", errorMessage: errorMessage});
-            return;
+            return null;
         }
 
-        var encryptedHomeData = res.data.newHomeData;
+        return res.data.newHomeData;   
+    }
 
-        //Get Updated Save File
+    /**
+     * Gets the updated save file data after processing on the server.
+     * @param {String} serverConnectionErrorMsg - The message to display if the server couldn't be connected to.
+     * @param {Number} boxSlot - The box slot to display any error messaged on.
+     * @returns {Buffer} The data buffer for the updated save file.
+     */
+    async getUpdatedSaveFile(serverConnectionErrorMsg, boxSlot)
+    {
+        var res, originalSaveContents, formData;
+        var saveRoute = `${config.dev_server}/getUpdatedSaveFile`;
+        var errorMessage = this.state.errorMessage;
+
         formData = new FormData(); //formData contains the data to send to the server
         formData.append("newBoxes", JSON.stringify(this.state.saveBoxes));
         formData.append("saveFileData", JSON.stringify(this.state.saveFileData["data"]));
         formData.append("fileIdNumber", JSON.stringify(this.state.saveFileNumber));
 
-        this.setState({savingMessage: "Preparing save data..."});
-        this.wipeErrorMessage();
+        //Check if save has been externally modified while using the app
+        if (this.state.saveFileHandle != null) //Only possible to check when using save file handles
+        {
+            //Get original save contents
+            try
+            {
+                originalSaveContents = await this.state.saveFileHandle.getFile();
+            }
+            catch (e)
+            {
+                console.log(`Error loading the save file: ${e}`);
+                errorMessage[boxSlot] = "Save file was not found.";
+                this.setState({savingMessage: "", errorMessage: errorMessage});
+                return null;
+            }
 
+            var typedArray = new Uint8Array(await originalSaveContents.arrayBuffer());
+            typedArray = Array.from(typedArray);
+
+            //Compare original save contents to the one saved in the state
+            const equals = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+
+            if (!equals(typedArray, this.state.saveFileData["data"]))
+            {
+                //Save file has been modified and can't be overwritten
+                errorMessage[boxSlot] = <span>Saving can't be completed.<br/>The save file has been used recently.<br/>Please reload the page.</span>;
+                this.setState({savingMessage: "", errorMessage: errorMessage});
+                return null;
+            }
+        }
+
+        //Get the updated save file contents
         try
         {
             res = await axios.post(saveRoute, formData, {});
@@ -1511,16 +2024,27 @@ export default class MainPage extends Component
         catch (error)
         {
             errorMessage[boxSlot] = (error.message === "Network Error") ? serverConnectionErrorMsg : error.response.data;
-            console.log(errorMessage[boxSlot]);
+            console.log(`Error saving Save data: ${errorMessage[boxSlot]}`);
             this.setState({savingMessage: "", errorMessage: errorMessage});
-            return;
+            return null;
         }
 
         //No error occurred good to proceed
-        var dataBuffer = res.data.newSaveFileData;
-        var name = (this.state.selectedSaveFile == null) ? "savefile.sav" : this.state.selectedSaveFile.name; //Same name as original file
+        return res.data.newSaveFileData;
+    }
 
-        var output = []
+    /**
+     * Downloads the updated save file.
+     * @param {Buffer} dataBuffer - The data buffer for the updated save file.
+     * @returns {Boolean} True if the download completed successfully. False if not.
+     */
+    async downloadSaveFile(dataBuffer, boxSlot)
+    {
+        var saveFileName = (this.state.selectedSaveFile == null) ? "savefile.sav" : this.state.selectedSaveFile.name; //Same name as original file
+        var errorMessage = this.state.errorMessage;
+        var output = [];
+
+        //Convert to downloadable format
         for (let byte of dataBuffer["data"])
         {
             let newArray = new Uint8Array(1);
@@ -1529,29 +2053,125 @@ export default class MainPage extends Component
         }
 
         //Download the Save File
-        if (this.state.changeWasMade[BOX_SAVE])
+        var fileContents = new Blob(output, {type: 'application/octet-stream'});
+
+        if (this.state.saveFileHandle != null)
         {
-            var file = new Blob(output, {type: 'application/octet-stream'});
-            var element = document.createElement("a");
-            element.href = URL.createObjectURL(file);
-            element.download = name;
+            if (this.state.changeWasMade[BOX_HOME])
+            {
+                //Test to make sure the Cloud folder is still present and can be saved to
+                try
+                {
+                    
+                    var iterator = await this.state.homeDirHandle.values();
+                    await iterator.next();
+                }
+                catch (e)
+                {
+                    //Cloud file is missing so cancel the save altogether
+                    console.log(`Cancelling saving save file since Cloud file was not found: ${e}`);
+                    errorMessage[boxSlot] = "Cloud file was not found.";
+                    this.setState({savingMessage: "", errorMessage: errorMessage});
+                    console.log("Returning false");
+                    return false;
+                }
+            }
+
+            try
+            {
+                let writable = await this.state.saveFileHandle.createWritable();
+                await writable.write(fileContents); //Write the contents of the file to the stream.
+                await writable.close(); //Close the file and write the contents to disk.
+            }
+            catch (e)
+            {
+                console.log(`Error saving Save file: ${e}`);
+                errorMessage[boxSlot] = <span>Save file is being used elsewhere.<br/>Close open emulators before trying again.</span>;
+                this.setState({savingMessage: "", errorMessage: errorMessage});
+                return false;
+            }
+        }
+        else
+        {
+            let element = document.createElement("a");
+            element.href = URL.createObjectURL(fileContents);
+            element.download = saveFileName;
             document.body.appendChild(element); //Required for this to work in FireFox
             element.click();
         }
 
-        if (this.state.changeWasMade[BOX_HOME])
+        this.setState({saveFileData: dataBuffer}); //Update the data in the state so it's up-to-date
+        return true;
+    }
+
+    /**
+     * Downloads the updated Home data file.
+     * @param {String} encryptedHomeData - The encrypted Home data text.
+     * @returns {Boolean} True if the download completed successfully. False if not.
+     */
+    async downloadHomeData(encryptedHomeData, boxSlot)
+    {
+        var errorMessage = this.state.errorMessage;
+        var fileContents = new Blob([encryptedHomeData], {type: 'application/octet-stream'});
+
+        if (this.state.saveFileHandle != null)
         {
-            //Download the Home Data
-            file = new Blob([encryptedHomeData], {type: 'application/octet-stream'});
-            element = document.createElement("a");
-            element.href = URL.createObjectURL(file);
+            var homeFileHandle = this.state.homeFileHandle;
+
+            try
+            {
+                if (homeFileHandle == null)
+                {
+                    //Backup old Home file (if present) and create fresh one
+                    await this.tryBackupCorruptedHomeFile();
+                    console.log("Creating new Home file");
+                    homeFileHandle = await this.state.homeDirHandle.getFileHandle(HOME_FILE_NAME, {create: true});
+                    this.setState({homeFileHandle: homeFileHandle});
+                }
+
+                var writable = await homeFileHandle.createWritable();
+                await writable.write(fileContents); //Write the contents of the file to the stream.
+                await writable.close(); //Close the file and write the contents to disk.
+            }
+            catch (e)
+            {
+                console.log(`Error saving Cloud file: ${e}`);
+                errorMessage[boxSlot] = "Cloud file was not found.";
+                this.setState({savingMessage: "", errorMessage: errorMessage});
+                return false;
+            }
+        }
+        else
+        {
+            let element = document.createElement("a");
+            element.href = URL.createObjectURL(fileContents);
             element.download = HOME_FILE_NAME;
             document.body.appendChild(element); //Required for this to work in FireFox
             element.click();
-            localStorage.lastSavedHomeData = encryptedHomeData;
         }
 
-        this.setState({savingMessage: "", changeWasMade: [false, false]});
+        localStorage.lastSavedHomeData = encryptedHomeData;
+        return true;
+    }
+
+    /**
+     * Tries renaming a Home file that didn't get used if there is one in the Home file directory.
+     */
+    async tryBackupCorruptedHomeFile()
+    {
+        var homeDirHandle = this.state.homeDirHandle;
+        var oldHomeFileHandle = await this.findFileHandleWithNameInDirHandle(HOME_FILE_NAME, homeDirHandle);
+
+        if (oldHomeFileHandle != null) //There is a home file that's not getting used because it's corrupt
+        {
+            //Back it up in case the user intentionally corrupted it
+            console.log("Backing up corrupted Home file");
+            var oldFileContents = await oldHomeFileHandle.getFile(); //Get corrupted file contents
+            var backupFileHandle = await homeDirHandle.getFileHandle(HOME_FILE_NAME.split(".dat")[0] + "_corrupt.dat", {create: true});
+            var writable = await backupFileHandle.createWritable();
+            await writable.write(oldFileContents); //Write the contents of the file to the stream.
+            await writable.close(); //Close the file and write the contents to disk.
+        }
     }
 
     /**
@@ -1663,6 +2283,15 @@ export default class MainPage extends Component
                 {this.saveToSaveButton()}
             </div>
         );
+    }
+
+    /**
+     * Gets the blank navbar displayed at the top of the page.
+     * @returns {JSX} The navbar.
+     */
+    navBarNoButtons()
+    {
+        return <div className="top-bar-buttons navbar-blank" />;
     }
 
     /**
@@ -1786,6 +2415,19 @@ export default class MainPage extends Component
     }
 
     /**
+     * Displays an error message that the server could not be connected to.
+     * @returns {JSX} A container with the error message.
+     */
+    printServerConnectionError()
+    {
+        return (
+            <div className="error-text" style={{visibility: this.state.serverConnectionError ? "visible" : "hidden"}}>
+                <p>Could not connect to the server. Please try again later.</p>
+            </div>
+        );
+    }
+ 
+    /**
      * Gets the screen shown the first time the user accesses the site (based on the local storage).
      * @returns {JSX} The welcome page.
      */
@@ -1796,7 +2438,7 @@ export default class MainPage extends Component
                 {title}
                 <FaArrowAltCircleRight aria-label="Next" className="main-page-purple-icon-button"
                         size={48}
-                        onClick={() => this.setState({editState: STATE_ASK_FIRST_TIME})} />
+                        onClick={() => this.setState({editState: (CanUseFileHandleAPI()) ? STATE_CHOOSE_HOME_FOLDER : STATE_ASK_FIRST_TIME})} />
             </div>
         )
     }
@@ -1835,15 +2477,17 @@ export default class MainPage extends Component
      */
     printUploadHomeFile()
     {
+        const error = "Make sure it was a proper Cloud data file and is not corrupted.";
+
         return (
             <div className="main-page-upload-instructions fade-in">
                 <h2>Upload your Cloud data.</h2>
-                <h3>It should be a file called {HOME_FILE_NAME}</h3>
+                <h3>It should be a file called <b>{HOME_FILE_NAME}</b>.</h3>
                 <div>
                     {
                         "lastSavedHomeData" in localStorage && localStorage.lastSavedHomeData != null && localStorage.lastSavedHomeData !== "" ?
                             <div>
-                                <Button size="lg" variant="info" onClick={() => this.useLastSavedHomeFile()}
+                                <Button size="lg" variant="info" onClick={() => this.useLastSavedHomeFile(error)}
                                         className="choose-home-file-button">
                                     Last Saved
                                 </Button>
@@ -1855,7 +2499,8 @@ export default class MainPage extends Component
                     <div>
                         <label className="btn btn-success btn-lg choose-home-file-button">
                             Upload File
-                            <input type="file" hidden onChange={(e) => this.chooseHomeFile(e)} />
+                            <input type="file" hidden onChange={(e) => this.chooseHomeFile(e, error)}
+                                   accept=".dat" />
                         </label>
                     </div>
 
@@ -1866,21 +2511,6 @@ export default class MainPage extends Component
                         </Button>
                     </div>
                 </div>
-
-                {
-                    this.state.fileUploadError ?
-                        <div className="error-text">
-                            <p>There was a problem with the data file chosen.</p>
-                            <p>Please make sure it was a correct data file with no corruption.</p>
-                        </div>
-                    : this.state.serverConnectionError ?
-                        <div className="error-text">
-                            <p>Could not connect to the server.</p>
-                            <p>Please try again later.</p>
-                        </div>
-                    :
-                        ""
-                }
             </div>
         )
     }
@@ -1906,6 +2536,7 @@ export default class MainPage extends Component
             <div className="main-page-upload-instructions fade-in">
                 {uploadProgress}
                 <h3>Please wait...</h3>
+                <span style={{visibility: "visible"}}>{this.navBarNoButtons()}</span> {/*Used to centre uploading bar*/}
             </div>
         )
     }
@@ -1916,30 +2547,138 @@ export default class MainPage extends Component
      */
     printUploadSaveFile()
     {
+        const error = "Make sure it's a save file for a supported hack and is not corrupted.";
+
         return (
             <div className="main-page-upload-instructions fade-in">
                 <h2>Upload your save file.</h2>
                 <h3>It should be a file ending with .sav, .srm, or .sa1.</h3>
                 <label className="btn btn-success btn-lg choose-save-file-button">
                     Upload File
-                    <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)} />
+                    <input type="file" hidden onChange={(e) => this.chooseSaveFile(e, error)}
+                           accept=".sav,.srm,.sa1" />
                 </label>
+            </div>
+        )
+    }
 
+    /**
+     * Gets the page that asks the user to choose the directory where their Home file is located.
+     * This uses the modern FileSystem API in order to function.
+     * @returns {JSX} The choose save folder page.
+     */
+    printChooseHomeFolder()
+    {
+        var showLastUsedButton = this.state.homeDirHandle != null;
+        var lastUsedButton = 
+            <Button size="lg" variant="info" onClick={() => this.useMostRecentHomeDirectoryHandle()}
+                    className="choose-home-file-button">
+                <b>Last Used</b>
+            </Button>;
+
+        if ("mostRecentHomeDir" in localStorage)
+        {
+            const tooltip = props => (<Tooltip {...props}>{localStorage.mostRecentHomeDir}</Tooltip>);
+
+            lastUsedButton =
+                <OverlayTrigger placement="bottom" overlay={tooltip}>
+                    {lastUsedButton}
+                </OverlayTrigger>
+        }
+
+        return (
+            <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                <h2>Choose your Cloud Data folder.</h2>
+                <h3>This is the folder on your {isMobile ? "device" : "computer"} where your Boxes {showLastUsedButton ? "are" : "will be"} stored.</h3>
                 {
-                    this.state.fileUploadError
-                    ?
-                        <div className="error-text">
-                            <p>There was a problem with the save file chosen.</p>
-                            <p>Please make sure it was a correct 128 kb save file with no corruption.</p>
-                        </div>
-                    : this.state.serverConnectionError ?
-                        <div className="error-text">
-                            <p>Could not connect to the server.</p>
-                            <p>Please try again later.</p>
-                        </div>
+                    showLastUsedButton ?
+                        <h3>Since you've made one before, pick <b>Last Used</b>.</h3>
                     :
-                        ""
+                        <h3>It's best to <b>create</b> a folder called <b>Unbound Cloud</b> in your <b>Documents</b> and save it there.</h3>
                 }
+                <div>
+                    {
+                        showLastUsedButton ? //Loaded one in the past
+                            <div>
+                                {lastUsedButton}
+                            </div>
+                        :
+                            ""
+                    }
+
+                    <div>
+                        <Button size="lg" onClick={() => this.chooseHomeFileDirectory()}
+                                className="btn-success choose-home-file-button">
+                            Choose Folder
+                        </Button>
+                    </div>
+                    {
+                        !showLastUsedButton && !isMobile ?
+                            <div className="main-page-home-storage-example-container">
+                                <img src={BASE_GFX_LINK + "DataStorageExample1.png"}
+                                    alt="Make a new folder in Documents."
+                                    className="main-page-home-storage-example"/>
+                                <img src={BASE_GFX_LINK + "DataStorageExample2.png"}
+                                     alt="Name that folder Unbound Cloud and select it."
+                                     className="main-page-home-storage-example"/>
+                            </div>
+                        :
+                            ""
+                    }
+                </div>
+                {showLastUsedButton ? this.printServerConnectionError() : "" /*Won't actually get used here, but needed to fill space*/}
+            </div>
+        );
+    }
+
+    /**
+     * Gets the page that asks the user to choose the directory where their save file is located.
+     * This uses the modern FileSystem API in order to function.
+     * @returns {JSX} The choose save folder page.
+     */
+    printChooseSaveFile()
+    {
+        var showLastUsedButton = this.state.saveFileHandle != null;
+        var lastUsedButton = 
+            <Button size="lg" variant="info" onClick={() => this.useMostRecentSaveHandle()}
+                    className="choose-home-file-button">
+                <b>Last Used</b>
+            </Button>;
+
+        if ("mostRecentSaveFile" in localStorage)
+        {
+            const tooltip = props => (<Tooltip {...props}>{localStorage.mostRecentSaveFile}</Tooltip>);
+
+            lastUsedButton =
+                <OverlayTrigger placement="bottom" overlay={tooltip}>
+                    {lastUsedButton}
+                </OverlayTrigger>
+        }
+
+        return (
+            <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                <h2>Choose your save file.</h2>
+                <h3>If you don't know where it is, start by looking in the same folder as your ROM.</h3>
+                <h3>The save file is a 128 kB .sav, .srm, or .sa1 file that has your ROM's name.</h3>
+                <div>
+                    {
+                        showLastUsedButton ? //Loaded one in the past
+                            <div>
+                                {lastUsedButton}
+                            </div>
+                        :
+                            ""
+                    }
+
+                    <div>
+                        <Button size="lg" onClick={() => this.chooseSaveFileHandle()}
+                                className="btn-success choose-home-file-button">
+                            Choose File
+                        </Button>
+                    </div>
+                </div>
+
+                {this.printServerConnectionError() /*Won't actually get used here, but needed to fill space*/}
             </div>
         )
     }
@@ -2046,14 +2785,26 @@ export default class MainPage extends Component
         )
     }
 
+    printNotSupportedInBrowser()
+    {
+        return (
+            <div className="main-page-upload-instructions fade-in">
+                <h2>😞 <b>Unbound Cloud is not supported in this browser. 😞</b></h2>
+                <h3>Please use an updated Google Chrome, Microsoft Edge, or Opera.</h3>
+                <h3>Why? See <a href="https://caniuse.com/?search=showOpenFilePicker">here</a>.</h3>
+            </div>
+        )
+    }
+
     /**
      * Prints the main page.
      */
     render()
     {
-        var title = <h1 className="main-page-title">Welcome to Unbound Home</h1>;
+        var title = <h1 className="main-page-title">Welcome to Unbound Cloud</h1>;
         var page, draggingImg;
         var navBar = false;
+        var noScroll = true;
 
         switch (this.state.editState)
         {
@@ -2075,21 +2826,37 @@ export default class MainPage extends Component
             case STATE_UPLOADING_SAVE_FILE:
                 page = this.printUploadingFile();
                 break;
+            case STATE_CHOOSE_HOME_FOLDER:
+                page = this.printChooseHomeFolder();
+                break;
+            case STATE_CHOOSE_SAVE_HANDLE:
+                page = this.printChooseSaveFile();
+                break;
             case STATE_EDITING_HOME_BOXES:
                 page = this.printEditingHomeBoxes(); //Don't display title
                 navBar = true;
+                noScroll = false;
                 break;
             case STATE_EDITING_SAVE_FILE:
                 page = this.printEditingSaveBoxes(); //Don't display title
                 navBar = true;
+                noScroll = false;
                 break;
             case STATE_MOVING_POKEMON:
                 page = this.printMovingPokemon(); //Don't display title
                 navBar = true;
+                noScroll = false;
                 break;
             default:
                 page = "";
                 break;
+        }
+
+        if (!DEBUG_ORIGINAL_FILE_METHOD && !isMobile && !CanUseFileHandleAPI())
+        {
+            page = this.printNotSupportedInBrowser();
+            navBar = false;
+            noScroll = true;
         }
 
         draggingImg = ""
@@ -2098,12 +2865,42 @@ export default class MainPage extends Component
                                onMouseDown={(e) => e.preventDefault()} id="moving-icon" className="dragging-image"/>;
 
         return (
-            <div className={isMobile ? "main-page-mobile" : ""}
+            <div className={isMobile && navBar ? "main-page-mobile" : ""}
+                 style={noScroll ? {height: "100vh"} : {}}
                  onMouseMove={(e) => this.moveDraggingMonIcon(e)}>
-                {navBar ? this.navBarButtons() : ""}
+                {navBar ? this.navBarButtons() : this.navBarNoButtons()}
                 {page}
                 {draggingImg}
             </div>
         )
     }
+}
+
+/**
+ * Gets the starting site the user is directed to when the access the site.
+ * @returns {Number} The starting edit state.
+ */
+function GetInitialPageState()
+{
+    if (localStorage.visitedBefore)
+    {
+        if (CanUseFileHandleAPI())
+            return STATE_CHOOSE_HOME_FOLDER;
+
+        return STATE_UPLOAD_HOME_FILE;
+    }
+
+    return STATE_WELCOME;
+}
+
+/**
+ * Checks if the user's browser supports the modern FileSystem API.
+ * @returns {Boolean} True if the user's browser supports the feature. False otherwise.
+ */
+function CanUseFileHandleAPI()
+{
+    if (DEBUG_ORIGINAL_FILE_METHOD)
+        return false;
+
+    return typeof(window.showOpenFilePicker) === "function";
 }

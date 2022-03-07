@@ -1,7 +1,7 @@
 .search-view
 {
     width: 100%;
-    max-width: 428px;
+    max-width: var(--min-mobile-width);
 }
 
 .search-form
