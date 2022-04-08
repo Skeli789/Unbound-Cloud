@@ -37,6 +37,7 @@ export class BoxList extends Component
             setParentState: props.updateParentState,
             searchCriteria: props.searchCriteria,
             isSameBoxBothSides: props.isSameBoxBothSides,
+            globalState: props.globalState,
             gameId: props.gameId,
             loaded: false,
         };
@@ -44,11 +45,16 @@ export class BoxList extends Component
 
     /**
      * Starts changing the screen from "Loading..." when the loading screen is displayed.
+     * Also overrides the back button to return to the main page.
      */
     async componentDidMount()
     {
         await new Promise(r => setTimeout(r, 10)); //Allows the loading screen to render
         this.setState({loaded: true});
+
+        //Override back button
+        window.history.pushState(null, document.title, window.location.href)
+        window.addEventListener("popstate", this.state.globalState.navBackButtonPressed.bind(this.state.globalState));
     }
 
     /**

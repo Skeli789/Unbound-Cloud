@@ -11,9 +11,8 @@ Feature Modifications:
 -Timeout if friend trade connection has gone on too long
 -Force save before friend trade
 -List supported hacks somewhere
--Make back button work for pages that have a back arrow on them
 -Starting dragging on the current public version selects the box (bring that back!)
--Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game
+-Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game (including via multi-select)
 
 Server Changes:
 -Change the file signature for Unbound
