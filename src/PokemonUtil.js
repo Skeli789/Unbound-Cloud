@@ -5,12 +5,12 @@
 import BaseFriendship from "./data/BaseFriendship.json";
 import ItemNames from "./data/ItemNames.json";
 import MoveData from "./data/MoveData.json";
-import NatureNames from "./data/NatureNames.json";
 import SpeciesNames from "./data/SpeciesNames.json";
 import TradeEvolutions from "./data/TradeEvolutions.json";
 import CFRUBaseStats from "./data/cfru/BaseStats.json";
 import UnboundBaseStats from "./data/unbound/BaseStats.json";
 import MAGMBaseStats from "./data/magm/BaseStats.json";
+import UnboundShinies from "./data/UnboundShinies.json";
 import {BASE_GFX_LINK, GetSpeciesName} from "./Util";
 
 const SPECIES_FORMS_ICON_NAMES =
@@ -693,6 +693,25 @@ export function GetMetLevel(pokemon)
 
 /**
  * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {String} The game the Pokemon originally came from.
+ */
+export function GetMetGame(pokemon)
+{
+    let dataMember = "metGame";
+
+    if (IsValidPokemon(pokemon) && dataMember in pokemon)
+    {
+        let metGame = pokemon[dataMember];
+
+        if (typeof(metGame) === "string")
+            return metGame;
+    }
+
+    return "";
+}
+
+/**
+ * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {Number} The current friendship level of the Pokemon
  */
 export function GetFriendship(pokemon)
@@ -1359,37 +1378,26 @@ export function GetIconSpeciesName(pokemon)
 }
 
 /**
- * Gets the image link for an icon species id.
- * @param {String} iconSpeciesName - The icon species id to get the link for.
- * @param {Boolean} isShiny - True if it should be a Shiny icon. False otherwise.
- * @param {Boolean} isGen8 - True if the species is from Gen 8. False otherwise.
- * @returns {String} The link to the icon image.
- */
-export function GetIconSpeciesLinkByIconSpeciesName(iconSpeciesName, isShiny, isGen8)
-{
-    if (iconSpeciesName === "pikachu-surfing")
-        return BASE_GFX_LINK + "SPECIES_PIKACHU_SURFING.png";
-    else if (iconSpeciesName === "pikachu-flying")
-        return BASE_GFX_LINK + "SPECIES_PIKACHU_FLYING.png";
-    else
-    {
-        var baseLink = "https://raw.githubusercontent.com/msikma/pokesprite/master/";
-        var colouration = iconSpeciesName === "unknown" || iconSpeciesName === "egg" || iconSpeciesName === "egg-manaphy" ? "" : isShiny ? "shiny/" : "regular/";
-        var gen = isGen8 ? "pokemon-gen8/" : "pokemon-gen7x/";
-    }
-
-    return baseLink + gen + colouration + iconSpeciesName + ".png";
-}
-
-/**
  * Gets the icon image link for a species.
  * @param {String} species - The species id to get the link for.
+ * @param {Boolean} isShiny - True if the Pokemon link should be for a shiny Pokemon. False if regular.
+ * @param {Boolean} isFromUnbound - True if the Pokemon originated in Pokemon Unbound. False otherwise.
  * @returns {String} The link to the icon image.
  */
-export function GetIconSpeciesLinkBySpecies(species)
-{
+export function GetIconSpeciesLinkBySpecies(species, isShiny, isFromUnbound)
+{    
+    if (isShiny && isFromUnbound && species in UnboundShinies)
+        return BASE_GFX_LINK + "unbound_shinies/" + species + ".png";
+    else if (species == "SPECIES_PIKACHU_SURFING"
+          || species == "SPECIES_PIKACHU_FLYING")
+        return BASE_GFX_LINK + species + ".png";
+
     var iconSpeciesName = GetIconSpeciesNameBySpecies(species);
-    return GetIconSpeciesLinkByIconSpeciesName(iconSpeciesName, false, IsSpeciesGen8(species))
+    var baseLink = "https://raw.githubusercontent.com/msikma/pokesprite/master/";
+    var colouration = iconSpeciesName === "unknown" || iconSpeciesName === "egg" || iconSpeciesName === "egg-manaphy" ? "" : isShiny ? "shiny/" : "regular/";
+    var gen = IsSpeciesGen8(species) ? "pokemon-gen8/" : "pokemon-gen7x/";
+
+    return baseLink + gen + colouration + iconSpeciesName + ".png";
 }
 
 /**
@@ -1399,8 +1407,7 @@ export function GetIconSpeciesLinkBySpecies(species)
  */
 export function GetIconSpeciesLink(pokemon)
 {
-    var iconSpeciesName = GetIconSpeciesName(pokemon);
-    return GetIconSpeciesLinkByIconSpeciesName(iconSpeciesName, IsShiny(pokemon), IsMonGen8(pokemon))
+    return GetIconSpeciesLinkBySpecies(GetMonVisibleSpecies(pokemon), IsShiny(pokemon), GetMetGame(pokemon) == "unbound");
 }
 
 /**

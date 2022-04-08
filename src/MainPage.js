@@ -18,6 +18,7 @@ import {GetIconSpeciesName, GetItem, GetSpecies, IsBlankMon, IsHoldingBannedItem
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
+import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 
 import {BiArrowBack} from "react-icons/bi";
 import {FaArrowAltCircleRight, FaCloud, FaGamepad} from "react-icons/fa";
@@ -1763,8 +1764,9 @@ export default class MainPage extends Component
     /**
      * Arranges the species in the Home boxes to satisfy the living Pokedex order.
      * @param {Array <String>} speciesList - The list of species ids to arrange Pokemon into.
+     * @param {Boolean} compareDexNums - True if the Pokemon should be compared by their Pokedex numbers. False if directly by species id.
      */
-    async fixLivingDex(speciesList)
+    async fixLivingDex(speciesList, compareDexNums)
     {
         var i;
         var newBoxes = this.generateBlankHomeBoxes();
@@ -1772,8 +1774,16 @@ export default class MainPage extends Component
         var freeSlot = speciesList.length;
 
         //First build a hash table for quick access
-        for (i = 0; i < speciesList.length; ++i)
-            speciesIndexDict[speciesList[i]] = i;
+        if (compareDexNums)
+        {
+            for (i = 0; i < speciesList.length; ++i)
+                speciesIndexDict[gSpeciesToDexNum[speciesList[i]]] = i;
+        }
+        else
+        {
+            for (i = 0; i < speciesList.length; ++i)
+                speciesIndexDict[speciesList[i]] = i;
+        }
 
         //Then move any Pokemon that are already placed after where the living dex would end
         //This ensures those Pokemon at least may remain in their positions
@@ -1785,10 +1795,11 @@ export default class MainPage extends Component
         {
             let pokemon = this.state.homeBoxes[i]
             let species = GetSpecies(pokemon);
+            let inDict = (compareDexNums) ? species in gSpeciesToDexNum && gSpeciesToDexNum[species] in speciesIndexDict : species in speciesIndexDict;
 
-            if (species in speciesIndexDict)
+            if (inDict)
             {
-                let index = speciesIndexDict[species];
+                let index = (compareDexNums) ? speciesIndexDict[gSpeciesToDexNum[species]] : speciesIndexDict[species];
                 if (IsBlankMon(newBoxes[index])) //Free spot
                     newBoxes[index] = pokemon;
                 else
@@ -1809,10 +1820,11 @@ export default class MainPage extends Component
         {
             let pokemon = newBoxes[i];
             let species = GetSpecies(pokemon);
+            let inDict = (compareDexNums) ? species in gSpeciesToDexNum && gSpeciesToDexNum[species] in speciesIndexDict : species in speciesIndexDict;
     
-            if (species in speciesIndexDict)
+            if (inDict)
             {
-                let index = speciesIndexDict[species];
+                let index = (compareDexNums) ? speciesIndexDict[gSpeciesToDexNum[species]] : speciesIndexDict[species];
                 if (IsBlankMon(newBoxes[index])) //Free spot
                 {
                     //"Swap" them

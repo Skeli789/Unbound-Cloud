@@ -18,7 +18,6 @@ Feature Modifications:
 -Make sure cursor changes to dragging when moving mon
 -Hidden Power type and variable move types should be display
 -Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game
--Ensure regular living dex works for forms of same species
 -Calculate level on front-end
 
 Server Changes:
@@ -28,3 +27,5 @@ Server Changes:
 -Handle no Gerben files
 -Flags when accessible
 -The isValidPokemon check in the js server code should just calculate the checksum and make sure it matches
+-Auto generate base stats and other front end data from back end when yarn build is run
+--Also generate the list of Unbound Shinies based on the contents of the folder

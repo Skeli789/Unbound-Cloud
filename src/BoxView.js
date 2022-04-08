@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {PokemonSummary} from "./PokemonSummary";
-import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, GetNickname, IsBlankMon,
+import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, GetNickname, GetSpecies, IsBlankMon,
         IsEgg, IsHoldingItem, IsShiny, IsValidPokemon} from "./PokemonUtil";
 import {MatchesSearchCriteria, Search} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
@@ -17,6 +17,7 @@ import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxPosBoxColumn, GetBoxP
         GetLocalBoxPosFromBoxOffset, GetSpeciesName, IsHomeBox, IsNullSpeciesName, IsSaveBox} from "./Util";
 import {WonderTrade} from "./WonderTrade";
 import gLivingDexOrder from "./data/LivingDexOrder.json";
+import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 
 import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
 import {BiSearchAlt2} from "react-icons/bi";
@@ -1052,6 +1053,7 @@ export class BoxView extends Component
     async fixLivingDex()
     {
         var speciesList = (this.getLivingDexState() === LIVING_DEX_ALL) ? gLivingDexOrder["allSpecies"] : gLivingDexOrder["noAltForms"];
+        var compareDexNums = (this.getLivingDexState() === LIVING_DEX_ALL) ? false : true;
         var boxCount = Math.ceil(speciesList.length / MONS_PER_BOX);
 
         PopUp.fire
@@ -1068,7 +1070,7 @@ export class BoxView extends Component
             {
                 this.setState({fixingLivingDex: true});
 
-                await this.state.parent.fixLivingDex(speciesList).then(newBoxes =>
+                await this.state.parent.fixLivingDex(speciesList, compareDexNums).then(newBoxes =>
                 {
                     var changeWasMade = this.getParentState().changeWasMade;
                     changeWasMade[this.state.boxType] = true;
@@ -1214,22 +1216,40 @@ export class BoxView extends Component
     /**
      * Gets the icon used to display a species in the Living Dex view.
      * @param {Number} i - The position in the entire state of boxes.
-     * @param {String} monInSlotLink - The icon link for the mon already in the slot.
+     * @param {String} speciesInSlot - The species of the mon already in the slot.
      * @returns {img} An img element for the icon.
      */
-    getLivingDexSpeciesIcon(i, monInSlotLink)
+    getLivingDexSpeciesIcon(i, speciesInSlot)
     {
-        let speciesList = (this.getLivingDexState() === LIVING_DEX_ALL) ? gLivingDexOrder["allSpecies"] : gLivingDexOrder["noAltForms"];
+        var species;
 
-        if (i >= speciesList.length)
-            return ""; //All done
+        if (this.getLivingDexState() === LIVING_DEX_ALL)
+        {
+            let speciesList = gLivingDexOrder["allSpecies"];
 
-        let species = speciesList[i];
-        let link = GetIconSpeciesLinkBySpecies(species);
+            if (i >= speciesList.length)
+                return ""; //All done
 
-        if (link === monInSlotLink.replace("shiny/", "regular/")) //Links are for same species
-            return ""; //Display full colour image instead
+            species = speciesList[i];
+            if (species === speciesInSlot) //Correct species is already in slot
+                return ""; //Display full colour image instead
+        }
+        else
+        {
+            let speciesList = gLivingDexOrder["noAltForms"];
 
+            if (i >= speciesList.length)
+                return ""; //All done
+
+            species = speciesList[i];
+            let dexNum = gSpeciesToDexNum[species];
+
+            if (speciesInSlot in gSpeciesToDexNum
+            && dexNum == gSpeciesToDexNum[speciesInSlot]) //Correct species is already in slot
+                return ""; //Display full colour image instead
+        }
+
+        let link = GetIconSpeciesLinkBySpecies(species, false, false);
         let alt = GetSpeciesName(species);
         let icon = <img src={link} alt={alt} aria-label={alt} className="box-icon-image living-dex-icon"
                         onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
@@ -1306,7 +1326,7 @@ export class BoxView extends Component
 
             if (addLivingDexIcon)
             {
-                livingDexIcon = this.getLivingDexSpeciesIcon(i, link);
+                livingDexIcon = this.getLivingDexSpeciesIcon(i, GetSpecies(pokemon));
                 if (livingDexIcon !== "")
                     icon = livingDexIcon;
             }
