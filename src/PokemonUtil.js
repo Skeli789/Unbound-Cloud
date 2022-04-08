@@ -6,11 +6,12 @@ import BaseFriendship from "./data/BaseFriendship.json";
 import ItemNames from "./data/ItemNames.json";
 import MoveData from "./data/MoveData.json";
 import SpeciesNames from "./data/SpeciesNames.json";
+import SpeciesToDexNum from "./data/SpeciesToDexNum.json";
 import TradeEvolutions from "./data/TradeEvolutions.json";
+import UnboundShinies from "./data/UnboundShinies.json";
 import CFRUBaseStats from "./data/cfru/BaseStats.json";
 import UnboundBaseStats from "./data/unbound/BaseStats.json";
 import MAGMBaseStats from "./data/magm/BaseStats.json";
-import UnboundShinies from "./data/UnboundShinies.json";
 import {BASE_GFX_LINK, GetSpeciesName} from "./Util";
 
 const SPECIES_FORMS_ICON_NAMES =
@@ -125,6 +126,55 @@ export const NATURE_STAT_TABLE =
     "NATURE_CAREFUL": [    0,  0,  0,    -1,    +1], // Careful
     "NATURE_QUIRKY":  [    0,  0,  0,     0,     0], // Quirky
 };
+
+const ID_TO_HIDDEN_POWER_TYPE =
+{
+    1: "TYPE_FIGHTING",
+    2: "TYPE_FLYING",
+    3: "TYPE_POISON",
+    4: "TYPE_GROUND",
+    5: "TYPE_ROCK",
+    6: "TYPE_BUG",
+    7: "TYPE_GHOST",
+    8: "TYPE_STEEL",
+    9: "TYPE_FIRE",
+    10: "TYPE_WATER",
+    11: "TYPE_GRASS",
+    12: "TYPE_ELECTRIC",
+    13: "TYPE_PSYCHIC",
+    14: "TYPE_ICE",
+    15: "TYPE_DRAGON",
+    16: "TYPE_DARK",
+};
+
+const PLATES_TO_TYPES =
+{
+    "ITEM_FIST_PLATE": "TYPE_FIGHTING",
+    "ITEM_SKY_PLATE": "TYPE_FLYING",
+    "ITEM_TOXIC_PLATE": "TYPE_POISON",
+    "ITEM_EARTH_PLATE": "TYPE_GROUND",
+    "ITEM_STONE_PLATE": "TYPE_ROCK",
+    "ITEM_INSECT_PLATE": "TYPE_BUG",
+    "ITEM_SPOOKY_PLATE": "TYPE_GHOST",
+    "ITEM_IRON_PLATE": "TYPE_STEEL",
+    "ITEM_FLAME_PLATE": "TYPE_FIRE",
+    "ITEM_SPLASH_PLATE": "TYPE_WATER",
+    "ITEM_MEADOW_PLATE": "TYPE_GRASS",
+    "ITEM_ZAP_PLATE": "TYPE_ELECTRIC",
+    "ITEM_MIND_PLATE": "TYPE_PSYCHIC",
+    "ITEM_ICICLE_PLATE": "TYPE_ICE",
+    "ITEM_DRACO_PLATE": "TYPE_DRAGON",
+    "ITEM_DREAD_PLATE": "TYPE_DARK",
+    "ITEM_PIXIE_PLATE": "TYPE_FAIRY",
+};
+
+const DRIVES_TO_TYPES =
+{
+    "ITEM_BURN_DRIVE": "TYPE_FIRE",
+    "ITEM_DOUSE_DRIVE": "TYPE_WATER",
+    "ITEM_SHOCK_DRIVE": "TYPE_ELECTRIC",
+    "ITEM_CHILL_DRIVE": "TYPE_ICE",
+}
 
 export const MAX_LEVEL = 100;
 export const HEART_FRIENDSHIP = 220;
@@ -648,6 +698,68 @@ export function GetPPBonuses(pokemon)
     }
 
     return 0;
+}
+
+/**
+ * Gets the type of a move when known by a specific Pokemon.
+ * @param {String} move - The move to get the type of.
+ * @param {Pokemon} pokemon - The Pokemon that knows the move.
+ * @param {String} gameId - The id of the game that's currently loaded.
+ * @returns {String} The type of move.
+ */
+export function GetMoveType(move, pokemon, gameId)
+{
+    var type = (move in MoveData) ? MoveData[move]["type"] : "TYPE_NORMAL";
+    var species = GetSpecies(pokemon);
+
+    switch (move)
+    {
+        case "MOVE_HIDDENPOWER":
+            let ivs = GetIVs(pokemon);
+            let typeId = ((ivs[0] & 1))       //HP
+			       | ((ivs[1] & 1) << 1)  //Attack
+			       | ((ivs[2] & 1) << 2)  //Defense
+			       | ((ivs[5] & 1) << 3)  //Speed
+			       | ((ivs[3] & 1) << 4)  //Sp. Atk
+			       | ((ivs[4] & 1) << 5); //Sp. Def
+            typeId = Math.floor((15 * typeId) / 63) + 1;
+            if (typeId in ID_TO_HIDDEN_POWER_TYPE)
+                type = ID_TO_HIDDEN_POWER_TYPE[typeId];
+            break;
+        case "MOVE_JUDGMENT":
+            if (species in SpeciesToDexNum && SpeciesToDexNum[species] === "NATIONAL_DEX_ARCEUS")
+            {
+                let item = GetItem(pokemon);
+                if (item in PLATES_TO_TYPES)
+                    type = PLATES_TO_TYPES[item];
+            }
+            break;
+        case "MOVE_MULTIATTACK":
+            if (species in SpeciesToDexNum && SpeciesToDexNum[species] === "NATIONAL_DEX_SILVALLY")
+            {
+                let item = GetItem(pokemon);
+                if (item.includes("_MEMORY"))
+                    type = "TYPE_" + item.split("ITEM_")[1].split("_MEMORY")[0];
+            }
+            break;
+        case "MOVE_TECHNOBLAST":
+            if (species in SpeciesToDexNum && SpeciesToDexNum[species] === "NATIONAL_DEX_GENESECT")
+            {
+                let item = GetItem(pokemon);
+                if (item in DRIVES_TO_TYPES)
+                    type = DRIVES_TO_TYPES[item];
+            }
+            break;
+        case "MOVE_REVELATIONDANCE":
+            let baseStats = GetBaseStats(pokemon, gameId);
+            if (baseStats != null)
+                type =  baseStats["type1"];
+            break;
+        default:
+            break;
+    }
+
+    return type;
 }
 
 /**

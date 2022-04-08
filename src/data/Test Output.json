@@ -13748,7 +13748,7 @@
             "ppBonuses": [0, 0, 0, 0],
             "friendship": 0,
             "pokeBall": "BALL_TYPE_POKE_BALL",
-            "moves": ["MOVE_TAKEDOWN", "MOVE_CRUNCH", "MOVE_DOUBLEEDGE", "MOVE_PARTINGSHOT"],
+            "moves": ["MOVE_MULTIATTACK", "MOVE_CRUNCH", "MOVE_DOUBLEEDGE", "MOVE_PARTINGSHOT"],
             "pokerus": 0,
             "metLocaton": 88,
             "ivs": [31, 31, 31, 31, 31, 31],
