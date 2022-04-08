@@ -6,7 +6,6 @@ New Features:
 -Search by Poke Ball, by Type
 
 Feature Modifications:
--Calc stats on client side and remove from data structure
 -Just dump entire base stats file on client side
 -Search bar for box list page
 -Loading screen for search view
@@ -15,9 +14,8 @@ Feature Modifications:
 -List supported hacks somewhere
 -Make back button work for pages that have a back arrow on them
 -Starting dragging on the current public version selects the box (bring that back!)
--Hidden Power type and variable move types should be display
 -Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game
--Calculate level on front-end
+-Make sure Missingno shows up in search
 
 Server Changes:
 -Change the file signature for Unbound

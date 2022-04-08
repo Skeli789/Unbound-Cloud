@@ -7,7 +7,7 @@ import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 import {CanMonGigantamax, ChangeMarking, GetAbility, GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel, GetMarkings,
         GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleNature, GetVisibleOTId, GetVisibleStats,
-        GetEVs, GetIVs, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP, NATURE_STAT_TABLE} from "./PokemonUtil";
+        GetEVs, GetIVs, GetMoveType, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP, NATURE_STAT_TABLE} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetAbilityName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName} from "./Util";
 import MoveData from "./data/MoveData.json";
 
@@ -376,7 +376,7 @@ export class PokemonSummary extends Component
             //Print Type
             if (move in MoveData)
             {
-                var moveType = MoveData[move]["type"];
+                var moveType = GetMoveType(move, this.state.pokemon, this.state.gameId);
                 typeNames[i] = moveType.toLowerCase().charAt(5).toUpperCase() + moveType.toLowerCase().slice(6); //Start after TYPE_
                 var alt = typeNames[i].slice(0, 2);
                 var typeNameTooltip = props => (<Tooltip {...props}>{typeNames[i]}</Tooltip>);
