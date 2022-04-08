@@ -318,13 +318,16 @@ app.post('/uploadSaveFile', async (req, res) =>
         var pythonFile = path.resolve('src/Interface.py');
         let pythonOutput = await RunCommand(`python "${pythonFile}" UPLOAD_SAVE "${saveFileName}"`);
         let data = JSON.parse(pythonOutput).data;
+        let gameId = data["gameId"];
+        let boxCount = data["boxCount"];
         let boxes = data["boxes"];
         let titles = data["titles"];
 
-        if (boxes.length == 0 || titles.length == 0) //Bad save file
-            result = res.status(StatusCode.ClientErrorBadRequest).json("ERROR: The uploaded save file is corrupt.");
+        if (gameId == "" || boxCount == 0 || boxes.length == 0 || titles.length == 0) //Bad save file
+            result = res.status(StatusCode.ClientErrorBadRequest).json("ERROR: The uploaded save file is corrupt or not supported.");
         else
-            result = res.status(StatusCode.SuccessOK).json({boxes: boxes, titles: titles, saveFileData: saveFileData, fileIdNumber: fileIdNumber});
+            result = res.status(StatusCode.SuccessOK).json({gameId: gameId, boxCount: boxCount, boxes: boxes, titles: titles,
+                                                            saveFileData: saveFileData, fileIdNumber: fileIdNumber});
     }
     catch (err)
     {
@@ -361,10 +364,13 @@ app.post('/uploadHomeData', async (req, res) =>
     //Decrypt the data
     try
     {
-        var bytes = CryptoJS.AES.decrypt(req.files.file.data.toString(), gSecretKey);
+        var homeData = req.files.file.data.toString()
+        var bytes = CryptoJS.AES.decrypt(homeData, gSecretKey);
         var data = JSON.parse(JSON.parse(bytes.toString(CryptoJS.enc.Utf8))); //Decrypted
         console.log("The home file has been successfully decrypted.");
-        return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"]});
+        data = await TryUpdateOldHomeData(data, res)
+        if (data != null)
+            return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"]});
     }
     catch (err)
     {
@@ -385,7 +391,9 @@ app.post("/uploadLastHomeData", async (req, res) =>
         var bytes = CryptoJS.AES.decrypt(homeData, gSecretKey);
         var data = JSON.parse(JSON.parse(bytes.toString(CryptoJS.enc.Utf8))); //Decrypted
         console.log("The home file has been successfully decrypted.");
-        return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"]});
+        data = await TryUpdateOldHomeData(data, res)
+        if (data != null)
+            return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"]});
     }
     catch (err)
     {
@@ -488,3 +496,59 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
 
     return result;
 });
+
+async function TryUpdateOldHomeData(homeData, res)
+{
+    if (!("version" in homeData) || homeData["version"] < 2)
+    {
+        //Write the cloud file to a temp file
+
+        do //Get a temp name that's not already in use
+        {
+            fileIdNumber = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+            homeFileName = `temp/homedata_${fileIdNumber}.json`;
+        } while(fs.existsSync(homeFileName));
+
+        MakeTempFolder();
+        fs.writeFileSync(homeFileName, JSON.stringify(homeData));
+        console.log(`Temp home file saved to server as ${homeFileName}.`);
+
+        //Run the Python script
+        var result;
+        try
+        {
+            var pythonFile = path.resolve('src/Interface.py');
+            let pythonOutput = await RunCommand(`python "${pythonFile}" CONVERT_OLD_CLOUD_FILE "${homeFileName}"`);
+            let data = JSON.parse(pythonOutput).data;
+
+            if (!data["completed"]) //Bad home file
+            {
+                console.log("An error occurred converting the home file.");
+                console.log(data["errorMsg"]);
+                result = res.status(StatusCode.ClientErrorBadRequest).json(`ERROR: The uploaded home file could not be converted:\n${data["errorMsg"]}`);
+                homeData = null;
+            }
+            else
+            {
+                homeData = fs.readFileSync(homeFileName);
+                homeData = JSON.parse(homeData);
+            }
+        }
+        catch (err)
+        {
+            console.log("An error occurred converting the home file.");
+            console.log(err);
+            res.status(StatusCode.ServerErrorInternal).json(err);
+            homeData = null;
+        }
+
+        //Delete the temp file
+        if (fs.existsSync(homeFileName))
+        {
+            fs.unlinkSync(homeFileName);
+            console.log(`Temp home file ${homeFileName} deleted from server.`);
+        }
+    }
+
+    return homeData;
+}

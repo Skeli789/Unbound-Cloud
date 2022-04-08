@@ -1,16 +1,18 @@
+from typing import List
 from Defines import Defines
 
 EOS = 255
 
 
-def BytesToInt(line: [bytes]) -> int:
-    return sum(line[i] << (8 * i) for i in range(len(line)))
+def BytesToInt(line: List[bytes]) -> int:
+    return sum(int(line[i]) << (8 * i) for i in range(len(line)))
 
 
-def BytesToString(byteString: [bytes]) -> str:
+def BytesToString(byteString: List[bytes]) -> str:
     string = ""
     # error = False
     for byte in byteString:
+        byte = int(byte)
         if byte == EOS:  # End of string
             break
         elif byte in Defines.charMap:
@@ -26,7 +28,7 @@ def BytesToString(byteString: [bytes]) -> str:
     return string
 
 
-def ConvertToReverseByteList(string: str) -> [str]:
+def ConvertToReverseByteList(string: str) -> List[str]:
     byteList = []
     inter = ''
     counter = 0

@@ -1,5 +1,5 @@
 import os
-from typing import BinaryIO
+from typing import BinaryIO, List, Dict, Tuple
 
 from Defines import Defines
 from Util import BytesToInt, ConvertToReverseByteList
@@ -16,7 +16,7 @@ SaveIndexOffset = 0xFFC  # Goes up by 1 each time the game is saved
 
 class SaveBlocks:
     @staticmethod
-    def LoadAll(saveFile: str) -> [{int: [int]}, int]:
+    def LoadAll(saveFile: str) -> Tuple[Dict[int, List[int]], int]:
         # Validate the save file first
         if not SaveBlocks.Validate(saveFile):
             return [{}, 0]
@@ -29,14 +29,29 @@ class SaveBlocks:
             binaryFile.seek(offset + SaveIndexOffset)
             saveIndexA = BytesToInt(binaryFile.read(4))
 
+            # Extract File Signature of Save A
+            binaryFile.seek(offset + FileSignatureOffset)
+            fileSignatureA = BytesToInt(binaryFile.read(4))
+    
             # Get Save Index of Save B
             offset = SaveSize
             binaryFile.seek(offset + SaveIndexOffset)
             saveIndexB = BytesToInt(binaryFile.read(4))
+    
+            # Extract File Signature of Save B
+            binaryFile.seek(offset + FileSignatureOffset)
+            fileSignatureB = BytesToInt(binaryFile.read(4))
 
             # Determine Correct Save Offset
             saveOffset = 0
-            if saveIndexB > saveIndexA:  # Main save is one with higher save index
+            fileSignature = fileSignatureA
+            if saveIndexA == 0xFFFFFFFF and fileSignatureA == 0xFFFFFFFF:  # Save 1 is empty
+                fileSignature = fileSignatureB
+                saveOffset = SaveSize  # Main save is saved second
+            elif saveIndexB == 0xFFFFFFFF and fileSignatureB == 0xFFFFFFFF:  # Save 2 is empty
+                pass  # Save is already set to Save 1
+            elif saveIndexB > saveIndexA:  # Main save is one with higher save index
+                fileSignature = fileSignatureB
                 saveOffset = SaveSize  # Main save is saved second
 
             # Extract Save Blocks
@@ -50,14 +65,10 @@ class SaveBlocks:
             for i in range(30, 31 + 1):
                 saveBlocks[i] = SaveBlocks.LoadOne(binaryFile, 0, i * BlockSize)[1]
 
-            # Extract File Signature
-            binaryFile.seek(saveOffset + FileSignatureOffset)
-            fileSignature = BytesToInt(binaryFile.read(4))
-
         return saveBlocks, fileSignature
 
     @staticmethod
-    def LoadOne(binaryFile: BinaryIO, saveOffset: int, blockOffset: int) -> (int, [int]):
+    def LoadOne(binaryFile: BinaryIO, saveOffset: int, blockOffset: int) -> Tuple[int, List[int]]:
         offset = saveOffset + blockOffset
 
         # Load Block Id
@@ -73,12 +84,31 @@ class SaveBlocks:
     @staticmethod
     def Validate(saveFile: str) -> bool:
         if not os.path.isfile(saveFile) \
-                or os.path.getsize(saveFile) != 0x20000:  # 128 kb
+                or (os.path.getsize(saveFile) != 0x20000  # 128 kb
+                 and os.path.getsize(saveFile) != 0x20010):  # Flashcart 128kb
             return False
 
         with open(saveFile, "rb") as binaryFile:
+            binaryFile.seek(FileSignatureOffset)
+            if BytesToInt(binaryFile.read(4)) == 0xFFFFFFFF:  # Save 1 is empty
+                # Check save 2 is good and is the first save
+                if not SaveBlocks.ValidateSave(binaryFile, SaveSize, SaveSize * 2):
+                    return False
+
+                binaryFile.seek(SaveSize + SaveIndexOffset)  # Save count of actual save
+                return BytesToInt(binaryFile.read(2)) == 1  # Save 2 should be the first time the game was saved
+
+            binaryFile.seek(SaveSize + FileSignatureOffset)
+            if BytesToInt(binaryFile.read(4)) == 0xFFFFFFFF:  # Save 2 is empty
+                # Check save 1 is good and is the first save
+                if not SaveBlocks.ValidateSave(binaryFile, 0, SaveSize):
+                    return False
+
+                binaryFile.seek(SaveIndexOffset)  # Save count of actual save
+                return BytesToInt(binaryFile.read(2)) == 1  # Save 1 should be the first time the game was saved
+
             return SaveBlocks.ValidateSave(binaryFile, 0, SaveSize) \
-                   and SaveBlocks.ValidateSave(binaryFile, SaveSize, SaveSize * 2)  # Both saves must be valid for use
+                and SaveBlocks.ValidateSave(binaryFile, SaveSize, SaveSize * 2)  # Both saves must be valid for use
 
     @staticmethod
     def ValidateSave(binaryFile: BinaryIO, startOffset: int, endOffset: int) -> bool:
@@ -133,7 +163,7 @@ class SaveBlocks:
         return True
 
     @staticmethod
-    def CalculateChecksum(saveBlock: [int], saveBlockId: int) -> int:
+    def CalculateChecksum(saveBlock: List[int], saveBlockId: int) -> int:
         if saveBlockId == 0:
             size = 0xF24
         elif saveBlockId == 4:
@@ -160,13 +190,13 @@ class SaveBlocks:
         return checksum
 
     @staticmethod
-    def CreateBlankDict() -> {int: []}:
+    def CreateBlankDict() -> Dict[int, list]:
         return dict((key, list()) for key in SaveBlockNumbers)
 
 
     ### Code for updating save files ###
     @staticmethod
-    def ReplaceAll(saveFile: str, saveBlocks: {int: [int]}) -> bool:
+    def ReplaceAll(saveFile: str, saveBlocks: Dict[int, List[int]]) -> bool:
         if not os.path.isfile(saveFile):
             return False
 
@@ -201,7 +231,7 @@ class SaveBlocks:
             return True  # Successfully updated the save file
 
     @staticmethod
-    def ReplaceOne(binaryFile: BinaryIO, offset: int, saveblockData: [int], blockId: int):
+    def ReplaceOne(binaryFile: BinaryIO, offset: int, saveblockData: List[int], blockId: int):
         # Update Data
         binaryFile.seek(offset)
         binaryFile.write(bytes(saveblockData))
@@ -216,3 +246,4 @@ class SaveBlocks:
             checksum.append(0)  # Make sure checksum is always 16-bit
         binaryFile.seek(offset + ChecksumOffset)
         binaryFile.write(bytes(checksum))
+

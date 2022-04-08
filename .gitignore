@@ -13,6 +13,9 @@ __pycache__/
 
 #test coverage
 /coverage
+htmlcov/
+.coverage
+settings.json
 
 # production
 /build

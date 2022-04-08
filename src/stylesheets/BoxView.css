@@ -112,6 +112,7 @@
     min-height: 56px;
     user-select: none;
     position: relative; /*Allows the item icon to position properly*/
+    font-size: 8px; /*For the image alts*/
 }
 
 .box-icon-hoverable

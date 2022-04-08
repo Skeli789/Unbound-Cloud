@@ -1,9 +1,10 @@
+import hashlib
+import json
 import random
-
 from Defines import Defines
 
-MaxLevel = 100
-NumStats = 6
+MAX_LEVEL = 100
+NUM_STATS = 6
 
 StatIdsToBaseAndEVs = {
     0: ("baseHP", "hpEv"),
@@ -14,34 +15,34 @@ StatIdsToBaseAndEVs = {
     5: ("baseSpDefense", "spDefEv"),
 }
 
-NatureStatTable = [
-    # Atk Def Spd Sp.Atk Sp.Def
-    (0, 0, 0, 0, 0),  # Hardy
-    (+1, -1, 0, 0, 0),  # Lonely
-    (+1, 0, -1, 0, 0),  # Brave
-    (+1, 0, 0, -1, 0),  # Adamant
-    (+1, 0, 0, 0, -1),  # Naughty
-    (-1, +1, 0, 0, 0),  # Bold
-    (0, 0, 0, 0, 0),  # Docile
-    (0, +1, -1, 0, 0),  # Relaxed
-    (0, +1, 0, -1, 0),  # Impish
-    (0, +1, 0, 0, -1),  # Lax
-    (-1, 0, +1, 0, 0),  # Timid
-    (0, -1, +1, 0, 0),  # Hasty
-    (0, 0, 0, 0, 0),  # Serious
-    (0, 0, +1, -1, 0),  # Jolly
-    (0, 0, +1, 0, -1),  # Naive
-    (-1, 0, 0, +1, 0),  # Modest
-    (0, -1, 0, +1, 0),  # Mild
-    (0, 0, -1, +1, 0),  # Quiet
-    (0, 0, 0, 0, 0),  # Bashful
-    (0, 0, 0, +1, -1),  # Rash
-    (-1, 0, 0, 0, +1),  # Calm
-    (0, -1, 0, 0, +1),  # Gentle
-    (0, 0, -1, 0, +1),  # Sassy
-    (0, 0, 0, -1, +1),  # Careful
-    (0, 0, 0, 0, 0),  # Quirky
-]
+NatureStatTable = {
+                    # Atk Def Spd Sp.Atk Sp.Def
+    "NATURE_HARDY":   ( 0,  0,  0,  0,  0),  # Hardy
+    "NATURE_LONELY":  (+1, -1,  0,  0,  0),  # Lonely
+    "NATURE_BRAVE":   (+1,  0, -1,  0,  0),  # Brave
+    "NATURE_ADAMANT": (+1,  0,  0, -1,  0),  # Adamant
+    "NATURE_NAUGHTY": (+1,  0,  0,  0, -1),  # Naughty
+    "NATURE_BOLD":    (-1, +1,  0,  0,  0),  # Bold
+    "NATURE_DOCILE":  ( 0,  0,  0,  0,  0),  # Docile
+    "NATURE_RELAXED": ( 0, +1, -1,  0,  0),  # Relaxed
+    "NATURE_IMPISH":  ( 0, +1,  0, -1,  0),  # Impish
+    "NATURE_LAX":     ( 0, +1,  0,  0, -1),  # Lax
+    "NATURE_TIMID":   (-1,  0, +1,  0,  0),  # Timid
+    "NATURE_HASTY":   ( 0, -1, +1,  0,  0),  # Hasty
+    "NATURE_SERIOUS": ( 0,  0,  0,  0,  0),  # Serious
+    "NATURE_JOLLY":   ( 0,  0, +1, -1,  0),  # Jolly
+    "NATURE_NAIVE":   ( 0,  0, +1,  0, -1),  # Naive
+    "NATURE_MODEST":  (-1,  0,  0, +1,  0),  # Modest
+    "NATURE_MILD":    ( 0, -1,  0, +1,  0),  # Mild
+    "NATURE_QUIET":   ( 0,  0, -1, +1,  0),  # Quiet
+    "NATURE_BASHFUL": ( 0,  0,  0,  0,  0),  # Bashful
+    "NATURE_RASH":    ( 0,  0,  0, +1, -1),  # Rash
+    "NATURE_CALM":    (-1,  0,  0,  0, +1),  # Calm
+    "NATURE_GENTLE":  ( 0, -1,  0,  0, +1),  # Gentle
+    "NATURE_SASSY":   ( 0,  0, -1,  0, +1),  # Sassy
+    "NATURE_CAREFUL": ( 0,  0,  0, -1, +1),  # Careful
+    "NATURE_QUIRKY":  ( 0,  0,  0,  0,  0),  # Quirky
+}
 
 CloneAbilities = [
     ("ABILITY_AIRLOCK", "ABILITY_CLOUDNINE"),
@@ -74,16 +75,34 @@ MiniorCores = [
 
 class PokemonUtil:
     @staticmethod
-    def GetAbility(pokemon: {}) -> str:
-        if pokemon["hiddenAbility"] != 0 and Defines.baseStats[pokemon["species"]]["hiddenAbility"] != "ABILITY_NONE":
-            return Defines.baseStats[pokemon["species"]]["hiddenAbility"]
-        elif (pokemon["personality"] & 1) == 0 or Defines.baseStats[pokemon["species"]]["ability2"] == "ABILITY_NONE":
-            return Defines.baseStats[pokemon["species"]]["ability1"]
-        else:
-            return Defines.baseStats[pokemon["species"]]["ability2"]
+    def GetBaseStats(pokemon: dict) -> dict:
+        return Defines.baseStats[pokemon["species"]]  # Want error to be thrown here (if needed) and not farther up the stack
 
     @staticmethod
-    def GetGender(pokemon: {}) -> str:
+    def GetAbilitySlot(pokemon: dict) -> int:
+        baseStats = PokemonUtil.GetBaseStats(pokemon)
+
+        if pokemon["hiddenAbility"] and baseStats["hiddenAbility"] != "ABILITY_NONE":
+            return 2  # Hidden Ability
+        elif (pokemon["personality"] & 1) == 0 or baseStats["ability2"] == "ABILITY_NONE":
+            return 0  # Ability 1
+        else:
+            return 1  # Ability 2
+
+    @staticmethod
+    def GetAbility(pokemon: dict) -> str:
+        abilitySlot = PokemonUtil.GetAbilitySlot(pokemon)
+        baseStats = PokemonUtil.GetBaseStats(pokemon)
+
+        if abilitySlot == 0:
+            return baseStats["ability1"]
+        elif abilitySlot == 1:
+            return baseStats["ability2"]
+        else:
+            return baseStats["hiddenAbility"]
+
+    @staticmethod
+    def GetGender(pokemon: dict) -> str:
         return PokemonUtil.GetGenderFromSpeciesAndPersonality(pokemon["species"], pokemon["personality"])
 
     @staticmethod
@@ -91,9 +110,9 @@ class PokemonUtil:
         if species in Defines.baseStats:
             ratio = Defines.baseStats[species]["genderRatio"]
 
-            if ratio == "MON_MALE":
+            if ratio == "MON_MALE" or ratio == "PERCENT_FEMALE(0)":
                 return "M"
-            elif ratio == "MON_FEMALE":
+            elif ratio == "MON_FEMALE" or ratio == "PERCENT_FEMALE(100)":  # Normally leaving it up to the percent calc (below) wouldn't guarantee a 100% female
                 return "F"
             elif ratio == "MON_GENDERLESS":
                 return "U"
@@ -109,15 +128,15 @@ class PokemonUtil:
         return "U"  # Couldn't determine gender
 
     @staticmethod
-    def GetNature(pokemon: {}) -> int:
+    def GetNature(pokemon: dict) -> int:
         return PokemonUtil.GetNatureFromPersonality(pokemon["personality"])
 
     @staticmethod
     def GetNatureFromPersonality(personality: int) -> int:
-        return personality % 25
+        return Defines.natures[personality % 25]
 
     @staticmethod
-    def IsShiny(pokemon: {}) -> bool:
+    def IsShiny(pokemon: dict) -> bool:
         if pokemon["species"] == "SPECIES_NONE":
             return False
         return PokemonUtil.IsShinyOtIdPersonality(pokemon["otId"], pokemon["personality"])
@@ -128,18 +147,18 @@ class PokemonUtil:
         return shinyValue < Defines.shinyOdds
 
     @staticmethod
-    def GetUnownLetterFromPersonality(personality: int):
+    def GetUnownLetterFromPersonality(personality: int) -> int:
         return (((personality & 0x3000000) >> 18)
-                | ((personality & 0x0030000) >> 12)
-                | ((personality & 0x0000300) >> 6)
-                | ((personality & 0x0000003) >> 0)) % 28
+              | ((personality & 0x0030000) >> 12)
+              | ((personality & 0x0000300) >> 6)
+              | ((personality & 0x0000003) >> 0)) % 28
 
     @staticmethod
-    def GetMiniorCoreFromPersonality(personality: int):
+    def GetMiniorCoreFromPersonality(personality: int) -> str:
         return MiniorCores[personality % (len(MiniorCores))]
 
     @staticmethod
-    def CalculateLevel(pokemon: {}) -> int:
+    def CalculateLevel(pokemon: dict) -> int:
         species = pokemon["species"]
         experience = pokemon["experience"]
 
@@ -147,19 +166,23 @@ class PokemonUtil:
             expRate = Defines.baseStats[species]["growthRate"]
             if expRate in Defines.experienceCurves:
                 level = 1
-                while level <= MaxLevel and Defines.experienceCurves[expRate][level] <= experience:
+                while level <= MAX_LEVEL and Defines.experienceCurves[expRate][level] <= experience:
                     level += 1
                 return level - 1
 
         return 1
 
     @staticmethod
-    def CalculateStat(pokemon: {}, statId: int) -> int:
+    def CalculateStat(pokemon: dict, statId: int) -> int:
         species = pokemon["species"]
         level = pokemon["level"]
-        base = Defines.baseStats[species][StatIdsToBaseAndEVs[statId][0]]
-        ev = pokemon[StatIdsToBaseAndEVs[statId][1]]
+        base = PokemonUtil.GetBaseStats(pokemon)[StatIdsToBaseAndEVs[statId][0]]
         iv = pokemon["ivs"][statId]
+
+        if StatIdsToBaseAndEVs[statId][1] in pokemon:
+            ev = pokemon[StatIdsToBaseAndEVs[statId][1]]
+        else:
+            ev = pokemon["evs"][statId]
 
         if statId == 0:  # HP
             if species == "SPECIES_SHEDINJA":
@@ -174,14 +197,14 @@ class PokemonUtil:
         return val
 
     @staticmethod
-    def UpdateStats(pokemon: {}):
+    def UpdateStats(pokemon: dict):
         stats = []
-        for statId in range(NumStats):
+        for statId in range(NUM_STATS):
             stats.append(PokemonUtil.CalculateStat(pokemon, statId))
         pokemon["rawStats"] = stats
 
     @staticmethod
-    def ModifyStatByNature(nature: int, rawStat: int, statId: int) -> int:
+    def ModifyStatByNature(nature: str, rawStat: int, statId: int) -> int:
         if statId < 1 or statId > 5:
             return rawStat
 
@@ -193,7 +216,20 @@ class PokemonUtil:
         return rawStat
 
     @staticmethod
-    def IsCloneAbility(ability1, ability2):
+    def CalculateChecksum(pokemon: dict):
+        pokemon = pokemon.copy()  # Don't modify the original Pokemon
+        if "markings" in pokemon:
+            del pokemon["markings"]  # These can be changed on the site so shouldn't be included in the checksum
+        if "checksum" in pokemon:
+            del pokemon["checksum"]  # Don't include an older calculated checksum
+        return hashlib.md5((json.dumps(pokemon, sort_keys=True) + "TODO: Use env var").encode("utf-8")).hexdigest()  # Add "TODO" on so people can't create their own checksums with the original data
+
+    @staticmethod
+    def IsUpdatedDataVersion(pokemon: dict):
+        return "metGame" in pokemon or "metGameId" in pokemon or "metLevel" in pokemon or "evs" in pokemon 
+
+    @staticmethod
+    def IsCloneAbility(ability1: str, ability2: str):
         for clones in CloneAbilities:
             if ability1 in clones and ability2 in clones:
                 return True
@@ -201,13 +237,14 @@ class PokemonUtil:
         return False
 
     @staticmethod
-    def ChangeAbility(pokemon: {}, abilityNum):
+    def ChangeAbility(pokemon: dict, abilityNum: int):
         if abilityNum == 0 or abilityNum == 1:
             species = pokemon["species"]
             personality = pokemon["personality"]
             otId = pokemon["otId"]
             sid = (otId >> 16) & 0xFFFF
             tid = otId & 0xFFFF
+            pokemon["hiddenAbility"] = False
 
             gender = PokemonUtil.GetGender(pokemon)
             isShiny = PokemonUtil.IsShiny(pokemon)
@@ -216,6 +253,9 @@ class PokemonUtil:
             isMinior = species.startswith("SPECIES_MINIOR")
             miniorCore = PokemonUtil.GetMiniorCoreFromPersonality(personality)
             loop = personality & 1 != abilityNum  # Doesn't already have Ability
+
+            if abilityNum == 1 and PokemonUtil.GetBaseStats(pokemon)["ability2"] == "ABILITY_NONE":
+                return  # No point in wasting time to change it
 
             while loop:
                 personality = random.randint(0, 0xFFFFFFFF + 1)
@@ -230,11 +270,10 @@ class PokemonUtil:
                 loop = (PokemonUtil.GetNatureFromPersonality(personality) != nature
                         or PokemonUtil.GetGenderFromSpeciesAndPersonality(species, personality) != gender
                         or (not isShiny and PokemonUtil.IsShinyOtIdPersonality(otId, personality))  # No free shinies
-                        or (species == "SPECIES_UNOWN" and PokemonUtil.GetUnownLetterFromPersonality(
-                            personality) != letter)
+                        or (isShiny and not PokemonUtil.IsShinyOtIdPersonality(otId, personality))
+                        or (species == "SPECIES_UNOWN" and PokemonUtil.GetUnownLetterFromPersonality(personality) != letter)
                         or (isMinior and PokemonUtil.GetMiniorCoreFromPersonality(personality) != miniorCore))
 
-            pokemon["hiddenAbility"] = 0
             pokemon["personality"] = personality
         else:  # Hidden Ability
-            pokemon["hiddenAbility"] = 1
+            pokemon["hiddenAbility"] = True

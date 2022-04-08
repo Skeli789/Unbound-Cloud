@@ -3,6 +3,7 @@ New Features:
 -GTS
 -Ads
 -Alcremie colour
+-Search by Poke Ball, by Type
 
 Feature Modifications:
 -Calc stats on client side and remove from data structure
@@ -13,14 +14,17 @@ Feature Modifications:
 -Force save before friend trade
 -List supported hacks somewhere
 -Make back button work for pages that have a back arrow on them
+-Starting dragging on the current public version selects the box (bring that back!)
+-Make sure cursor changes to dragging when moving mon
+-Hidden Power type and variable move types should be display
+-Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game
+-Ensure regular living dex works for forms of same species
+-Calculate level on front-end
 
 Server Changes:
 -Change the file signature for Unbound
 -Unbound can only load saves with FR or Unbound file signature
--Mons have internal checksum to prevent modification when sent to the site. If checksum fails, then Pokemon is wiped completely.
--Save file with no backup save doesn't work
--FLAG_USED_DEBUG_MENU shouldn't be allowed to use it
--Add met game to data structure when in Unbound Home. If none assume Unbound
--Add "version number" to data structure
--If not found, set to v2 and adjust to match new format
 -Hardcode Leech Life turning into Leech Fang when moving into Unbound and back to Leech Life when moving out
+-Handle no Gerben files
+-Flags when accessible
+-The isValidPokemon check in the js server code should just calculate the checksum and make sure it matches
