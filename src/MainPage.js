@@ -2881,9 +2881,11 @@ export default class MainPage extends Component
             draggingImg = <img src={this.state.draggingImg} alt={GetSpeciesName(GetSpecies(this.getMonAtBoxPos(this.state.draggingFromBox, this.state.draggingMon)))}
                                onMouseDown={(e) => e.preventDefault()} id="moving-icon" className="dragging-image"/>;
 
+        let cursorStyle = draggingImg !== "" ? {cursor: "grabbing"} : {};
+        let scrollStyle = noScroll ? {height: "100vh"} : {};
         return (
             <div className={isMobile && navBar ? "main-page-mobile" : ""}
-                 style={noScroll ? {height: "100vh"} : {}}
+                 style={{...cursorStyle, ...scrollStyle}}
                  onMouseMove={(e) => this.moveDraggingMonIcon(e)}>
                 {navBar ? this.navBarButtons() : this.navBarNoButtons()}
                 {page}
