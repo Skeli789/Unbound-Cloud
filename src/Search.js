@@ -44,16 +44,34 @@ export class Search extends Component
             genders: [false, false, false],
             shiny: [false, false],
             pokerus: [false, false],
+            speciesNameList: [],
+            abilityNameList: [],
+            moveNameList: [],
+            itemNameList: [],
+            natureNameList: [],
+            boxType: this.props.boxType,
+            boxSlot: this.props.boxSlot,
+            parent: this.props.parent,
+            mainPage: this.props.mainPage,
+            loaded: false,
+        };
+    }
+
+    /**
+     * Starts changing the screen from "Loading..." when the loading screen is displayed.
+     */
+    async componentDidMount()
+    {   
+        await new Promise(r => setTimeout(r, 10)); //Allows the loading screen to render
+        this.setState
+        ({
             speciesNameList: this.createSpeciesNameList(),
             abilityNameList: this.createAbilityNameList(),
             moveNameList: this.createMoveNameList(),
             itemNameList: this.createItemNameList(),
             natureNameList: this.createNatureNameList(),
-            boxType: this.props.boxType,
-            boxSlot: this.props.boxSlot,
-            parent: this.props.parent,
-            mainPage: this.props.mainPage,
-        };
+            loaded: true
+        });
     }
 
     /**
@@ -345,15 +363,34 @@ export class Search extends Component
      */
     render()
     {
+        var titleBar =
+            <div className="box-title-no-edit">
+                <ImCancelCircle size={34} className="box-change-arrow" onClick={this.cancelSearch.bind(this)}/>
+                <span className="box-name">
+                    <h2 className="search-title-text">Search</h2>
+                </span>
+                <ImCancelCircle size={34} className="box-change-arrow" style={{visibility: "hidden"}}/>
+            </div>;
+
+        if (!this.state.loaded)
+        {
+            return (
+                <div className="search-view">
+                    {titleBar}
+
+                    <Form
+                        className={"search-form search-loading " + (this.isHomeBox() ? "home-box" : "save-box")}
+                        onSubmit={(e) => e.preventDefault()}
+                    >
+                        <Form.Label>Loading...</Form.Label>
+                    </Form>
+                </div>
+            );
+        }
+
         return(
             <div className="search-view">
-                <div className="box-title-no-edit">
-                    <ImCancelCircle size={34} className="box-change-arrow" onClick={this.cancelSearch.bind(this)}/>
-                    <span className="box-name">
-                        <h2 className="search-title-text">Search</h2>
-                    </span>
-                    <ImCancelCircle size={34} className="box-change-arrow" style={{visibility: "hidden"}}/>
-                </div>
+                {titleBar}
 
                 <Form
                         className={"search-form " + (this.isHomeBox() ? "home-box" : "save-box")}

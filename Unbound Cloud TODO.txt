@@ -8,7 +8,6 @@ New Features:
 Feature Modifications:
 -Just dump entire base stats file on client side
 -Search bar for box list page
--Loading screen for search view
 -Timeout if friend trade connection has gone on too long
 -Force save before friend trade
 -List supported hacks somewhere
