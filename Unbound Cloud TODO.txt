@@ -15,7 +15,6 @@ Feature Modifications:
 -Make back button work for pages that have a back arrow on them
 -Starting dragging on the current public version selects the box (bring that back!)
 -Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game
--Make sure Missingno shows up in search
 
 Server Changes:
 -Change the file signature for Unbound

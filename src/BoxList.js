@@ -99,7 +99,7 @@ export class BoxList extends Component
             let species = GetIconSpeciesName(pokemon);
             let colour = "rgba(0, 0, 0, 0.8)";
 
-            if (IsNullSpeciesName(species))
+            if (species == "none") //Still show "unknown" because they take up slots
                 icon = <div className="mini-box-cell" key={key}></div>;
             else
             {
