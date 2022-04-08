@@ -340,9 +340,9 @@ function CalcStat(pokemon, statId, gameId)
         var base = baseStats[statIdsToBaseStatsName[statId]];
         const visibleStatIdToStatId = [0, 1, 2, 4, 5, 3]; //Needed for nature calc
     
-        if (statId == 0) //HP
+        if (statId === 0) //HP
         {
-            if (species == "SPECIES_SHEDINJA")
+            if (species === "SPECIES_SHEDINJA")
                 val = 1;
             else
             {
@@ -373,9 +373,9 @@ function ModifyStatByNature(nature, rawStat, statId)
     if (statId < 1 || statId > 5)
         return rawStat;
 
-    if (NATURE_STAT_TABLE[nature][statId - 1] == 1)
+    if (NATURE_STAT_TABLE[nature][statId - 1] === 1)
         rawStat = (rawStat * 110) / 100;
-    else if (NATURE_STAT_TABLE[nature][statId - 1] == -1)
+    else if (NATURE_STAT_TABLE[nature][statId - 1] === -1)
         rawStat = (rawStat * 90) / 100;
 
     return Math.floor(rawStat);
@@ -506,11 +506,11 @@ export function GetAbility(pokemon, gameId)
                 switch (abilitySlot)
                 {
                     case 1:
-                        if ("ability2" in baseStats && baseStats["ability2"] != "ABILITY_NONE")
+                        if ("ability2" in baseStats && baseStats["ability2"] !== "ABILITY_NONE")
                             ability = baseStats["ability2"];
                         break;
                     case 2:
-                        if ("hiddenAbility" in baseStats && baseStats["hiddenAbility"] != "ABILITY_NONE")
+                        if ("hiddenAbility" in baseStats && baseStats["hiddenAbility"] !== "ABILITY_NONE")
                             ability = baseStats["hiddenAbility"];
                         break;
                     default:
@@ -1135,7 +1135,7 @@ export function GetVisibleStats(pokemon, gameId)
             ]);
         }
         else*/ //Calc based on the specific game
-        {
+        //{
             return [
                 CalcStat(pokemon, 0, gameId),
                 CalcStat(pokemon, 1, gameId),
@@ -1144,7 +1144,7 @@ export function GetVisibleStats(pokemon, gameId)
                 CalcStat(pokemon, 4, gameId),
                 CalcStat(pokemon, 5, gameId),
             ];
-        }
+        //}
     }
 }
 
@@ -1388,8 +1388,8 @@ export function GetIconSpeciesLinkBySpecies(species, isShiny, isFromUnbound)
 {    
     if (isShiny && isFromUnbound && species in UnboundShinies)
         return BASE_GFX_LINK + "unbound_shinies/" + species + ".png";
-    else if (species == "SPECIES_PIKACHU_SURFING"
-          || species == "SPECIES_PIKACHU_FLYING")
+    else if (species === "SPECIES_PIKACHU_SURFING"
+          || species === "SPECIES_PIKACHU_FLYING")
         return BASE_GFX_LINK + species + ".png";
 
     var iconSpeciesName = GetIconSpeciesNameBySpecies(species);
@@ -1407,7 +1407,7 @@ export function GetIconSpeciesLinkBySpecies(species, isShiny, isFromUnbound)
  */
 export function GetIconSpeciesLink(pokemon)
 {
-    return GetIconSpeciesLinkBySpecies(GetMonVisibleSpecies(pokemon), IsShiny(pokemon), GetMetGame(pokemon) == "unbound");
+    return GetIconSpeciesLinkBySpecies(GetMonVisibleSpecies(pokemon), IsShiny(pokemon), GetMetGame(pokemon) === "unbound");
 }
 
 /**

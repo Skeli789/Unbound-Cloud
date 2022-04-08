@@ -1245,7 +1245,7 @@ export class BoxView extends Component
             let dexNum = gSpeciesToDexNum[species];
 
             if (speciesInSlot in gSpeciesToDexNum
-            && dexNum == gSpeciesToDexNum[speciesInSlot]) //Correct species is already in slot
+            && dexNum === gSpeciesToDexNum[speciesInSlot]) //Correct species is already in slot
                 return ""; //Display full colour image instead
         }
 
