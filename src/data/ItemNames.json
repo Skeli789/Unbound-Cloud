@@ -16,7 +16,7 @@
 		"link": "ball/great"
 	},
 	"ITEM_POKE_BALL": {
-		"name": "Poké Ball",
+		"name": "PokÃ© Ball",
 		"link": "ball/poke"
 	},
 	"ITEM_SAFARI_BALL": {
@@ -316,7 +316,7 @@
 		"link": "battle-item/x-sp-atk"
 	},
 	"ITEM_POKE_DOLL": {
-		"name": "Poké Doll",
+		"name": "PokÃ© Doll",
 		"link": "other-item/poke-doll"
 	},
 	"ITEM_FLUFFY_TAIL": {
@@ -2084,5 +2084,17 @@
 	"ITEM_GALARICA_WREATH": {
 		"name": "Galarica Wreath",
 		"link": "evo-item/galarica-wreath"
+	},
+	"ITEM_BLACK_AUGURITE": {
+		"name": "Black Augurite"
+	},
+	"ITEM_PEAT_BLOCK": {
+		"name": "Peat Block"
+	},
+	"ITEM_HISUI_ROCK": {
+		"name": "Hisui Rock"
+	},
+	"ITEM_MAGM_BADGE": {
+		"name": "MAGM Badge"
 	}
 }

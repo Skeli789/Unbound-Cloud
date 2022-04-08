@@ -267,5 +267,24 @@
 	"ABILITY_GRIMNEIGH": "Grim Neigh",
 	"ABILITY_CHILLINGNEIGH": "Chilling Neigh",
 	"ABILITY_ASONE_GRIM": "As One (Spectrier)",
-	"ABILITY_ASONE_CHILLING": "As One (Glastrier)"
+	"ABILITY_ASONE_CHILLING": "As One (Glastrier)",
+
+    "ABILITY_NINELIVES": "Nine Lives",
+    "ABILITY_FOCUSBELT": "Focus Belt",
+    "ABILITY_FIERYNEIGH": "Fiery Neigh",
+    "ABILITY_SHOCKINGNEIGH": "Shocking Neigh",
+    "ABILITY_PRIDE": "Pride",
+    "ABILITY_MULTIEYE": "Multieye",
+    "ABILITY_SUBTERFUGE": "Subterfuge",
+    "ABILITY_TANGLINGWOOL": "Tangling Wool",
+    "ABILITY_BRAINBOND": "Brain Bond",
+    "ABILITY_COTTONCLOUD": "Cotton Cloud",
+    "ABILITY_BELLOW": "Bellow",
+    "ABILITY_SOUNDWAVES": "Sound Waves",
+    "ABILITY_ICYSKIN": "Icy Skin",
+    "ABILITY_DUSTYSCALES": "Dusty Scales",
+    "ABILITY_CRABBYTACTICS": "Crabby Tactics",
+    "ABILITY_HONEYARMOR": "Honey Armor",
+    "ABILITY_FACESHIELD": "Face Shield",
+    "ABILITY_ROYALROAR": "Royal Roar"
 }

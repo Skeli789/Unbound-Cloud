@@ -549,7 +549,7 @@ export class Search extends Component
  * @param {Object} searchCriteria - The search criteria to check against.
  * @returns True if the Pokemon matches the given search criteria. False otherwise.
  */
-export function MatchesSearchCriteria(pokemon, searchCriteria)
+export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
 {
     if (searchCriteria == null || searchCriteria === {})
         return false; //No search criteria
@@ -586,7 +586,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria)
     //Check Has Ability
     if ("ability" in searchCriteria)
     {
-        if (!searchCriteria["ability"].includes(GetAbility(pokemon)))
+        if (!searchCriteria["ability"].includes(GetAbility(pokemon, gameId)))
             return false;
     }
 

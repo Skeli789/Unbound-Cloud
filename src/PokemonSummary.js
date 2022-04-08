@@ -7,43 +7,13 @@ import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 import {CanMonGigantamax, ChangeMarking, GetAbility, GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel, GetMarkings,
         GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleNature, GetVisibleOTId, GetVisibleStats,
-        GetEVs, GetIVs, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP} from "./PokemonUtil";
+        GetEVs, GetIVs, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP, NATURE_STAT_TABLE} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetAbilityName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName} from "./Util";
 import MoveData from "./data/MoveData.json";
 
 import {BsCircle, BsSquare, BsTriangle, BsHeart, BsCircleFill, BsSquareFill, BsTriangleFill, BsHeartFill} from "react-icons/bs";
 
 import "./stylesheets/PokemonSummary.css";
-
-const NATURE_STAT_TABLE =
-[
-    // Atk Def Spd Sp.Atk Sp.Def
-    [    0,  0,  0,     0,     0], // Hardy
-    [   +1, -1,  0,     0,     0], // Lonely
-    [   +1,  0, -1,     0,     0], // Brave
-    [   +1,  0,  0,    -1,     0], // Adamant
-    [   +1,  0,  0,     0,    -1], // Naughty
-    [   -1, +1,  0,     0,     0], // Bold
-    [    0,  0,  0,     0,     0], // Docile
-    [    0, +1, -1,     0,     0], // Relaxed
-    [    0, +1,  0,    -1,     0], // Impish
-    [    0, +1,  0,     0,    -1], // Lax
-    [   -1,  0, +1,     0,     0], // Timid
-    [    0, -1, +1,     0,     0], // Hasty
-    [    0,  0,  0,     0,     0], // Serious
-    [    0,  0, +1,    -1,     0], // Jolly
-    [    0,  0, +1,     0,    -1], // Naive
-    [   -1,  0,  0,    +1,     0], // Modest
-    [    0, -1,  0,    +1,     0], // Mild
-    [    0,  0, -1,    +1,     0], // Quiet
-    [    0,  0,  0,     0,     0], // Bashful
-    [    0,  0,  0,    +1,    -1], // Rash
-    [   -1,  0,  0,     0,    +1], // Calm
-    [    0, -1,  0,     0,    +1], // Gentle
-    [    0,  0, -1,     0,    +1], // Sassy
-    [    0,  0,  0,    -1,    +1], // Careful
-    [    0,  0,  0,     0,     0], // Quirky
-];
 
 const IV_LETTERS = ["E", "D", "C", "B", "A", "S"];
 const IV_SIGNS = ["-", "-", "", "", "+", "+"];
@@ -52,8 +22,8 @@ const IV_COLOURS = ["red", "orangered", "darkorange", "olivedrab", "dodgerblue",
 const POKE_BALL_GFX_LINK = "https://raw.githubusercontent.com/msikma/pokesprite/master/items/ball/";
 const TYPE_ICON_GFX_LINK = "https://raw.githubusercontent.com/msikma/pokesprite/master/misc/types/gen8/";
 const CATEGORY_ICON_GFX_LINK = "https://raw.githubusercontent.com/msikma/pokesprite/master/misc/seals/home/move-";
-const POKERUS_INFECTED_LINK = "https://archives.bulbagarden.net/media/upload/3/33/Pok%C3%A9rusIC_IV_V.png";
-const POKERUS_CURED_LINK = "https://archives.bulbagarden.net/media/upload/c/c4/Pok%C3%A9rusIC_VII_cured.png";
+const POKERUS_INFECTED_LINK = BASE_GFX_LINK + "pokerus_infected.png"
+const POKERUS_CURED_LINK = BASE_GFX_LINK + "pokerus_cured.png"
 
 
 export class PokemonSummary extends Component
@@ -73,6 +43,7 @@ export class PokemonSummary extends Component
             boxType: props.boxType,
             areBoxViewsVertical: props.areBoxViewsVertical,
             inTrade: props.inTrade,
+            gameId: props.gameId,
             viewingEVsIVs: false,
         };
 
@@ -174,7 +145,7 @@ export class PokemonSummary extends Component
         else if (WasCuredOfPokerus(this.state.pokemon))
         {
             iconLink = POKERUS_CURED_LINK;
-            alt = ":|";
+            alt = "😐";
             tooltip = "Cured of Pokerus";
             extraStyle = {marginBottom: "1px"};
         }
@@ -279,8 +250,8 @@ export class PokemonSummary extends Component
     {
         var key = 0;
         var statNames = ["HP", "Attack", "Defense", "Sp. Atk", "Sp. Def", "Speed"];
-        var visibleStatIdToStatId = [0, 1, 2, 4, 5, 3];
-        var stats = GetVisibleStats(this.state.pokemon);
+        const visibleStatIdToStatId = [0, 1, 2, 4, 5, 3];
+        var stats = GetVisibleStats(this.state.pokemon, this.state.gameId);
         var nature = GetVisibleNature(this.state.pokemon);
         var evs = GetEVs(this.state.pokemon);
         var ivs = GetIVs(this.state.pokemon);
@@ -466,7 +437,7 @@ export class PokemonSummary extends Component
     render()
     {
         var level = GetLevel(this.state.pokemon);
-        var ability = GetAbilityName(GetAbility(this.state.pokemon));
+        var ability = GetAbilityName(GetAbility(this.state.pokemon, this.state.gameId));
         var nature = GetNatureName(GetNature(this.state.pokemon));
         var natureMint = GetNatureName(GetVisibleNature(this.state.pokemon));
 

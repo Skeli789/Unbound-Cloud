@@ -8,6 +8,9 @@ import MoveData from "./data/MoveData.json";
 import NatureNames from "./data/NatureNames.json";
 import SpeciesNames from "./data/SpeciesNames.json";
 import TradeEvolutions from "./data/TradeEvolutions.json";
+import CFRUBaseStats from "./data/cfru/BaseStats.json";
+import UnboundBaseStats from "./data/unbound/BaseStats.json";
+import MAGMBaseStats from "./data/magm/BaseStats.json";
 import {BASE_GFX_LINK, GetSpeciesName} from "./Util";
 
 const SPECIES_FORMS_ICON_NAMES =
@@ -21,7 +24,10 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_PIKACHU_CAP_PARTNER": "pikachu-partner-cap",
     "SPECIES_PIKACHU_CAP_WORLD": "pikachu-world-cap",
     "SPECIES_PIKACHU_STARTER": "pikachu-starter",
+    "SPECIES_PIKACHU_A": "pikachu",
     "SPECIES_EEVEE_STARTER": "eevee-starter",
+    "SPECIES_EXEGGCUTE_A": "exeggcute",
+    "SPECIES_CUBONE_A": "cubone",
     "SPECIES_PICHU_SPIKY": "pichu-spiky-eared",
     "SPECIES_HIPPOPOTAS_F": "female/hippopotas",
     "SPECIES_HIPPOWDON_F": "female/hippowdon",
@@ -29,6 +35,7 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_UNFEZANT_F": "female/unfezant",
     "SPECIES_BASCULIN_RED": "basculin",
     "SPECIES_BASCULIN_BLUE": "basculin-blue-striped",
+    "SPECIES_BASCULIN_H": "basculin-white-striped",
     "SPECIES_FRILLISH_F": "female/frillish",
     "SPECIES_JELLICENT_F": "female/jellicent",
     "SPECIES_PYROAR_FEMALE": "female/pyroar",
@@ -63,6 +70,8 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_INDEEDEE_FEMALE": "female/indeedee",
     "SPECIES_URSHIFU_SINGLE": "urshifu",
     "SPECIES_URSHIFU_RAPID": "urshifu",
+    "SPECIES_BASCULEGION_M": "basculegion",
+    "SPECIES_BASCULEGION_F": "female/basculegion",
 };
 
 const BASE_FORMS_OF_BANNED_SPECIES = //All forms that can't exist outside of battle
@@ -85,6 +94,36 @@ const BASE_FORMS_OF_BANNED_SPECIES = //All forms that can't exist outside of bat
     "SPECIES_ZACIAN_CROWNED": "SPECIES_ZACIAN",
     "SPECIES_ZAMAZENTA_CROWNED": "SPECIES_ZAMAZENTA",
     "SPECIES_ETERNATUS_ETERNAMAX": "SPECIES_ETERNATUS",
+};
+
+export const NATURE_STAT_TABLE =
+{
+                       // Atk Def Spd Sp.Atk Sp.Def
+    "NATURE_HARDY":   [    0,  0,  0,     0,     0], // Hardy
+    "NATURE_LONELY":  [   +1, -1,  0,     0,     0], // Lonely
+    "NATURE_BRAVE":   [   +1,  0, -1,     0,     0], // Brave
+    "NATURE_ADAMANT": [   +1,  0,  0,    -1,     0], // Adamant
+    "NATURE_NAUGHTY": [   +1,  0,  0,     0,    -1], // Naughty
+    "NATURE_BOLD":    [   -1, +1,  0,     0,     0], // Bold
+    "NATURE_DOCILE":  [    0,  0,  0,     0,     0], // Docile
+    "NATURE_RELAXED": [    0, +1, -1,     0,     0], // Relaxed
+    "NATURE_IMPISH":  [    0, +1,  0,    -1,     0], // Impish
+    "NATURE_LAX":     [    0, +1,  0,     0,    -1], // Lax
+    "NATURE_TIMID":   [   -1,  0, +1,     0,     0], // Timid
+    "NATURE_HASTY":   [    0, -1, +1,     0,     0], // Hasty
+    "NATURE_SERIOUS": [    0,  0,  0,     0,     0], // Serious
+    "NATURE_JOLLY":   [    0,  0, +1,    -1,     0], // Jolly
+    "NATURE_NAIVE":   [    0,  0, +1,     0,    -1], // Naive
+    "NATURE_MODEST":  [   -1,  0,  0,    +1,     0], // Modest
+    "NATURE_MILD":    [    0, -1,  0,    +1,     0], // Mild
+    "NATURE_QUIET":   [    0,  0, -1,    +1,     0], // Quiet
+    "NATURE_BASHFUL": [    0,  0,  0,     0,     0], // Bashful
+    "NATURE_RASH":    [    0,  0,  0,    +1,    -1], // Rash
+    "NATURE_CALM":    [   -1,  0,  0,     0,    +1], // Calm
+    "NATURE_GENTLE":  [    0, -1,  0,     0,    +1], // Gentle
+    "NATURE_SASSY":   [    0,  0, -1,     0,    +1], // Sassy
+    "NATURE_CAREFUL": [    0,  0,  0,    -1,    +1], // Careful
+    "NATURE_QUIRKY":  [    0,  0,  0,     0,     0], // Quirky
 };
 
 export const MAX_LEVEL = 100;
@@ -153,13 +192,13 @@ function IsValidItemId(item)
 }
  
  /**
-  * Gets whether or not a variable contains a valid nature number.
-  * @param {Number} nature - The nature number to check.
-  * @returns {Boolean} True if the nature number is valid. False otherwise.
+  * Gets whether or not a variable contains a valid nature id.
+  * @param {String} nature - The nature id to check.
+  * @returns {Boolean} True if the nature id is valid. False otherwise.
   */
-function IsValidNatureNumber(nature)
+function IsValidNature(nature)
 {
-    return nature in NatureNames;
+    return nature in NATURE_STAT_TABLE;
 }
 
 /**
@@ -198,6 +237,8 @@ function IsSpeciesGen8(species)
  * Checks if an array contains only integers and is a certain size.
  * @param {Array} array - The array to check.
  * @param {Number} length - The expected length of the array.
+ * @param {Number} lowerBound - The minimum number the integers can be.
+ * @param {Number} upperBound - The maximum number the integers can be.
  * @returns {Boolean} True if the array is valid. False otherwise.
  */
 function IsIntArrayWithSizeAndBounds(array, length, lowerBound, upperBound)
@@ -205,13 +246,139 @@ function IsIntArrayWithSizeAndBounds(array, length, lowerBound, upperBound)
     if (!Array.isArray(array) || array.length !== length)
         return false;
 
-    for (let i of array)
+    for (let elem of array)
     {
-        if (typeof(i) !== "number" || i < lowerBound || i > upperBound)
+        if (typeof(elem) !== "number" || elem < lowerBound || elem > upperBound)
             return false;
     }
 
     return true;
+}
+
+/**
+ * Checks if an array contains only booleans.
+ * @param {Array} array - The array to check.
+ * @param {Number} minSize - The minimum length of the array
+ * @returns {Boolean} True if the array is valid. False otherwise.
+ */
+function IsBooleanArray(array, minSize)
+{
+    if (!Array.isArray(array) || array.length < minSize)
+        return false;
+
+    for (let elem of array)
+    {
+        if (typeof(elem) !== "boolean")
+            return false;
+    }
+
+    return true;
+}
+
+/**
+ * Gets the base stats of a specific Pokemon
+ * @param {Pokemon} pokemon - The Pokemon to get the base stats for.
+ * @param {String} gameId - The game to get the base stats from.
+ * @returns {Object} The base stats of the requested Pokemon.
+ */
+function GetBaseStats(pokemon, gameId)
+{
+    var baseStats = null;
+
+    if (IsValidPokemon(pokemon))
+    {
+        let species = GetSpecies(pokemon);
+        switch (gameId)
+        {
+            case "cfru":
+                baseStats = CFRUBaseStats;
+                break;
+            case "unbound":
+                baseStats = UnboundBaseStats;
+                break;
+            case "magm":
+                baseStats = MAGMBaseStats;
+                break;
+            default:
+                break;
+        }
+
+        if (baseStats != null && species in baseStats)
+            return baseStats[species];
+    }
+
+    return baseStats;
+}
+
+/**
+ * Calculates the visible stat of a specific Pokemon.
+ * @param {Pokemon} pokemon - The Pokemon to calculate the stat of.
+ * @param {Number} statId - The id number of the visible stat to calculate (Speed should be last).
+ * @param {String} gameId - The game id to get the base stats from.
+ * @returns {Number} The requested visible stat of the Pokemon.
+ */
+function CalcStat(pokemon, statId, gameId)
+{
+    var val = 0;
+    var baseStats = GetBaseStats(pokemon, gameId);
+    const statIdsToBaseStatsName = //Uses visible order (Speed is last)
+    {
+        0: "baseHP",
+        1: "baseAttack",
+        2: "baseDefense",
+        3: "baseSpAttack",
+        4: "baseSpDefense",
+        5: "baseSpeed",
+    };
+
+    if (baseStats != null)
+    {
+        var species = GetSpecies(pokemon);
+        var level = GetLevel(pokemon);
+        var iv = GetIVs(pokemon)[statId];
+        var ev = GetEVs(pokemon)[statId];
+        var base = baseStats[statIdsToBaseStatsName[statId]];
+        const visibleStatIdToStatId = [0, 1, 2, 4, 5, 3]; //Needed for nature calc
+    
+        if (statId == 0) //HP
+        {
+            if (species == "SPECIES_SHEDINJA")
+                val = 1;
+            else
+            {
+                val = 2 * base + iv;
+                val = Math.min(Math.floor((Math.floor(val + ev / 4) * level) / 100) + level + 10, 0xFFFF);
+            }
+        }
+        else
+        {
+            val = (Math.floor((Math.floor(2 * base + iv + ev / 4) * level) / 100) + 5);
+        }
+    
+        val = ModifyStatByNature(GetVisibleNature(pokemon), val, visibleStatIdToStatId[statId]);
+    }
+
+    return val;
+}
+
+/**
+ * Modifies a visible stat number based on a Pokemon's nature.
+ * @param {String} nature - The nature that modifies the stat.
+ * @param {Number} rawStat - The current calculated stat to modify.
+ * @param {Number} statId - The id number of the stat to check the nature's effect on (Speed is after Defense).
+ * @returns {Number} - The new visible stat adjusted by a nature if necessary.
+ */
+function ModifyStatByNature(nature, rawStat, statId)
+{
+    if (statId < 1 || statId > 5)
+        return rawStat;
+
+    if (NATURE_STAT_TABLE[nature][statId - 1] == 1)
+        rawStat = (rawStat * 110) / 100;
+    else if (NATURE_STAT_TABLE[nature][statId - 1] == -1)
+        rawStat = (rawStat * 90) / 100;
+
+    return Math.floor(rawStat);
 }
 
 
@@ -284,7 +451,7 @@ export function GetNature(pokemon)
     {
         let nature = pokemon[dataMember];
 
-        if (IsValidNatureNumber(nature))
+        if (IsValidNature(nature))
             return nature;
     }
 
@@ -303,7 +470,7 @@ export function GetNature(pokemon)
      {
          let nature = pokemon[dataMember];
  
-         if (IsValidNatureNumber(nature))
+         if (IsValidNature(nature))
              return nature;
      }
  
@@ -314,14 +481,46 @@ export function GetNature(pokemon)
  * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {String} The Pokemon's Ability id.
  */
-export function GetAbility(pokemon)
+export function GetAbility(pokemon, gameId)
 {
+    let ability = "ABILITY_NONE"
     let dataMember = "ability";
 
-    if (IsValidPokemon(pokemon) && dataMember in pokemon)
-        return pokemon[dataMember];
+    if (IsValidPokemon(pokemon))
+    {
+        if (dataMember in pokemon)
+            return pokemon[dataMember];
 
-    return "ABILITY_NONE";
+        dataMember = "abilitySlot";
+
+        if (dataMember in pokemon)
+        {
+            let abilitySlot = pokemon[dataMember];
+            let baseStats = GetBaseStats(pokemon, gameId);
+
+            if (baseStats != null)
+            {
+                if ("ability1" in baseStats)
+                    ability = baseStats["ability1"];
+
+                switch (abilitySlot)
+                {
+                    case 1:
+                        if ("ability2" in baseStats && baseStats["ability2"] != "ABILITY_NONE")
+                            ability = baseStats["ability2"];
+                        break;
+                    case 2:
+                        if ("hiddenAbility" in baseStats && baseStats["hiddenAbility"] != "ABILITY_NONE")
+                            ability = baseStats["hiddenAbility"];
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    return ability;
 }
 
 /**
@@ -413,8 +612,14 @@ export function GetMovePP(pokemon, move, moveIndex)
 
     if (IsValidPokemon(pokemon))
     {
-        var ppBonuses = GetPPBonuses(pokemon);
-        var ppBonus = (moveIndex < PP_BONUS_MASK.length) ? (PP_BONUS_MASK[moveIndex] & ppBonuses) >> (2 * moveIndex) : 0;
+        var ppBonuses, ppBonus;
+        ppBonuses = GetPPBonuses(pokemon);
+
+        if (Array.isArray(ppBonuses)) //Already processed into array of bonuses
+            ppBonus = (moveIndex < PP_BONUS_MASK.length) ? ppBonuses[moveIndex] : 0;
+        else
+            ppBonus = (moveIndex < PP_BONUS_MASK.length) ? (PP_BONUS_MASK[moveIndex] & ppBonuses) >> (2 * moveIndex) : 0;
+
         return Math.min(Math.floor(basePP + ((basePP * 20 * ppBonus) / 100), 99));
     }
 
@@ -433,11 +638,16 @@ export function GetPPBonuses(pokemon)
     {
         let ppBonuses = pokemon[dataMember];
 
-        if (typeof(ppBonuses) === "number" && ppBonuses >= 0)
+        if (typeof(ppBonuses) === "number")
+        {
+            if (ppBonuses >= 0)
+                return ppBonuses;
+        }
+        else if (IsIntArrayWithSizeAndBounds(ppBonuses, 4, 0, 3))
             return ppBonuses;
     }
 
-    return 0;   
+    return 0;
 }
 
 /**
@@ -801,6 +1011,8 @@ export function GetMarkings(pokemon)
                 (markings & 8) !== 0,
             ];
         }
+        else if (IsBooleanArray(markings, 4))
+            return markings.slice(0, 4)
     }
 
     return [false, false, false, false];
@@ -884,24 +1096,37 @@ export function CanMonGigantamax(pokemon)
  * @param {*} pokemon - The Pokemon to process.
  * @returns {Array <Number>} The list of the Pokemon's summary screen stats in the order [HP, Atk, Def, Sp. Atk, Sp. Def, Spd].
  */
-export function GetVisibleStats(pokemon)
+export function GetVisibleStats(pokemon, gameId)
 {
-    let dataMember = "rawStats";
+    //let dataMember = "rawStats";
 
-    if (!IsValidPokemon(pokemon)
-    || !(dataMember in pokemon)
-    || !IsIntArrayWithSizeAndBounds(pokemon[dataMember], 6, 0, 0xFFFF))
-        return [0, 0, 0, 0, 0, 0];
-
-    let stats = pokemon[dataMember];
-    return ([
-        stats[0], //HP
-        stats[1], //Attack
-        stats[2], //Defense
-        stats[4], //Sp. Atk
-        stats[5], //Sp. Def
-        stats[3], //Speed
-    ]);
+    if (IsValidPokemon(pokemon))
+    {
+        /*if (dataMember in pokemon //Old version
+        && IsIntArrayWithSizeAndBounds(pokemon[dataMember], 6, 0, 0xFFFF))
+        {
+            let stats = pokemon[dataMember];
+            return ([
+                stats[0], //HP
+                stats[1], //Attack
+                stats[2], //Defense
+                stats[4], //Sp. Atk
+                stats[5], //Sp. Def
+                stats[3], //Speed
+            ]);
+        }
+        else*/ //Calc based on the specific game
+        {
+            return [
+                CalcStat(pokemon, 0, gameId),
+                CalcStat(pokemon, 1, gameId),
+                CalcStat(pokemon, 2, gameId),
+                CalcStat(pokemon, 3, gameId),
+                CalcStat(pokemon, 4, gameId),
+                CalcStat(pokemon, 5, gameId),
+            ];
+        }
+    }
 }
 
 /**
@@ -910,29 +1135,52 @@ export function GetVisibleStats(pokemon)
  */
 export function GetEVs(pokemon)
 {
-    if (!IsValidPokemon(pokemon)
-    || !("hpEv" in pokemon)
-    || !("atkEv" in pokemon)
-    || !("defEv" in pokemon)
-    || !("spAtkEv" in pokemon)
-    || !("spDefEv" in pokemon)
-    || !("spdEv" in pokemon)
-    || !IsValidEV(pokemon["hpEv"])
-    || !IsValidEV(pokemon["atkEv"])
-    || !IsValidEV(pokemon["defEv"])
-    || !IsValidEV(pokemon["spAtkEv"])
-    || !IsValidEV(pokemon["spDefEv"])
-    || !IsValidEV(pokemon["spdEv"]))
-        return [0, 0, 0, 0, 0, 0];
+    var evs = [0, 0, 0, 0, 0, 0]; //Default if there's an error
+    let dataMember = "evs";
 
-    return ([
-        pokemon["hpEv"],
-        pokemon["atkEv"],
-        pokemon["defEv"],
-        pokemon["spAtkEv"],
-        pokemon["spDefEv"],
-        pokemon["spdEv"],
-    ]);
+    if (IsValidPokemon(pokemon))
+    {
+        if (dataMember in pokemon
+        && IsIntArrayWithSizeAndBounds(pokemon[dataMember], 6, 0, 255)) //EVs are stored as array
+        {
+            evs = pokemon[dataMember];
+            evs = [
+                evs[0], //HP
+                evs[1], //Attack
+                evs[2], //Defense
+                evs[4], //Sp. Atk
+                evs[5], //Sp. Def
+                evs[3], //Speed
+            ];
+        }
+        else //EVs are stored as individual values (old version)
+        {
+            if ("hpEv" in pokemon
+            && "atkEv" in pokemon
+            && "defEv" in pokemon
+            && "spAtkEv" in pokemon
+            && "spDefEv" in pokemon
+            && "spdEv" in pokemon
+            && IsValidEV(pokemon["hpEv"])
+            && IsValidEV(pokemon["atkEv"])
+            && IsValidEV(pokemon["defEv"])
+            && IsValidEV(pokemon["spAtkEv"])
+            && IsValidEV(pokemon["spDefEv"])
+            && IsValidEV(pokemon["spdEv"]))
+            {
+                evs = [
+                    pokemon["hpEv"],
+                    pokemon["atkEv"],
+                    pokemon["defEv"],
+                    pokemon["spAtkEv"],
+                    pokemon["spDefEv"],
+                    pokemon["spdEv"],
+                ];
+            }
+        }
+    }
+
+    return evs;
 }
 
 /**
@@ -1009,14 +1257,14 @@ export function GetMonVisibleSpecies(pokemon)
 
     if (typeof(species) == "string")
     {
-        if (species.endsWith("_MEGA")) //Can't exist outside of battle
+        if (species.endsWith("_MEGA")
+         || species.endsWith("_MEGA_X")
+         || species.endsWith("_MEGA_Y")) //Can't exist outside of battle
             species = species.split("_MEGA")[0];
-        else if (species.endsWith("_MEGA_X")) //Can't exist outside of battle
-            species = species.split("_MEGA_X")[0];
-        else if (species.endsWith("_MEGA_Y")) //Can't exist outside of battle
-            species = species.split("_MEGA_Y")[0];
-        else if (species.endsWith("GIGA")) //Can't exist outside of battle
+        else if (species.endsWith("_GIGA")) //Can't exist outside of battle
             species = species.split("_GIGA")[0];
+        else if (species.endsWith("_PRIMAL")) //Can't exist outside of battle
+            species = species.split("_PRIMAL")[0];
 
         switch (species)
         {
@@ -1089,6 +1337,8 @@ export function GetIconSpeciesNameBySpecies(species)
             speciesName = speciesName.replaceAll("_A", "_ALOLA");
         else if (speciesName.endsWith("_G") && speciesName !== "UNOWN_G")
             speciesName = speciesName.replaceAll("_G", "_GALAR");
+        else if (speciesName.endsWith("_H") && speciesName !== "UNOWN_H")
+            speciesName = speciesName.replaceAll("_H", "_HISUI");
 
         speciesName = speciesName.toLowerCase().replaceAll("_", "-");
     }

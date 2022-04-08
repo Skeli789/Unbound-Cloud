@@ -1,0 +1,2 @@
+Open terminal in this directory and run:
+pytest --cov-report html --cov

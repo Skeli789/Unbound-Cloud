@@ -11,10 +11,10 @@ import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
 import {BoxList} from "./BoxList";
-import {BoxView, HIGHEST_HOME_BOX_NUM, HIGHEST_SAVE_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
+import {BoxView, HIGHEST_HOME_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
 import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {FriendTrade} from "./FriendTrade";
-import {GetItem, GetSpecies, IsBlankMon, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
+import {GetIconSpeciesName, GetItem, GetSpecies, IsBlankMon, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
@@ -51,8 +51,6 @@ const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="ht
 const PopUp = withReactContent(Swal);
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
 
-//TODO: Unbound Base Stats
-//TODO: More data fields like "Gigantamax" and "MapSec" (with like MAPSEC_BORRIUS_ROUTE_1) - use Met Game to advantage
 //TODO: Make sure Wonder Trading can't be hijacked
 
 
@@ -107,7 +105,9 @@ export default class MainPage extends Component
             draggingToBox: -1,
             draggedAtLeastOnce: false,
 
-            //Actual Stoage System
+            //Actual Storage System
+            saveGameId: SaveData["gameId"],
+            saveBoxCount: SaveData["boxCount"],
             saveBoxes: SaveData["boxes"],
             saveTitles: SaveData["titles"],
             homeBoxes: this.generateBlankHomeBoxes(),
@@ -367,7 +367,7 @@ export default class MainPage extends Component
         if (this.getBoxTypeByBoxSlot(boxSlot) === BOX_HOME)
             return HIGHEST_HOME_BOX_NUM;
         else
-            return HIGHEST_SAVE_BOX_NUM; //TODO: Variable based on game
+            return this.state.saveBoxCount;
     }
 
     /**
@@ -499,7 +499,7 @@ export default class MainPage extends Component
     {
         return  file != null
             /*&& this.isValidSaveFileName(file.name.toLowerCase())*/ //Extension doesn't matter because the user will be guided to pick the right one anyway
-            && file.size === 131072;
+            && (file.size === 0x20000 || file.size === 0x20010); //Flashcarts append 0x10 bytes onto the end
     }
 
     /**
@@ -814,6 +814,8 @@ export default class MainPage extends Component
         ({
             saveBoxes: res.data.boxes,
             saveTitles: res.data.titles,
+            saveGameId: res.data.gameId,
+            saveBoxCount: res.data.boxCount,
             saveFileNumber: res.data.fileIdNumber,
             saveFileData: res.data.saveFileData,
         });
@@ -1530,7 +1532,8 @@ export default class MainPage extends Component
 
         if (fromOffset >= 0 && toOffset >= 0
         && (this.state.draggingFromBox !== this.state.draggingToBox || fromOffset !== toOffset) //Make sure different Pokemon are being swapped
-        && !this.isMonInWonderTrade(this.getBoxTypeByBoxSlot(this.state.draggingToBox), toOffset))
+        && !this.isMonInWonderTrade(this.getBoxTypeByBoxSlot(this.state.draggingToBox), toOffset)
+        && GetIconSpeciesName(this.getMonAtBoxPos(this.state.draggingToBox, toOffset)) !== "unknown") //Potentially unofficial species from a certain hack
         {
             let alreadyExistsRet =
                 this.monAlreadyExistsInBoxes(fromBoxes[fromOffset], toBoxes, this.getBoxAmountByBoxSlot(this.state.draggingToBox),
@@ -1949,6 +1952,7 @@ export default class MainPage extends Component
         ({
             titles: this.state.homeTitles,
             boxes: this.state.homeBoxes,
+            version: 2, //No version was in the original tester release
         });
 
         this.addHomeDataToFormData(homeData, formData);
@@ -2392,6 +2396,7 @@ export default class MainPage extends Component
                      currentBoxes={this.state.currentBox} selectedMonPos={this.state.selectedMonPos}
                      summaryMon={this.state.summaryMon} searchCriteria={this.state.searchCriteria[this.state.viewingBoxList]}
                      isSameBoxBothSides={this.state.editState === STATE_EDITING_SAVE_FILE || this.state.editState === STATE_EDITING_HOME_BOXES}
+                     gameId={this.state.saveGameId}
                      updateParentState={this.updateState}/>
         );
     }

@@ -1,8 +1,12 @@
+import copy
+from typing import List, Tuple, Dict
+from Defines import Defines
 from PokemonProcessing import PokemonProcessing, CFRUCompressedPokemonSize
 from SaveBlocks import BlockDataSize
 from Util import BytesToString
 
 VanillaBoxSaveSections = list(range(5, 13 + 1))
+VanillaFRBoxCount = 14
 VanillaMemoryBoxCount = 19
 BoxNamesSaveBlock = 13
 BoxNamesOffset = 0x361
@@ -36,20 +40,20 @@ StartingBoxMemoryOffsets = {
 
 class SaveBlockProcessing:
     @staticmethod
-    def LoadPCPokemon(saveBlocks: {int: [int]}) -> [{}]:
+    def LoadPCPokemon(saveBlocks: Dict[int, List[int]]) -> List[dict]:
         allPokemon = []
 
-        # TODO: Change method of loading based on game in Defines
-        allBoxes = SaveBlockProcessing.GetAllCFRUBoxesData(saveBlocks)
-        for monOffset in range(0, len(allBoxes), CFRUCompressedPokemonSize):
-            pokemonData = PokemonProcessing.LoadCFRUCompressedMonAtBoxOffset(allBoxes, monOffset)
-            PokemonProcessing.AssignConstantsToCFRUData(pokemonData)
-            allPokemon.append(pokemonData)
+        if Defines.IsCFRUHack():
+            allBoxes = SaveBlockProcessing.GetAllCFRUBoxesData(saveBlocks)
+            for monOffset in range(0, len(allBoxes), CFRUCompressedPokemonSize):
+                pokemonData = PokemonProcessing.LoadCFRUCompressedMonAtBoxOffset(allBoxes, monOffset)
+                PokemonProcessing.AssignConstantsToCFRUData(pokemonData)
+                allPokemon.append(pokemonData)
 
         return allPokemon
 
     @staticmethod
-    def GetAllCFRUBoxesData(saveBlocks: {int: [int]}) -> [int]:
+    def GetAllCFRUBoxesData(saveBlocks: Dict[int, List[int]]) -> List[int]:
         # Get from vanilla box memory: Boxes 1 - 19
         res = saveBlocks[5][4:]  # First four bytes are current box
         for i in VanillaBoxSaveSections[1:]:
@@ -57,43 +61,55 @@ class SaveBlockProcessing:
         res = res[:VanillaMemoryBoxCount * MonsPerBox * CFRUCompressedPokemonSize]  # Only get mon data
 
         # Get from expanded box memory: Boxes 20 - 22
-        res += saveBlocks[30][StartingBoxMemoryOffsets[30]:BlockDataSize]
-        res += saveBlocks[31][StartingBoxMemoryOffsets[31]:0xF80]
+        if Defines.BoxCount() >= 20:
+            res += saveBlocks[30][StartingBoxMemoryOffsets[30]:BlockDataSize]
+            res += saveBlocks[31][StartingBoxMemoryOffsets[31]:0xF80]
 
         # Get from expanded box memory: Boxes 23 - 24
-        res += saveBlocks[2][StartingBoxMemoryOffsets[2]:BlockDataSize]
-        res += saveBlocks[3][StartingBoxMemoryOffsets[3]:0xCC0]
+        if Defines.BoxCount() >= 23:
+            res += saveBlocks[2][StartingBoxMemoryOffsets[2]:BlockDataSize]
+            res += saveBlocks[3][StartingBoxMemoryOffsets[3]:0xCC0]
 
         # Get from expanded box memory: Box 25
-        res += saveBlocks[0][
-               StartingBoxMemoryOffsets[0]:StartingBoxMemoryOffsets[0] + CFRUCompressedPokemonSize * MonsPerBox]
+        if Defines.BoxCount() >= 25:
+            res += saveBlocks[0][
+                StartingBoxMemoryOffsets[0]:StartingBoxMemoryOffsets[0] + CFRUCompressedPokemonSize * MonsPerBox]
 
         return res
 
     @staticmethod
-    def LoadCFRUBoxTitles(saveBlocks: {int: [int]}) -> [str]:
+    def LoadCFRUBoxTitles(saveBlocks: Dict[int, List[int]]) -> List[str]:
         titles = []
-        titleData = saveBlocks[BoxNamesSaveBlock][BoxNamesOffset:BoxNamesEndOffset]
-        for i in range(0, len(titleData), BoxNameLength):
-            title = titleData[i:i + BoxNameLength]
-            title = BytesToString(title)
-            if title.lower().startswith("box") and len(title) >= 4 and title[3].isdigit():
-                title = title[:3] + " " + title[3:]  # Change titles like "Box24" to change to "Box 24"
-            titles.append(title)
 
-        titles = titles[11:len(titles)] + titles[10:0:-1] + [titles[0]]  # Get the correct order
+        if Defines.IsCFRUHack():
+            numBoxesAfterVanillaAmount = Defines.BoxCount() - VanillaFRBoxCount  # 11 for 25 boxes
+            titleData = saveBlocks[BoxNamesSaveBlock][BoxNamesEndOffset - BoxNameLength * Defines.BoxCount():BoxNamesEndOffset]
+            for i in range(0, len(titleData), BoxNameLength):
+                title = titleData[i:i + BoxNameLength]
+                title = BytesToString(title)
+                if title.lower().startswith("box") and len(title) >= 4 and title[3].isdigit():
+                    title = title[:3] + " " + title[3:]  # Change titles like "Box24" to change to "Box 24"
+                titles.append(title)
+
+            titles = titles[numBoxesAfterVanillaAmount:len(titles)] + titles[numBoxesAfterVanillaAmount - 1:0:-1] + [titles[0]]  # Get the correct order
+
         return titles
 
     @staticmethod
-    def LoadCFRUPokedexFlags(saveBlocks: {int: [int]}) -> [[int], [int]]:
-        seenFlags = saveBlocks[PokedexFlagsSaveBlock][SeenFlagsOffset:CaughtFlagsOffset]
-        caughtFlags = saveBlocks[PokedexFlagsSaveBlock][CaughtFlagsOffset:CaughtFlagsEndOffset]
+    def LoadCFRUPokedexFlags(saveBlocks: Dict[int, List[int]]) -> Tuple[List[int], List[int]]:
+        seenFlags, caughtFlags = 0, 0
+
+        if PokedexFlagsSaveBlock in saveBlocks:
+            seenFlags = saveBlocks[PokedexFlagsSaveBlock][SeenFlagsOffset:CaughtFlagsOffset]
+            caughtFlags = saveBlocks[PokedexFlagsSaveBlock][CaughtFlagsOffset:CaughtFlagsEndOffset]
+  
         return seenFlags, caughtFlags
 
 
     ### Code for updating save files ###
     @staticmethod
-    def UpdateCFRUBoxData(saveBlocks: {int: [int]}, allPokemonData: [{}]) -> {int: [int]}:
+    def UpdateCFRUBoxData(saveBlocks: Dict[int, List[int]], allPokemonData: List[dict]) -> Dict[int, List[int]]:
+        saveBlocks = copy.deepcopy(saveBlocks)
         allCompressedMons = PokemonProcessing.GetAllCFRUCompressedMons(allPokemonData)
 
         endOfBox19Memory = VanillaMemoryBoxCount * MonsPerBox * CFRUCompressedPokemonSize
@@ -106,21 +122,27 @@ class SaveBlockProcessing:
         box25 = allCompressedMons[endOfBox24Memory:endOfBox25Memory]
 
         SaveBlockProcessing.SaveBoxMemory(box1to19, endOfBox19Memory, saveBlocks, 5)
-        SaveBlockProcessing.SaveBoxMemory(box20to22, endOfBox22Memory - endOfBox19Memory, saveBlocks, 30)
-        SaveBlockProcessing.SaveBoxMemory(box23to24, endOfBox24Memory - endOfBox22Memory, saveBlocks, 2)
-        SaveBlockProcessing.SaveBoxMemory(box25, endOfBox25Memory - endOfBox24Memory, saveBlocks, 0)
+
+        if Defines.BoxCount() >= 20:
+            SaveBlockProcessing.SaveBoxMemory(box20to22, endOfBox22Memory - endOfBox19Memory, saveBlocks, 30)
+        
+        if Defines.BoxCount() >= 23:
+            SaveBlockProcessing.SaveBoxMemory(box23to24, endOfBox24Memory - endOfBox22Memory, saveBlocks, 2)
+        
+        if Defines.BoxCount() >= 25:
+            SaveBlockProcessing.SaveBoxMemory(box25, endOfBox25Memory - endOfBox24Memory, saveBlocks, 0)
 
         assert (box1to19 + box20to22 + box23to24 + box25 == allCompressedMons)
         assert (box25 == allCompressedMons[endOfBox24Memory:])
         return saveBlocks
 
     @staticmethod
-    def SaveBoxMemory(memToSave: [int], endOfMemory: int, saveBlocks: {int: [int]}, startingSaveBlockNum: int):
+    def SaveBoxMemory(memToSave: List[int], endOfMemory: int, saveBlocks: Dict[int, List[int]], startingSaveBlockNum: int):
         SaveBlockProcessing.SaveMemorySubset(saveBlocks, startingSaveBlockNum, memToSave,
                                              StartingBoxMemoryOffsets[startingSaveBlockNum], endOfMemory)
 
     @staticmethod
-    def SaveMemorySubset(saveBlocks: {int: [int]}, startingSaveBlockNum: int, memToSave: [int], memOffsetStart: int,
+    def SaveMemorySubset(saveBlocks: Dict[int, List[int]], startingSaveBlockNum: int, memToSave: List[int], memOffsetStart: int,
                          endOfMemory: int):
         saveBlockNum = startingSaveBlockNum
         saveBlockOffset = memOffsetStart
@@ -134,7 +156,8 @@ class SaveBlockProcessing:
                 saveBlockOffset = StartingBoxMemoryOffsets[saveBlockNum]
 
     @staticmethod
-    def UpdateCFRUPokedexFlags(saveBlocks: {int: [int]}, seenFlags: [int], caughtFlags: [int]) -> {int: [int]}:
+    def UpdateCFRUPokedexFlags(saveBlocks: Dict[int, List[int]], seenFlags: List[int], caughtFlags: List[int]) -> Dict[int, List[int]]:
+        saveBlocks = copy.deepcopy(saveBlocks)
         SaveBlockProcessing.SaveMemorySubset(saveBlocks, PokedexFlagsSaveBlock, seenFlags, SeenFlagsOffset,
                                              len(seenFlags))
         SaveBlockProcessing.SaveMemorySubset(saveBlocks, PokedexFlagsSaveBlock, caughtFlags, CaughtFlagsOffset,

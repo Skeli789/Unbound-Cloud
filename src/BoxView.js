@@ -27,7 +27,6 @@ import {RiBoxingLine} from "react-icons/ri";
 import "./stylesheets/BoxView.css";
 
 //Constants
-export const HIGHEST_SAVE_BOX_NUM = 25;
 export const HIGHEST_HOME_BOX_NUM = 100;
 export const MONS_PER_BOX = 30;
 export const MONS_PER_ROW = 6;
@@ -140,7 +139,7 @@ export class BoxView extends Component
      */
     getHighestSaveBoxNum()
     {
-        return HIGHEST_SAVE_BOX_NUM;
+        return this.getParentState().saveBoxCount;
     }
 
     /**
@@ -357,7 +356,7 @@ export class BoxView extends Component
 
         var searchCriteria = this.getParentState().searchCriteria[this.state.boxSlot];
 
-        return MatchesSearchCriteria(pokemon, searchCriteria);
+        return MatchesSearchCriteria(pokemon, searchCriteria, this.getParentState().saveGameId);
     }
 
 
@@ -1389,11 +1388,12 @@ export class BoxView extends Component
                     }
                 }
 
-                return(<ShowdownExport pokemonList={pokemonList} key={this.getSummaryMonKey()}/>);
+                return(<ShowdownExport pokemonList={pokemonList} gameId={this.getParentState().saveGameId} key={this.getSummaryMonKey()}/>);
             }
             else
                 return(<PokemonSummary pokemon={pokemon} areBoxViewsVertical={this.state.parent.areBoxViewsVertical()}
                                        boxType={this.state.boxType} changeWasMade={this.getParentState().changeWasMade}
+                                       gameId={this.getParentState().saveGameId}
                                        setGlobalState={this.state.parent.setState.bind(this.state.parent)}
                                        key={this.getSummaryMonKey()} inTrade={this.isTrading()}/>);
         }

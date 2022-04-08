@@ -37,6 +37,7 @@ export class BoxList extends Component
             setParentState: props.updateParentState,
             searchCriteria: props.searchCriteria,
             isSameBoxBothSides: props.isSameBoxBothSides,
+            gameId: props.gameId,
             loaded: false,
         };
     }
@@ -102,7 +103,7 @@ export class BoxList extends Component
                 icon = <div className="mini-box-cell" key={key}></div>;
             else
             {
-                if (MatchesSearchCriteria(pokemon, this.state.searchCriteria))
+                if (MatchesSearchCriteria(pokemon, this.state.searchCriteria, this.state.gameId))
                     colour = "#f33d21"; //Highlight icon red
 
                 icon =

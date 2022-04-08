@@ -26,6 +26,7 @@ export class ShowdownExport extends Component
         this.state =
         {
             pokemonList: props.pokemonList, //Can display multiple Pokemon at the same time.
+            gameId: props.gameId,
         }
     }
 
@@ -41,7 +42,7 @@ export class ShowdownExport extends Component
         var speciesName = GetSpeciesName(GetSpecies(pokemon));
         var genderLetter = GetGender(pokemon);
         var itemName = GetItemName(GetItem(pokemon));
-        var abilityLine = "Ability: " + GetAbilityName(GetAbility(pokemon));
+        var abilityLine = "Ability: " + GetAbilityName(GetAbility(pokemon, this.state.gameId));
         var levelLine = "Level: " + GetLevel(pokemon);
         var shinyLine = "Shiny: " + (IsShiny(pokemon) ? "Yes" : "No");
         var gigantamaxLine = "";
