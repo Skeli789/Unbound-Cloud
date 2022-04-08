@@ -63,6 +63,15 @@ export class FriendTrade extends Component
     }
 
     /**
+     * Overrides the back button to return to the main page.
+     */
+    componentDidMount()
+    {
+        window.history.pushState(null, document.title, window.location.href)
+        window.addEventListener("popstate", this.getMainPage().navBackButtonPressed.bind(this.getMainPage()));
+    }
+
+    /**
      * Gets the main page component.
      * @returns {Component} The main page component.
      */
