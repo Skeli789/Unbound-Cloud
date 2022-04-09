@@ -6,10 +6,9 @@ New Features:
 -Search by Poke Ball, by Type
 
 Feature Modifications:
--Just dump entire base stats file on client side
 -Search bar for box list page
 -Timeout if friend trade connection has gone on too long
--Force save before friend trade
+-Force save before and after friend trade (for after, wait until all trades are done)
 -List supported hacks somewhere
 -Starting dragging on the current public version selects the box (bring that back!)
 -Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game (including via multi-select)
@@ -21,5 +20,3 @@ Server Changes:
 -Handle no Gerben files
 -Flags when accessible
 -The isValidPokemon check in the js server code should just calculate the checksum and make sure it matches
--Auto generate base stats and other front end data from back end when yarn build is run
---Also generate the list of Unbound Shinies based on the contents of the folder
