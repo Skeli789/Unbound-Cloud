@@ -176,6 +176,22 @@ const DRIVES_TO_TYPES =
     "ITEM_CHILL_DRIVE": "TYPE_ICE",
 }
 
+const GAME_IDS_TO_DATA =
+{
+    "cfru":
+    {
+        "baseStats": CFRUBaseStats,
+    },
+    "unbound":
+    {
+        "baseStats": UnboundBaseStats,
+    },
+    "magm":
+    {
+        "baseStats": MAGMBaseStats,
+    }
+}
+
 export const MAX_LEVEL = 100;
 export const HEART_FRIENDSHIP = 220;
 export const MAX_FRIENDSHIP = 255;
@@ -338,20 +354,9 @@ function GetBaseStats(pokemon, gameId)
     if (IsValidPokemon(pokemon))
     {
         let species = GetSpecies(pokemon);
-        switch (gameId)
-        {
-            case "cfru":
-                baseStats = CFRUBaseStats;
-                break;
-            case "unbound":
-                baseStats = UnboundBaseStats;
-                break;
-            case "magm":
-                baseStats = MAGMBaseStats;
-                break;
-            default:
-                break;
-        }
+
+        if (gameId in GAME_IDS_TO_DATA)
+            baseStats = GAME_IDS_TO_DATA[gameId]["baseStats"];
 
         if (baseStats != null && species in baseStats)
             return baseStats[species];

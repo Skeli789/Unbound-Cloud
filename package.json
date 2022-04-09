@@ -27,7 +27,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "python DataCopy.py && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
