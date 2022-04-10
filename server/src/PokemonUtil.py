@@ -165,10 +165,24 @@ class PokemonUtil:
         if species in Defines.baseStats:
             expRate = Defines.baseStats[species]["growthRate"]
             if expRate in Defines.experienceCurves:
-                level = 1
-                while level <= MAX_LEVEL and Defines.experienceCurves[expRate][level] <= experience:
-                    level += 1
-                return level - 1
+                lowLevel = 1
+                highLevel = MAX_LEVEL
+                expCurve = Defines.experienceCurves[expRate]
+
+                while lowLevel < highLevel:
+                    mid = (lowLevel + highLevel) // 2
+
+                    if expCurve[mid] == experience:  # Check if experience matches at mid (probably won't)
+                        return mid
+                    elif expCurve[mid] < experience:  # If experience is greater, ignore lower half
+                        lowLevel = mid + 1
+                    else:  # If experience is smaller, ignore right half
+                        highLevel = mid - 1
+
+                if expCurve[highLevel] > experience:  # Not actually at the higher level yet
+                    return highLevel - 1
+                else:
+                    return highLevel
 
         return 1
 

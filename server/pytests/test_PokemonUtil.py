@@ -192,14 +192,29 @@ class TestCalculateLevel:
         pokemon = {"species": "SPECIES_LEDIAN", "experience": 100000}
         assert PokemonUtil.CalculateLevel(pokemon) == 50
 
+    def testFast2(self):
+        Defines.LoadAll(CFRE_FILE_SIGNATURE)
+        pokemon = {"species": "SPECIES_LEDIAN", "experience": 100001}
+        assert PokemonUtil.CalculateLevel(pokemon) == 50
+
     def testMediumFast(self):
         Defines.LoadAll(CFRE_FILE_SIGNATURE)
         pokemon = {"species": "SPECIES_MIMIKYU", "experience": 125000}
         assert PokemonUtil.CalculateLevel(pokemon) == 50
 
+    def testMediumFast2(self):
+        Defines.LoadAll(CFRE_FILE_SIGNATURE)
+        pokemon = {"species": "SPECIES_DUCKLETT", "experience": 136881}
+        assert PokemonUtil.CalculateLevel(pokemon) == 51
+
     def testMediumSlow(self):
         Defines.LoadAll(CFRE_FILE_SIGNATURE)
         pokemon = {"species": "SPECIES_CHARMELEON", "experience": 11734}
+        assert PokemonUtil.CalculateLevel(pokemon) == 25
+
+    def testMediumSlow2(self):
+        Defines.LoadAll(CFRE_FILE_SIGNATURE)
+        pokemon = {"species": "SPECIES_CHARMELEON", "experience": 11735}
         assert PokemonUtil.CalculateLevel(pokemon) == 25
 
     def testSlow(self):
@@ -207,14 +222,29 @@ class TestCalculateLevel:
         pokemon = {"species": "SPECIES_BLACEPHALON", "experience": 156250}
         assert PokemonUtil.CalculateLevel(pokemon) == 50
 
+    def testSlow2(self):
+        Defines.LoadAll(CFRE_FILE_SIGNATURE)
+        pokemon = {"species": "SPECIES_BLACEPHALON", "experience": 156251}
+        assert PokemonUtil.CalculateLevel(pokemon) == 50
+
     def testErratic(self):
         Defines.LoadAll(CFRE_FILE_SIGNATURE)
         pokemon = {"species": "SPECIES_ARMALDO", "experience": 257834}
         assert PokemonUtil.CalculateLevel(pokemon) == 68
 
+    def testErratic2(self):
+        Defines.LoadAll(CFRE_FILE_SIGNATURE)
+        pokemon = {"species": "SPECIES_ARMALDO", "experience": 257838}
+        assert PokemonUtil.CalculateLevel(pokemon) == 68
+
     def testFluctuating(self):
         Defines.LoadAll(CFRE_FILE_SIGNATURE)
         pokemon = {"species": "SPECIES_WAILORD", "experience": 142500}
+        assert PokemonUtil.CalculateLevel(pokemon) == 50
+
+    def testFluctuating2(self):
+        Defines.LoadAll(CFRE_FILE_SIGNATURE)
+        pokemon = {"species": "SPECIES_WAILORD", "experience": 142501}
         assert PokemonUtil.CalculateLevel(pokemon) == 50
 
 

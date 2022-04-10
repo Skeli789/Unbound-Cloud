@@ -21,4 +21,3 @@ Server Changes:
 -Hardcode Leech Life turning into Leech Fang when moving into Unbound and back to Leech Life when moving out
 -Handle no Gerben files (also make Gerben Pokemon not show up on the site)
 -Flags when accessible
--Use binary search for calculating level?
