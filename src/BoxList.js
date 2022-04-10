@@ -8,7 +8,7 @@ import {isMobile} from "react-device-detect";
 import {MONS_PER_BOX} from "./BoxView";
 import {GetIconSpeciesName} from "./PokemonUtil";
 import {MatchesSearchCriteria} from "./Search";
-import {CreateSingleBlankSelectedPos, GetBoxStartIndex, IsHomeBox, IsNullSpeciesName} from "./Util";
+import {CreateSingleBlankSelectedPos, GetBoxStartIndex, IsHomeBox} from "./Util";
 
 import "./stylesheets/BoxList.css";
 
@@ -105,7 +105,7 @@ export class BoxList extends Component
             let species = GetIconSpeciesName(pokemon);
             let colour = "rgba(0, 0, 0, 0.8)";
 
-            if (species == "none") //Still show "unknown" because they take up slots
+            if (species === "none") //Still show "unknown" because they take up slots
                 icon = <div className="mini-box-cell" key={key}></div>;
             else
             {

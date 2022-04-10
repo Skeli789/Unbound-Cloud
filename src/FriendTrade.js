@@ -136,6 +136,7 @@ export class FriendTrade extends Component
         const connectedToFriend = this.connectedToFriend.bind(this);
         const couldntFindFriend = this.couldntFindFriend.bind(this);
         const partnerDisconnected = this.partnerDisconnected.bind(this);
+        const handleInvalidPokemon = this.handleInvalidPokemon.bind(this);
 
         console.log("Connecting...");
         var socket = io(`${config.dev_server}`, {autoConnect: false});
@@ -159,6 +160,7 @@ export class FriendTrade extends Component
                 socket.on('friendFound', function() {connectedToFriend(socket)});
                 socket.on('friendNotFound', function() {couldntFindFriend(socket)});
                 socket.on('partnerDisconnected', function() {partnerDisconnected(socket)});
+                socket.on('invalidPokemon', function() {handleInvalidPokemon()});
                 socket.on('createCode', function(code) //Code is received from server
                 {
                     navigator.clipboard.writeText(code).then((text) => //Copy to clipboard
@@ -464,6 +466,25 @@ export class FriendTrade extends Component
 
         this.setGlobalState({tradeData: tradeData});
         this.offerPokemonToTrade(null);
+    }
+
+    /**
+     * Cancels the Pokemon currently being offered to the trade partner due to checksum mismatch.
+     */
+    handleInvalidPokemon()
+    {
+        console.log("Pokemon failed checksum!");
+        this.cancelTradeOffer();
+
+        PopUp.fire(
+        {
+            title: "That Pokemon appears invalid and can't be traded!",
+            cancelButtonText: `Awww`,
+            showConfirmButton: false,
+            showCancelButton: true,
+            icon: 'error',
+            scrollbarPadding: false,
+        });
     }
 
     /**
