@@ -62,7 +62,7 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_MAGEARNA_P": "magearna-original",
     "SPECIES_SINISTEA_CHIPPED": "sinistea",
     "SPECIES_POLTEAGEIST_CHIPPED": "polteageist",
-    "SPECIES_ALCREMIE_STRAWBERRY": "alcremie",
+    "SPECIES_ALCREMIE_STRAWBERRY": "alcremie", //These Alcremie forms are mainly for the living dex icons
     "SPECIES_ALCREMIE_BERRY": "alcremie-vanilla-cream-berry",
     "SPECIES_ALCREMIE_CLOVER": "alcremie-vanilla-cream-clover",
     "SPECIES_ALCREMIE_FLOWER": "alcremie-vanilla-cream-flower",
@@ -97,6 +97,19 @@ const BASE_FORMS_OF_BANNED_SPECIES = //All forms that can't exist outside of bat
     "SPECIES_ZAMAZENTA_CROWNED": "SPECIES_ZAMAZENTA",
     "SPECIES_ETERNATUS_ETERNAMAX": "SPECIES_ETERNATUS",
 };
+
+const ALCREMIE_COLOURS =
+[
+    "VANILLA_CREAM",
+    "CARAMEL_SWIRL",
+    "LEMON_CREAM",
+    "MATCHA_CREAM",
+    "MINT_CREAM",
+    "RAINBOW_SWIRL",
+    "RUBY_CREAM",
+    "RUBY_SWIRL",
+    "SALTED_CREAM",
+];
 
 export const NATURE_STAT_TABLE =
 {
@@ -284,8 +297,8 @@ function IsSpeciesGen8(species)
     }
     else if (typeof(species) === "string")
     {
-        if (species.includes("PIKACHU"))
-            return true; //Get all the Pikachu forms from the Gen 8 repo
+        if (species.includes("PIKACHU") || species.includes("ALCREMIE"))
+            return true; //Get all the Pikachu and Alcremie forms from the Gen 8 repo
 
         if (species in SpeciesNames)
             speciesIndex = speciesIds.indexOf(species);
@@ -1265,6 +1278,27 @@ export function GetUnownLetter(pokemon)
 
 /**
  * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {String} The Alcremie colour.
+ */
+export function GetAlcremieColour(pokemon)
+{
+    if (IsValidPokemon(pokemon))
+    {
+        let dataMember = "personality";
+        if (dataMember in pokemon)
+        {
+            let personality = pokemon[dataMember];
+
+            if (typeof(personality) === "number")
+                return ALCREMIE_COLOURS[personality % ALCREMIE_COLOURS.length];
+        }
+    }
+
+    return ALCREMIE_COLOURS[0];
+}
+
+/**
+ * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {Boolean} True if the Pokemon has the Gigantamax factor. False otherwise.
  */
 export function CanMonGigantamax(pokemon)
@@ -1496,6 +1530,15 @@ export function GetMonVisibleSpecies(pokemon)
             case "SPECIES_PYROAR":
                 if (IsFemale(pokemon))
                     species = "SPECIES_PYROAR_FEMALE";
+                break;
+            case "SPECIES_ALCREMIE_STRAWBERRY":
+            case "SPECIES_ALCREMIE_BERRY":
+            case "SPECIES_ALCREMIE_CLOVER":
+            case "SPECIES_ALCREMIE_FLOWER":
+            case "SPECIES_ALCREMIE_LOVE":
+            case "SPECIES_ALCREMIE_RIBBON":
+            case "SPECIES_ALCREMIE_STAR":
+                species = species.replaceAll("ALCREMIE", `ALCREMIE_${GetAlcremieColour(pokemon)}`);
                 break;
             default: //Needed for the compiler
                 break;

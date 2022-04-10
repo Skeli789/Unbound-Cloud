@@ -2,7 +2,6 @@ New Features:
 -Give mon little exclamation mark in corner if has data that will disappear in game
 -GTS
 -Ads
--Alcremie colour
 -Search by Poke Ball, by Type
 
 Feature Modifications:
@@ -17,6 +16,5 @@ Feature Modifications:
 Server Changes:
 -Change the file signature for Unbound
 -Unbound can only load saves with FR or Unbound file signature
--Hardcode Leech Life turning into Leech Fang when moving into Unbound and back to Leech Life when moving out
 -Handle no Gerben files (also make Gerben Pokemon not show up on the site)
 -Flags when accessible
