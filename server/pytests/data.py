@@ -229,13 +229,12 @@ OLD_TEST_POKEMON_CONVERTED = \
     "shiny": False,
     "abilitySlot": 1,
     "gender": "F",
-    "level": 100,
     "nature": "NATURE_MILD",
     "metLevel": 100,
     "metGame": "unbound",
     "gigantamax": False,
     "otGender": "M",
-    "checksum": "1c62f10a2db3ac044c7d2cc6a49b33a8"
+    "checksum": "657f9b0499772d68fd38c11b2034ce43"
 }
 
 OLD_TEST_POKEMON_RAW = \
@@ -326,13 +325,12 @@ BLANK_TEST_POKEMON_CONVERTED = \
     "shiny": False,
     "abilitySlot": 0,
     "gender": "U",
-    "level": 1,
     "nature": 0,
     "metLevel": 0,
     "metGame": "unbound",
     "gigantamax": False,
     "otGender": "M",
-    "checksum": "c7fa9617c11e2ca17ae4015ce470638a"
+    "checksum": "b32f654d6f18fe7df816e52dc99f0089"
 }
 
 BLANK_TEST_POKEMON_RAW = \

@@ -37,9 +37,10 @@ def main():
     with open(os.path.join(clientDataDir, "UnboundShinies.json"), "w") as file:
         file.write(json.dumps(speciesList, indent=4) + "\n")
 
-    # Copy SpeciesToDexNum
-    file = "SpeciesToDexNum.json"
-    shutil.copy(os.path.join(serverDataDir, file), os.path.join(clientDataDir, file))
+    # Copy Entire Files
+    entireFiles = ["SpeciesToDexNum.json", "ExperienceCurves.json"]
+    for file in entireFiles:
+        shutil.copy(os.path.join(serverDataDir, file), os.path.join(clientDataDir, file))
 
     print("Data copied successfully!")
 

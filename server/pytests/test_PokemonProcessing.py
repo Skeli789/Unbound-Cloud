@@ -191,8 +191,8 @@ class TestConvertOldCloudFileToNew:
         Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
         shutil.copyfile(f"{DATA_DIR}/cloud_old_format.json", f"{DATA_DIR}/cloud_converted.json")
         completed, error = PokemonProcessing.ConvertOldCloudFileToNew(f"{DATA_DIR}/cloud_converted.json")
-        assert completed
         assert error == ""
+        assert completed
 
     def testConvertOldCloudData(self):
         Defines.LoadAll(UNBOUND_FILE_SIGNATURE)

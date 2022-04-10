@@ -7,6 +7,7 @@ import ItemNames from "./data/ItemNames.json";
 import MoveData from "./data/MoveData.json";
 import SpeciesNames from "./data/SpeciesNames.json";
 import SpeciesToDexNum from "./data/SpeciesToDexNum.json";
+import ExperienceCurves from "./data/ExperienceCurves.json";
 import TradeEvolutions from "./data/TradeEvolutions.json";
 import UnboundShinies from "./data/UnboundShinies.json";
 import CFRUBaseStats from "./data/cfru/BaseStats.json";
@@ -389,7 +390,7 @@ function CalcStat(pokemon, statId, gameId)
     if (baseStats != null)
     {
         var species = GetSpecies(pokemon);
-        var level = GetLevel(pokemon);
+        var level = GetLevel(pokemon, gameId);
         var iv = GetIVs(pokemon)[statId];
         var ev = GetEVs(pokemon)[statId];
         var base = baseStats[statIdsToBaseStatsName[statId]];
@@ -769,18 +770,71 @@ export function GetMoveType(move, pokemon, gameId)
 
 /**
  * @param {Pokemon} pokemon - The Pokemon to process.
- * @returns {Number} The Pokemon's level.
+ * @returns {Number} The Pokemon's amount of experience.
  */
-export function GetLevel(pokemon)
+export function GetExperience(pokemon)
 {
-    let dataMember = "level";
+    let dataMember = "experience";
 
     if (IsValidPokemon(pokemon) && dataMember in pokemon)
     {
-        let level = pokemon[dataMember];
+        if (typeof(pokemon[dataMember]) === "number")
+            return pokemon[dataMember];
+    }
 
-        if (IsValidLevel(level))
-            return level;
+    return 0;
+}
+
+/**
+ * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {Number} The Pokemon's level.
+ */
+export function GetLevel(pokemon, gameId)
+{
+    // let dataMember = "level";
+
+    if (IsValidPokemon(pokemon))
+    {
+        /* From old data struct
+        if (dataMember in pokemon)
+        {
+            let level = pokemon[dataMember];
+
+            if (IsValidLevel(level))
+                return level;
+        }
+        */
+
+        let experience = GetExperience(pokemon);
+        let baseStats = GetBaseStats(pokemon, gameId);
+
+        if (baseStats != null)
+        {
+            let expRate = baseStats.growthRate;
+            if (expRate in ExperienceCurves)
+            {
+                let lowLevel = 1;
+                let highLevel = MAX_LEVEL;
+                let expCurve = ExperienceCurves[expRate];
+
+                while (lowLevel < highLevel)
+                {
+                    let mid = Math.floor((lowLevel + highLevel) / 2);
+
+                    if (expCurve[mid] === experience) //Check if experience matches at mid (probably won't)
+                        return mid;
+                    else if (expCurve[mid] < experience) //If experience is greater, ignore lower half
+                        lowLevel = mid + 1;
+                    else //If experience is smaller, ignore right half
+                        highLevel = mid - 1;
+                }
+
+                if (expCurve[highLevel] > experience) //Not actually at the higher level yet
+                    return highLevel - 1;
+                else
+                    return highLevel;
+            }
+        }
     }
 
     return 1;

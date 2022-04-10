@@ -436,7 +436,7 @@ export class PokemonSummary extends Component
      */
     render()
     {
-        var level = GetLevel(this.state.pokemon);
+        var level = GetLevel(this.state.pokemon, this.state.gameId);
         var ability = GetAbilityName(GetAbility(this.state.pokemon, this.state.gameId));
         var nature = GetNatureName(GetNature(this.state.pokemon));
         var natureMint = GetNatureName(GetVisibleNature(this.state.pokemon));

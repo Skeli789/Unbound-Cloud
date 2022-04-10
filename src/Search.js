@@ -645,13 +645,13 @@ export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
     //Check correct level range
     if ("levelStart" in searchCriteria)
     {
-        if (GetLevel(pokemon) < searchCriteria["levelStart"])
+        if (GetLevel(pokemon, gameId) < searchCriteria["levelStart"])
             return false;
     }
 
     if ("levelEnd" in searchCriteria)
     {
-        if (GetLevel(pokemon) > searchCriteria["levelEnd"])
+        if (GetLevel(pokemon, gameId) > searchCriteria["levelEnd"])
             return false;
     }
 
