@@ -10,16 +10,15 @@ Feature Modifications:
 -Timeout if friend trade connection has gone on too long
 -Force save before and after friend trade (for after, wait until all trades are done)
 -List supported hacks somewhere
--Starting dragging on the current public version selects the box (bring that back!)
 -Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game (including via multi-select)
 -Bad words in nickname should be handled server side so the checksum can be updated
 -Calculate level on front-end (with binary search)?
--Back arrow when on trade offer page should return to choose a Pokemon page
+-Back arrow while trade in progress should display a pop-up prompting to cancel the friend trade
 
 Server Changes:
 -Change the file signature for Unbound
 -Unbound can only load saves with FR or Unbound file signature
 -Hardcode Leech Life turning into Leech Fang when moving into Unbound and back to Leech Life when moving out
--Handle no Gerben files
+-Handle no Gerben files (also make Gerben Pokemon not show up on the site)
 -Flags when accessible
 -Use binary search for calculating level?

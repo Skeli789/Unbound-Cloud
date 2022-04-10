@@ -1279,14 +1279,14 @@ export class BoxView extends Component
             let heldItemIcon = ""
             let shinyIcon = ""
 
-            if (species === "none"
-            || this.isMonAtPosBeingDragged(i - startIndex)) //Hide a mon that's being dragged (attached to mouse instead)
+            if (species === "none")
                 icon = "";
             else
             {
                 var matchesSearchCriteria = true;
                 var className = "box-icon-image";
                 var alt = GetNickname(pokemon);
+                var hiddenImages = this.isMonAtPosBeingDragged(i - startIndex); //Hide a mon that's being dragged (attached to mouse instead)
 
                 if (!this.matchesSearchCriteria(pokemon))
                 {
@@ -1301,18 +1301,21 @@ export class BoxView extends Component
                 }
 
                 icon = <img src={link} alt={alt} aria-label={alt} className={className}
+                            hidden={hiddenImages}
                             onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
 
                 if (IsHoldingItem(pokemon))
                 {
                     heldItemIcon = <img src={BASE_GFX_LINK + "held_item.png"} alt="I" aria-label="Holds Item"
                                         className={"box-icon-item-icon" + (!matchesSearchCriteria ? " box-icon-faded" : "")}
+                                        hidden={hiddenImages}
                                         onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
                 }
 
                 if (IsShiny(pokemon))
                 {
                     shinyIcon = <span className={"box-icon-shiny-icon" + (!matchesSearchCriteria ? " box-icon-faded" : "")}
+                                      hidden={hiddenImages}
                                       aria-label="Shiny">★</span> //Show shiny star
                 }
 
