@@ -91,13 +91,12 @@ BLANK_CONVERTED_POKEMON = \
     "shiny": False,
     "abilitySlot": 0,
     "gender": "U",
-    "level": 1,
     "nature": 0,
     "metLevel": 0,
     "metGame": "unbound",
     "gigantamax": False,
     "otGender": "M",
-    "checksum": "c7fa9617c11e2ca17ae4015ce470638a"
+    "checksum": "b32f654d6f18fe7df816e52dc99f0089"
 }
 
 
@@ -212,11 +211,11 @@ class PokemonProcessing:
             # Assign Gender
             pokemonData["gender"] = PokemonUtil.GetGender(pokemonData)
 
-            # Assign Level
-            pokemonData["level"] = PokemonUtil.CalculateLevel(pokemonData)
-
             # Assign Nature
             pokemonData["nature"] = PokemonUtil.GetNature(pokemonData)
+
+            # Assign Level
+            # pokemonData["level"] = PokemonUtil.CalculateLevel(pokemonData)
 
             # Assign Raw Stats
             # PokemonUtil.UpdateStats(pokemonData)
@@ -224,8 +223,8 @@ class PokemonProcessing:
             # pokemonData["ability"] = 0
             pokemonData["abilitySlot"] = 0
             pokemonData["gender"] = "U"  # Unknown
-            pokemonData["level"] = 1
             pokemonData["nature"] = 0
+            # pokemonData["level"] = 1
             # pokemonData["rawStats"] = [0] * NUM_STATS
 
         # Wipe Bad Eggs
@@ -488,6 +487,7 @@ class PokemonProcessing:
     def ConvertOldDataStructToNew(pokemon: dict):
         PokemonProcessing.AssignConstantsToCFRUData(pokemon)
         del pokemon["ability"]
+        del pokemon["level"]
         del pokemon["rawStats"]
         pokemon["metGame"] = "unbound"  # Assume unbound
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)

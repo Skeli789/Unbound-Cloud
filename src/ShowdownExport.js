@@ -43,7 +43,7 @@ export class ShowdownExport extends Component
         var genderLetter = GetGender(pokemon);
         var itemName = GetItemName(GetItem(pokemon));
         var abilityLine = "Ability: " + GetAbilityName(GetAbility(pokemon, this.state.gameId));
-        var levelLine = "Level: " + GetLevel(pokemon);
+        var levelLine = "Level: " + GetLevel(pokemon, this.state.gameId);
         var shinyLine = "Shiny: " + (IsShiny(pokemon) ? "Yes" : "No");
         var gigantamaxLine = "";
         var friendshipLine = "Happiness: " + GetFriendship(pokemon);

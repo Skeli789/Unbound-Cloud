@@ -80,10 +80,10 @@ def LoadAllTest(saveName: str):
     boxTitles = SaveBlockProcessing.LoadCFRUBoxTitles(saveBlocks)
 
     # with open(f"{DATA_DIR}/{saveName}.json", "w") as file:
-    #     file.write(json.dumps(allPokemon, indent=4))
+    #     file.write(json.dumps(allPokemon, indent=4) + "\n")
 
     # with open(f"{DATA_DIR}/{saveName}_titles.json", "w") as file:
-    #     file.write(json.dumps(boxTitles, indent=4))
+    #     file.write(json.dumps(boxTitles, indent=4) + "\n")
 
     with open(f"{DATA_DIR}/{saveName}.json", "r", encoding="utf-8") as file:
         correctPokemon = json.load(file)

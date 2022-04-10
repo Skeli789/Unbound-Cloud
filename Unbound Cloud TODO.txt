@@ -12,7 +12,6 @@ Feature Modifications:
 -List supported hacks somewhere
 -Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game (including via multi-select)
 -Bad words in nickname should be handled server side so the checksum can be updated
--Calculate level on front-end (with binary search)?
 -Back arrow while trade in progress should display a pop-up prompting to cancel the friend trade
 
 Server Changes:
