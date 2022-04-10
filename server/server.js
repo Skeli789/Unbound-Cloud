@@ -9,6 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const randomstring = require("randomstring");
 const CryptoJS = require("crypto-js");
+const util = require('./util');
 const {StatusCode} = require('status-code-enum');
 
 const gSecretKey = "TODO: Set a secret key for encryption in an env file.";
@@ -57,21 +58,28 @@ io.on("connection", async function(socket)
         {
             console.log(`WT-Client ${clientId} wants a Wonder Trade`);
 
-            socket.on("message", (data) =>
+            socket.on("message", (pokemonToSend) =>
             {
-                var pokemonToSend = data;
                 var keys = Object.keys(gWonderTradeClients).filter((x) => x != clientId && gWonderTradeClients[x].tradedWith === 0);
-        
-                if (keys.length !== 0)
+
+                if (!util.ValidatePokemon(pokemonToSend, false))
                 {
-                    var pokemonToReceive = gWonderTradeClients[keys[0]].pokemon;
-                    gWonderTradeClients[keys[0]] =  {pokemon: pokemonToSend, tradedWith: clientId}; //Immediately lock the data
-                    gWonderTradeClients[clientId] = {pokemon: pokemonToReceive, tradedWith: keys[0]}; //Set this client as traded
+                    console.log(`WT-Client ${clientId} sent an invalid Pokemon for a Wonder Trade`);
+                    socket.emit("invalidPokemon");
                 }
                 else
                 {
-                    if (!(clientId in gWonderTradeClients)) //Don't overwrite previously requested mon
-                        gWonderTradeClients[clientId] = {pokemon: pokemonToSend, tradedWith: 0};
+                    if (keys.length !== 0)
+                    {
+                        var pokemonToReceive = gWonderTradeClients[keys[0]].pokemon;
+                        gWonderTradeClients[keys[0]] =  {pokemon: pokemonToSend, tradedWith: clientId}; //Immediately lock the data
+                        gWonderTradeClients[clientId] = {pokemon: pokemonToReceive, tradedWith: keys[0]}; //Set this client as traded
+                    }
+                    else
+                    {
+                        if (!(clientId in gWonderTradeClients)) //Don't overwrite previously requested mon
+                            gWonderTradeClients[clientId] = {pokemon: pokemonToSend, tradedWith: 0};
+                    }
                 }
             });
 
@@ -120,7 +128,12 @@ io.on("connection", async function(socket)
 
             socket.on('tradeOffer', (pokemon) =>
             {
-                if (clientId in gFriendTradeClients)
+                if (!util.ValidatePokemon(pokemon, true))
+                {
+                    console.log(`FT-Client ${clientId} sent an invalid Pokemon for a Friend Trade`);
+                    socket.emit("invalidPokemon");
+                }
+                else if (clientId in gFriendTradeClients)
                 {
                     if (pokemon != null && "species" in pokemon)
                         console.log(`FT-Client ${clientId} is offering ${pokemon.species}`);

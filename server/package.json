@@ -16,10 +16,12 @@
   "license": "ISC",
   "dependencies": {
     "@shelf/jest-mongodb": "1.2.3",
+    "chai": "^4.3.6",
     "cors": "2.8.5",
     "crypto-js": "4.0.0",
     "express": "4.17.1",
     "express-fileupload": "1.2.0",
+    "md5": "^2.3.0",
     "mongodb": "3.6.2",
     "mongoose": "^5.13.14",
     "multer": "1.4.2",

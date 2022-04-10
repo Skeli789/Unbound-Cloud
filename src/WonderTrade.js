@@ -307,6 +307,7 @@ export class WonderTrade extends Component
                     //Other handler functions
                     socket.on('disconnect', thisObject.handleLostConnection.bind(thisObject, socket));
                     socket.on('connect_error', thisObject.handleLostConnection.bind(thisObject, socket));
+                    socket.on('invalidPokemon', thisObject.handleInvalidPokemon.bind(thisObject, socket));
                     socket.on('message', function(data)
                     {
                         endWonderTrade(thisObject, data, GetSpecies(pokemon), socket);
@@ -422,6 +423,27 @@ export class WonderTrade extends Component
         PopUp.fire(
         {
             title: "The connection has been lost!\nThe Wonder Trade was cancelled.",
+            cancelButtonText: `Awww`,
+            showConfirmButton: false,
+            showCancelButton: true,
+            icon: 'error',
+            scrollbarPadding: false,
+        });
+    }
+
+    /**
+     * Handles ending the Wonder Trade after sending an invalid Pokemon for a trade (due to checksum mismatch).
+     * @param {WebSocket} socket - The socket used to connect to the server.
+     */
+    handleInvalidPokemon(socket)
+    {
+        socket.close();
+        this.setGlobalState({wonderTradeData: null});
+        console.log("Pokemon failed checksum!");
+
+        PopUp.fire(
+        {
+            title: "That Pokemon appears invalid and can't be traded!",
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
