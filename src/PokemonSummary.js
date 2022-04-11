@@ -5,8 +5,8 @@
 import React, {Component} from 'react';
 import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
-import {CanMonGigantamax, ChangeMarking, GetAbility, GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel, GetMarkings,
-        GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleNature, GetVisibleOTId, GetVisibleStats,
+import {CanMonGigantamax, ChangeMarking, GetAbility, /*GetBaseStats,*/ GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel,
+        GetMarkings, GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleNature, GetVisibleOTId, GetVisibleStats,
         GetEVs, GetIVs, GetMoveType, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP, NATURE_STAT_TABLE} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetAbilityName, GetBallName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName, GetTypeName} from "./Util";
 import MoveData from "./data/MoveData.json";
@@ -66,6 +66,33 @@ export class PokemonSummary extends Component
             this.setGlobalState({changeWasMade: changeWasMade});
         }
     }
+
+    /**
+     * Prints one of the Pokemon's types.
+     * @param typeNum {String} - Either "1" or "2" depending on which type to print.
+     * @returns {JSX} An element containing the text of the type symbol.
+     */
+    /*printSpeciesType(typeNum)
+    {
+        let baseStats = GetBaseStats(this.state.pokemon, this.state.gameId);
+        if (baseStats != null)
+        {
+            let typeName = GetTypeName(baseStats["type" + typeNum]);
+            let alt = typeName.slice(0, 2);
+            let typeNameTooltip = props => (<Tooltip {...props}>{typeName}</Tooltip>);
+
+            if (typeNum == "2" && baseStats["type1"] == baseStats["type2"])
+                return ""; //Don't print duplicate types
+
+            return (
+                <OverlayTrigger placement="top" overlay={typeNameTooltip}>
+                    <img src={TYPE_ICON_GFX_LINK + typeName.toLowerCase() + ".png"} alt={alt} className="summary-move-type" />
+                </OverlayTrigger>
+            );
+        }
+
+        return "";
+    }*/
 
     /**
      * Prints the Pokemon's gender symbol.
@@ -482,6 +509,12 @@ export class PokemonSummary extends Component
 
                     {/*Pokerus*/}
                     {this.printPokerusSymbol()}
+
+                    {/*Types*/}
+                    {/*<span>
+                        {this.printSpeciesType("1")}
+                        {this.printSpeciesType("2")}
+                    </span>*/}
                 </div>
 
                 {/*OT Summary Row*/}
