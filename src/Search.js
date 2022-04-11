@@ -7,15 +7,17 @@ import {Button, Form} from "react-bootstrap";
 import {Dropdown} from 'semantic-ui-react';
 
 import {BOX_HOME} from './MainPage';
-import {GetAbility, GetGender, GetItem, GetLevel, GetNature, GetMoves, GetSpecies,
-        GetVisibleNature, HasPokerus, IsEgg, IsShiny, MAX_LEVEL} from './PokemonUtil';
+import {GetAbility, GetBaseStats, GetCaughtBall, GetGender, GetItem, GetLevel, GetNature,
+        GetMoves, GetSpecies, GetVisibleNature, HasPokerus, IsEgg, IsShiny, MAX_LEVEL} from './PokemonUtil';
 import {GetAbilityName, GetItemName, GetSpeciesName} from "./Util";
 
 import AbilityNames from "./data/AbilityNames.json";
+import BallTypeNames from "./data/BallTypeNames.json";
 import ItemNames from "./data/ItemNames.json";
 import MoveNames from "./data/MoveNames.json";
 import NatureNames from "./data/NatureNames.json";
 import SpeciesNames from "./data/SpeciesNames.json";
+import TypeNames from "./data/TypeNames.json";
 
 import {ImCancelCircle} from "react-icons/im";
 
@@ -39,6 +41,8 @@ export class Search extends Component
             itemIds: [],
             moveIds: [],
             natureIds: [],
+            ballTypeIds: [],
+            typeIds: [],
             levelStart: "",
             levelEnd: "",
             genders: [false, false, false],
@@ -49,6 +53,8 @@ export class Search extends Component
             moveNameList: [],
             itemNameList: [],
             natureNameList: [],
+            ballTypeNameList: [],
+            typeNameList: [],
             boxType: this.props.boxType,
             boxSlot: this.props.boxSlot,
             parent: this.props.parent,
@@ -70,6 +76,8 @@ export class Search extends Component
             moveNameList: this.createMoveNameList(),
             itemNameList: this.createItemNameList(),
             natureNameList: this.createNatureNameList(),
+            ballTypeNameList: this.createBallTypeNameList(),
+            typeNameList: this.createTypeNameList(),
             loaded: true
         });
     }
@@ -174,7 +182,7 @@ export class Search extends Component
 
     /**
      * Creates a list of nature names that the user can search for.
-     * @returns {Array <Object>} A list of objects with the format {key: NATURE_NUMBER, text: Nature Name, value: NATURE_NUMBER}.
+     * @returns {Array <Object>} A list of objects with the format {key: NATURE_ID, text: Nature Name, value: NATURE_ID}.
      */
     createNatureNameList()
     {
@@ -185,6 +193,36 @@ export class Search extends Component
 
         natures.sort((a, b) => (a.text > b.text) ? 1 : -1);
         return natures;
+    }
+
+    /**
+     * Creates a list of Poke Ball names that the user can search for.
+     * @returns {Array <Object>} A list of objects with the format {key: BALL_TYPE_ID, text: Ball Name, value: BALL_TYPE_ID}.
+     */
+    createBallTypeNameList()
+    {
+        var ballTypes = [];
+
+        for (let ballTypeId of Object.keys(BallTypeNames))
+            ballTypes.push({key: ballTypeId, text: BallTypeNames[ballTypeId], value: ballTypeId});
+
+        ballTypes.sort((a, b) => (a.text > b.text) ? 1 : -1);
+        return ballTypes;
+    }
+
+    /**
+     * Creates a list of Pokemon types that the user can search for.
+     * @returns {Array <Object>} A list of objects with the format {key: TYPE_ID, text: Type Name, value: TYPE_ID}.
+     */
+    createTypeNameList()
+    {
+        var types = [];
+
+        for (let typeId of Object.keys(TypeNames))
+            types.push({key: typeId, text: TypeNames[typeId], value: typeId});
+
+        types.sort((a, b) => (a.text > b.text) ? 1 : -1);
+        return types;
     }
 
     /**
@@ -311,7 +349,13 @@ export class Search extends Component
             criteria["item"] = this.state.itemIds;
 
         if (this.state.natureIds.length > 0)
-            criteria["nature"] = this.state.natureIds.map((move) => parseInt(move));
+            criteria["nature"] = this.state.natureIds;
+
+        if (this.state.ballTypeIds.length > 0)
+            criteria["ballType"] = this.state.ballTypeIds;
+
+        if (this.state.typeIds.length > 0)
+            criteria["type"] = this.state.typeIds;
 
         if (this.state.levelStart !== "" && !isNaN(this.state.levelStart) && parseInt(this.state.levelStart) > 1)
             criteria["levelStart"] = parseInt(this.state.levelStart);
@@ -463,6 +507,34 @@ export class Search extends Component
                             selection
                             options={this.state.natureNameList}
                             onChange={(e, data) => this.setState({natureIds: data.value})}
+                        />
+                    </Form.Group>
+
+                    {/* Caught Ball Input */}
+                    <Form.Group controlId="formBall">
+                        <Form.Label>Caught Ball</Form.Label>
+                        <Dropdown
+                            placeholder='-'
+                            fluid
+                            multiple
+                            search
+                            selection
+                            options={this.state.ballTypeNameList}
+                            onChange={(e, data) => this.setState({ballTypeIds: data.value})}
+                        />
+                    </Form.Group>
+
+                    {/* Type Input */}
+                    <Form.Group controlId="formBall">
+                        <Form.Label>Type</Form.Label>
+                        <Dropdown
+                            placeholder='-'
+                            fluid
+                            multiple
+                            search
+                            selection
+                            options={this.state.typeNameList}
+                            onChange={(e, data) => this.setState({typeIds: data.value})}
                         />
                     </Form.Group>
 
@@ -639,6 +711,25 @@ export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
     {
         if (!searchCriteria["nature"].includes(GetNature(pokemon))
         && !searchCriteria["nature"].includes(GetVisibleNature(pokemon))) //Eg. Nature Mint
+            return false;
+    }
+
+    //Check Caught In Ball
+    if ("ballType" in searchCriteria)
+    {
+        if (!searchCriteria["ballType"].includes(GetCaughtBall(pokemon)))
+            return false;
+    }
+
+    //Check Is Of Type
+    if ("type" in searchCriteria)
+    {
+        let baseStats = GetBaseStats(pokemon, gameId);
+        if (baseStats == null)
+            return false;
+
+        if (!searchCriteria["type"].includes(baseStats["type1"])
+         && !searchCriteria["type"].includes(baseStats["type2"]))
             return false;
     }
 

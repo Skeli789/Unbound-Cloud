@@ -361,7 +361,7 @@ function IsBooleanArray(array, minSize)
  * @param {String} gameId - The game to get the base stats from.
  * @returns {Object} The base stats of the requested Pokemon.
  */
-function GetBaseStats(pokemon, gameId)
+export function GetBaseStats(pokemon, gameId)
 {
     var baseStats = null;
 

@@ -2,7 +2,6 @@ New Features:
 -Give mon little exclamation mark in corner if has data that will disappear in game
 -GTS
 -Ads
--Search by Poke Ball, by Type
 
 Feature Modifications:
 -Search bar for box list page

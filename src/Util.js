@@ -2,10 +2,12 @@ import {MONS_PER_BOX, MONS_PER_ROW} from "./BoxView";
 import {BOX_HOME, BOX_SAVE} from "./MainPage";
 
 import AbilityNames from "./data/AbilityNames.json";
+import BallTypeNames from "./data/BallTypeNames.json";
 import ItemNames from "./data/ItemNames.json";
 import MoveNames from "./data/MoveNames.json";
 import NatureNames from "./data/NatureNames.json";
 import SpeciesNames from "./data/SpeciesNames.json";
+import TypeNames from "./data/TypeNames.json";
 
 export const BASE_GFX_LINK = "images/";
 
@@ -185,7 +187,7 @@ export function GetAbilityName(ability)
 
 /**
  * Gets the pretty name like "Serious" for an Ability id.
- * @param {Number} nature - The Nature's numerical id.
+ * @param {Number} nature - The Nature's STRING_BASED id.
  * @returns {String} The name of the Nature.
  */
 export function GetNatureName(nature)
@@ -194,4 +196,30 @@ export function GetNatureName(nature)
         return NatureNames[nature];
 
     return "Unknown Nature";
+}
+
+/**
+ * Gets the pretty name like "Master Ball" for a ball type id.
+ * @param {Number} ballType - The Balls's STRING_BASED id.
+ * @returns {String} The name of the Poke Ball.
+ */
+export function GetBallName(ballType)
+{
+    if (ballType in BallTypeNames)
+        return BallTypeNames[ballType];
+
+    return "Unknown Ball Type";
+}
+
+/**
+ * Gets the pretty name like "Fire" for a Pokemon type id.
+ * @param {Number} ballType - The type's STRING_BASED id.
+ * @returns {String} The name of the type
+ */
+export function GetTypeName(type)
+{
+    if (type in TypeNames)
+        return TypeNames[type];
+
+    return "Unknown Type";
 }
