@@ -8,7 +8,7 @@ import {OverlayTrigger, Tooltip} from "react-bootstrap";
 import {CanMonGigantamax, ChangeMarking, GetAbility, GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel, GetMarkings,
         GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleNature, GetVisibleOTId, GetVisibleStats,
         GetEVs, GetIVs, GetMoveType, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP, NATURE_STAT_TABLE} from "./PokemonUtil";
-import {BASE_GFX_LINK, GetAbilityName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName} from "./Util";
+import {BASE_GFX_LINK, GetAbilityName, GetBallName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName, GetTypeName} from "./Util";
 import MoveData from "./data/MoveData.json";
 
 import {BsCircle, BsSquare, BsTriangle, BsHeart, BsCircleFill, BsSquareFill, BsTriangleFill, BsHeartFill} from "react-icons/bs";
@@ -213,8 +213,8 @@ export class PokemonSummary extends Component
     {
         //Caught Ball Details
         var ballType = GetCaughtBall(this.state.pokemon);
-        var baseBallName = ballType.split("BALL_TYPE_")[1].split("_BALL")[0].toLowerCase();
-        var ballName = baseBallName.charAt(0).toUpperCase() + baseBallName.slice(1) + " Ball";
+        var ballName = GetBallName(ballType);
+        var baseBallName = ballName.split(" Ball")[0].toLowerCase().replaceAll("é", "e");
         var ballNameTooltip = props => (<Tooltip {...props}>{ballName}</Tooltip>);
 
         //Held Item Details
@@ -377,7 +377,7 @@ export class PokemonSummary extends Component
             if (move in MoveData)
             {
                 var moveType = GetMoveType(move, this.state.pokemon, this.state.gameId);
-                typeNames[i] = moveType.toLowerCase().charAt(5).toUpperCase() + moveType.toLowerCase().slice(6); //Start after TYPE_
+                typeNames[i] = GetTypeName(moveType);
                 var alt = typeNames[i].slice(0, 2);
                 var typeNameTooltip = props => (<Tooltip {...props}>{typeNames[i]}</Tooltip>);
 
