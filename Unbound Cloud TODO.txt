@@ -4,7 +4,6 @@ New Features:
 -Ads
 
 Feature Modifications:
--Search bar for box list page
 -Timeout if friend trade connection has gone on too long
 -Force save before and after friend trade (for after, wait until all trades are done)
 -List supported hacks somewhere

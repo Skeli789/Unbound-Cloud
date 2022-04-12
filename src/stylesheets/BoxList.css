@@ -24,11 +24,29 @@
     top: 56px;
 }
 
+.box-list-filter-container
+{
+    text-align: center;
+    margin-top: 15px;
+}
+
+.box-list-empty-filter
+{
+    text-align: center;
+    margin-top: 25px;
+}
+
+.box-list-empty-filter-text
+{
+    font-size: 3rem;
+}
+
 .mini-boxes
 {
     display: flex;
     flex-wrap: wrap;
-    padding-top: 1%;
+    padding-top: 15px;
+    height: 90%;
 }
 
 .mini-boxes > div

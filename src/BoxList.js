@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import {isMobile} from "react-device-detect";
 
-import {MONS_PER_BOX} from "./BoxView";
+import {MAX_TITLE_LENGTH, MONS_PER_BOX} from "./BoxView";
 import {GetIconSpeciesName} from "./PokemonUtil";
 import {MatchesSearchCriteria} from "./Search";
 import {CreateSingleBlankSelectedPos, GetBoxStartIndex, IsHomeBox} from "./Util";
@@ -26,6 +26,7 @@ export class BoxList extends Component
 
         this.state =
         {
+            boxNameFilter: "",
             boxType: props.boxType,
             boxSlot: props.boxSlot, //Left or right
             boxes: props.boxes,
@@ -55,6 +56,20 @@ export class BoxList extends Component
         //Override back button
         window.history.pushState(null, document.title, window.location.href)
         window.addEventListener("popstate", this.state.globalState.navBackButtonPressed.bind(this.state.globalState));
+    }
+
+    /**
+     * Checks if a box's name matches the user's filter input.
+     * @param {Number} boxId - The id number of the box to check the name of.
+     * @returns {Boolean} True if the box name falls within the filter. False otherwise.
+     */
+    matchesFilter(boxId)
+    {
+        if (this.state.boxNameFilter === "")
+            return true; //No filter applied
+
+        var title = this.state.titles[boxId];
+        return title.toLowerCase().includes(this.state.boxNameFilter.trim().toLowerCase());
     }
 
     /**
@@ -88,9 +103,10 @@ export class BoxList extends Component
     /**
      * Creates the mini-image of a specific box.
      * @param {Number} boxId - The id number of the box to make the image of.
+     * @param {Boolean} hidden - True if the box shouldn't be visible. False if it should be.
      * @returns {MiniBox} A mini box element.
      */
-    createBoxView(boxId)
+    createBoxView(boxId, hidden)
     {
         var title;
         var icons = [];
@@ -134,8 +150,8 @@ export class BoxList extends Component
             disabledBox = true; //Prevent jumping to this box since the other box is already showing it
 
         //Create the entire box
-        return(
-            <div className="mini-box-with-title" key={boxId}>
+        return (
+            <div className="mini-box-with-title" hidden={hidden} key={boxId}>
                 <div className={"mini-box " + (disabledBox ? "disabled-box" : IsHomeBox(this.state.boxType) ? "home-box" : "save-box")}
                      onClick={disabledBox ? null : this.jumpToBox.bind(this, boxId)}>
                     {icons}
@@ -152,9 +168,28 @@ export class BoxList extends Component
     printBoxes()
     {
         var boxes = [];
+        var atLeastOneBox = false;
 
         for (let i = 0; i < this.state.boxCount; ++i)
-            boxes.push(this.createBoxView(i));
+        {
+            let visible = this.matchesFilter(i);
+
+            if (visible)
+                atLeastOneBox = true;
+
+            boxes.push(this.createBoxView(i, !visible));
+        }
+
+        if (!atLeastOneBox)
+        {
+            return (
+                <div className="box-list-empty-filter">
+                    <h1 className="box-list-empty-filter-text">
+                        No Boxes Found
+                    </h1>
+                </div>
+            );
+        }
 
         return boxes;
     }
@@ -175,8 +210,20 @@ export class BoxList extends Component
         else
         {
             return(
-                <div className={"mini-boxes scroll-container-box-list" + (isMobile ? "-mobile" : "")}>
-                    {this.printBoxes()}
+                <div className={"scroll-container-box-list" + (isMobile ? "-mobile" : "")}>
+                    {/*Box Filter*/}
+                    <div className="box-list-filter-container">
+                        <input type="text"
+                               className="mini-box-title"
+                               placeholder="Type to filter..."
+                               onChange={(e) => this.setState({boxNameFilter: e.target.value.substring(0, MAX_TITLE_LENGTH)})}
+                               value={this.state.boxNameFilter}/>
+                    </div>
+
+                    {/*Actual Boxes*/}
+                    <div className="mini-boxes">
+                        {this.printBoxes()}
+                    </div>
                 </div>
             )
         }
