@@ -631,12 +631,12 @@ export class FriendTrade extends Component
                     <h2>The other enters the code created.</h2>
                 </div>
                 <div className="friend-trade-code-choice-buttons">
-                    <Button className="friend-trade-offer-button"
+                    <Button className="friend-trade-offer-button friend-trade-code-button"
                             onClick={this.createCode.bind(this)}>
                         Create Code
                     </Button>
 
-                    <Button className="friend-trade-offer-button"
+                    <Button className="friend-trade-offer-button friend-trade-code-button"
                             onClick={() => this.setState({friendTradeState: FRIEND_TRADE_INPUT_CODE})}>
                         Enter Code
                     </Button>
@@ -692,7 +692,7 @@ export class FriendTrade extends Component
                             onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}/>
 
                         <OverlayTrigger placement="bottom" overlay={pasteTooltip}>
-                            <Button size="sm" className="friend-trade-offer-button"
+                            <Button size="sm" className="friend-trade-offer-button friend-trade-code-button"
                                     aria-label="Paste Code"
                                     onClick={this.pasteCode.bind(this)}>
                                 <ImPaste size={pasteButtonSize}/>
@@ -702,7 +702,7 @@ export class FriendTrade extends Component
 
                     <div className="friend-trade-code-input-button">
                         <OverlayTrigger placement="bottom" overlay={submitTooltip}>
-                            <Button size="lg" className="friend-trade-offer-button"
+                            <Button size="lg" className="friend-trade-offer-button friend-trade-code-button"
                                     aria-label="Submit Code"
                                     type="submit">
                                 <AiOutlineCheckCircle size={confirmButtonSize}/>
@@ -742,6 +742,7 @@ export class FriendTrade extends Component
             var cancelButton =
                 <OverlayTrigger placement="bottom" overlay={cancelTradeTooltip}>
                     <Button size="lg" className="friend-trade-offer-button"
+                            variant="danger"
                             aria-label="Cancel Trade"
                             onClick={this.cancelTradeOffer.bind(this)}>
                         <AiOutlineCloseCircle size={size}/>
@@ -751,6 +752,7 @@ export class FriendTrade extends Component
             var acceptTradeButton =
                 <OverlayTrigger placement="bottom" overlay={acceptTradeTooltip}>
                     <Button size="lg" className="friend-trade-offer-button"
+                            variant="success"
                             aria-label="Confirm Trade"
                             onClick={this.confirmTradeOffer.bind(this)}>
                         <AiOutlineCheckCircle size={size}/>
