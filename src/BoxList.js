@@ -12,7 +12,8 @@ import {CreateSingleBlankSelectedPos, GetBoxStartIndex, IsHomeBox} from "./Util"
 
 import "./stylesheets/BoxList.css";
 
-const PokeBallIconInterior = <g clipPath="url(#cPath)"><g><circle cx="0" cy="0" r="90" transform="matrix(1,0,0,-1,0,0)" /*fill="rgba(0,0,0,1)"*/ fillOpacity="1"></circle><circle cx="0" cy="0" r="27" transform="matrix(1,0,0,-1,0,0)" fill="none" strokeWidth="18" stroke="rgba(255,255,255,1)" strokeOpacity="1"></circle></g><g><defs><mask id="c1"><g><rect x="-96" y="-64" width="192" height="128" transform="matrix(1,0,0,-1,0,0)" fill="rgba(0,0,0,1)" fillOpacity="1"></rect><g><circle cx="0" cy="0" r="90" transform="matrix(1,0,0,-1,0,0)" fill="rgba(255,255,255,1)" fillOpacity="1"></circle><circle cx="0" cy="0" r="27" transform="matrix(1,0,0,-1,0,0)" fill="rgba(255,255,255,1)" fillOpacity="1" strokeWidth="18" stroke="rgba(255,255,255,1)" strokeOpacity="1"></circle></g></g></mask></defs><g mask="url(#c1)"><g><rect x="-31.5" y="-9" width="63" height="18" transform="matrix(1,0,0,-1,63,0)" fill="rgba(255,255,255,1)" fillOpacity="1"></rect><rect x="-31.5" y="-9" width="63" height="18" transform="matrix(1,0,0,-1,-63,0)" fill="rgba(255,255,255,1)" fillOpacity="1"></rect></g></g></g></g>;
+import {ReactComponent as PokeBallIcon} from './images/PokeBallIcon.svg';
+const POKE_BALL_ICON_STYLE = {position: "absolute", top: "0", left: "0", height: "100%", width: "100%"};
 
 
 export class BoxList extends Component
@@ -130,9 +131,7 @@ export class BoxList extends Component
 
                 icon =
                     <div className="mini-box-cell" key={key}>
-                        <svg width="100%" height="100%" style={{fill: colour, position: "absolute", top: "0px", left: "0px"}} viewBox="-96 -64 192 128" id="render">
-                            {PokeBallIconInterior}
-                        </svg>
+                        <PokeBallIcon fill={colour} style={POKE_BALL_ICON_STYLE}/>
                     </div>
             }
 
