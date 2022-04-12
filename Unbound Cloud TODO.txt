@@ -1,18 +1,17 @@
 New Features:
 -Give mon little exclamation mark in corner if has data that will disappear in game
--GTS
 -Ads
+-GTS
 
 Feature Modifications:
--Timeout if friend trade connection has gone on too long
--Force save before and after friend trade (for after, wait until all trades are done)
--List supported hacks somewhere
 -Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game (including via multi-select)
--Bad words in nickname should be handled server side so the checksum can be updated
 -Back arrow while trade in progress should display a pop-up prompting to cancel the friend trade
+-Force save before and after friend trade (for after, wait until all trades are done)
+-Timeout if friend trade connection has gone on too long
+-List supported hacks somewhere
 
 Server Changes:
--Change the file signature for Unbound
--Unbound can only load saves with FR or Unbound file signature
+-Bad words in nickname should be handled server side so the checksum can be updated
 -Handle no Gerben files (also make Gerben Pokemon not show up on the site)
 -Flags when accessible
+-Change the file signature for Unbound
