@@ -32,6 +32,7 @@ export const HIGHEST_HOME_BOX_NUM = 100;
 export const MONS_PER_BOX = 30;
 export const MONS_PER_ROW = 6;
 export const MONS_PER_COL = MONS_PER_BOX / MONS_PER_ROW;
+export const MAX_TITLE_LENGTH = 16;
 
 const LIVING_DEX_NONE = 0;
 const LIVING_DEX_NO_FORMS = 1;
@@ -994,7 +995,7 @@ export class BoxView extends Component
      */
     updateTitleNameInput(input)
     {
-        if (input.length <= 16) //Max 16 characters in the title
+        if (input.length <= MAX_TITLE_LENGTH) //Must be within max characters in the title
             this.setState({titleInput: input});
     }
 
