@@ -335,27 +335,28 @@ export class Search extends Component
 
         var criteria = {};
         var searchCriteria = this.state.mainPage.state.searchCriteria;
+        const reduceFunc = (a, key) => ({ ...a, [key]: true}); //Converts list into object - turns all search checks into O(1)
 
         if (this.state.speciesIds.length > 0)
-            criteria["species"] = this.state.speciesIds.map((species) => GetSpeciesName(species));
+            criteria["species"] = this.state.speciesIds.map((species) => GetSpeciesName(species)).reduce(reduceFunc, {});
 
         if (this.state.moveIds.length > 0)
-            criteria["move"] = this.state.moveIds;
+            criteria["move"] = this.state.moveIds.reduce(reduceFunc, {});
 
         if (this.state.abilityIds.length > 0)
-            criteria["ability"] = this.state.abilityIds;
+            criteria["ability"] = this.state.abilityIds.reduce(reduceFunc, {});
 
         if (this.state.itemIds.length > 0)
-            criteria["item"] = this.state.itemIds;
+            criteria["item"] = this.state.itemIds.reduce(reduceFunc, {});
 
         if (this.state.natureIds.length > 0)
-            criteria["nature"] = this.state.natureIds;
+            criteria["nature"] = this.state.natureIds.reduce(reduceFunc, {});
 
         if (this.state.ballTypeIds.length > 0)
-            criteria["ballType"] = this.state.ballTypeIds;
+            criteria["ballType"] = this.state.ballTypeIds.reduce(reduceFunc, {});
 
         if (this.state.typeIds.length > 0)
-            criteria["type"] = this.state.typeIds;
+            criteria["type"] = this.state.typeIds.reduce(reduceFunc, {});
 
         if (this.state.levelStart !== "" && !isNaN(this.state.levelStart) && parseInt(this.state.levelStart) > 1)
             criteria["levelStart"] = parseInt(this.state.levelStart);
@@ -376,6 +377,8 @@ export class Search extends Component
 
             if (this.state.genders[2])
                 criteria["gender"].push("U");
+            
+            criteria["gender"] = criteria["gender"].reduce(reduceFunc, {});
         }
 
         if (this.state.shiny.some((x) => x)) //At least one shiny option selected
@@ -669,7 +672,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
     if ("species" in searchCriteria)
     {
         let name = isEgg ? "Egg" : GetSpeciesName(GetSpecies(pokemon));
-        if (!searchCriteria["species"].includes(name))
+        if (!(name in searchCriteria["species"]))
             return false;
     }
 
@@ -684,7 +687,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
 
         for (i = 0; i < moves.length; ++i)
         {
-            if (searchCriteria["move"].includes(moves[i]))
+            if (!(moves[i] in searchCriteria["move"]))
                 break; //Has at least one requested move
         }
 
@@ -695,29 +698,29 @@ export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
     //Check Has Ability
     if ("ability" in searchCriteria)
     {
-        if (!searchCriteria["ability"].includes(GetAbility(pokemon, gameId)))
+        if (!(GetAbility(pokemon, gameId) in searchCriteria["ability"]))
             return false;
     }
 
     //Check Holds Item
     if ("item" in searchCriteria)
     {
-        if (!searchCriteria["item"].includes(GetItem(pokemon)))
+        if (!(GetItem(pokemon) in searchCriteria["item"]))
             return false;
     }
 
     //Check Has Nature
     if ("nature" in searchCriteria)
     {
-        if (!searchCriteria["nature"].includes(GetNature(pokemon))
-        && !searchCriteria["nature"].includes(GetVisibleNature(pokemon))) //Eg. Nature Mint
+        if (!(GetNature(pokemon) in searchCriteria["nature"])
+        && !(GetVisibleNature(pokemon) in searchCriteria["nature"])) //Eg. Nature Mint
             return false;
     }
 
     //Check Caught In Ball
     if ("ballType" in searchCriteria)
     {
-        if (!searchCriteria["ballType"].includes(GetCaughtBall(pokemon)))
+        if (!(GetCaughtBall(pokemon) in searchCriteria["ballType"]))
             return false;
     }
 
@@ -728,8 +731,8 @@ export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
         if (baseStats == null)
             return false;
 
-        if (!searchCriteria["type"].includes(baseStats["type1"])
-         && !searchCriteria["type"].includes(baseStats["type2"]))
+        if (!(baseStats["type1"] in searchCriteria["type"])
+         && !(baseStats["type2"] in searchCriteria["type"]))
             return false;
     }
 
@@ -749,7 +752,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
     //Check Matches Gender
     if ("gender" in searchCriteria)
     {
-        if (!searchCriteria["gender"].includes(GetGender(pokemon)))
+        if (!(GetGender(pokemon) in searchCriteria["gender"]))
             return false;
 
     }
