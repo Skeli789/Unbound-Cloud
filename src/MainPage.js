@@ -1828,16 +1828,39 @@ export default class MainPage extends Component
     {
         if (this.state.tradeData != null)
         {
-            this.state.tradeData.socket.off("disconnect"); //Prevents disconnected pop-up from showing
-            this.state.tradeData.socket.close();
+            PopUp.fire
+            ({
+                title: `Going back now will disconnect you from the trade!\nAre you sure you want to go back?`,
+                denyButtonText: `Stop Trading`,
+                cancelButtonText: `Cancel`,
+                showDenyButton: true, //Red button
+                showCancelButton: true,
+                showConfirmButton: false,
+                icon: 'warning',
+                scrollbarPadding: false,
+            }).then((result) =>
+            {
+                if (result.isDenied)
+                {
+                    this.state.tradeData.socket.off("disconnect"); //Prevents disconnected pop-up from showing
+                    this.state.tradeData.socket.close();
+                    this.setState
+                    ({
+                        inFriendTrade: false,
+                        tradeData: null,
+                        pokemonToTrade: null,
+                    });
+                }
+            });
         }
-
-        this.setState
-        ({
-            inFriendTrade: false,
-            tradeData: null,
-            pokemonToTrade: null,
-        });
+        else
+        {
+            this.setState
+            ({
+                inFriendTrade: false,
+                pokemonToTrade: null,
+            });
+        }
     }
 
 
