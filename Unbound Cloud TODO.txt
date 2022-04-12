@@ -4,7 +4,6 @@ New Features:
 -GTS
 
 Feature Modifications:
--Pokemon shouldn't be placeable in a certain game if the species doesn't exist at all in the game (including via multi-select)
 -Back arrow while trade in progress should display a pop-up prompting to cancel the friend trade
 -Force save before and after friend trade (for after, wait until all trades are done)
 -Timeout if friend trade connection has gone on too long

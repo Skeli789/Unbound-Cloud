@@ -367,13 +367,14 @@ export function GetBaseStats(pokemon, gameId)
 
     if (IsValidPokemon(pokemon))
     {
+        let allBaseStats;
         let species = GetSpecies(pokemon);
 
         if (gameId in GAME_IDS_TO_DATA)
-            baseStats = GAME_IDS_TO_DATA[gameId]["baseStats"];
+            allBaseStats = GAME_IDS_TO_DATA[gameId]["baseStats"];
 
-        if (baseStats != null && species in baseStats)
-            return baseStats[species];
+        if (allBaseStats != null && species in allBaseStats)
+            return allBaseStats[species];
     }
 
     return baseStats;
@@ -1460,6 +1461,21 @@ export function PokemonAreDuplicates(pokemon1, pokemon2)
         && GetMetLevel(pokemon1) === GetMetLevel(pokemon2)
         && GetOTName(pokemon1) === GetOTName(pokemon2) //Most likely matches if the original Trainer is the same
         && GetOTGender(pokemon1) === GetOTGender(pokemon2); //Most likely matches if the original Trainer is the same
+}
+
+/**
+ * Checks if a Pokemon's species is present in a certain game.
+ * @param {Pokemon} pokemon - The Pokemon to check.
+ * @param {String} gameId - The game to check if the Pokemon is in.
+ * @returns {Boolean} True if the Pokemon is present in the game. False if it's not.
+ */
+export function DoesPokemonSpeciesExistInGame(pokemon, gameId)
+{
+    var species = GetSpecies(pokemon);
+
+    return species === "" //Always allow blank slots to be transferred in
+        || species === "SPECIES_NONE"
+        || GetBaseStats(pokemon, gameId) != null;
 }
 
 /**
