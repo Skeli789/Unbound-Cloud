@@ -1439,7 +1439,7 @@ export class BoxView extends Component
      */
     printWonderTradeIcon(boxName)
     {
-        if (this.isViewingMonSummary() && !this.isTrading())
+        if (this.isViewingMonSummary() && !this.isTrading() && !this.isSaveBox()) //Can only Wonder Trade in a Home Box
         {
             var summaryMonObj = this.getRawSummaryMon()
             var isMonInWonderTrade = this.isMonAtPosInWonderTrade(summaryMonObj.boxPos);

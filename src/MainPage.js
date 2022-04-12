@@ -14,7 +14,8 @@ import {BoxList} from "./BoxList";
 import {BoxView, HIGHEST_HOME_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
 import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {FriendTrade} from "./FriendTrade";
-import {GetIconSpeciesName, GetItem, GetSpecies, IsBlankMon, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
+import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetSpecies, IsBlankMon,
+        IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
@@ -440,11 +441,23 @@ export default class MainPage extends Component
      * Checks if a Pokemon can't be placed in a box because it's holding an item that can't be placed in the cloud boxes.
      * @param {Pokemon} pokemon - The Pokemon to check.
      * @param {number} placedInBoxType - The box type the Pokemon is being placed in.
-     * @returns 
+     * @returns {Boolean} True if the Pokemon can't be placed in the box. False if it can be.
      */
     cantBePlacedInBoxBecauseOfBannedItem(pokemon, placedInBoxType)
     {
         return IsHoldingBannedItem(pokemon) && placedInBoxType === BOX_HOME;
+    }
+
+    /**
+     * Checks if a Pokemon can't be placed in a box because it doesn't exist in the save hack.
+     * @param {Pokemon} pokemon - The Pokemon to check.
+     * @param {number} placedInBoxType - The box type the Pokemon is being placed in.
+     * @returns {Boolean} True if the Pokemon can't be placed in the box. False if it can be.
+     */
+    cantBePlacedInBoxBecauseOfNonExistentSpecies(pokemon, placedInBoxType)
+    {
+        return placedInBoxType === BOX_SAVE
+            && !DoesPokemonSpeciesExistInGame(pokemon, this.state.saveGameId);
     }
 
     /**
@@ -1215,6 +1228,39 @@ export default class MainPage extends Component
     }
 
     /**
+     * Sets the error message for a Pokemon not existing in the save game being moved to the save box.
+     * @param {Pokemon} pokemon - The Pokemon that doesn't exist in the save hack.
+     * @param {Number} fromOffset - The offset in the "from" set of boxes the Pokemon was being moved from.
+     * @param {Number} fromBoxSlot - The box slot of the box the Pokemon is being moved from.
+     * @param {Number} toBoxSlot - The box slot of the box the Pokemon is being moved to.
+     */
+    setNonExistentSpeciesError(pokemon, fromOffset, fromBoxSlot, toBoxSlot)
+    {
+        var errorMessage = ["", ""];
+        var impossibleFrom = this.generateBlankImpossibleMovementArray();
+        var impossibleMovement = [null, null];
+        var selectedMonPos = this.state.selectedMonPos;
+        var fromPos = GetLocalBoxPosFromBoxOffset(fromOffset);
+
+        impossibleFrom[GetBoxPosBoxRow(fromPos)][GetBoxPosBoxColumn(fromPos)] = true;
+        impossibleMovement[fromBoxSlot] = impossibleFrom;
+        errorMessage[toBoxSlot] = `${GetSpeciesName(GetSpecies(pokemon))} doesn't exist in this game.`;
+
+        if (impossibleMovement[0] == null)
+            impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
+        else if (impossibleMovement[1] == null)
+            impossibleMovement[1] = this.generateBlankImpossibleMovementArray();
+
+        selectedMonPos[toBoxSlot] = CreateSingleBlankSelectedPos(); //Undo selections just clicked on
+
+        this.setState({
+            selectedMonPos: selectedMonPos,
+            errorMessage: errorMessage,
+            impossibleMovement: impossibleMovement,
+        });
+    }
+
+    /**
      * Handles moving Pokemon from one box slot to another (can be same box type, though).
      * @param {Boolean} multiSwap - True if more than one Pokemon is being at once, False if only one is being moved.
      */
@@ -1246,6 +1292,9 @@ export default class MainPage extends Component
                     let holdingBannedItem =
                         this.cantBePlacedInBoxBecauseOfBannedItem(leftBoxes[leftOffset], rightBoxType);
 
+                    let doesntExistInGame =
+                        this.cantBePlacedInBoxBecauseOfNonExistentSpecies(leftBoxes[leftOffset], rightBoxType);
+        
                     if (alreadyExistsRet.boxNum >= 0)
                     {
                         this.setDuplicatePokemonSwappingError(BOX_SLOT_LEFT, leftOffset, BOX_SLOT_RIGHT, alreadyExistsRet);
@@ -1254,6 +1303,11 @@ export default class MainPage extends Component
                     else if (holdingBannedItem)
                     {
                         this.setBannedItemError(leftBoxes[leftOffset], leftOffset, BOX_SLOT_LEFT, BOX_SLOT_RIGHT);
+                        return;
+                    }
+                    else if (doesntExistInGame)
+                    {
+                        this.setNonExistentSpeciesError(leftBoxes[leftOffset], leftOffset, BOX_SLOT_LEFT, BOX_SLOT_RIGHT);
                         return;
                     }
                     else
@@ -1265,6 +1319,9 @@ export default class MainPage extends Component
                         holdingBannedItem =
                             this.cantBePlacedInBoxBecauseOfBannedItem(rightBoxes[rightOffset], leftBoxType);
 
+                        doesntExistInGame =
+                            this.cantBePlacedInBoxBecauseOfNonExistentSpecies(rightBoxes[rightOffset], leftBoxType);
+            
                         if (alreadyExistsRet.boxNum >= 0)
                         {
                             this.setDuplicatePokemonSwappingError(BOX_SLOT_RIGHT, rightOffset, BOX_SLOT_LEFT, alreadyExistsRet);
@@ -1273,6 +1330,11 @@ export default class MainPage extends Component
                         else if (holdingBannedItem)
                         {
                             this.setBannedItemError(rightBoxes[rightOffset], rightOffset, BOX_SLOT_RIGHT, BOX_SLOT_LEFT);
+                            return;
+                        }
+                        else if (doesntExistInGame)
+                        {
+                            this.setNonExistentSpeciesError(rightBoxes[rightOffset], rightOffset, BOX_SLOT_RIGHT, BOX_SLOT_LEFT);
                             return;
                         }
                         else
@@ -1323,6 +1385,9 @@ export default class MainPage extends Component
                         let holdingBannedItem =
                             this.cantBePlacedInBoxBecauseOfBannedItem(pokemon, toBoxType);
 
+                        let doesntExistInGame =
+                            this.cantBePlacedInBoxBecauseOfNonExistentSpecies(pokemon, toBoxType);
+            
                         if (alreadyExistsRet.boxNum >= 0)
                         {
                             this.setDuplicatePokemonSwappingError(multiFrom, offset, multiTo, alreadyExistsRet);
@@ -1331,6 +1396,11 @@ export default class MainPage extends Component
                         else if (holdingBannedItem)
                         {
                             this.setBannedItemError(pokemon, offset, multiFrom, multiTo);
+                            return;
+                        }
+                        else if (doesntExistInGame)
+                        {
+                            this.setNonExistentSpeciesError(pokemon, offset, multiFrom, multiTo);
                             return;
                         }
                     }
@@ -1542,6 +1612,9 @@ export default class MainPage extends Component
             let holdingBannedItem =
                 this.cantBePlacedInBoxBecauseOfBannedItem(fromBoxes[fromOffset], toBoxType);
 
+            let doesntExistInGame =
+                this.cantBePlacedInBoxBecauseOfNonExistentSpecies(fromBoxes[fromOffset], toBoxType);
+
             if (alreadyExistsRet.boxNum >= 0)
             {
                 this.setDuplicatePokemonSwappingError(this.state.draggingFromBox, fromOffset, this.state.draggingToBox, alreadyExistsRet);
@@ -1549,6 +1622,10 @@ export default class MainPage extends Component
             else if (holdingBannedItem)
             {
                 this.setBannedItemError(fromBoxes[fromOffset], fromOffset, this.state.draggingFromBox, this.state.draggingToBox);
+            }
+            else if (doesntExistInGame)
+            {
+                this.setNonExistentSpeciesError(fromBoxes[fromOffset], fromOffset, this.state.draggingFromBox, this.state.draggingToBox);
             }
             else
             {
@@ -1558,6 +1635,9 @@ export default class MainPage extends Component
                 holdingBannedItem =
                     this.cantBePlacedInBoxBecauseOfBannedItem(toBoxes[toOffset], fromBoxType);
 
+                doesntExistInGame =
+                    this.cantBePlacedInBoxBecauseOfNonExistentSpecies(toBoxes[toOffset], fromBoxType);
+    
                 if (alreadyExistsRet.boxNum >= 0)
                 {
                     this.setDuplicatePokemonSwappingError(this.state.draggingToBox, toOffset, this.state.draggingFromBox, alreadyExistsRet);
@@ -1565,6 +1645,10 @@ export default class MainPage extends Component
                 else if (holdingBannedItem)
                 {
                     this.setBannedItemError(toBoxes[toOffset], toOffset, this.state.draggingToBox, this.state.draggingFromBox);
+                }
+                else if (doesntExistInGame)
+                {
+                    this.setNonExistentSpeciesError(toBoxes[toOffset], toOffset, this.state.draggingToBox, this.state.draggingFromBox);
                 }
                 else
                 {
