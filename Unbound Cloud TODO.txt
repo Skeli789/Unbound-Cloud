@@ -4,8 +4,7 @@ New Features:
 -GTS
 
 Feature Modifications:
--Back arrow while trade in progress should display a pop-up prompting to cancel the friend trade
--Force save before and after friend trade (for after, wait until all trades are done)
+-Force save before and after friend trade (on PC) (for after, wait until all trades are done - also do it after a connection error that occurs after at least one successful trade)
 -Timeout if friend trade connection has gone on too long
 -List supported hacks somewhere
 
