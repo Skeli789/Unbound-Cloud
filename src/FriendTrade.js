@@ -11,7 +11,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 import {BoxView} from './BoxView';
 import {config} from "./config";
-import {BOX_HOME, BOX_SLOT_LEFT} from './MainPage';
+import {BOX_HOME, BOX_SLOT_LEFT, CanUseFileHandleAPI} from './MainPage';
 import {PokemonSummary} from './PokemonSummary';
 import {GetBaseFriendship, GetIconSpeciesLink, GetNickname, GetSpecies, TryActivateTradeEvolution} from './PokemonUtil';
 
@@ -204,11 +204,11 @@ export class FriendTrade extends Component
 
                     PopUp.fire
                     ({
+                        icon: 'error',
                         title: "Couldn't connect!\nPlease try again later.",
                         cancelButtonText: `Awww`,
                         showConfirmButton: false,
                         showCancelButton: true,
-                        icon: 'error',
                         scrollbarPadding: false,
                     }).then(() =>
                     {
@@ -229,11 +229,11 @@ export class FriendTrade extends Component
 
         PopUp.fire(
         {
+            icon: 'error',
             title: "The connection has been lost!\nThe Friend Trade was cancelled.",
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            icon: 'error',
             scrollbarPadding: false,
         }).then(() =>
         {
@@ -251,11 +251,11 @@ export class FriendTrade extends Component
 
         PopUp.fire(
         {
+            icon: 'error',
             title: "Your partner has disconnected!\nThe Friend Trade was cancelled.",
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            icon: 'error',
             scrollbarPadding: false,
         }).then(() =>
         {
@@ -395,11 +395,11 @@ export class FriendTrade extends Component
 
         PopUp.fire
         ({
+            icon: 'error',
             title: title,
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            icon: 'error',
             scrollbarPadding: false,
         });
     }
@@ -478,11 +478,11 @@ export class FriendTrade extends Component
 
         PopUp.fire(
         {
+            icon: 'error',
             title: "That Pokemon appears invalid and can't be traded!",
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            icon: 'error',
             scrollbarPadding: false,
         });
     }
@@ -543,12 +543,67 @@ export class FriendTrade extends Component
         PopUp.fire
         ({
             title: `${GetNickname(newPokemon)} was received!`,
+            confirmButtonText: "Hooray!",
+            imageUrl: GetIconSpeciesLink(newPokemon),
+            imageAlt: "",
+            scrollbarPadding: false,
+        }).then(() =>
+        {
+            if (CanUseFileHandleAPI())
+            {
+                //Force a save
+                PopUp.fire
+                ({
+                    title: 'Saving, please wait...',
+                    allowOutsideClick: false,
+                    scrollbarPadding: false,
+                    didOpen: async () =>
+                    {
+                        PopUp.showLoading();
+                        let savedSucessfully = await this.getMainPage().downloadSaveFileAndHomeData(BOX_SLOT_LEFT);
+                        if (!savedSucessfully)
+                        {
+                            PopUp.fire
+                            ({
+                                icon: 'error',
+                                title: "Error saving data!",
+                                html: this.getGlobalState().errorMessage[BOX_SLOT_LEFT],
+                                confirmButtonText: "Awww",
+                                allowOutsideClick: false,
+                                scrollbarPadding: false,
+                            }).then(() =>
+                            {
+                                //Force the save to end after this first one
+                                this.getMainPage().wipeErrorMessage();
+                                socket.off("disconnect"); //Prevents disconnected pop-up from showing
+                                socket.close();
+                                this.resetTradeState(); //Prep for a future trade - must go before setGlobalState
+                                this.setGlobalState({inFriendTrade: false}); //Done trading
+                            });
+                        }
+                        else
+                            this.printPromptToContinueTrading(socket);
+                    },
+                });
+            }
+            else //Don't force a save when the user has to download their file each time
+                this.printPromptToContinueTrading(socket);
+        });
+    }
+
+    /**
+     * Prints a pop-up that asks the player if they want to keep on trading.
+     * @param {WebSocket} socket - The socket used to connect to the server.
+     */
+    printPromptToContinueTrading(socket)
+    {
+        PopUp.fire
+        ({
+            title: "Continue trading?",
             confirmButtonText: "Trade Again",
             cancelButtonText: "Done Trading",
             showCancelButton: true,
             allowOutsideClick: false,
-            imageUrl: GetIconSpeciesLink(newPokemon),
-            imageAlt: "",
             scrollbarPadding: false,
         }).then((result) =>
         {

@@ -896,7 +896,7 @@ export default class MainPage extends Component
                 PopUp.fire
                 ({
                     title: "Supported Hacks",
-                    html: `<ul style=\"text-align: left\">${supportedHacks}</ul>`,
+                    html: `<ul style="text-align: left">${supportedHacks}</ul>`,
                 });
             }
         });
@@ -1810,6 +1810,25 @@ export default class MainPage extends Component
     {
         if (this.state.inFriendTrade)
             this.tryResetFriendTradeState();
+        else if (CanUseFileHandleAPI() && this.state.changeWasMade.some((x) => x)) //Some boxes aren't saved
+        {
+            //Force a save
+            PopUp.fire
+            ({
+                icon: 'warning',
+                title: "Your data must be saved before starting a trade.",
+                confirmButtonText: "OK, Save It",
+                cancelButtonText: "I'll Do It Myself",
+                showCancelButton: true,
+                scrollbarPadding: false,
+            }).then((result) =>
+            {
+                if (result.isConfirmed)
+                    this.downloadSaveFileAndHomeData(BOX_SLOT_LEFT);
+            });
+
+            return;
+        }
 
         this.setState({inFriendTrade: !this.state.inFriendTrade});
         this.resetStateForStartingFriendTrade(false);
@@ -2026,6 +2045,7 @@ export default class MainPage extends Component
     /**
      * Downloads any updated data.
      * @param {Number} boxSlot - The box slot that the download button was clicked from (used for error message).
+     * @returns {Boolean} True if the save completed successfully. False if it did not.
      */
     async downloadSaveFileAndHomeData(boxSlot)
     {
@@ -2040,7 +2060,7 @@ export default class MainPage extends Component
             this.setState({savingMessage: `Preparing Cloud data...`});
             encryptedHomeData = await this.getEncryptedHomeFile(serverConnectionErrorMsg, boxSlot);
             if (encryptedHomeData == null)
-                return;
+                return false;
         }
 
         //Get Updated Save File
@@ -2049,7 +2069,7 @@ export default class MainPage extends Component
             this.setState({savingMessage: `Preparing Save data...`});
             dataBuffer = await this.getUpdatedSaveFile(serverConnectionErrorMsg, boxSlot);
             if (dataBuffer == null)
-                return;
+                return false;
         }
 
         //Download the Save Data (done first because more likely to be problematic)
@@ -2057,7 +2077,7 @@ export default class MainPage extends Component
         {
             this.setState({savingMessage: `Downloading Save data...`});
             if (!(await this.downloadSaveFile(dataBuffer, boxSlot))) //Couldn't save because file probably in use
-                return;
+                return false;
         }
 
         //Download the Home Data
@@ -2065,10 +2085,11 @@ export default class MainPage extends Component
         {
             this.setState({savingMessage: `Downloading Cloud data...`});
             if (!(await this.downloadHomeData(encryptedHomeData, boxSlot))) //Couldn't save because file missing
-                return;
+                return false;
         }
 
         this.setState({savingMessage: "", changeWasMade: [false, false]});
+        return true;
     }
 
     /**
@@ -2514,7 +2535,7 @@ export default class MainPage extends Component
                 {this.openGTSButton()}
                 {this.muteSoundsButton()}
             </div>
-        )
+        );
     }
 
     /**
@@ -2551,7 +2572,7 @@ export default class MainPage extends Component
                             finishFriendTrade={this.finishWonderTrade.bind(this)}/>
                 {this.footerButtons()}
             </div>
-        )
+        );
     }
 
     /**
@@ -2580,7 +2601,7 @@ export default class MainPage extends Component
                         size={48}
                         onClick={() => this.setState({editState: (CanUseFileHandleAPI()) ? STATE_CHOOSE_HOME_FOLDER : STATE_ASK_FIRST_TIME})} />
             </div>
-        )
+        );
     }
 
     /**
@@ -2652,7 +2673,7 @@ export default class MainPage extends Component
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 
     /**
@@ -2678,7 +2699,7 @@ export default class MainPage extends Component
                 <h3>Please wait...</h3>
                 <span style={{visibility: "visible"}}>{this.navBarNoButtons()}</span> {/*Used to centre uploading bar*/}
             </div>
-        )
+        );
     }
 
     /**
@@ -2698,7 +2719,7 @@ export default class MainPage extends Component
                            accept=".sav,.srm,.sa1" />
                 </label>
             </div>
-        )
+        );
     }
 
     /**
@@ -2819,7 +2840,7 @@ export default class MainPage extends Component
 
                 {this.printServerConnectionError() /*Won't actually get used here, but needed to fill space*/}
             </div>
-        )
+        );
     }
 
     /**
@@ -2853,7 +2874,7 @@ export default class MainPage extends Component
                     </div>
             }
             </>
-        )
+        );
     }
 
     /**
@@ -2887,7 +2908,7 @@ export default class MainPage extends Component
                     </div>
             }
             </>
-        )
+        );
     }
 
     /**
@@ -2921,7 +2942,7 @@ export default class MainPage extends Component
                         </div>
                 }
             </>
-        )
+        );
     }
 
     printNotSupportedInBrowser()
@@ -3013,7 +3034,7 @@ export default class MainPage extends Component
                 {page}
                 {draggingImg}
             </div>
-        )
+        );
     }
 }
 
@@ -3038,7 +3059,7 @@ function GetInitialPageState()
  * Checks if the user's browser supports the modern FileSystem API.
  * @returns {Boolean} True if the user's browser supports the feature. False otherwise.
  */
-function CanUseFileHandleAPI()
+export function CanUseFileHandleAPI()
 {
     if (DEBUG_ORIGINAL_FILE_METHOD)
         return false;
