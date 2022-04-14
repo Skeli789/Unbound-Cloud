@@ -4,12 +4,12 @@ New Features:
 -GTS
 
 Feature Modifications:
--Force save before and after friend trade (on PC) (for after, wait until all trades are done - also do it after a connection error that occurs after at least one successful trade)
+-Force save before and after friend trade (on PC) (for after do it after each trade)
 -Timeout if friend trade connection has gone on too long
--List supported hacks somewhere
 
 Server Changes:
 -Bad words in nickname should be handled server side so the checksum can be updated
 -Handle no Gerben files (also make Gerben Pokemon not show up on the site)
 -Flags when accessible
+-Special files for randomized saves
 -Change the file signature for Unbound
