@@ -821,8 +821,8 @@ export class FriendTrade extends Component
                         {this.printPokemonOffer(friendPokemon, "Friend's Offer")}
                     </div>
                     <div className="friend-trade-offer-buttons">
-                        {cancelButton}
                         {friendPokemon != null ? acceptTradeButton : ""}
+                        {cancelButton}
                     </div>
                 </div>
             );
