@@ -9,9 +9,9 @@ import io from 'socket.io-client';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-import {BoxView} from './BoxView';
+import {BoxView, HIGHEST_HOME_BOX_NUM} from './BoxView';
 import {config} from "./config";
-import {BOX_HOME, BOX_SLOT_LEFT, CanUseFileHandleAPI} from './MainPage';
+import {CanUseFileHandleAPI, BOX_HOME, BOX_SLOT_LEFT} from './MainPage';
 import {PokemonSummary} from './PokemonSummary';
 import {GetBaseFriendship, GetIconSpeciesLink, GetNickname, GetSpecies, TryActivateTradeEvolution} from './PokemonUtil';
 
@@ -494,7 +494,26 @@ export class FriendTrade extends Component
     {
         var socket = this.getGlobalState().tradeData.socket;
         const finalizeTrade = this.finalizeTrade.bind(this);
+        
+        //First make sure the friend's offer isn't a duplicate
+        let alreadyExistsRet = this.getMainPage().monAlreadyExistsInBoxes(this.state.friendPokemon,
+                                    this.getMainPage().getBoxesByBoxType(BOX_HOME), HIGHEST_HOME_BOX_NUM, -1);
 
+        if (alreadyExistsRet.boxNum >= 0)
+        {
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "You already have what your friend is offering!\nTell your friend to offer something else.",
+                text: `The duplicate is in ${this.getGlobalState().homeTitles[alreadyExistsRet.boxNum]}.`,
+                confirmButtonText: "Awww",
+                scrollbarPadding: false,
+            });
+
+            return;
+        }
+
+        //Then send the acceptance
         if (socket != null)
         {
             socket.emit("acceptedTrade");

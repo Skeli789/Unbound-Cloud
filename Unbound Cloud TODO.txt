@@ -6,7 +6,6 @@ New Features:
 Feature Modifications:
 -Timeout if friend trade connection has gone on too long
 -Saving data should use pop-ups instead of text below the boxes
--Add dupe check into trading (can't confirm offer if you already have a dupe in the cloud boxes)
 
 Server Changes:
 -Bad words in nickname should be handled server side so the checksum can be updated
