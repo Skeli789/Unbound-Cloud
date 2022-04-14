@@ -53,6 +53,8 @@ const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="ht
 const PopUp = withReactContent(Swal);
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
 
+const SUPPORTED_HACKS = ["Unbound", "Magical Altering Gym Menagerie"];
+
 //TODO: Make sure Wonder Trading can't be hijacked
 
 
@@ -519,24 +521,15 @@ export default class MainPage extends Component
     /**
      * Handles the user's choice of a save file.
      * @param {Object} e - The file upload event.
-     * @param {String} errorMsg - An error message to display in the pop-up if the upload fails due to a bad file.
      */
-    async chooseSaveFile(e, errorMsg)
+    async chooseSaveFile(e)
     {
         var file = e.target.files[0];
         if (file == null) //Cancelled the file upload
             return;
 
         if (!(await this.handleChooseSaveFile(file)) && !this.state.serverConnectionError)
-        {
-            PopUp.fire
-            ({
-                icon: "error",
-                title: "Problem With Save File",
-                html: errorMsg,
-                scrollbarPadding: false,
-            });
-        }
+            this.printSaveFileUploadError();
     }
 
     /**
@@ -878,6 +871,37 @@ export default class MainPage extends Component
         });
     }
 
+    /**
+     * Displays an error pop-up after a failed save file upload.
+     */
+    printSaveFileUploadError()
+    {
+        PopUp.fire
+        ({
+            icon: "error",
+            title: "Unacceptable Save File",
+            text: "Make sure it's a save file for a supported ROM Hack and is not corrupted.",
+            confirmButtonText: "Which ROM Hacks are supported?",
+            scrollbarPadding: false,
+        }).then((result) =>
+        {
+            if (result.isConfirmed)
+            {
+                let supportedHacks = [];
+    
+                for (let hack of SUPPORTED_HACKS)
+                    supportedHacks.push(`<li>${hack}</li>`);
+    
+                supportedHacks = supportedHacks.toString().replaceAll(",", "");
+                PopUp.fire
+                ({
+                    title: "Supported Hacks",
+                    html: `<ul style=\"text-align: left\">${supportedHacks}</ul>`,
+                });
+            }
+        });
+    }
+
 
     /**********************************
         Modern File Handle Functions   
@@ -1083,15 +1107,7 @@ export default class MainPage extends Component
         if (await this.uploadSaveFileHandle()) //True if file uploaded successfully
             this.wipeErrorMessage();
         else if (this.state.fileUploadError)
-        {
-            PopUp.fire
-            ({
-                icon: "error",
-                title: "Unacceptable Save File",
-                text: "Make sure it's a save file for a supported hack and is not corrupted.",
-                scrollbarPadding: false,
-            });  
-        }
+            this.printSaveFileUploadError();
     }
 
     /**
@@ -2671,15 +2687,14 @@ export default class MainPage extends Component
      */
     printUploadSaveFile()
     {
-        const error = "Make sure it's a save file for a supported hack and is not corrupted.";
-
         return (
             <div className="main-page-upload-instructions fade-in">
                 <h2>Upload your save file.</h2>
-                <h3>It should be a file ending with .sav, .srm, or .sa1.</h3>
+                <h3>If you don't know where it is, start by looking in the same place as your ROM.</h3>
+                <h3>The save file is a 128 kB .sav, .srm, or .sa1 file that has your ROM's name.</h3>
                 <label className="btn btn-success btn-lg choose-save-file-button">
                     Upload File
-                    <input type="file" hidden onChange={(e) => this.chooseSaveFile(e, error)}
+                    <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)}
                            accept=".sav,.srm,.sa1" />
                 </label>
             </div>
