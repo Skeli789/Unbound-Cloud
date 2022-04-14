@@ -566,44 +566,38 @@ export class FriendTrade extends Component
             imageUrl: GetIconSpeciesLink(newPokemon),
             imageAlt: "",
             scrollbarPadding: false,
-        }).then(() =>
+        }).then(async () =>
         {
             if (CanUseFileHandleAPI())
             {
                 //Force a save
-                PopUp.fire
-                ({
-                    title: 'Saving, please wait...',
-                    allowOutsideClick: false,
-                    scrollbarPadding: false,
-                    didOpen: async () =>
-                    {
-                        PopUp.showLoading();
-                        let savedSucessfully = await this.getMainPage().downloadSaveFileAndHomeData(BOX_SLOT_LEFT);
-                        if (!savedSucessfully)
+                let savedSucessfully = await this.getMainPage().downloadSaveFileAndHomeData();
+                if (!savedSucessfully)
+                {
+                    PopUp.fire
+                    ({
+                        icon: 'error',
+                        title: "Error saving data!",
+                        html: this.getGlobalState().savingMessage,
+                        confirmButtonText: "Awww",
+                        allowOutsideClick: false,
+                        scrollbarPadding: false,
+                        didOpen: () =>
                         {
-                            PopUp.fire
-                            ({
-                                icon: 'error',
-                                title: "Error saving data!",
-                                html: this.getGlobalState().errorMessage[BOX_SLOT_LEFT],
-                                confirmButtonText: "Awww",
-                                allowOutsideClick: false,
-                                scrollbarPadding: false,
-                            }).then(() =>
-                            {
-                                //Force the save to end after this first one
-                                this.getMainPage().wipeErrorMessage();
-                                socket.off("disconnect"); //Prevents disconnected pop-up from showing
-                                socket.close();
-                                this.resetTradeState(); //Prep for a future trade - must go before setGlobalState
-                                this.setGlobalState({inFriendTrade: false}); //Done trading
-                            });
+                            PopUp.hideLoading(); //From previous pop-ups
                         }
-                        else
-                            this.printPromptToContinueTrading(socket);
-                    },
-                });
+                    }).then(() =>
+                    {
+                        //Force the save to end after this first one
+                        this.getMainPage().wipeErrorMessage();
+                        socket.off("disconnect"); //Prevents disconnected pop-up from showing
+                        socket.close();
+                        this.resetTradeState(); //Prep for a future trade - must go before setGlobalState
+                        this.setGlobalState({inFriendTrade: false}); //Done trading
+                    });
+                }
+                else
+                    this.printPromptToContinueTrading(socket);
             }
             else //Don't force a save when the user has to download their file each time
                 this.printPromptToContinueTrading(socket);

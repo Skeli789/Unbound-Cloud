@@ -1824,7 +1824,7 @@ export default class MainPage extends Component
             }).then((result) =>
             {
                 if (result.isConfirmed)
-                    this.downloadSaveFileAndHomeData(BOX_SLOT_LEFT);
+                    this.saveAndExit();
             });
 
             return;
@@ -2044,10 +2044,9 @@ export default class MainPage extends Component
 
     /**
      * Downloads any updated data.
-     * @param {Number} boxSlot - The box slot that the download button was clicked from (used for error message).
      * @returns {Boolean} True if the save completed successfully. False if it did not.
      */
-    async downloadSaveFileAndHomeData(boxSlot)
+    async downloadSaveFileAndHomeData()
     {
         var encryptedHomeData = null;
         var dataBuffer = null;
@@ -2057,8 +2056,8 @@ export default class MainPage extends Component
         //Get Encrypted Home File
         if (this.state.changeWasMade[BOX_HOME]) //Don't waste time if there's no updated version
         {
-            this.setState({savingMessage: `Preparing Cloud data...`});
-            encryptedHomeData = await this.getEncryptedHomeFile(serverConnectionErrorMsg, boxSlot);
+            this.printSavingPopUp("Preparing Cloud data...");
+            encryptedHomeData = await this.getEncryptedHomeFile(serverConnectionErrorMsg);
             if (encryptedHomeData == null)
                 return false;
         }
@@ -2066,8 +2065,8 @@ export default class MainPage extends Component
         //Get Updated Save File
         if (this.state.changeWasMade[BOX_SAVE]) //Don't waste time if there's no updated version
         {
-            this.setState({savingMessage: `Preparing Save data...`});
-            dataBuffer = await this.getUpdatedSaveFile(serverConnectionErrorMsg, boxSlot);
+            this.printSavingPopUp("Preparing Save data...");
+            dataBuffer = await this.getUpdatedSaveFile(serverConnectionErrorMsg);
             if (dataBuffer == null)
                 return false;
         }
@@ -2075,16 +2074,16 @@ export default class MainPage extends Component
         //Download the Save Data (done first because more likely to be problematic)
         if (this.state.changeWasMade[BOX_SAVE])
         {
-            this.setState({savingMessage: `Downloading Save data...`});
-            if (!(await this.downloadSaveFile(dataBuffer, boxSlot))) //Couldn't save because file probably in use
+            this.printSavingPopUp("Downloading Save data...");
+            if (!(await this.downloadSaveFile(dataBuffer))) //Couldn't save because file probably in use
                 return false;
         }
 
         //Download the Home Data
         if (this.state.changeWasMade[BOX_HOME])
         {
-            this.setState({savingMessage: `Downloading Cloud data...`});
-            if (!(await this.downloadHomeData(encryptedHomeData, boxSlot))) //Couldn't save because file missing
+            this.printSavingPopUp("Downloading Cloud data...");
+            if (!(await this.downloadHomeData(encryptedHomeData))) //Couldn't save because file missing
                 return false;
         }
 
@@ -2093,16 +2092,32 @@ export default class MainPage extends Component
     }
 
     /**
+     * Displays a pop-up while saving is in progress.
+     * @param {String} text - The text to display in the pop-up.
+     */
+    printSavingPopUp(text)
+    {
+        PopUp.fire
+        ({
+            title: text,
+            allowOutsideClick: false,
+            scrollbarPadding: false,
+            didOpen: () =>
+            {
+                PopUp.showLoading();
+            }
+        });
+    }
+
+    /**
      * Gets the encrypted version of the Home boxes from the server.
      * @param {String} serverConnectionErrorMsg - The message to display if the server couldn't be connected to.
-     * @param {Number} boxSlot - The box slot to display any error messaged on.
      * @returns {String} The encrypted Home data text.
      */
-    async getEncryptedHomeFile(serverConnectionErrorMsg, boxSlot)
+    async getEncryptedHomeFile(serverConnectionErrorMsg)
     {
         var res;
         var homeRoute = `${config.dev_server}/encryptHomeData`;
-        var errorMessage = this.state.errorMessage;
         var formData = new FormData(); //formData contains the home data split into four parts to guarantee it'll all be sent
         var homeData = JSON.stringify
         ({
@@ -2119,9 +2134,9 @@ export default class MainPage extends Component
         }
         catch (error)
         {
-            errorMessage[boxSlot] = (error.message === "Network Error") ? serverConnectionErrorMsg : error.response.data;
-            console.log(`Error saving Home data: ${errorMessage[boxSlot]}`);
-            this.setState({savingMessage: "", errorMessage: errorMessage});
+            let errorMsg = (error.message === "Network Error") ? serverConnectionErrorMsg : error.response.data;
+            console.log(`Error saving Home data: ${errorMsg}`);
+            this.setState({savingMessage: errorMsg});
             return null;
         }
 
@@ -2131,14 +2146,12 @@ export default class MainPage extends Component
     /**
      * Gets the updated save file data after processing on the server.
      * @param {String} serverConnectionErrorMsg - The message to display if the server couldn't be connected to.
-     * @param {Number} boxSlot - The box slot to display any error messaged on.
      * @returns {Buffer} The data buffer for the updated save file.
      */
-    async getUpdatedSaveFile(serverConnectionErrorMsg, boxSlot)
+    async getUpdatedSaveFile(serverConnectionErrorMsg)
     {
         var res, originalSaveContents, formData;
         var saveRoute = `${config.dev_server}/getUpdatedSaveFile`;
-        var errorMessage = this.state.errorMessage;
 
         formData = new FormData(); //formData contains the data to send to the server
         formData.append("newBoxes", JSON.stringify(this.state.saveBoxes));
@@ -2156,8 +2169,8 @@ export default class MainPage extends Component
             catch (e)
             {
                 console.log(`Error loading the save file: ${e}`);
-                errorMessage[boxSlot] = "Save file was not found.";
-                this.setState({savingMessage: "", errorMessage: errorMessage});
+                let errorMsg = "Save file was not found.";
+                this.setState({savingMessage: errorMsg});
                 return null;
             }
 
@@ -2170,8 +2183,8 @@ export default class MainPage extends Component
             if (!equals(typedArray, this.state.saveFileData["data"]))
             {
                 //Save file has been modified and can't be overwritten
-                errorMessage[boxSlot] = <span>Saving can't be completed.<br/>The save file has been used recently.<br/>Please reload the page.</span>;
-                this.setState({savingMessage: "", errorMessage: errorMessage});
+                let errorMsg = <span>Saving can't be completed.<br/>The save file has been used recently.<br/>Please reload the page.</span>;
+                this.setState({savingMessage: errorMsg});
                 return null;
             }
         }
@@ -2183,9 +2196,9 @@ export default class MainPage extends Component
         }
         catch (error)
         {
-            errorMessage[boxSlot] = (error.message === "Network Error") ? serverConnectionErrorMsg : error.response.data;
-            console.log(`Error saving Save data: ${errorMessage[boxSlot]}`);
-            this.setState({savingMessage: "", errorMessage: errorMessage});
+            let errorMsg = (error.message === "Network Error") ? serverConnectionErrorMsg : error.response.data;
+            console.log(`Error saving Save data: ${errorMsg}`);
+            this.setState({savingMessage: errorMsg});
             return null;
         }
 
@@ -2198,10 +2211,9 @@ export default class MainPage extends Component
      * @param {Buffer} dataBuffer - The data buffer for the updated save file.
      * @returns {Boolean} True if the download completed successfully. False if not.
      */
-    async downloadSaveFile(dataBuffer, boxSlot)
+    async downloadSaveFile(dataBuffer)
     {
         var saveFileName = (this.state.selectedSaveFile == null) ? "savefile.sav" : this.state.selectedSaveFile.name; //Same name as original file
-        var errorMessage = this.state.errorMessage;
         var output = [];
 
         //Convert to downloadable format
@@ -2230,9 +2242,8 @@ export default class MainPage extends Component
                 {
                     //Cloud file is missing so cancel the save altogether
                     console.log(`Cancelling saving save file since Cloud file was not found: ${e}`);
-                    errorMessage[boxSlot] = "Cloud file was not found.";
-                    this.setState({savingMessage: "", errorMessage: errorMessage});
-                    console.log("Returning false");
+                    let errorMsg = "Cloud file was not found.";
+                    this.setState({savingMessage: errorMsg});
                     return false;
                 }
             }
@@ -2246,8 +2257,8 @@ export default class MainPage extends Component
             catch (e)
             {
                 console.log(`Error saving Save file: ${e}`);
-                errorMessage[boxSlot] = <span>Save file is being used elsewhere.<br/>Close open emulators before trying again.</span>;
-                this.setState({savingMessage: "", errorMessage: errorMessage});
+                let errorMsg = <span>Save file is being used elsewhere.<br/>Close open emulators before trying again.</span>;
+                this.setState({savingMessage: errorMsg});
                 return false;
             }
         }
@@ -2269,9 +2280,8 @@ export default class MainPage extends Component
      * @param {String} encryptedHomeData - The encrypted Home data text.
      * @returns {Boolean} True if the download completed successfully. False if not.
      */
-    async downloadHomeData(encryptedHomeData, boxSlot)
+    async downloadHomeData(encryptedHomeData)
     {
-        var errorMessage = this.state.errorMessage;
         var fileContents = new Blob([encryptedHomeData], {type: 'application/octet-stream'});
 
         if (this.state.saveFileHandle != null)
@@ -2296,8 +2306,8 @@ export default class MainPage extends Component
             catch (e)
             {
                 console.log(`Error saving Cloud file: ${e}`);
-                errorMessage[boxSlot] = "Cloud file was not found.";
-                this.setState({savingMessage: "", errorMessage: errorMessage});
+                let errorMsg = "Cloud file was not found.";
+                this.setState({savingMessage: errorMsg});
                 return false;
             }
         }
@@ -2336,11 +2346,31 @@ export default class MainPage extends Component
 
     /**
      * Handles downloading the updated data for one of the box slots.
-     * @param {Number} boxSlot - The box slot to save and download.
      */
-    async saveAndExit(boxSlot)
+    async saveAndExit()
     {
-        await this.downloadSaveFileAndHomeData(boxSlot);
+        if (!(await this.downloadSaveFileAndHomeData()))
+        {
+            PopUp.fire
+            ({
+                icon: 'error',
+                title: "Error saving data!",
+                html: this.state.savingMessage,
+                confirmButtonText: "Awww",
+                scrollbarPadding: false,
+                didOpen: () =>
+                {
+                    PopUp.hideLoading(); //From previous pop-ups
+                }
+            }).then(() =>
+            {
+                //Force the save to end after this first one
+                this.getMainPage().wipeErrorMessage();
+                this.setState({savingMessage: ""});
+            });      
+        }
+        else
+            PopUp.close();
     }
 
 
@@ -2463,8 +2493,8 @@ export default class MainPage extends Component
         var size = 42;
         const tooltip = props => (<Tooltip {...props}>Friend Trade</Tooltip>);
 
-        if (this.state.savingMessage !== "")
-            return ""; //Can't use while saving
+        // if (this.state.savingMessage !== "")
+        //     return ""; //Can't use while saving
 
         return (
             <OverlayTrigger placement="top" overlay={tooltip}>
@@ -2485,8 +2515,8 @@ export default class MainPage extends Component
     {
         const tooltip = props => (<Tooltip {...props}>Global Trade Station</Tooltip>);
 
-        if (this.state.savingMessage !== "")
-            return ""; //Can't use while saving
+        // if (this.state.savingMessage !== "")
+        //     return ""; //Can't use while saving
 
         return (
             <Button size="lg" className="footer-button" style={{display: "contents"}} //Style needed to properly position svg

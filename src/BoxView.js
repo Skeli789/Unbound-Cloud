@@ -176,7 +176,7 @@ export class BoxView extends Component
      */
     isSaving()
     {
-        return this.getParentState().savingMessage !== "";
+        return false; //Pop-Up should now prevent any modifications during saving
     }
 
     /**
@@ -1582,7 +1582,7 @@ export class BoxView extends Component
                 { /*Save Icon*/
                     this.getParentState().changeWasMade[this.state.boxType] && !this.isTrading() ?
                         <OverlayTrigger placement="bottom" overlay={saveTooltip}>
-                            <AiOutlineSave size={36} className="box-lower-icon" onClick={() => this.state.parent.saveAndExit(this.state.boxSlot)}/>
+                            <AiOutlineSave size={36} className="box-lower-icon" onClick={() => this.state.parent.saveAndExit()}/>
                         </OverlayTrigger>
                     :
                         ""
@@ -1632,12 +1632,7 @@ export class BoxView extends Component
         if (this.state.fixingLivingDex)
             lowerIcons = <p className="lower-icon-message box-lower-icons">Please Wait...</p>
         else if (this.isSaving())
-        {
-            if (this.getParentState().changeWasMade[this.state.boxType])
-                lowerIcons = <p className="lower-icon-message box-lower-icons">{this.getParentState().savingMessage}</p>
-            else
-                lowerIcons = <p/>; //Show no options
-        }
+            lowerIcons = <p/>; //Show no options
 
         //Actual box view setup
         return (
