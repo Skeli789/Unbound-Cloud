@@ -44,7 +44,7 @@ export class PokemonSummary extends Component
             areBoxViewsVertical: props.areBoxViewsVertical,
             inTrade: props.inTrade,
             gameId: props.gameId,
-            viewingEVsIVs: false,
+            viewingEVsIVs: props.viewingEVsIVs,
         };
 
         this.setGlobalState = props.setGlobalState;
@@ -65,6 +65,17 @@ export class PokemonSummary extends Component
             changeWasMade[this.state.boxType] = true;
             this.setGlobalState({changeWasMade: changeWasMade});
         }
+    }
+
+    /**
+     * Changes whether are not the real stats or EV/IV values are shown on the summary.
+     */
+    changeStatDisplay()
+    {
+        this.setState({viewingEVsIVs: !this.state.viewingEVsIVs}, () =>
+        {
+            this.setGlobalState({viewingSummaryEVsIVs: this.state.viewingEVsIVs}); //Update permanently until user clicks again
+        });
     }
 
     /**
@@ -363,7 +374,7 @@ export class PokemonSummary extends Component
         //Try put tooltip over EV/IV container
         var statValuesContainer =
             <div className="summary-stat-values-container"
-                 onClick={() => this.setState({viewingEVsIVs: !this.state.viewingEVsIVs})}>
+                 onClick={this.changeStatDisplay.bind(this)}>
                 {printableStats}
             </div>    
 

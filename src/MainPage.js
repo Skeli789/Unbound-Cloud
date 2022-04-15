@@ -121,6 +121,7 @@ export default class MainPage extends Component
             muted: ("muted" in localStorage && localStorage.muted === "true") ? true : false,
             inFriendTrade: false,
             tradeData: null,
+            viewingSummaryEVsIVs: false,
         };
 
         this.updateState = this.updateState.bind(this);
