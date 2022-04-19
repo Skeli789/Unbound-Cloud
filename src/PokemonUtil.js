@@ -965,6 +965,9 @@ export function IsShiny(pokemon)
 {
     let dataMember = "shiny";
 
+    if (IsEgg(pokemon))
+        return false;
+
     if (IsValidPokemon(pokemon) && dataMember in pokemon)
     {
         let shiny = pokemon[dataMember];
@@ -1130,6 +1133,28 @@ export function GetVisibleOTId(pokemon)
     }
 
     return 0;
+}
+
+/**
+ * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {Boolean} True if the Pokemon was generated with Gerban's EggLocke tool. False if it wasn't.
+ */
+export function HasEggLockeOT(pokemon)
+{
+    let dataMember = "otId";
+
+    if (IsValidPokemon(pokemon) && dataMember in pokemon)
+    {
+        let otId = pokemon[dataMember];
+
+        if (typeof(otId) === "number")
+        {
+            if (otId !== 0x3CEAB505)
+                return false;
+        }
+    }
+
+    return GetOTName(pokemon) === "Egglock";
 }
 
 /**

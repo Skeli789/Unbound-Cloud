@@ -3,7 +3,7 @@ from typing import List, Tuple, Dict
 from Defines import Defines
 from PokemonProcessing import PokemonProcessing, CFRUCompressedPokemonSize
 from SaveBlocks import BlockDataSize
-from Util import BytesToString
+from Util import BytesToInt, BytesToString
 
 VanillaBoxSaveSections = list(range(5, 13 + 1))
 VanillaFRBoxCount = 14
@@ -17,8 +17,19 @@ SeenFlagsOffset = 0x310
 CaughtFlagsOffset = 0x38D
 CaughtFlagsEndOffset = 0x40A
 
+TrainerDetailsSaveBlock = 0
+TrainerNameLength = 7
+TrainerNameOffset = 0x0
+TrainerNameEndOffset = TrainerNameOffset + TrainerNameLength
+TrainerIdLength = 4
+TrainerIdOffset = 0xA
+TrainerIdEndOffset = TrainerIdOffset + TrainerIdLength
+
 BoxNameLength = 9
 MonsPerBox = 30
+
+EgglockeTrainerId = 0x3CEAB505  # Set by Gerben's tool
+EgglockeTrainerName = "Egglock"
 
 StartingBoxMemoryOffsets = {
     0: 0xB0,
@@ -105,6 +116,24 @@ class SaveBlockProcessing:
   
         return seenFlags, caughtFlags
 
+    @staticmethod
+    def LoadCFRUTrainerDetails(saveBlocks: Dict[int, List[int]]) -> Tuple[str, int]:
+        trainerName, trainerId = "None", 0
+
+        if TrainerDetailsSaveBlock in saveBlocks:
+            trainerName = BytesToString(saveBlocks[TrainerDetailsSaveBlock][TrainerNameOffset:TrainerNameEndOffset])
+            trainerId = BytesToInt(saveBlocks[TrainerDetailsSaveBlock][TrainerIdOffset:TrainerIdEndOffset])
+
+        return trainerName, trainerId
+
+    @staticmethod
+    def IsGerbenFile(saveBlocks: Dict[int, List[int]]) -> bool:
+        trainerName, trainerId = SaveBlockProcessing.LoadCFRUTrainerDetails(saveBlocks)
+        return trainerName == EgglockeTrainerName and trainerId == EgglockeTrainerId
+
+    @staticmethod
+    def IsRandomizedSave(saveBlocks: Dict[int, List[int]]) -> bool:
+        return SaveBlockProcessing.IsGerbenFile(saveBlocks)
 
     ### Code for updating save files ###
     @staticmethod

@@ -5,9 +5,10 @@ New Features:
 
 Feature Modifications:
 -Timeout if friend trade connection has gone on too long
+-No Wonder Trading while Friend Trade is in progress? Or maybe remove the no save rule why a Wonder Trade is in progress?
+-Typing should focus on filter field in box list page
 
 Server Changes:
--Handle no Gerben files (also make Gerben Pokemon not show up on the site)
 -Flags when accessible
--Special files for randomized saves
+-Special files for randomized saves (Trading should never connect between the two)
 -Change the file signature for Unbound
