@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
-const {gTestPokemon, gTestPokemon2, gTestPokemonStringified} = require('./data.js');
 const util = require('../util');
+const {gTestPokemon, gTestPokemonStringified} = require('./data');
+const gSpeciesNames = require('../src/data/SpeciesNames.json');
 
 
 describe("Test PythonJSONStringify", () =>
@@ -32,78 +33,84 @@ describe("Test PythonJSONStringify", () =>
     it (`should convert a whole pokemon`, () =>
     {
         let stringified = util.PythonJSONStringify(gTestPokemon);
-        expect(stringified).to.equal(gTestPokemonStringified);
+        expect(stringified).to.eql(gTestPokemonStringified);
     });
 });
 
 
-describe("Test CalculateMonChecksum", () =>
+describe("Test BadWordInText", () =>
 {
-    it(`should be ${gTestPokemon.checksum} for gTestPokemon`, () =>
+    it (`should be true for whole word "faggot"`, () =>
     {
-        let checksum = util.CalculateMonChecksum(gTestPokemon);
-        expect(checksum).to.equal(gTestPokemon.checksum);
+        let word = "faggot";
+        expect(util.BadWordInText(word)).to.be.true;
     });
 
-    it(`should be ${gTestPokemon2.checksum} for gTestPokemon2`, () =>
+    it (`should be true for whole word "FAGGOT"`, () =>
     {
-        let checksum = util.CalculateMonChecksum(gTestPokemon2);
-        expect(checksum).to.equal(gTestPokemon2.checksum);
+        let word = "FAGGOT";
+        expect(util.BadWordInText(word)).to.be.true;
     });
 
-    it(`should be unchanged with modified markings`, () =>
+    it (`should be true for contained word "afaggot"`, () =>
     {
-        let pokemon = Object.assign({}, gTestPokemon);
-        pokemon.markings[0] = true;
-        let checksum = util.CalculateMonChecksum(pokemon);
-        expect(checksum).to.equal(gTestPokemon.checksum);
+        let word = "afaggot";
+        expect(util.BadWordInText(word)).to.be.true;
     });
 
-    it(`should be unchanged with a modified checksum`, () =>
+    it (`should be true for contained word "AFAGGOT"`, () =>
     {
-        let pokemon = Object.assign({}, gTestPokemon2);
-        pokemon.checksum = "blash";
-        let checksum = util.CalculateMonChecksum(pokemon);
-        expect(checksum).to.equal(gTestPokemon2.checksum);
+        let word = "afaggot";
+        expect(util.BadWordInText(word)).to.be.true;
     });
 
-    it(`should be the same for similar objects`, () =>
+    it (`should be false for contained word "fag"`, () =>
     {
-        let pokemon1 = {"species": "SPECIES_BULBASAUR", "personality": 12345678}
-        let pokemon2 = {"personality": 12345678, "species": "SPECIES_BULBASAUR"}
-        let checksum1 = util.CalculateMonChecksum(pokemon1);
-        let checksum2 = util.CalculateMonChecksum(pokemon2);
-        expect(checksum1).to.equal(checksum2);
+        let word = "Cofagrigus";
+        expect(util.BadWordInText(word)).to.be.false;
+    });
+
+    it (`should be false for contained word "FAG"`, () =>
+    {
+        let word = "COFAGRIGUS";
+        expect(util.BadWordInText(word)).to.be.false;
+    });
+
+    it (`should be false for every species name`, () =>
+    {
+        for (let species of Object.keys(gSpeciesNames))
+            expect(util.BadWordInText(gSpeciesNames[species])).to.be.false;
     });
 });
 
 
-describe("Test ValidatePokemon", () =>
+describe("Test GetSpeciesName", () =>
 {
-    it(`should be valid for gTestPokemon`, () =>
+    it (`should be "Bulbasaur" for "SPECIES_BULBASAUR"`, () =>
     {
-        expect(util.ValidatePokemon(gTestPokemon, false)).to.be.true;
+        let species = "SPECIES_BULBASAUR";
+        let expectedName = "Bulbasaur";
+        expect(util.GetSpeciesName(species)).to.equal(expectedName);
     });
 
-    it(`should be valid for gTestPokemon2`, () =>
+    it (`should be "Enamorus" for "SPECIES_ENAMORUS_THERIAN"`, () =>
     {
-        expect(util.ValidatePokemon(gTestPokemon2, false)).to.be.true;
+        let species = "SPECIES_ENAMORUS_THERIAN";
+        let expectedName = "Enamorus";
+        expect(util.GetSpeciesName(species)).to.equal(expectedName);
     });
 
-    it(`should not be valid for a missing checksum`, () =>
+    it (`should be "Unknown Species" for "SPECIES_FAKE"`, () =>
     {
-        let pokemon = Object.assign({}, gTestPokemon);
-        delete pokemon.checksum;
-        expect(util.ValidatePokemon(pokemon, false)).to.be.false;
+        let species = "SPECIES_FAKE";
+        let expectedName = "Unknown Species";
+        expect(util.GetSpeciesName(species)).to.equal(expectedName);
     });
 
-    it(`should be valid for null Pokemon`, () =>
+    it (`should be "Unknown Species" for 5`, () =>
     {
-        expect(util.ValidatePokemon(null, true)).to.be.true;
-    });
-
-    it(`should be invalid for null Pokemon`, () =>
-    {
-        expect(util.ValidatePokemon(null, false)).to.be.false;
+        let species = 5;
+        let expectedName = "Unknown Species";
+        expect(util.GetSpeciesName(species)).to.equal(expectedName);
     });
 });

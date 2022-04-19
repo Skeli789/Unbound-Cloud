@@ -2,13 +2,11 @@
  * Various utility functions related to Pokemon data.
  */
 
-import BaseFriendship from "./data/BaseFriendship.json";
 import ItemNames from "./data/ItemNames.json";
 import MoveData from "./data/MoveData.json";
 import SpeciesNames from "./data/SpeciesNames.json";
 import SpeciesToDexNum from "./data/SpeciesToDexNum.json";
 import ExperienceCurves from "./data/ExperienceCurves.json";
-import TradeEvolutions from "./data/TradeEvolutions.json";
 import UnboundShinies from "./data/UnboundShinies.json";
 import CFRUBaseStats from "./data/cfru/BaseStats.json";
 import UnboundBaseStats from "./data/unbound/BaseStats.json";
@@ -916,24 +914,14 @@ export function GetFriendship(pokemon)
 
 /**
  * @param {Pokemon} pokemon - The Pokemon to process.
- * @returns {Number} The base friendship value for Pokemon of the same species. 
- */
-export function GetBaseFriendship(pokemon)
-{
-    var species = GetSpecies(pokemon);
-    if (species in BaseFriendship)
-        return BaseFriendship[species];
-
-    return 50; //Default value
-}
-
-/**
- * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {Boolean} True if the Pokemon is in an Egg. False if it's not.
  */
 export function IsEgg(pokemon)
 {
     let dataMember = "isEgg";
+
+    if (IsBadEgg(pokemon))
+        return true;
 
     if (IsValidPokemon(pokemon) && dataMember in pokemon)
     {
@@ -1072,26 +1060,6 @@ export function GetNickname(pokemon)
 }
 
 /**
- * Changes a Pokemon's nickname
- * @param {Pokemon} pokemon - The Pokemon to process.
- * @param {String} newNickname - The new nickname to give the Pokemon.
- */
-export function SetPokemonNickname(pokemon, newNickname)
-{
-    if (IsValidPokemon(pokemon))
-        pokemon.nickname = newNickname.substring(0, 10); //Max 10 characters
-}
-
-/**
- * Changes a Pokemon's nickname to match its species name.
- * @param {Pokemon} pokemon - The Pokemon to process.
- */
-export function GivePokemonSpeciesName(pokemon)
-{
-    SetPokemonNickname(pokemon, GetSpeciesName(GetSpecies(pokemon)))
-}
-
-/**
  * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {String} The Pokemon's original Trainer's name.
  */
@@ -1108,17 +1076,6 @@ export function GetOTName(pokemon)
     }
 
     return "Unknown";
-}
-
-/**
- * Changes a Pokemon's original Trainer name.
- * @param {Pokemon} pokemon - The Pokemon to process.
- * @param {String} newOTName - The new name to give for the original Trainer.
- */
-export function SetOTName(pokemon, newOTName)
-{
-    if (IsValidPokemon(pokemon))
-        pokemon.otName = newOTName.substring(0, 7); //Max 7 characters
 }
 
 /**
@@ -1638,54 +1595,4 @@ export function GetIconSpeciesLinkBySpecies(species, isShiny, isFromUnbound)
 export function GetIconSpeciesLink(pokemon)
 {
     return GetIconSpeciesLinkBySpecies(GetMonVisibleSpecies(pokemon), IsShiny(pokemon), GetMetGame(pokemon) === "unbound");
-}
-
-/**
- * Tries to evolve a Pokemon after it was traded.
- * @param {Pokemon} pokemon - The Pokemon to evolve.
- * @param {String} tradedWithSpecies - The original species it was traded with.
- */
-export function TryActivateTradeEvolution(pokemon, tradedWithSpecies)
-{
-    var newSpecies = "";
-    var monSpecies = GetSpecies(pokemon);
-    var removeItemPostEvo = false;
-
-    for (let species of Object.keys(TradeEvolutions))
-    {
-        if (species === monSpecies)
-        {
-            for (let method of TradeEvolutions[species])
-            {
-                if ("item" in method)
-                {
-                    if (GetItem(pokemon) !== method.item) //Not holding required item
-                        continue;
-                    
-                    removeItemPostEvo = true;
-                }
-                else if ("withSpecies" in method)
-                {
-                    if (tradedWithSpecies !== method.withSpecies) //Not traded with the correct species for evolution
-                        continue;
-                }
-
-                newSpecies = method.toSpecies;
-                break;
-            }
-
-            break;
-        }
-    }
-
-    if (newSpecies !== "") //Pokemon evolves via trading it
-    {
-        pokemon.species = newSpecies;
-
-        if (GetNickname(pokemon) === GetSpeciesName(monSpecies)) //Using default name
-            GivePokemonSpeciesName(pokemon); //Give evolution's default name
-
-        if (removeItemPostEvo)
-            pokemon.item = "ITEM_NONE";
-    }
 }

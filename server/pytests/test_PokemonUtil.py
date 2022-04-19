@@ -338,6 +338,12 @@ class TestCalculateChecksum:
         pokemon["markings"] = 25
         assert PokemonUtil.CalculateChecksum(pokemon) == checksum
     
+    def testWonderTradeTimestampNotIncludedInChecksum(self):
+        pokemon = TEST_POKEMON.copy()
+        checksum = PokemonUtil.CalculateChecksum(pokemon)
+        pokemon["wonderTradeTimestamp"] = 25
+        assert PokemonUtil.CalculateChecksum(pokemon) == checksum
+
     def testSimilarDicts(self):
         pokemon1 = {"species": "SPECIES_BULBASAUR", "personality": 12345678}
         pokemon2 = {"personality": 12345678, "species": "SPECIES_BULBASAUR"}

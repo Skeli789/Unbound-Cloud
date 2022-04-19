@@ -9,10 +9,8 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
-import {GetBaseFriendship, GetIconSpeciesLink, GetNickname, GetOTName, GetSpecies, GivePokemonSpeciesName,
-        IsEgg, IsValidPokemon, SetOTName, TryActivateTradeEvolution} from "./PokemonUtil";
+import {GetIconSpeciesLink, GetNickname, GetSpecies, IsEgg, IsValidPokemon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos} from './Util';
-import BannedWords from "./data/BannedWords.json"
 
 import {CgExport, CgImport} from "react-icons/cg";
 import SfxTradeComplete from './audio/TradeComplete.mp3';
@@ -74,37 +72,6 @@ export class WonderTrade extends Component
     }
 
     /**
-     * Checks if a piece of text has a bad word in it.
-     * @param {String} textToCheck - The text to check for the bad word.
-     * @returns {Boolean} True if the text contains a bad word. False otherwise.
-     */
-    badWordInText(textToCheck)
-    {
-        textToCheck = textToCheck.toUpperCase();
-        var textToCheckWords = textToCheck.split(" ");
-
-        for (let bannedWord of BannedWords)
-        {
-            if (bannedWord.contains) //The banned word cannot be present in the name at all
-            {
-                let allLetters = textToCheck.replace(" ", "").replace("-", "").replace(".", "");
-                if (allLetters.includes(bannedWord.text))
-                    return true; //Includes a banned string
-            }
-            else //Entire word matches
-            {
-                for (let text of textToCheckWords)
-                {
-                    if (text === bannedWord.text)
-                        return true; //Has a bad word entirely in its name
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Checks if the selected Pokemon is eligible to be Wonder Traded.
      * @returns {Boolean} - True if the selected Pokemon can be Wonder Traded. False otherwise.
      */
@@ -145,29 +112,6 @@ export class WonderTrade extends Component
     needToWaitForWonderTrade()
     {
         return this.getTimeToNextWonderTrade() !== 0;
-    }
-
-    /**
-     * Gives the received Pokemon its species name as a nickname if its current nickname has a bad word in it.
-     * @param {Pokemon} newPokemon - The Pokemmon received in the trade.
-     */
-    replaceNicknameWithSpeciesNameIfNeeded(newPokemon)
-    {
-        if (this.badWordInText(GetNickname(newPokemon)))
-            GivePokemonSpeciesName(newPokemon);
-    }
-
-    /**
-     * Gives the received Pokemon a generic OT name as a nickname if its current OT name has a bad word in it.
-     * @param {Pokemon} newPokemon - The Pokemmon received in the trade.
-     */
-    replaceOTNameWithGenericNameIfNeeded(newPokemon)
-    {
-        if (this.badWordInText(GetOTName(newPokemon)))
-        {
-            let replacementOTNames = ["Red", "Blue", "Green", "Yellow", "Gold", "Silver", "Crystal", "Ruby", "Emerald", "Diamond", "Pearl", "Black", "White"];
-            SetOTName(newPokemon, replacementOTNames[Math.floor(Math.random() * replacementOTNames.length)]);
-        }
     }
 
     /**
@@ -385,12 +329,8 @@ export class WonderTrade extends Component
     endWonderTrade(thisObject, newPokemon, tradedSpecies, socket)
     {
         socket.close();
-        console.log(`Receieved ${GetNickname(newPokemon)}`);
+        console.log(`Received ${GetNickname(newPokemon)}`);
         newPokemon.wonderTradeTimestamp = Date.now(); //Prevent this Pokemon from instantly being sent back
-        newPokemon.friendship = GetBaseFriendship(newPokemon); //Reset after being traded
-        TryActivateTradeEvolution(newPokemon, tradedSpecies);
-        this.replaceNicknameWithSpeciesNameIfNeeded(newPokemon);
-        this.replaceOTNameWithGenericNameIfNeeded(newPokemon);
         thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
         var backupTitle = document.title;
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
