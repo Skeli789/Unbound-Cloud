@@ -10,7 +10,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
 import {GetIconSpeciesLink, GetNickname, GetSpecies, IsEgg, IsValidPokemon} from "./PokemonUtil";
-import {CreateSingleBlankSelectedPos} from './Util';
+import {CreateSingleBlankSelectedPos, GetSpeciesName} from './Util';
 
 import {CgExport, CgImport} from "react-icons/cg";
 import SfxTradeComplete from './audio/TradeComplete.mp3';
@@ -338,9 +338,10 @@ export class WonderTrade extends Component
         if (!this.getGlobalState().muted)
             tradeCompleteSound.play();
 
+        var newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon));
         PopUp.fire
         ({
-            title: `${GetNickname(newPokemon)} has just arrived!\nIt was placed in "${this.state.boxName}".`,
+            title: `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} has just arrived!\nIt was placed in "${this.state.boxName}".`,
             confirmButtonText: `Hooray!`,
             imageUrl: GetIconSpeciesLink(newPokemon),
             imageAlt: "",
