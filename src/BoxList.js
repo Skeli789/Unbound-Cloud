@@ -48,6 +48,7 @@ export class BoxList extends Component
     /**
      * Starts changing the screen from "Loading..." when the loading screen is displayed.
      * Also overrides the back button to return to the main page.
+     * Also ensures the filter starts immediately when the user starts typing.
      */
     async componentDidMount()
     {
@@ -57,6 +58,25 @@ export class BoxList extends Component
         //Override back button
         window.history.pushState(null, document.title, window.location.href)
         window.addEventListener("popstate", this.state.globalState.navBackButtonPressed.bind(this.state.globalState));
+        window.addEventListener("keydown", (this.handleKeyDown.bind(this)));
+    }
+
+    /**
+     * Removes the event listener for the typing recognition when the user leaves the pages.
+     */
+    componentWillUnmount()
+    {
+        window.removeEventListener('keydown', this.handleKeyDown.bind(this));
+    }
+
+    /**
+     * Focuses on the filter input field when the user starts typing.
+     */
+    handleKeyDown()
+    {
+        let inputFields = document.getElementsByTagName("input");
+        if (inputFields.length > 0)
+            inputFields[0].focus();
     }
 
     /**
