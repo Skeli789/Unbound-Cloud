@@ -14,6 +14,7 @@ import {config} from "./config";
 import {CanUseFileHandleAPI, BOX_HOME, BOX_SLOT_LEFT} from './MainPage';
 import {PokemonSummary} from './PokemonSummary';
 import {GetIconSpeciesLink, GetNickname, GetSpecies} from './PokemonUtil';
+import {GetSpeciesName} from './Util';
 
 import {AiOutlineCloseCircle, AiOutlineCheckCircle} from "react-icons/ai";
 import {ImPaste} from "react-icons/im";
@@ -559,9 +560,10 @@ export class FriendTrade extends Component
         if (!this.getGlobalState().muted)
             tradeCompleteSound.play();
 
+        var newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon));
         PopUp.fire
         ({
-            title: `${GetNickname(newPokemon)} was received!`,
+            title: `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} was received!`,
             confirmButtonText: "Hooray!",
             imageUrl: GetIconSpeciesLink(newPokemon),
             imageAlt: "",

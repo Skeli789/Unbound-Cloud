@@ -7,8 +7,8 @@ import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 import {CanMonGigantamax, ChangeMarking, GetAbility, /*GetBaseStats,*/ GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel,
         GetMarkings, GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleNature, GetVisibleOTId, GetVisibleStats,
-        GetEVs, GetIVs, GetMoveType, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP, NATURE_STAT_TABLE} from "./PokemonUtil";
-import {BASE_GFX_LINK, GetAbilityName, GetBallName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName, GetTypeName} from "./Util";
+        GetEVs, GetIVs, GetMoveType, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP, NATURE_STAT_TABLE, GetSpecies} from "./PokemonUtil";
+import {BASE_GFX_LINK, GetAbilityName, GetBallName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName, GetSpeciesName, GetTypeName} from "./Util";
 import MoveData from "./data/MoveData.json";
 
 import {BsCircle, BsSquare, BsTriangle, BsHeart, BsCircleFill, BsSquareFill, BsTriangleFill, BsHeartFill} from "react-icons/bs";
@@ -76,6 +76,30 @@ export class PokemonSummary extends Component
         {
             this.setGlobalState({viewingSummaryEVsIVs: this.state.viewingEVsIVs}); //Update permanently until user clicks again
         });
+    }
+
+    /**
+     * Prints the Pokemon's nickname.
+     * @returns {JSX} An element containing the container of the nickname.
+     */
+    printNickname()
+    {        
+        var speciesName = GetSpeciesName(GetSpecies(this.state.pokemon));
+        var nicknameText = GetNickname(this.state.pokemon);
+        var nickname = <span className="summary-name">{nicknameText}</span>
+
+        if (nicknameText !== speciesName)
+        {
+            //Display species name when nickname is hovered over
+            const speciesTooltip = props => (<Tooltip {...props}>{speciesName}</Tooltip>);
+
+            nickname =
+                <OverlayTrigger placement="top" overlay={speciesTooltip}>
+                    {nickname}
+                </OverlayTrigger>
+        }
+
+        return nickname;
     }
 
     /**
@@ -498,9 +522,7 @@ export class PokemonSummary extends Component
                 {/*Nickname, Gender, Level, Friendship, & Gigantamax Row*/}
                 <div className="summary-name-level-container">
                     {/*Nickname*/}
-                    <span className="summary-name">
-                        {GetNickname(this.state.pokemon)}
-                    </span>
+                    {this.printNickname()}
 
                     {/*Gender (attached to Level)*/}
                     <span>
