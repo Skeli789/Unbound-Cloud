@@ -14,8 +14,8 @@ import {BoxList} from "./BoxList";
 import {BoxView, HIGHEST_HOME_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
 import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {FriendTrade} from "./FriendTrade";
-import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetIconSpeciesLink, GetItem, GetNickname,
-        GetSpecies, HasEggLockeOT, IsBlankMon, IsEgg, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
+import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetSpecies, HasEggLockeOT, IsBlankMon,
+        IsEgg, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
@@ -123,6 +123,7 @@ export default class MainPage extends Component
             inFriendTrade: false,
             tradeData: null,
             viewingSummaryEVsIVs: false,
+            isSaving: false,
         };
 
         this.updateState = this.updateState.bind(this);
@@ -2134,7 +2135,7 @@ export default class MainPage extends Component
                 return false;
         }
 
-        this.setState({savingMessage: "", changeWasMade: [false, false]});
+        this.setState({savingMessage: "", isSaving: false, changeWasMade: [false, false]});
         return true;
     }
 
@@ -2144,16 +2145,19 @@ export default class MainPage extends Component
      */
     printSavingPopUp(text)
     {
-        PopUp.fire
-        ({
-            title: text,
-            allowOutsideClick: false,
-            scrollbarPadding: false,
-            didOpen: () =>
-            {
-                PopUp.showLoading();
-            }
-        });
+        this.setState({savingMessage: text, isSaving: true}, () =>
+        {
+            PopUp.fire
+            ({
+                title: text,
+                allowOutsideClick: false,
+                scrollbarPadding: false,
+                didOpen: () =>
+                {
+                    PopUp.showLoading();
+                }
+            });
+        })
     }
 
     /**
@@ -2396,7 +2400,7 @@ export default class MainPage extends Component
      */
     async trySaveAndExit()
     {
-        if (this.isAnyMonInWonderTrade())
+        /*if (this.isAnyMonInWonderTrade())
         {
             let pokemon = this.getMonAtBoxPos(this.state.wonderTradeData.boxType,
                                 GetOffsetFromBoxNumAndPos(this.state.wonderTradeData.boxNum, this.state.wonderTradeData.boxPos));
@@ -2426,7 +2430,7 @@ export default class MainPage extends Component
                 }
             });
         }
-        else
+        else*/
             await this.saveAndExit();
     }
 
@@ -2451,8 +2455,8 @@ export default class MainPage extends Component
             }).then(() =>
             {
                 //Force the save to end after this first one
-                this.getMainPage().wipeErrorMessage();
-                this.setState({savingMessage: ""});
+                this.wipeErrorMessage();
+                this.setState({savingMessage: "", isSaving: false});
             });      
         }
         else
@@ -2579,7 +2583,7 @@ export default class MainPage extends Component
         var size = 42;
         const tooltip = props => (<Tooltip {...props}>Friend Trade</Tooltip>);
 
-        // if (this.state.savingMessage !== "")
+        // if (this.state.isSaving)
         //     return ""; //Can't use while saving
 
         return (
@@ -2601,7 +2605,7 @@ export default class MainPage extends Component
     {
         const tooltip = props => (<Tooltip {...props}>Global Trade Station</Tooltip>);
 
-        // if (this.state.savingMessage !== "")
+        // if (this.state.isSaving)
         //     return ""; //Can't use while saving
 
         return (

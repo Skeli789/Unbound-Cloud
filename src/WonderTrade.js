@@ -254,7 +254,7 @@ export class WonderTrade extends Component
                     socket.on('invalidPokemon', thisObject.handleInvalidPokemon.bind(thisObject, socket));
                     socket.on('message', function(data)
                     {
-                        endWonderTrade(thisObject, data, GetSpecies(pokemon), socket);
+                        endWonderTrade(thisObject, data, socket);
                     });
 
                     //Send Pokemon for trade
@@ -323,16 +323,19 @@ export class WonderTrade extends Component
      * Receives the new Pokemon and ends the Wonder Trade.
      * @param {Object} thisObject - The "this" object for the Wonder Trade class.
      * @param {Pokemon} newPokemon - The Pokemon received in the Wonder Trade.
-     * @param {String} tradedSpecies - The species id traded away.
      * @param {WebSocket} socket - The socket used to connect to the server.
      */
-    endWonderTrade(thisObject, newPokemon, tradedSpecies, socket)
+    async endWonderTrade(thisObject, newPokemon, socket)
     {
+        const backupTitle = document.title;
+
+        while (this.getGlobalState().isSaving || this.getGlobalState().inFriendTrade) //Saving or trade in progress
+            await new Promise(r => setTimeout(r, 50)); //Sleep temporarily before checking again if can continue
+
         socket.close();
         console.log(`Received ${GetNickname(newPokemon)}`);
         newPokemon.wonderTradeTimestamp = Date.now(); //Prevent this Pokemon from instantly being sent back
         thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
-        var backupTitle = document.title;
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
 
         if (!this.getGlobalState().muted)
