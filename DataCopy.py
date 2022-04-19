@@ -38,7 +38,7 @@ def main():
         file.write(json.dumps(speciesList, indent=4) + "\n")
 
     # Copy Entire Files
-    entireFiles = ["SpeciesToDexNum.json", "ExperienceCurves.json"]
+    entireFiles = ["ExperienceCurves.json", "SpeciesNames.json", "SpeciesToDexNum.json"]
     for file in entireFiles:
         shutil.copy(os.path.join(serverDataDir, file), os.path.join(clientDataDir, file))
 

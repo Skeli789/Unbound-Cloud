@@ -9,7 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const randomstring = require("randomstring");
 const CryptoJS = require("crypto-js");
-const util = require('./util');
+const pokemonUtil = require('./pokemon-util');
 const {StatusCode} = require('status-code-enum');
 
 const gSecretKey = "blah blah blacksheep";
@@ -62,7 +62,7 @@ io.on("connection", async function(socket)
             {
                 var keys = Object.keys(gWonderTradeClients).filter((x) => x != clientId && gWonderTradeClients[x].tradedWith === 0);
 
-                if (!util.ValidatePokemon(pokemonToSend, false))
+                if (!pokemonUtil.ValidatePokemon(pokemonToSend, false))
                 {
                     console.log(`WT-Client ${clientId} sent an invalid Pokemon for a Wonder Trade`);
                     socket.emit("invalidPokemon");
@@ -72,8 +72,8 @@ io.on("connection", async function(socket)
                     if (keys.length !== 0)
                     {
                         var pokemonToReceive = gWonderTradeClients[keys[0]].pokemon;
-                        gWonderTradeClients[keys[0]] =  {pokemon: pokemonToSend, tradedWith: clientId}; //Immediately lock the data
-                        gWonderTradeClients[clientId] = {pokemon: pokemonToReceive, tradedWith: keys[0]}; //Set this client as traded
+                        gWonderTradeClients[keys[0]] =  {pokemon: pokemonToSend, originalPokemon: pokemonToReceive, tradedWith: clientId}; //Immediately lock the data
+                        gWonderTradeClients[clientId] = {pokemon: pokemonToReceive, originalPokemon: pokemonToSend, tradedWith: keys[0]}; //Set this client as traded
                     }
                     else
                     {
@@ -128,7 +128,7 @@ io.on("connection", async function(socket)
 
             socket.on('tradeOffer', (pokemon) =>
             {
-                if (!util.ValidatePokemon(pokemon, true))
+                if (!pokemonUtil.ValidatePokemon(pokemon, true))
                 {
                     console.log(`FT-Client ${clientId} sent an invalid Pokemon for a Friend Trade`);
                     socket.emit("invalidPokemon");
@@ -136,7 +136,7 @@ io.on("connection", async function(socket)
                 else if (clientId in gFriendTradeClients)
                 {
                     if (pokemon != null && "species" in pokemon)
-                        console.log(`FT-Client ${clientId} is offering ${pokemon.species}`);
+                        console.log(`FT-Client ${clientId} is offering ${pokemonUtil.GetSpecies(pokemon)}`);
                     else
                         console.log(`FT-Client ${clientId} cancelled the trade offer`);
 
@@ -176,17 +176,20 @@ io.on("connection", async function(socket)
 
     while (true)
     {
+        let friend, friendPokemon, originalPokemon;
+
         if (clientId in gWonderTradeClients && gWonderTradeClients[clientId].tradedWith !== 0)
         {
-            socket.send(gWonderTradeClients[clientId].pokemon);
+            originalPokemon = gWonderTradeClients[clientId].originalPokemon;
+            friendPokemon = Object.assign({}, gWonderTradeClients[clientId].pokemon);
+            pokemonUtil.UpdatePokemonAfterNonFriendTrade(friendPokemon, originalPokemon);
+            socket.send(friendPokemon);
             console.log(`WT-Client ${clientId} received Pokemon from ${gWonderTradeClients[clientId].tradedWith}`);
             //Data deleted when client disconnects in case they don't receive this transmission
         }
         else if (clientId in gFriendTradeClients
         && gFriendTradeClients[clientId].friend !== "")
         {
-            let friend;
-
             switch (gFriendTradeClients[clientId].state)
             {
                 case FRIEND_TRADE_CONNECTED:
@@ -207,9 +210,14 @@ io.on("connection", async function(socket)
                             && !gFriendTradeClients[friend].notifiedFriendOfOffer)
                             {
                                 //Send the new offer
-                                let pokemon = gFriendTradeClients[friend].offeringPokemon;
-                                console.log(`FT-Client ${clientId} received offer for ${pokemon != null && "species" in pokemon ? pokemon.species : "SPECIES_NONE"}`);
-                                socket.emit("tradeOffer", pokemon); //Can be sent null (means partner cancelled offer)
+                                friendPokemon = gFriendTradeClients[friend].offeringPokemon;
+
+                                if (friendPokemon == null || !("species" in friendPokemon))
+                                    console.log(`FT-Client ${clientId} has been notified of the the trade offer cancellation`);
+                                else
+                                    console.log(`FT-Client ${clientId} received offer for ${pokemonUtil.GetSpecies(friendPokemon)}`);
+
+                                socket.emit("tradeOffer", friendPokemon); //Can be sent null (means partner cancelled offer)
                                 gFriendTradeClients[friend].notifiedFriendOfOffer = true;
                             }
                             else if ("acceptedTrade" in gFriendTradeClients[clientId]
@@ -224,7 +232,10 @@ io.on("connection", async function(socket)
                     }
                     break;
                 case FRIEND_TRADE_ACCEPTED_TRADE:
-                    socket.emit("acceptedTrade");
+                    friend = gFriendTradeClients[clientId].friend;
+                    friendPokemon = Object.assign({}, gFriendTradeClients[friend].offeringPokemon);
+                    pokemonUtil.UpdatePokemonAfterFriendTrade(friendPokemon, gFriendTradeClients[clientId].offeringPokemon);
+                    socket.emit("acceptedTrade", friendPokemon);
                     gFriendTradeClients[clientId].state = FRIEND_TRADE_ENDING_TRADE;
                     break;
                 default:

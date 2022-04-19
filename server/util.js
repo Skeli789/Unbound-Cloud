@@ -2,7 +2,8 @@
     Various utility functions for the server.
 */
 
-const md5 = require('md5');
+const gBannedWords = require('./src/data/BannedWords.json');
+const gSpeciesNames = require('./src/data/SpeciesNames.json');
 
 
 /**
@@ -31,33 +32,52 @@ function PythonJSONStringify(pokemon)
 module.exports.PythonJSONStringify = PythonJSONStringify;
 
 /**
- * Calculates the checksum hash for a Pokemon.
- * @param {Pokemon} pokemon - The Pokemon to calculate the checksum for.
- * @returns {String} The hash value of the Pokemon.
+ * Checks if a piece of text has a bad word in it.
+ * @param {String} textToCheck - The text to check for the bad word.
+ * @returns {Boolean} True if the text contains a bad word. False otherwise.
  */
-function CalculateMonChecksum(pokemon)
+function BadWordInText(textToCheck)
 {
-    pokemon = Object.assign({}, pokemon); //Don't modify the original Pokemon
+    textToCheck = textToCheck.toUpperCase();
+    var textToCheckWords = textToCheck.split(" ");
 
-    delete pokemon.markings //These can be changed on the site so shouldn't be included in the checksum
-    delete pokemon.checksum //Don't include an older calculated checksum
+    for (let bannedWord of Object.keys(gBannedWords))
+    {
+        let checkContaining = gBannedWords[bannedWord];
 
-    return md5(PythonJSONStringify(pokemon) + "extra"); //Add "extra" on so people can't create their own checksums with the original data
+        if (checkContaining) //The banned word cannot be present in the name at all
+        {
+            let allLetters = textToCheck.replace(" ", "").replace("-", "").replace(".", "");
+            if (allLetters.includes(bannedWord))
+                return true; //Includes a banned string
+        }
+        else //Entire word matches
+        {
+            for (let text of textToCheckWords)
+            {
+                if (text === bannedWord)
+                    return true; //Has a bad word entirely in its name
+            }
+        }
+    }
+
+    return false;
 }
-module.exports.CalculateMonChecksum = CalculateMonChecksum;
+module.exports.BadWordInText = BadWordInText;
 
 /**
- * Checks if a Pokemon object is a valid Pokemon.
- * @param {Pokemon} pokemon - The Pokemon to check.
- * @param {Boolean} canBeNull - Allows a null object to be considered valid if true.
- * @returns {Boolean} true if the Pokemon is valid, false otherwise.
+ * Gets the pretty name like "Venusaur" for a species id.
+ * @param {String} species - The species' STRING_BASED id.
+ * @returns {String} The name of the item.
  */
-function ValidatePokemon(pokemon, canBeNull)
+function GetSpeciesName(species)
 {
-    if (pokemon == null)
-        return canBeNull;
+    if (typeof(species) == "string")
+    {
+        if (species in gSpeciesNames)
+            return gSpeciesNames[species];
+    }
 
-    return "checksum" in pokemon
-        && pokemon.checksum == CalculateMonChecksum(pokemon);
+    return "Unknown Species";
 }
-module.exports.ValidatePokemon = ValidatePokemon;
+module.exports.GetSpeciesName = GetSpeciesName;

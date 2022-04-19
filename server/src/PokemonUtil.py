@@ -236,6 +236,8 @@ class PokemonUtil:
             del pokemon["markings"]  # These can be changed on the site so shouldn't be included in the checksum
         if "checksum" in pokemon:
             del pokemon["checksum"]  # Don't include an older calculated checksum
+        if "wonderTradeTimestamp" in pokemon:
+            del pokemon["wonderTradeTimestamp"]  # Don't include an added-on Wonder Trade timestamp
         return hashlib.md5((json.dumps(pokemon, sort_keys=True) + "extra").encode("utf-8")).hexdigest()  # Add "extra" on so people can't create their own checksums with the original data
 
     @staticmethod

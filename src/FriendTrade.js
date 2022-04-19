@@ -13,7 +13,7 @@ import {BoxView, HIGHEST_HOME_BOX_NUM} from './BoxView';
 import {config} from "./config";
 import {CanUseFileHandleAPI, BOX_HOME, BOX_SLOT_LEFT} from './MainPage';
 import {PokemonSummary} from './PokemonSummary';
-import {GetBaseFriendship, GetIconSpeciesLink, GetNickname, GetSpecies, TryActivateTradeEvolution} from './PokemonUtil';
+import {GetIconSpeciesLink, GetNickname, GetSpecies} from './PokemonUtil';
 
 import {AiOutlineCloseCircle, AiOutlineCheckCircle} from "react-icons/ai";
 import {ImPaste} from "react-icons/im";
@@ -448,8 +448,11 @@ export class FriendTrade extends Component
      */
     receivedTradeOffer(socket, pokemon)
     {
-        console.log(`Friend is offering to trade ${GetSpecies(pokemon)}.`);
         this.setState({friendPokemon: pokemon});
+        if (pokemon == null)
+            console.log(`Friend has cancelled trade offer.`);
+        else
+            console.log(`Friend is offering to trade ${GetSpecies(pokemon)}.`);
 
         //If the user previously confirmed, cancel the confirmation since the Pokemon has changed
         socket.emit("cancelledTradeAcceptance");
@@ -518,9 +521,9 @@ export class FriendTrade extends Component
         {
             socket.emit("acceptedTrade");
 
-            socket.on('acceptedTrade', function()
+            socket.on('acceptedTrade', function(pokemon)
             {
-                finalizeTrade(socket);
+                finalizeTrade(socket, pokemon);
             });
 
             PopUp.fire
@@ -544,14 +547,11 @@ export class FriendTrade extends Component
     /**
      * Receives the Pokemon offered in the trade and tries to start a new trade.
      * @param {WebSocket} socket - The socket used to connect to the server.
+     * @param {Pokemon} newPokemon - The Pokemon received in the trade.
      */
-    finalizeTrade(socket)
+    finalizeTrade(socket, newPokemon)
     {
-        let newPokemon = this.state.friendPokemon;
-
-        console.log(`Receieved ${GetNickname(newPokemon)}`);
-        newPokemon.friendship = GetBaseFriendship(newPokemon); //Reset after being traded
-        TryActivateTradeEvolution(newPokemon, GetSpecies(this.getPokemonToTrade()));
+        console.log(`Received ${GetNickname(newPokemon)}`);
         this.finishFriendTrade(newPokemon, BOX_HOME,
                     this.getGlobalState().tradeData.boxNum,
                     this.getGlobalState().tradeData.boxPos);

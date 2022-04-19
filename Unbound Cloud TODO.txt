@@ -1,13 +1,13 @@
 New Features:
 -Give mon little exclamation mark in corner if has data that will disappear in game
 -Ads
--GTS
+-GTS (and make sure bad words are replaced if necessary)
 
 Feature Modifications:
 -Timeout if friend trade connection has gone on too long
+-Species Icons should have tooltips of the species names over them
 
 Server Changes:
--Bad words in nickname should be handled server side so the checksum can be updated
 -Handle no Gerben files (also make Gerben Pokemon not show up on the site)
 -Flags when accessible
 -Special files for randomized saves
