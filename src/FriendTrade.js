@@ -595,7 +595,7 @@ export class FriendTrade extends Component
                         socket.off("disconnect"); //Prevents disconnected pop-up from showing
                         socket.close();
                         this.resetTradeState(); //Prep for a future trade - must go before setGlobalState
-                        this.setGlobalState({inFriendTrade: false}); //Done trading
+                        this.setGlobalState({savingMessage: "", isSaving: false, inFriendTrade: false}); //Done trading
                     });
                 }
                 else

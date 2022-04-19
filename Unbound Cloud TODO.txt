@@ -5,7 +5,6 @@ New Features:
 
 Feature Modifications:
 -Timeout if friend trade connection has gone on too long
--No Wonder Trading while Friend Trade is in progress? Or maybe remove the no save rule why a Wonder Trade is in progress?
 
 Server Changes:
 -Flags when accessible
