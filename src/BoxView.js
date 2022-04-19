@@ -765,6 +765,18 @@ export class BoxView extends Component
         if (this.isSaving())
             return; //Don't allow selections while saving
 
+        if (this.isUnselectableMon(pokemon) && !IsBlankMon(pokemon))
+        {
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "This Pokémon can't be selected!",
+                scrollbarPadding: false,
+            });
+
+            return; //Pretend like the user didn't click at all
+        }
+
         var swapMons = false;
         var multiSwap = false;
         var deselectedSlot = false;
@@ -843,6 +855,9 @@ export class BoxView extends Component
 
         if (icon === "")
             return; //No dragging empty cell
+
+        if (this.isUnselectableMon(pokemon))
+            return;
 
         var summaryMon = this.getParentState().summaryMon;
         summaryMon[this.state.boxSlot] = {pokemon: pokemon, boxNum: this.getCurrentBoxId(), boxPos: boxPos}; //Show dragee's summary

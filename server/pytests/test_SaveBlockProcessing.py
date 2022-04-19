@@ -54,6 +54,67 @@ class TestLoadCFRUPokedexFlags:
             assert CalcFlagCount(caughtFlags) == 33
 
 
+class TestLoadCFRUTrainerDetails:
+    def testFlex(self):
+        with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as saveBlockFile:
+            Defines.LoadCharMap()
+            saveBlocks = json.load(saveBlockFile)
+            saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
+            trainerName, trainerId = SaveBlockProcessing.LoadCFRUTrainerDetails(saveBlocks)
+            assert trainerName == "Deneb"
+            assert trainerId == 0x55FCD528
+
+    def testNGPlus(self):
+        with open(f"{DATA_DIR}/ngplus_saveblocks.json", "r") as saveBlockFile:
+            Defines.LoadCharMap()
+            saveBlocks = json.load(saveBlockFile)
+            saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
+            trainerName, trainerId = SaveBlockProcessing.LoadCFRUTrainerDetails(saveBlocks)
+            assert trainerName == "Skeli"
+            assert trainerId == 0x578BF8C4
+
+    def testEgglocke(self):
+        with open(f"{DATA_DIR}/egglocke_saveblocks.json", "r") as saveBlockFile:
+            Defines.LoadCharMap()
+            saveBlocks = json.load(saveBlockFile)
+            saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
+            trainerName, trainerId = SaveBlockProcessing.LoadCFRUTrainerDetails(saveBlocks)
+            assert trainerName == EgglockeTrainerName
+            assert trainerId == EgglockeTrainerId
+
+
+class TestIsGerbenFile:
+    def testFlex(self):
+        with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as saveBlockFile:
+            Defines.LoadCharMap()
+            saveBlocks = json.load(saveBlockFile)
+            saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
+            assert not SaveBlockProcessing.IsGerbenFile(saveBlocks)
+
+    def testEgglockeFile(self):
+        with open(f"{DATA_DIR}/egglocke_saveblocks.json", "r") as saveBlockFile:
+            Defines.LoadCharMap()
+            saveBlocks = json.load(saveBlockFile)
+            saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
+            assert SaveBlockProcessing.IsGerbenFile(saveBlocks)  
+
+
+class TestIsRandomizedSave:
+    def testFlex(self):
+        with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as saveBlockFile:
+            Defines.LoadCharMap()
+            saveBlocks = json.load(saveBlockFile)
+            saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
+            assert not SaveBlockProcessing.IsRandomizedSave(saveBlocks)
+
+    def testEgglockeFile(self):
+        with open(f"{DATA_DIR}/egglocke_saveblocks.json", "r") as saveBlockFile:
+            Defines.LoadCharMap()
+            saveBlocks = json.load(saveBlockFile)
+            saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
+            assert SaveBlockProcessing.IsRandomizedSave(saveBlocks)  
+
+
 def CalcFlagCount(flagList):
     counter = 0
     flags = [False] * 999

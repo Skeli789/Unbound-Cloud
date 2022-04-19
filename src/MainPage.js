@@ -15,7 +15,7 @@ import {BoxView, HIGHEST_HOME_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW}
 import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {FriendTrade} from "./FriendTrade";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetIconSpeciesLink, GetItem, GetNickname,
-        GetSpecies, IsBlankMon, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
+        GetSpecies, HasEggLockeOT, IsBlankMon, IsEgg, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
@@ -116,6 +116,7 @@ export default class MainPage extends Component
             saveTitles: SaveData["titles"],
             homeBoxes: this.generateBlankHomeBoxes(),
             homeTitles: this.generateBlankHomeTitles(),
+            isRandomizedSave: false,
 
             //Other
             muted: ("muted" in localStorage && localStorage.muted === "true") ? true : false,
@@ -470,8 +471,20 @@ export default class MainPage extends Component
      */
     cantBePlacedInBoxBecauseOfNonExistentSpecies(pokemon, placedInBoxType)
     {
-        return placedInBoxType === BOX_SAVE
-            && !DoesPokemonSpeciesExistInGame(pokemon, this.state.saveGameId);
+        switch (placedInBoxType)
+        {
+            case BOX_SAVE:
+                if (!DoesPokemonSpeciesExistInGame(pokemon, this.state.saveGameId))
+                    return true;
+                break;
+            case BOX_HOME:
+            default:
+                if (!this.state.isRandomizedSave && HasEggLockeOT(pokemon))
+                    return true;
+                break;
+        }
+
+        return false;
     }
 
     /**
@@ -1282,7 +1295,19 @@ export default class MainPage extends Component
 
         impossibleFrom[GetBoxPosBoxRow(fromPos)][GetBoxPosBoxColumn(fromPos)] = true;
         impossibleMovement[fromBoxSlot] = impossibleFrom;
-        errorMessage[toBoxSlot] = `${GetSpeciesName(GetSpecies(pokemon))} doesn't exist in this game.`;
+
+        if (this.getBoxTypeByBoxSlot(toBoxSlot) === BOX_HOME)
+        {
+            //Error placing randomized Pokemon in the cloud storage
+            errorMessage[fromBoxSlot] = "A randomized Pokémon can't be stored."; //Intentionally fromBoxSlot
+        }
+        else
+        {
+            if (IsEgg(pokemon))
+                errorMessage[toBoxSlot] = "The Egg's Pokémon doesn't exist in this game.";
+            else
+                errorMessage[toBoxSlot] = `${GetSpeciesName(GetSpecies(pokemon))} doesn't exist in this game.`;
+        }
 
         if (impossibleMovement[0] == null)
             impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
