@@ -172,6 +172,14 @@ class TestReplaceAll:
             contents, _ = SaveBlocks.LoadAll(f"{SAVE_DIR}/ng+_new.sav")
             assert contents == saveBlocks  # Should be Flex saveblocks now
 
+    def testPutFlexInSingleSave(self):
+        with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as file:
+            saveBlocks = json.load(file)
+            saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
+            shutil.copyfile(f"{SAVE_DIR}/single_save.sav", f"{SAVE_DIR}/single_save_new.sav")
+            assert SaveBlocks.ReplaceAll(f"{SAVE_DIR}/single_save_new.sav", saveBlocks)
+            contents, _ = SaveBlocks.LoadAll(f"{SAVE_DIR}/single_save_new.sav")
+            assert contents == saveBlocks  # Should be Flex saveblocks now
 
 class TestReplaceOne:
     def testPutFlexBlock3InNGPlus(self):

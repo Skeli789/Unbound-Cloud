@@ -499,6 +499,7 @@ class PokemonProcessing:
             with open(cloudFilePath, "r") as file:
                 cloudData = json.load(file)
                 cloudData["boxes"] = [PokemonProcessing.ConvertOldDataStructToNew(x) for x in cloudData["boxes"]]
+                cloudData["randomizer"] = False
             with open(cloudFilePath, "w") as file:
                 file.write(json.dumps(cloudData, indent=4))
             return True, ""

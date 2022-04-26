@@ -136,6 +136,7 @@ export class FriendTrade extends Component
         const handleLostConnection = this.handleLostConnection.bind(this);
         const connectedToFriend = this.connectedToFriend.bind(this);
         const couldntFindFriend = this.couldntFindFriend.bind(this);
+        const mismatchedRandomizer = this.mismatchedRandomizer.bind(this);
         const partnerDisconnected = this.partnerDisconnected.bind(this);
         const handleInvalidPokemon = this.handleInvalidPokemon.bind(this);
 
@@ -160,6 +161,7 @@ export class FriendTrade extends Component
                 socket.on('connect_error', function() {handleLostConnection(socket)});
                 socket.on('friendFound', function() {connectedToFriend(socket)});
                 socket.on('friendNotFound', function() {couldntFindFriend(socket)});
+                socket.on('mismatchedRandomizer', function() {mismatchedRandomizer(socket)});
                 socket.on('partnerDisconnected', function() {partnerDisconnected(socket)});
                 socket.on('invalidPokemon', function() {handleInvalidPokemon()});
                 socket.on('createCode', function(code) //Code is received from server
@@ -282,7 +284,7 @@ export class FriendTrade extends Component
         socket.emit("tradeType", "FRIEND_TRADE"); //As opposed to WONDER_TRADE
         console.log("Connection established.");
         console.log("Requesting code...");
-        socket.emit("createCode");
+        socket.emit("createCode", this.getGlobalState().isRandomizedSave);
         console.log("Code request sent!");
 
         PopUp.close(); //Closes "Connecting..." pop up
@@ -354,7 +356,7 @@ export class FriendTrade extends Component
         socket.emit("tradeType", "FRIEND_TRADE"); //As opposed to WONDER_TRADE
         console.log("Connection established.");
         console.log("Sending code...");
-        socket.emit("checkCode", code);
+        socket.emit("checkCode", code, this.getGlobalState().isRandomizedSave);
         console.log("Code sent!");
 
         PopUp.fire
@@ -405,6 +407,34 @@ export class FriendTrade extends Component
         });
     }
 
+    /**
+     * Processes the notice from the server that a randomized save can't trade with a regular one.
+     * @param {WebSocket} socket - The socket used to connect to the server.
+     */
+    mismatchedRandomizer(socket)
+    {
+        var title = "Found your friend, but ";
+        socket.close();
+        this.setGlobalState({tradeData: null});
+        
+        if (this.getGlobalState().isRandomizedSave)
+            title += "your randomized save can't trade with your friend's regular save!";
+        else
+            title += "your regular save can't trade with your friend's randomized save!";
+
+        PopUp.fire
+        ({
+            icon: 'error',
+            title: title,
+            cancelButtonText: `Awww`,
+            showConfirmButton: false,
+            showCancelButton: true,
+            scrollbarPadding: false,
+        });
+    
+        this.setState({codeInput: ""}); //Must go after pop-up
+    }
+ 
     /**
      * Confirms the connection for the Friend Trade.
      * @param {WebSocket} socket - The socket used to connect to the server.

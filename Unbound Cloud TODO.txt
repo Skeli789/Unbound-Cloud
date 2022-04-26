@@ -5,8 +5,8 @@ New Features:
 
 Feature Modifications:
 -Timeout if friend trade connection has gone on too long
+-Add back button on choose cloud file page
 
 Server Changes:
 -Flags when accessible
--Special files for randomized saves (Trading should never connect between the two)
 -Change the file signature for Unbound

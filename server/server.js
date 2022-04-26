@@ -58,9 +58,12 @@ io.on("connection", async function(socket)
         {
             console.log(`WT-Client ${clientId} wants a Wonder Trade`);
 
-            socket.on("message", (pokemonToSend) =>
+            socket.on("message", (pokemonToSend, randomizer) =>
             {
-                var keys = Object.keys(gWonderTradeClients).filter((x) => x != clientId && gWonderTradeClients[x].tradedWith === 0);
+                var keys = Object.keys(gWonderTradeClients).filter((x) =>
+                                       x != clientId
+                                    && gWonderTradeClients[x].tradedWith === 0
+                                    && gWonderTradeClients[x].randomizer == randomizer);
 
                 if (!pokemonUtil.ValidatePokemon(pokemonToSend, false))
                 {
@@ -74,11 +77,12 @@ io.on("connection", async function(socket)
                         var pokemonToReceive = gWonderTradeClients[keys[0]].pokemon;
                         gWonderTradeClients[keys[0]] =  {pokemon: pokemonToSend, originalPokemon: pokemonToReceive, tradedWith: clientId}; //Immediately lock the data
                         gWonderTradeClients[clientId] = {pokemon: pokemonToReceive, originalPokemon: pokemonToSend, tradedWith: keys[0]}; //Set this client as traded
+                        //Note that the randomizer key isn't needed anymore
                     }
                     else
                     {
                         if (!(clientId in gWonderTradeClients)) //Don't overwrite previously requested mon
-                            gWonderTradeClients[clientId] = {pokemon: pokemonToSend, tradedWith: 0};
+                            gWonderTradeClients[clientId] = {pokemon: pokemonToSend, tradedWith: 0, randomizer: randomizer};
                     }
                 }
             });
@@ -93,16 +97,16 @@ io.on("connection", async function(socket)
         {
             console.log(`FT-Client ${clientId} wants a Friend Trade`);
 
-            socket.on("createCode", () =>
+            socket.on("createCode", (randomizer) =>
             {
                 let code = CreateFriendCode();
                 socket.emit("createCode", code);
                 console.log(`FT-Client ${clientId} has created code "${code}"`);
-                gFriendTradeClients[clientId] = {code: code, friend: "", state: FRIEND_TRADE_INITIAL};
+                gFriendTradeClients[clientId] = {code: code, friend: "", randomizer: randomizer, state: FRIEND_TRADE_INITIAL};
                 gCodesInUse[code] = true;
             });
 
-            socket.on("checkCode", (code) =>
+            socket.on("checkCode", (code, randomizer) =>
             {
                 let partnerFound = false;
                 console.log(`FT-Client ${clientId} is looking for code "${code}"`);
@@ -114,8 +118,19 @@ io.on("connection", async function(socket)
                     {
                         partnerFound = true;
                         console.log(`FT-Client ${clientId} has matched with ${otherClientId}`);
-                        gFriendTradeClients[clientId] = {code: code, friend: otherClientId, state: FRIEND_TRADE_CONNECTED};
-                        gFriendTradeClients[otherClientId] = {code: code, friend: clientId, state: FRIEND_TRADE_CONNECTED};
+
+                        if ((!randomizer && !gFriendTradeClients[otherClientId].randomizer)
+                        || (randomizer && gFriendTradeClients[otherClientId].randomizer)) //Randomizer status matches
+                        {
+                            gFriendTradeClients[clientId] = {code: code, friend: otherClientId, state: FRIEND_TRADE_CONNECTED};
+                            gFriendTradeClients[otherClientId] = {code: code, friend: clientId, state: FRIEND_TRADE_CONNECTED};
+                            //Randomizer keys no longer matter
+                        }
+                        else
+                        {
+                            console.log(`But FT-Clients ${clientId} and ${otherClientId} don't match randomizer statuses`);
+                            socket.emit("mismatchedRandomizer");
+                        }
                     }
                 }
 
@@ -346,11 +361,12 @@ app.post('/uploadSaveFile', async (req, res) =>
         let boxCount = data["boxCount"];
         let boxes = data["boxes"];
         let titles = data["titles"];
+        let randomizer = data["randomizer"]
 
         if (gameId == "" || boxCount == 0 || boxes.length == 0 || titles.length == 0) //Bad save file
             result = res.status(StatusCode.ClientErrorBadRequest).json("ERROR: The uploaded save file is corrupt or not supported.");
         else
-            result = res.status(StatusCode.SuccessOK).json({gameId: gameId, boxCount: boxCount, boxes: boxes, titles: titles,
+            result = res.status(StatusCode.SuccessOK).json({gameId: gameId, boxCount: boxCount, boxes: boxes, titles: titles, randomizer: randomizer,
                                                             saveFileData: saveFileData, fileIdNumber: fileIdNumber});
     }
     catch (err)
@@ -394,7 +410,8 @@ app.post('/uploadHomeData', async (req, res) =>
         console.log("The home file has been successfully decrypted.");
         data = await TryUpdateOldHomeData(data, res)
         if (data != null)
-            return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"]});
+            return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"],
+                                                          randomizer: data["randomizer"] ? true : false});
     }
     catch (err)
     {
@@ -417,7 +434,8 @@ app.post("/uploadLastHomeData", async (req, res) =>
         console.log("The home file has been successfully decrypted.");
         data = await TryUpdateOldHomeData(data, res)
         if (data != null)
-            return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"]});
+            return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"],
+                                                          randomizer: data["randomizer"] ? true : false});
     }
     catch (err)
     {
@@ -475,7 +493,7 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
     {
         //Update the save file
         var pythonFile = path.resolve('src/Interface.py');
-        let pythonOutput = await RunCommand(`python "${pythonFile}" UPDATE_SAVE ${newBoxesName} ${saveFileName}`);
+        var pythonOutput = await RunCommand(`python "${pythonFile}" UPDATE_SAVE ${newBoxesName} ${saveFileName}`);
         newSavePath = JSON.parse(pythonOutput).data;
 
         if (newSavePath === "")
@@ -509,7 +527,7 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
     if (fs.existsSync(newBoxesName))
     {
         fs.unlinkSync(newBoxesName);
-        console.log(`Temp save file ${newBoxesName} deleted from server.`);
+        console.log(`Temp save boxes ${newBoxesName} deleted from server.`);
     }
 
     if (newSavePath != null && fs.existsSync(newSavePath))
