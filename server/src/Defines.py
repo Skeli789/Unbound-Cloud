@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from typing import Dict
+from typing import Dict, List
 
 ## Defines Files ##
 SRC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -169,15 +169,22 @@ class Defines:
     reverseCharMap = dict()
 
     @staticmethod
-    def GetCurrentGameName():
+    def GetCurrentGameName() -> str:
         return GameDetails[Defines.fileSignature]["name"]
 
     @staticmethod
-    def GetCurrentDefinesDir():
+    def GetCurrentDefinesDir() -> str:
         return GameDetails[Defines.fileSignature]["definesDir"]
 
     @staticmethod
-    def GetMonOriginalGameName(monGameId):
+    def GetRandomizerFlags() -> List[int]:
+        if "randomizerFlags" in GameDetails[Defines.fileSignature]:
+            return GameDetails[Defines.fileSignature]["randomizerFlags"]
+
+        return []
+
+    @staticmethod
+    def GetMonOriginalGameName(monGameId: str) -> str:
         gameName = "unknown"
         if Defines.fileSignature in GameDetails:
             gameName = Defines.GetCurrentGameName()
@@ -194,7 +201,7 @@ class Defines:
         return gameName
 
     @staticmethod
-    def GetFileSignatureByGameName(gameName):
+    def GetFileSignatureByGameName(gameName: str) -> int:
         for signature in GameDetails:
             if GameDetails[signature]["name"] == gameName:
                 return signature
@@ -202,7 +209,7 @@ class Defines:
         return 0
     
     @staticmethod
-    def GetMetIdToBeSaved(monGameName):
+    def GetMetIdToBeSaved(monGameName: str) -> str:
         monGameSignature = Defines.GetFileSignatureByGameName(monGameName)
         if monGameSignature in GameDetails:
             # Check staying within same region

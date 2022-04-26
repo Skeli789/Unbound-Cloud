@@ -24,36 +24,15 @@ class SaveBlocks:
         saveBlocks = SaveBlocks.CreateBlankDict()  # Get the storage dict for the final data
 
         with open(saveFile, "rb") as binaryFile:
-            # Get Save Index of Save A
-            offset = 0
-            binaryFile.seek(offset + SaveIndexOffset)
-            saveIndexA = BytesToInt(binaryFile.read(4))
+            if SaveBlocks.UsesSaveIndexA(binaryFile):
+                saveOffset = 0
+            else:
+                saveOffset = SaveSize
 
-            # Extract File Signature of Save A
-            binaryFile.seek(offset + FileSignatureOffset)
-            fileSignatureA = BytesToInt(binaryFile.read(4))
+            # Extract File Signature
+            binaryFile.seek(saveOffset + FileSignatureOffset)
+            fileSignature = BytesToInt(binaryFile.read(4))
     
-            # Get Save Index of Save B
-            offset = SaveSize
-            binaryFile.seek(offset + SaveIndexOffset)
-            saveIndexB = BytesToInt(binaryFile.read(4))
-    
-            # Extract File Signature of Save B
-            binaryFile.seek(offset + FileSignatureOffset)
-            fileSignatureB = BytesToInt(binaryFile.read(4))
-
-            # Determine Correct Save Offset
-            saveOffset = 0
-            fileSignature = fileSignatureA
-            if saveIndexA == 0xFFFFFFFF and fileSignatureA == 0xFFFFFFFF:  # Save 1 is empty
-                fileSignature = fileSignatureB
-                saveOffset = SaveSize  # Main save is saved second
-            elif saveIndexB == 0xFFFFFFFF and fileSignatureB == 0xFFFFFFFF:  # Save 2 is empty
-                pass  # Save is already set to Save 1
-            elif saveIndexB > saveIndexA:  # Main save is one with higher save index
-                fileSignature = fileSignatureB
-                saveOffset = SaveSize  # Main save is saved second
-
             # Extract Save Blocks
             for blockOffset in range(0, SaveSize, BlockSize):
                 blockId, saveBlockData = SaveBlocks.LoadOne(binaryFile, saveOffset, blockOffset)
@@ -80,6 +59,34 @@ class SaveBlocks:
         saveBlockData = list(binaryFile.read(BlockDataSize))
 
         return blockId, saveBlockData
+
+    @staticmethod
+    def UsesSaveIndexA(binaryFile) -> bool:
+        # Get Save Index of Save A
+        offset = 0
+        binaryFile.seek(offset + SaveIndexOffset)
+        saveIndexA = BytesToInt(binaryFile.read(4))
+
+        # Extract File Signature of Save A
+        binaryFile.seek(offset + FileSignatureOffset)
+        fileSignatureA = BytesToInt(binaryFile.read(4))
+
+        # Get Save Index of Save B
+        offset = SaveSize
+        binaryFile.seek(offset + SaveIndexOffset)
+        saveIndexB = BytesToInt(binaryFile.read(4))
+
+        # Extract File Signature of Save B
+        binaryFile.seek(offset + FileSignatureOffset)
+        fileSignatureB = BytesToInt(binaryFile.read(4))
+
+        # Determine Correct Save Offset
+        if saveIndexA == 0xFFFFFFFF and fileSignatureA == 0xFFFFFFFF:  # Save 1 is empty
+            return False  # Main save is saved second
+        elif saveIndexB == 0xFFFFFFFF and fileSignatureB == 0xFFFFFFFF:  # Save 2 is empty
+            return True  # Main save is saved first
+
+        return saveIndexA >= saveIndexB  # Main save is one with higher save index
 
     @staticmethod
     def Validate(saveFile: str) -> bool:
@@ -201,20 +208,10 @@ class SaveBlocks:
             return False
 
         with open(saveFile, "rb+") as binaryFile:  # Read and write
-            # Get Save Index of Save A
-            offset = 0
-            binaryFile.seek(offset + SaveIndexOffset)
-            saveIndexA = BytesToInt(binaryFile.read(4))
-
-            # Get Save Index of Save B
-            offset = SaveSize
-            binaryFile.seek(offset + SaveIndexOffset)
-            saveIndexB = BytesToInt(binaryFile.read(4))
-
-            # Determine Correct Save Offset
-            saveOffset = 0
-            if saveIndexB > saveIndexA:  # Main save is one with higher save index
-                saveOffset = SaveSize  # Main save is saved second
+            if SaveBlocks.UsesSaveIndexA(binaryFile):
+                saveOffset = 0
+            else:
+                saveOffset = SaveSize
 
             # Replace Relevant Saveblocks
             for blockOffset in range(0, SaveSize, BlockSize):

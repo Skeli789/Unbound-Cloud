@@ -17,6 +17,26 @@ SeenFlagsOffset = 0x310
 CaughtFlagsOffset = 0x38D
 CaughtFlagsEndOffset = 0x40A
 
+VanillaFlagsSaveBlock = 1
+VanillaFlagsOffset = 0xEE0
+VanillaFlagsSize = 0x120
+VanillaFlagsEndOffset = VanillaFlagsOffset + VanillaFlagsSize
+
+CFRUFlagsASaveBlock = 0
+CFRUFlagsAOffset = 0xF24
+CFRUFlagsASize = BlockDataSize - CFRUFlagsAOffset
+CFRUFlagsAEndOffset = CFRUFlagsAOffset + CFRUFlagsASize
+
+CFRUFlagsBSaveBlock = 4
+CFRUFlagsBOffset = 0xD98
+CFRUFlagsBSize = 0x200 - CFRUFlagsASize
+CFRUFlagsBEndOffset = CFRUFlagsBOffset + CFRUFlagsBSize
+
+VanillaVarsSaveBlock = 2
+VanillaVarsOffset = 0xEE0
+VanillaVarsSize = 0x200
+VanillaVarsEndOffset = VanillaVarsOffset + VanillaVarsSize
+
 TrainerDetailsSaveBlock = 0
 TrainerNameLength = 7
 TrainerNameOffset = 0x0
@@ -133,7 +153,29 @@ class SaveBlockProcessing:
 
     @staticmethod
     def IsRandomizedSave(saveBlocks: Dict[int, List[int]]) -> bool:
+        randomizerFlags = Defines.GetRandomizerFlags()
+        for flag in randomizerFlags:
+            if SaveBlockProcessing.FlagGet(flag, saveBlocks):
+                return True
+
         return SaveBlockProcessing.IsGerbenFile(saveBlocks)
+
+    @staticmethod
+    def FlagGet(flag: int, saveBlocks: Dict[int, List[int]]) -> bool:
+        if Defines.IsCFRUHack():
+            if flag < 0x900:
+                if VanillaFlagsSaveBlock in saveBlocks:
+                    flags = saveBlocks[VanillaFlagsSaveBlock][VanillaFlagsOffset:VanillaFlagsEndOffset]
+                    return (flags[flag // 8] & (1 << (flag % 8))) != 0
+            elif flag >= 0x900 and flag < 0x1900:
+                if CFRUFlagsASaveBlock in saveBlocks and CFRUFlagsBSaveBlock in saveBlocks:
+                    flags = saveBlocks[CFRUFlagsASaveBlock][CFRUFlagsAOffset:CFRUFlagsAEndOffset] \
+                          + saveBlocks[CFRUFlagsBSaveBlock][CFRUFlagsBOffset:CFRUFlagsBEndOffset]
+                    return (flags[(flag - 0x900) // 8] & (1 << (flag % 8))) != 0
+
+            raise ValueError(f"Flag \"{flag}\" is not wihin the valid range")
+        else:
+            return False
 
     ### Code for updating save files ###
     @staticmethod

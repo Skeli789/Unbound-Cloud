@@ -27,13 +27,17 @@ def main():
                 saveBlocks, fileSignature = SaveBlocks.LoadAll(saveFilePath)
                 allPokemon = []   # In case error reading save blocks
                 boxTitles = []
+                randomizer = False
 
                 if saveBlocks != {} and fileSignature != 0 and Defines.LoadAll(fileSignature):
                     allPokemon = SaveBlockProcessing.LoadPCPokemon(saveBlocks)
                     boxTitles = SaveBlockProcessing.LoadCFRUBoxTitles(saveBlocks)
 
+                    if SaveBlockProcessing.IsRandomizedSave(saveBlocks):
+                        randomizer = True
+
                 returnData({"gameId": Defines.GetCurrentDefinesDir(), "boxCount": Defines.BoxCount(),  # gameId is used on the front-end to load game-specific data
-                            "boxes": allPokemon, "titles": boxTitles})
+                            "boxes": allPokemon, "titles": boxTitles, "randomizer": randomizer})
                 return
         elif command == "UPDATE_SAVE":
             if len(sys.argv) > 3:  # Has data and save file

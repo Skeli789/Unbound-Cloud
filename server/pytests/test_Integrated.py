@@ -52,6 +52,9 @@ class TestIntegrated:
     def testReplaceAllPokemonEmptySave(self):
         LoadAndReplaceTest("single_save")
 
+    def testReplaceAllPokemonSingleSaveRandomizer(self):
+        LoadAndReplaceTest("single_save_randomizer")
+
     def testReplaceCorruptBlocks30And31(self):
         LoadAndReplaceTest("corrupt_blocks_30_31")
 
@@ -69,6 +72,9 @@ class TestIntegrated:
 
     def testTransferPokemonFromMAGMToUnbound(self):
         TransferTest("all_pokemon", "magm", "magm", "unbound")
+    
+    def testTransferPokemonFromMAGMToUnboundSingleSave(self):
+        TransferTest("single_save_randomizer", "magm", "magm", "unbound")
 
 
 def LoadAllTest(saveName: str):

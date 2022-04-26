@@ -51,7 +51,7 @@ const selectAllTooltip = props => (<Tooltip {...props}>Select All</Tooltip>);
 const deselectAllTooltip = props => (<Tooltip {...props}>Deselect All</Tooltip>);
 const showdownTooltip = props => (<Tooltip {...props}>Showdown</Tooltip>);
 const releaseTooltip = props => (<Tooltip {...props}>Release</Tooltip>);
-const fixLivingDexTooltip = props => (<Tooltip {...props}>Fix Living Dex</Tooltip>);
+const fixLivingDexTooltip = props => (<Tooltip {...props}>Sort Living Dex</Tooltip>);
 const tradeTooltip = props => (<Tooltip {...props}>Select For Trade</Tooltip>);
 
 

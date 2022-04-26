@@ -36,10 +36,10 @@ export const BOX_SLOT_RIGHT = 1;
 
 const STATE_WELCOME = 0
 const STATE_ASK_FIRST_TIME = 1;
-const STATE_UPLOAD_HOME_FILE = 2;
-const STATE_UPLOADING_HOME_FILE = 3;
-const STATE_UPLOAD_SAVE_FILE = 4;
-const STATE_UPLOADING_SAVE_FILE = 5;
+const STATE_UPLOAD_SAVE_FILE = 2;
+const STATE_UPLOADING_SAVE_FILE = 3;
+const STATE_UPLOAD_HOME_FILE = 4;
+const STATE_UPLOADING_HOME_FILE = 5;
 const STATE_CHOOSE_HOME_FOLDER = 6;
 const STATE_CHOOSE_SAVE_HANDLE = 7;
 const STATE_EDITING_HOME_BOXES = 8;
@@ -47,6 +47,7 @@ const STATE_EDITING_SAVE_FILE = 9;
 const STATE_MOVING_POKEMON = 10;
 
 const HOME_FILE_NAME = "cloud.dat";
+const HOME_FILE_RANDOMIZER_NAME = "cloud_randomizer.dat"
 const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} label={"0%"} />;
 const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path fill="white" d="M254.777 93.275c-58.482 0-105.695 47.21-105.695 105.696 0 58.487 47.213 105.698 105.695 105.698 58.482 0 105.696-47.21 105.696-105.697 0-58.48-47.214-105.695-105.696-105.695zm-140.714 63.59C-40.9 155.67-21.26 276.118 227.043 357.748c225.954 74.28 319.04 10.624 239.48-69.973-.413-.55-.84-1.097-1.277-1.64-4.755 3.954-9.71 7.915-14.95 11.88 4.487 5.513 7.138 11.084 7.704 16.01.713 6.2-.9 11.8-6.986 17.977-5.84 5.927-16.25 11.98-32.307 16.49-24.074 5.698-58.427 5.6-102.287-2.656l.105-.04c-2.153-.38-4.3-.787-6.445-1.198-21.875-4.418-46.004-10.805-72.318-19.455-69.962-23-118.054-49.706-146.063-74.936.246-.19.48-.38.728-.568-.27.166-.532.333-.8.5-53.315-48.08-33.682-90.78 46.558-92.2-8.46-.665-16.502-1.016-24.124-1.075zm281.425 0c-7.62.06-15.663.41-24.123 1.076 80.24 1.42 99.86 44.115 46.537 92.193-.264-.165-.513-.33-.78-.494.244.184.472.368.712.553-26.017 23.434-69.357 48.144-131.455 69.973 21.19 5.413 42.82 9.363 64.815 11.64 34.83-15.125 63.025-30.916 84.91-46.554.01.007.02.014.032.02.522-.386 1.03-.773 1.547-1.16 90.502-65.565 69.686-128.11-42.196-127.247zM44.54 286.27c-74.364 73.55-5.467 133.668 176.683 89.125-22.844-7.563-44.89-15.83-65.84-24.194-25.396 2.316-46.41 1.29-62.842-2.346-16.802-4.544-27.613-10.765-33.61-16.852-6.086-6.176-7.697-11.776-6.985-17.977.56-4.88 3.17-10.395 7.582-15.86-5.253-3.968-10.22-7.935-14.986-11.894z"/></svg>;
 
@@ -81,6 +82,7 @@ export default class MainPage extends Component
             selectedHomeFile: null,
             fileUploadError: false,
             serverConnectionError: false,
+            mismatchedRandomizerError: false,
             saveFileData: {"data": []}, //Also used in downloading
             saveFileNumber: 0, //Also used in downloading
             homeDirHandle: null,  //Modern file system API
@@ -555,6 +557,15 @@ export default class MainPage extends Component
     }
 
     /**
+     * Gets the correct name of the home file based on the uploaded save file.
+     * @returns {String} HOME_FILE_NAME for a regular save, HOME_FILE_RANDOMIZER_NAME for a randomized save.
+     */
+    getHomeFileName()
+    {
+        return this.state.isRandomizedSave ? HOME_FILE_RANDOMIZER_NAME : HOME_FILE_NAME;
+    }
+
+    /**
      * Handles the user's choice of a save file.
      * @param {Object} e - The file upload event.
      */
@@ -598,7 +609,9 @@ export default class MainPage extends Component
         if (file == null) //Cancelled the file upload
             return;
 
-        if (!(await this.handleChooseHomeFile(file)) && !this.state.serverConnectionError)
+        if (!(await this.handleChooseHomeFile(file))
+        && !this.state.serverConnectionError
+        && !this.state.mismatchedRandomizerError)
         {
             PopUp.fire
             ({
@@ -630,13 +643,33 @@ export default class MainPage extends Component
     }
 
     /**
+     * Checks if last saved Home data exists based on the user's save file.
+     * @returns {Boolean} True if the user can load last saved home data. False if not.
+     */
+    existsLastSavedHomeData()
+    {
+        if (this.state.isRandomizedSave)
+        {
+            return "lastSavedRandomizerHomeData" in localStorage
+                && localStorage.lastSavedRandomizerHomeData != null
+                && localStorage.lastSavedRandomizerHomeData !== "";
+        }
+        else
+        {
+            return "lastSavedHomeData" in localStorage
+                && localStorage.lastSavedHomeData != null
+                && localStorage.lastSavedHomeData !== "";
+        }
+    }
+
+    /**
      * Handles the user's choice to use the Home data file stored in the local storage.
      * @param {String} errorMsg - An error message to display in the pop-up if the upload fails due to a bad file.
      */
     async useLastSavedHomeFile(errorMsg)
     {
         const formData = new FormData(); //formData contains the Home boxes
-        var homeData = localStorage.lastSavedHomeData;
+        var homeData = (this.state.isRandomizedSave) ? localStorage.lastSavedRandomizerHomeData : localStorage.lastSavedHomeData;
         var route = `${config.dev_server}/uploadLastHomeData`;
 
         this.addHomeDataToFormData(homeData, formData);
@@ -675,16 +708,24 @@ export default class MainPage extends Component
             return;
         }
 
-        //Accepted, no error occurred
-        console.log("Last home file upload successful.");
+        if ((this.state.isRandomizedSave && res.data.randomizer)
+        || (!this.state.isRandomizedSave && !res.data.randomizer))
+        {
+            //Accepted, no error occurred
+            console.log("Last home file upload successful.");
 
-        this.setState({
-            editState: STATE_UPLOAD_SAVE_FILE,
-            homeBoxes: res.data.boxes,
-            homeTitles: res.data.titles,
-            fileUploadError: false,
-            serverConnectionError: false,
-        });
+            this.setState({
+                editState: STATE_MOVING_POKEMON,
+                homeBoxes: res.data.boxes,
+                homeTitles: res.data.titles,
+            });
+
+            this.wipeErrorMessage();
+        }
+        else
+        {
+            await this.printMismatchedRandomizerError();
+        }
     }
 
     /**
@@ -740,17 +781,21 @@ export default class MainPage extends Component
             console.log("Save file upload successful.");
             await this.setSaveBoxesFromResponse(res);
 
+            if (!localStorage.displayedRandomizerInfo)
+                this.tryPrintRandomizerNoticePopUp();
+
             if (isUsingFileHandles)
             {
                 //Upload the standard name for a cloud file if it exists
                 //If it doesn't or there's an error, just use a blank new home file
                 try
                 {
-                    let homeFileHandle = await this.findFileHandleWithNameInDirHandle(HOME_FILE_NAME, this.state.homeDirHandle);
+                    let homeFileHandle = await this.findFileHandleWithNameInDirHandle(this.getHomeFileName(), this.state.homeDirHandle);
                     if (homeFileHandle != null) //Home file has already been created
                     {
                         await this.setState({homeFileHandle: homeFileHandle});
-                        if (!(await this.handleChooseHomeFile(await homeFileHandle.getFile())))
+                        if (!(await this.handleChooseHomeFile(await homeFileHandle.getFile()))
+                        && !this.state.mismatchedRandomizerError)
                         {
                             //Site can still be used, but warn user
                             PopUp.fire
@@ -761,6 +806,10 @@ export default class MainPage extends Component
                                 scrollbarPadding: false,
                             });
                         }
+                    }
+                    else
+                    {
+                        this.setState({homeTitles: this.generateBlankHomeTitles()}); //In case they need updating for a randomizer
                     }
                 }
                 catch (e)
@@ -779,23 +828,41 @@ export default class MainPage extends Component
                         window.location.reload(); //Force a reload because normally wouldn't stop for a missing cloud file
                     });
                 }
+
+                this.setState({editState: STATE_MOVING_POKEMON});
+                localStorage.visitedBefore = true; //Set cookie now
+            }
+            else
+            {
+                this.setState({editState: STATE_UPLOAD_HOME_FILE});
             }
 
-            this.setState({editState: STATE_MOVING_POKEMON});
             this.wipeErrorMessage();
-            localStorage.visitedBefore = true; //Set cookie now
         }
         else //Home File
         {
             console.log("Home file upload successful.");
 
-            this.setState
-            ({
-                editState: (!isUsingFileHandles) ? STATE_UPLOAD_SAVE_FILE : this.state.editState, //Uploading a home file handle doesn't change the edit state (updated above in the call stack)
-                homeBoxes: res.data.boxes,
-                homeTitles: res.data.titles,
-            });
-            this.wipeErrorMessage();
+            if ((this.state.isRandomizedSave && res.data.randomizer)
+            || (!this.state.isRandomizedSave && !res.data.randomizer))
+            {
+                this.setState
+                ({
+                    editState: (!isUsingFileHandles) ? STATE_MOVING_POKEMON : this.state.editState, //Uploading a home file handle doesn't change the edit state (updated above in the call stack)
+                    homeBoxes: res.data.boxes,
+                    homeTitles: res.data.titles,
+                });
+
+                this.wipeErrorMessage();
+
+                if (!isUsingFileHandles)
+                    localStorage.visitedBefore = true; //Set cookie now
+            }
+            else
+            {
+                await this.printMismatchedRandomizerError(isUsingFileHandles);
+                return false;
+            }
         }
 
         return true;
@@ -859,6 +926,7 @@ export default class MainPage extends Component
             saveTitles: res.data.titles,
             saveGameId: res.data.gameId,
             saveBoxCount: res.data.boxCount,
+            isRandomizedSave: res.data.randomizer,
             saveFileNumber: res.data.fileIdNumber,
             saveFileData: res.data.saveFileData,
         });
@@ -938,6 +1006,58 @@ export default class MainPage extends Component
         });
     }
 
+    /**
+     * Displays an error pop-up when the user tries uploading a Cloud file incompatible with the
+     * save file due to a difference in randomizers.
+     */
+    async printMismatchedRandomizerError(isUsingFileHandles)
+    {
+        let text;
+
+        if (this.state.isRandomizedSave)
+            text = "The Cloud file uploaded is for regular saves.<br/>Please upload a Cloud data file created for randomized saves."
+        else
+            text = "The Cloud file uploaded is for randomized saves.<br/>Please upload a Cloud data file created for regular saves."
+
+        await this.setState({mismatchedRandomizerError: true}); //Prevent the pop-up from showing up for file handles
+
+        console.log("Home file randomizer doesn't match save randomizer.");
+        PopUp.fire
+        ({
+            icon: "warning",
+            title: "Cloud File Randomizer Mismatch",
+            html: text,
+            scrollbarPadding: false,
+        }).then(() =>
+        {
+            if (isUsingFileHandles)
+                window.location.reload() //Force reload page afterwards
+            else
+                this.setState({editState: STATE_UPLOAD_HOME_FILE});
+        });
+    }
+
+    /**
+     * Displays a pop-up when the user uploads a randomized save file for the first time.
+     */
+    tryPrintRandomizerNoticePopUp()
+    {
+        if (this.state.isRandomizedSave)
+        {
+            PopUp.fire
+            ({
+                icon: "warning",
+                title: "A Note About Randomizers",
+                text: "Please be aware that save files with randomizers active use separate Cloud data files.",
+                confirmButtonText: "I Understand",
+                scrollbarPadding: false,
+                allowOutsideClick: false,
+            });
+
+            localStorage.displayedRandomizerInfo = true;
+        }
+    }
+
 
     /**********************************
         Modern File Handle Functions   
@@ -988,7 +1108,7 @@ export default class MainPage extends Component
             ({
                 icon: "error",
                 title: "Cloud Folder Not Chosen",
-                html: `<p>If you already have a Cloud storage file, then pick the folder with the <b>${HOME_FILE_NAME}</b> file.</p>`,
+                html: `<p>If you already have a Cloud storage file, then pick the folder with the <b>${this.getHomeFileName()}</b> file.</p>`,
                 scrollbarPadding: false,
             });
         }
@@ -2174,6 +2294,7 @@ export default class MainPage extends Component
         ({
             titles: this.state.homeTitles,
             boxes: this.state.homeBoxes,
+            randomizer: this.state.isRandomizedSave,
             version: 2, //No version was in the original tester release
         });
 
@@ -2346,7 +2467,7 @@ export default class MainPage extends Component
                     //Backup old Home file (if present) and create fresh one
                     await this.tryBackupCorruptedHomeFile();
                     console.log("Creating new Home file");
-                    homeFileHandle = await this.state.homeDirHandle.getFileHandle(HOME_FILE_NAME, {create: true});
+                    homeFileHandle = await this.state.homeDirHandle.getFileHandle(this.getHomeFileName(), {create: true});
                     this.setState({homeFileHandle: homeFileHandle});
                 }
 
@@ -2366,12 +2487,16 @@ export default class MainPage extends Component
         {
             let element = document.createElement("a");
             element.href = URL.createObjectURL(fileContents);
-            element.download = HOME_FILE_NAME;
+            element.download = this.getHomeFileName();
             document.body.appendChild(element); //Required for this to work in FireFox
             element.click();
         }
 
-        localStorage.lastSavedHomeData = encryptedHomeData;
+        if (this.state.isRandomizedSave)
+            localStorage.lastSavedRandomizerHomeData = encryptedHomeData;
+        else
+            localStorage.lastSavedHomeData = encryptedHomeData;
+
         return true;
     }
 
@@ -2381,14 +2506,14 @@ export default class MainPage extends Component
     async tryBackupCorruptedHomeFile()
     {
         var homeDirHandle = this.state.homeDirHandle;
-        var oldHomeFileHandle = await this.findFileHandleWithNameInDirHandle(HOME_FILE_NAME, homeDirHandle);
+        var oldHomeFileHandle = await this.findFileHandleWithNameInDirHandle(this.getHomeFileName(), homeDirHandle);
 
         if (oldHomeFileHandle != null) //There is a home file that's not getting used because it's corrupt
         {
             //Back it up in case the user intentionally corrupted it
             console.log("Backing up corrupted Home file");
             var oldFileContents = await oldHomeFileHandle.getFile(); //Get corrupted file contents
-            var backupFileHandle = await homeDirHandle.getFileHandle(HOME_FILE_NAME.split(".dat")[0] + "_corrupt.dat", {create: true});
+            var backupFileHandle = await homeDirHandle.getFileHandle(this.getHomeFileName().split(".dat")[0] + "_corrupt.dat", {create: true});
             var writable = await backupFileHandle.createWritable();
             await writable.write(oldFileContents); //Write the contents of the file to the stream.
             await writable.close(); //Close the file and write the contents to disk.
@@ -2763,10 +2888,10 @@ export default class MainPage extends Component
         return (
             <div className="main-page-upload-instructions fade-in">
                 <h2>Upload your Cloud data.</h2>
-                <h3>It should be a file called <b>{HOME_FILE_NAME}</b>.</h3>
+                <h3>It should be a file called <b>{this.getHomeFileName()}</b>.</h3>
                 <div>
                     {
-                        "lastSavedHomeData" in localStorage && localStorage.lastSavedHomeData != null && localStorage.lastSavedHomeData !== "" ?
+                        this.existsLastSavedHomeData() ?
                             <div>
                                 <Button size="lg" variant="info" onClick={() => this.useLastSavedHomeFile(error)}
                                         className="choose-home-file-button">
@@ -2786,7 +2911,7 @@ export default class MainPage extends Component
                     </div>
 
                     <div>
-                        <Button size="lg" onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE, fileUploadError: false, serverConnectionError: false})}
+                        <Button size="lg" onClick={() => this.setState({editState: STATE_MOVING_POKEMON, fileUploadError: false, serverConnectionError: false})}
                                 className="choose-home-file-button">
                             Create New
                         </Button>
@@ -3169,7 +3294,7 @@ function GetInitialPageState()
         if (CanUseFileHandleAPI())
             return STATE_CHOOSE_HOME_FOLDER;
 
-        return STATE_UPLOAD_HOME_FILE;
+        return STATE_UPLOAD_SAVE_FILE;
     }
 
     return STATE_WELCOME;
