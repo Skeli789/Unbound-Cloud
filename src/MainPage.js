@@ -78,6 +78,7 @@ export default class MainPage extends Component
 
             //Uploading & Downloading Files
             uploadProgress: BLANK_PROGRESS_BAR,
+            isFirstTime: false,
             selectedSaveFile: null,
             selectedHomeFile: null,
             fileUploadError: false,
@@ -283,6 +284,20 @@ export default class MainPage extends Component
      */
     navBackButtonPressed()
     {
+        this.wipeErrorMessage();
+
+        switch (this.state.editState)
+        {
+            case STATE_UPLOAD_HOME_FILE:
+                this.setState({editState: STATE_UPLOAD_SAVE_FILE, saveFileData: {"data": []}, saveFileNumber: 0});
+                return;
+            case STATE_CHOOSE_SAVE_HANDLE:
+                this.setState({editState: STATE_CHOOSE_HOME_FOLDER, homeFileHandle: null}); //Don't clear homeDirHandle because it's populated on page load
+                return;
+            default:
+                break;
+        }
+
         if (this.state.viewingBoxList >= 0)
             this.setState({viewingBoxList: -1}); //Overrides Friend Trade because could be jumping boxes looking for a Pokemon
         else if (this.state.inFriendTrade)
@@ -834,7 +849,7 @@ export default class MainPage extends Component
             }
             else
             {
-                this.setState({editState: STATE_UPLOAD_HOME_FILE});
+                this.setState({editState: this.state.isFirstTime ? STATE_MOVING_POKEMON : STATE_UPLOAD_HOME_FILE});
             }
 
             this.wipeErrorMessage();
@@ -2648,7 +2663,7 @@ export default class MainPage extends Component
      * Gets the button for returning to the box view from the box list page.
      * @returns {JSX} A arrow meant to be pressed as a button.
      */
-    backToMainViewButton()
+    handlePressBackButton()
     {
         var size = window.innerWidth < 500 ? 28 : 42;
         var paddingRight = window.innerWidth < 500 ? "0%" : "90%";
@@ -2656,6 +2671,19 @@ export default class MainPage extends Component
         return (
             <BiArrowBack size={size} className="top-bar-back-button" style={{paddingRight: paddingRight}}
                          aria-label="Back" onClick={this.navBackButtonPressed.bind(this)}/>
+        );
+    }
+
+    /**
+     * Prints the back arrow at the top of the page.
+     * @returns {JSX} The back button navbar.
+     */
+    printBackButton()
+    {
+        return (
+            <div className={"top-bar-buttons " + (this.state.viewingBoxList >= 0 ? "fixed-navbar" : "sticky-navbar")}>
+                {this.handlePressBackButton()}
+            </div>
         );
     }
 
@@ -2672,13 +2700,7 @@ export default class MainPage extends Component
         var sticky = viewingNonBoxView || !this.areBoxViewsVertical();
 
         if (viewingNonBoxView)
-        {
-            return (
-                <div className={"top-bar-buttons " + (this.state.viewingBoxList >= 0 ? "fixed-navbar" : "sticky-navbar")}>
-                    {this.backToMainViewButton()}
-                </div>
-            );
-        }
+            return this.printBackButton();
 
         return (
             <div className="top-bar-buttons" style={{zIndex: 100,
@@ -2696,6 +2718,10 @@ export default class MainPage extends Component
      */
     navBarNoButtons()
     {
+        if (this.state.editState === STATE_UPLOAD_HOME_FILE
+        || this.state.editState === STATE_CHOOSE_SAVE_HANDLE)
+            return this.printBackButton();
+
         return <div className="top-bar-buttons navbar-blank" />;
     }
 
@@ -2860,14 +2886,14 @@ export default class MainPage extends Component
                 <h2>Is this your first time here?</h2>
                 <div>
                     <div>
-                        <Button size="lg" variant="success" onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE})}
+                        <Button size="lg" variant="success" onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE, isFirstTime: true})}
                                 className="choose-home-file-button">
                             Yes
                         </Button>
                     </div>
 
                     <div>
-                        <Button size="lg" variant="secondary" onClick={() => this.setState({editState: STATE_UPLOAD_HOME_FILE})}
+                        <Button size="lg" variant="secondary" onClick={() => this.setState({editState: STATE_UPLOAD_SAVE_FILE})}
                                 className="choose-home-file-button">
                             No
                         </Button>
