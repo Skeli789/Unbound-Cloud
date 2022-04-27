@@ -12,6 +12,9 @@ DATA_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 SAVE_DIR = os.path.join(DATA_DIR, "saves")
 
 FLAG_UNBOUND_EASY_PUZZLES = 0x16E3
+VAR_UNBOUND_MAIN_STORY = 0x500C
+VAR_UNBOUND_KEYSTONE = 0x5010
+VAR_UNBOUND_HEALING_MAP = 0x405A
 
 # Less tests can be found here because most are already handled in test_integrated.py
 
@@ -196,6 +199,95 @@ class TestFlagGet:
         Defines.LoadAll(fileSignature)
         assert not SaveBlockProcessing.FlagGet(FLAG_UNBOUND_SPECIES_RANDOMIZER, saveBlocks)
         assert not SaveBlockProcessing.FlagGet(FLAG_UNBOUND_LEARNSET_RANDOMIZER, saveBlocks)
+
+
+class TestVarGet:
+    def testMemoryOffsets(self):
+        assert CFRUVarsASize == 0x124
+        assert CFRUVarsAEndOffset == 0xFF0
+        assert CFRUVarsBSize == 0xDC
+        assert CFRUVarsBEndOffset == 0x52C
+
+    def testFakeVar(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/magm.sav")
+        Defines.LoadAll(fileSignature)
+        with raises(ValueError): 
+            SaveBlockProcessing.VarGet(0xFFFF, saveBlocks)
+
+    def testVanillaDifficulty(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/var_test/vanilla_difficulty.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.VarGet(VAR_UNBOUND_GAME_DIFFICULTY, saveBlocks) == 1
+
+    def testDifficultDifficulty(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/var_test/difficult_difficulty.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.VarGet(VAR_UNBOUND_GAME_DIFFICULTY, saveBlocks) == 0
+
+    def testExpertDifficulty(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/var_test/expert_difficulty.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.VarGet(VAR_UNBOUND_GAME_DIFFICULTY, saveBlocks) == 2
+
+    def testInsaneDifficulty(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/var_test/insane_difficulty.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.VarGet(VAR_UNBOUND_GAME_DIFFICULTY, saveBlocks) == 3
+
+    def testHealingMap_Var0x4000Range(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/flex.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.VarGet(VAR_UNBOUND_HEALING_MAP, saveBlocks) == 0x21
+
+    def testMainStory_Var0x5000Range(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/flex.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.VarGet(VAR_UNBOUND_MAIN_STORY, saveBlocks) == 0x56
+
+    def testKeystone_TwoByteVar(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/flex.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.VarGet(VAR_UNBOUND_KEYSTONE, saveBlocks) == 0x161
+
+
+class TestIsAccessibleCurrently:
+    def testEmptySaveBlocks(self):
+        assert not SaveBlockProcessing.IsAccessibleCurrently(dict())
+
+    def testMAGMNormally(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/magm.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.IsAccessibleCurrently(saveBlocks)
+
+    def testMAGMBeforePC(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/flag_test/magm_before_pc.sav")
+        Defines.LoadAll(fileSignature)
+        assert not SaveBlockProcessing.IsAccessibleCurrently(saveBlocks)
+
+    def testInsaneMainGame(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/var_test/insane_main_game.sav")
+        Defines.LoadAll(fileSignature)
+        assert not SaveBlockProcessing.IsAccessibleCurrently(saveBlocks)
+
+    def testInsanePostGame(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/var_test/insane_difficulty.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.IsAccessibleCurrently(saveBlocks)
+
+    def testInsaneNewGamePlus(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/var_test/insane_ng+.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.IsAccessibleCurrently(saveBlocks)
+
+    def testSandboxMainGame(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/var_test/expert_sandbox.sav")
+        Defines.LoadAll(fileSignature)
+        assert not SaveBlockProcessing.IsAccessibleCurrently(saveBlocks)
+
+    def testSandboxPostGame(self):
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/var_test/expert_sandbox_post_game.sav")
+        Defines.LoadAll(fileSignature)
+        assert SaveBlockProcessing.IsAccessibleCurrently(saveBlocks)
 
 
 def CalcFlagCount(flagList):

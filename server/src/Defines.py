@@ -91,7 +91,6 @@ GameDetails = {
         "shinyOdds": MODERN_SHINY_ODDS,
         "boxCount": 25,
         "randomizerFlags": [FLAG_UNBOUND_SPECIES_RANDOMIZER, FLAG_UNBOUND_LEARNSET_RANDOMIZER],
-        "gameClearFlag": [FLAG_FR_GAME_CLEAR],
         "inaccessible": [
             {   # Insane difficulty
                 "varSetTo": (VAR_UNBOUND_GAME_DIFFICULTY, INSANE_DIFFICULTY_UNBOUND),
@@ -180,6 +179,13 @@ class Defines:
     def GetRandomizerFlags() -> List[int]:
         if "randomizerFlags" in GameDetails[Defines.fileSignature]:
             return GameDetails[Defines.fileSignature]["randomizerFlags"]
+
+        return []
+
+    @staticmethod
+    def GetInaccessibleConditions() -> List[dict]:
+        if "inaccessible" in GameDetails[Defines.fileSignature]:
+            return GameDetails[Defines.fileSignature]["inaccessible"]
 
         return []
 

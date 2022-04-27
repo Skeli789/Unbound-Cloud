@@ -82,6 +82,8 @@ def LoadAllTest(saveName: str):
 
     saveBlocks, fileSignature = SaveBlocks.LoadAll(saveFilePath)
     Defines.LoadAll(fileSignature)
+
+    assert SaveBlockProcessing.IsAccessibleCurrently(saveBlocks)
     allPokemon = SaveBlockProcessing.LoadPCPokemon(saveBlocks)
     boxTitles = SaveBlockProcessing.LoadCFRUBoxTitles(saveBlocks)
 
@@ -110,6 +112,8 @@ def LoadAndReplaceTest(saveName: str, definesAdjustmentFunc=None, shouldFail=Fal
     Defines.LoadAll(fileSignature)
     if definesAdjustmentFunc is not None:
         definesAdjustmentFunc()
+
+    assert SaveBlockProcessing.IsAccessibleCurrently(saveBlocks)
     allPokemon = SaveBlockProcessing.LoadPCPokemon(saveBlocks)
     seenFlags, caughtFlags = SaveBlockProcessing.LoadCFRUPokedexFlags(saveBlocks)
 
