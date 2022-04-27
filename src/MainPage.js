@@ -6,6 +6,7 @@ import axios from "axios";
 import React, {Component} from 'react';
 import {Button, ProgressBar, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {isMobile} from "react-device-detect";
+import {StatusCode} from "status-code-enum";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -84,6 +85,7 @@ export default class MainPage extends Component
             fileUploadError: false,
             serverConnectionError: false,
             mismatchedRandomizerError: false,
+            inaccessibleSaveError: false,
             saveFileData: {"data": []}, //Also used in downloading
             saveFileNumber: 0, //Also used in downloading
             homeDirHandle: null,  //Modern file system API
@@ -189,11 +191,14 @@ export default class MainPage extends Component
      */
     wipeErrorMessage()
     {
-        return this.setState({
+        return this.setState
+        ({
             errorMessage: ["", ""],
             impossibleMovement: null,
             fileUploadError: false,
             serverConnectionError: false,
+            mismatchedRandomizerError: false,
+            inaccessibleSaveError: false,
         });
     }
 
@@ -961,9 +966,11 @@ export default class MainPage extends Component
         {
             console.log("Could not connect to the server.");
 
-            await this.setState({
+            await this.setState
+            ({
                 editState: newState,
                 fileUploadError: false,
+                inaccessibleSaveError: false,
                 serverConnectionError: true,
             });
 
@@ -973,9 +980,11 @@ export default class MainPage extends Component
         {
             console.log(error["response"]["data"]);
 
-            await this.setState({
+            await this.setState
+            ({
                 editState: newState,
                 fileUploadError: true,
+                inaccessibleSaveError: error["response"]["status"] === StatusCode.ClientErrorForbidden,
                 serverConnectionError: false,
             });
 
@@ -995,30 +1004,43 @@ export default class MainPage extends Component
      */
     printSaveFileUploadError()
     {
-        PopUp.fire
-        ({
-            icon: "error",
-            title: "Unacceptable Save File",
-            text: "Make sure it's a save file for a supported ROM Hack and is not corrupted.",
-            confirmButtonText: "Which ROM Hacks are supported?",
-            scrollbarPadding: false,
-        }).then((result) =>
+        if (this.state.inaccessibleSaveError)
         {
-            if (result.isConfirmed)
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "Save File Can't Be Used Right Now",
+                text: "Please progress further in the game and try again.",
+                scrollbarPadding: false,
+            });
+        }
+        else
+        {
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "Unacceptable Save File",
+                text: "Make sure it's a save file for a supported ROM Hack and is not corrupted.",
+                confirmButtonText: "Which ROM Hacks are supported?",
+                scrollbarPadding: false,
+            }).then((result) =>
             {
-                let supportedHacks = [];
-    
-                for (let hack of SUPPORTED_HACKS)
-                    supportedHacks.push(`<li>${hack}</li>`);
-    
-                supportedHacks = supportedHacks.toString().replaceAll(",", "");
-                PopUp.fire
-                ({
-                    title: "Supported Hacks",
-                    html: `<ul style="text-align: left">${supportedHacks}</ul>`,
-                });
-            }
-        });
+                if (result.isConfirmed)
+                {
+                    let supportedHacks = [];
+        
+                    for (let hack of SUPPORTED_HACKS)
+                        supportedHacks.push(`<li>${hack}</li>`);
+        
+                    supportedHacks = supportedHacks.toString().replaceAll(",", "");
+                    PopUp.fire
+                    ({
+                        title: "Supported Hacks",
+                        html: `<ul style="text-align: left">${supportedHacks}</ul>`,
+                    });
+                }
+            });
+        }
     }
 
     /**

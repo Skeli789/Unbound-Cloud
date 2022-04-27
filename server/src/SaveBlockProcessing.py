@@ -17,10 +17,15 @@ SeenFlagsOffset = 0x310
 CaughtFlagsOffset = 0x38D
 CaughtFlagsEndOffset = 0x40A
 
-VanillaFlagsSaveBlock = 1
-VanillaFlagsOffset = 0xEE0
-VanillaFlagsSize = 0x120
-VanillaFlagsEndOffset = VanillaFlagsOffset + VanillaFlagsSize
+VanillaFlagsASaveBlock = 1
+VanillaFlagsAOffset = 0xEE0
+VanillaFlagsASize = BlockDataSize - VanillaFlagsAOffset
+VanillaFlagsAEndOffset = VanillaFlagsAOffset + VanillaFlagsASize
+
+VanillaFlagsBSaveBlock = 2
+VanillaFlagsBOffset = 0
+VanillaFlagsBSize = 0x120 - VanillaFlagsASize
+VanillaFlagsBEndOffset = VanillaFlagsBOffset + VanillaFlagsBSize
 
 CFRUFlagsASaveBlock = 0
 CFRUFlagsAOffset = 0xF24
@@ -33,9 +38,21 @@ CFRUFlagsBSize = 0x200 - CFRUFlagsASize
 CFRUFlagsBEndOffset = CFRUFlagsBOffset + CFRUFlagsBSize
 
 VanillaVarsSaveBlock = 2
-VanillaVarsOffset = 0xEE0
+VanillaVarsOffset = 0x10
 VanillaVarsSize = 0x200
 VanillaVarsEndOffset = VanillaVarsOffset + VanillaVarsSize
+
+CFRUVarsASaveBlock = 4
+CFRUVarsAOffset = 0xECC
+CFRUVarsASize = BlockDataSize - CFRUVarsAOffset
+CFRUVarsAEndOffset = CFRUVarsAOffset + CFRUVarsASize
+
+CFRUVarsBSaveBlock = 13
+CFRUVarsBOffset = 0x450
+CFRUVarsBSize = 0x200 - CFRUVarsASize
+CFRUVarsBEndOffset = CFRUVarsBOffset + CFRUVarsBSize
+
+VARS_START = 0x4000
 
 TrainerDetailsSaveBlock = 0
 TrainerNameLength = 7
@@ -164,8 +181,9 @@ class SaveBlockProcessing:
     def FlagGet(flag: int, saveBlocks: Dict[int, List[int]]) -> bool:
         if Defines.IsCFRUHack():
             if flag < 0x900:
-                if VanillaFlagsSaveBlock in saveBlocks:
-                    flags = saveBlocks[VanillaFlagsSaveBlock][VanillaFlagsOffset:VanillaFlagsEndOffset]
+                if VanillaFlagsASaveBlock in saveBlocks and VanillaFlagsBSaveBlock in saveBlocks:
+                    flags = saveBlocks[VanillaFlagsASaveBlock][VanillaFlagsAOffset:VanillaFlagsAEndOffset] \
+                          + saveBlocks[VanillaFlagsBSaveBlock][VanillaFlagsBOffset:VanillaFlagsBEndOffset]
                     return (flags[flag // 8] & (1 << (flag % 8))) != 0
             elif flag >= 0x900 and flag < 0x1900:
                 if CFRUFlagsASaveBlock in saveBlocks and CFRUFlagsBSaveBlock in saveBlocks:
@@ -176,6 +194,69 @@ class SaveBlockProcessing:
             raise ValueError(f"Flag \"{flag}\" is not wihin the valid range")
         else:
             return False
+
+    @staticmethod
+    def VarGet(var: int, saveBlocks: Dict[int, List[int]]) -> int:
+        if Defines.IsCFRUHack():
+            varsStart = 0
+            if var >= VARS_START and var < VARS_START + 0x100:
+                if VanillaVarsSaveBlock in saveBlocks:
+                    vars = saveBlocks[VanillaVarsSaveBlock][VanillaVarsOffset:VanillaVarsEndOffset]
+                    varsStart = VARS_START
+            elif var >= 0x5000 and var < 0x5200:
+                if CFRUVarsASaveBlock in saveBlocks and CFRUVarsBSaveBlock in saveBlocks:
+                    vars = saveBlocks[CFRUVarsASaveBlock][CFRUVarsAOffset:CFRUVarsAEndOffset] \
+                         + saveBlocks[CFRUVarsBSaveBlock][CFRUVarsBOffset:CFRUVarsBEndOffset]
+                    varsStart = 0x5000
+
+            if varsStart != 0:
+                return BytesToInt(vars[(var - varsStart) * 2:(var - varsStart) * 2 + 2])
+
+            raise ValueError(f"Var \"{var}\" is not wihin the valid range")
+        else:
+            return -1
+
+    @staticmethod
+    def IsAccessibleCurrently(saveBlocks: Dict[int, List[int]]) -> bool:
+        if saveBlocks == {}:
+            return False
+
+        conditions = Defines.GetInaccessibleConditions()
+        for condition in conditions:
+            if "butNotIfFlagSet" in condition:
+                if type(condition["butNotIfFlagSet"]) == list:
+                    skipCondition = False
+                    for flag in condition["butNotIfFlagSet"]:
+                        if SaveBlockProcessing.FlagGet(flag, saveBlocks):
+                            skipCondition = True
+                            break
+
+                    if skipCondition:  # At least one flag is set
+                        continue
+                else:
+                    flag = condition["butNotIfFlagSet"]
+                    if SaveBlockProcessing.FlagGet(flag, saveBlocks):
+                        continue
+
+            if "flagSet" in condition:
+                flag = condition["flagSet"]
+                if SaveBlockProcessing.FlagGet(flag, saveBlocks):
+                    return False
+            elif "flagNotSet" in condition:
+                flag = condition["flagNotSet"]
+                if not SaveBlockProcessing.FlagGet(flag, saveBlocks):
+                    return False
+            elif "varSetTo" in condition:
+                var, value = condition["varSetTo"]
+                if SaveBlockProcessing.VarGet(var, saveBlocks) == value:
+                    return False
+            elif "varNotSetTo" in condition:
+                var, value = condition["varNotSetTo"]
+                if SaveBlockProcessing.VarGet(var, saveBlocks) != value:
+                    return False
+
+        return True
+
 
     ### Code for updating save files ###
     @staticmethod

@@ -1,4 +1,5 @@
 import json
+from os import access
 import shutil
 import sys
 
@@ -28,6 +29,7 @@ def main():
                 allPokemon = []   # In case error reading save blocks
                 boxTitles = []
                 randomizer = False
+                accessible = True
 
                 if saveBlocks != {} and fileSignature != 0 and Defines.LoadAll(fileSignature):
                     allPokemon = SaveBlockProcessing.LoadPCPokemon(saveBlocks)
@@ -36,8 +38,11 @@ def main():
                     if SaveBlockProcessing.IsRandomizedSave(saveBlocks):
                         randomizer = True
 
+                    if not SaveBlockProcessing.IsAccessibleCurrently(saveBlocks):
+                        accessible = False
+
                 returnData({"gameId": Defines.GetCurrentDefinesDir(), "boxCount": Defines.BoxCount(),  # gameId is used on the front-end to load game-specific data
-                            "boxes": allPokemon, "titles": boxTitles, "randomizer": randomizer})
+                            "boxes": allPokemon, "titles": boxTitles, "randomizer": randomizer, "accessible": accessible})
                 return
         elif command == "UPDATE_SAVE":
             if len(sys.argv) > 3:  # Has data and save file

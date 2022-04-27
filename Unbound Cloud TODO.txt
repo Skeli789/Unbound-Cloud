@@ -7,5 +7,4 @@ Feature Modifications:
 -Timeout if friend trade connection has gone on too long
 
 Server Changes:
--Flags when accessible
 -Change the file signature for Unbound
