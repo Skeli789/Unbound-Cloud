@@ -4,7 +4,6 @@ New Features:
 
 Feature Modifications:
 -Timeout if friend trade connection has gone on too long
--Dragging should display original icon when hovering over original slot
 
 Server Changes:
 -Change the file signature for Unbound

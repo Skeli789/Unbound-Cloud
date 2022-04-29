@@ -112,7 +112,7 @@ export default class MainPage extends Component
             draggingOver: -1,
             draggingFromBox: -1,
             draggingToBox: -1,
-            draggedAtLeastOnce: false,
+            draggingLeftCell: false,
 
             //Actual Storage System
             saveGameId: SaveData["gameId"],
@@ -1758,6 +1758,15 @@ export default class MainPage extends Component
     **********************************/
 
     /**
+     * Checks if a Pokemon's dragging icon should currently appear on the screen.
+     * @returns {Boolean} - True if the icon should appear. False otherwise.
+     */
+    shouldViewDraggingImg()
+    {
+        return this.state.draggingImg !== "" && this.state.draggingLeftCell;
+    }
+
+    /**
      * Moves the icon of the Pokemon being dragged.
      * @param {Object} e - The drag mouse event.
      */
@@ -3311,7 +3320,7 @@ export default class MainPage extends Component
         }
 
         draggingImg = ""
-        if (this.state.draggingImg !== "")
+        if (this.shouldViewDraggingImg())
             draggingImg = <img src={this.state.draggingImg} alt={GetSpeciesName(GetSpecies(this.getMonAtBoxPos(this.state.draggingFromBox, this.state.draggingMon)))}
                                onMouseDown={(e) => e.preventDefault()} id="moving-icon" className="dragging-image"/>;
 
