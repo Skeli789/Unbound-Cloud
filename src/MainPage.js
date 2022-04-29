@@ -3312,7 +3312,7 @@ export default class MainPage extends Component
                 break;
         }
 
-        if (!DEBUG_ORIGINAL_FILE_METHOD && !isMobile && !CanUseFileHandleAPI())
+        if (!DEBUG_ORIGINAL_FILE_METHOD && !IsMobileBrowser() && !CanUseFileHandleAPI())
         {
             page = this.printNotSupportedInBrowser();
             navBar = false;
@@ -3365,4 +3365,15 @@ export function CanUseFileHandleAPI()
         return false;
 
     return typeof(window.showOpenFilePicker) === "function";
+}
+
+/**
+ * Checks if the user's browser is being run from a mobile device.
+ * @returns {Boolean} True if the user's browser is running from a mobile device. False if not.
+ */
+function IsMobileBrowser()
+{
+    //Some mobile devices can be run in desktop mode, so this determines that
+    return isMobile
+        || navigator.userAgent.match(/Mobile|Windows Phone|Lumia|Android|webOS|iPhone|iPod|Blackberry|PlayBook|BB10|Opera Mini|\bCrMo\/|Opera Mobi|Tablet|iPad/i);
 }
