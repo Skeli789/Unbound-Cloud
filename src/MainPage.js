@@ -3375,5 +3375,5 @@ function IsMobileBrowser()
 {
     //Some mobile devices can be run in desktop mode, so this determines that
     return isMobile
-        || navigator.userAgent.match(/Mobile|Windows Phone|Lumia|Android|webOS|iPhone|iPod|Blackberry|PlayBook|BB10|Opera Mini|\bCrMo\/|Opera Mobi|Tablet|iPad/i);
+        || navigator.userAgent.match(/Mobile|Windows Phone|Lumia|Android|webOS|iPhone|iPod|Blackberry|PlayBook|BB10|X11|Opera Mini|\bCrMo\/|Opera Mobi|Tablet|iPad/i);
 }
