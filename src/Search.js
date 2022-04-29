@@ -6,9 +6,10 @@ import React, { Component } from 'react';
 import {Button, Form} from "react-bootstrap";
 import {Dropdown} from 'semantic-ui-react';
 
-import {BOX_HOME} from './MainPage';
+import {BOX_HOME, BOX_SAVE} from './MainPage';
 import {GetAbility, GetBaseStats, GetCaughtBall, GetGender, GetItem, GetLevel, GetNature,
-        GetMoves, GetSpecies, GetVisibleNature, HasPokerus, IsEgg, IsShiny, MAX_LEVEL} from './PokemonUtil';
+        GetMoves, GetSpecies, GetVisibleNature, HasPokerus, IsEgg, IsShiny, MonWillLoseDataInSave, 
+        MAX_LEVEL} from './PokemonUtil';
 import {GetAbilityName, GetItemName, GetSpeciesName} from "./Util";
 
 import AbilityNames from "./data/AbilityNames.json";
@@ -48,6 +49,7 @@ export class Search extends Component
             genders: [false, false, false],
             shiny: [false, false],
             pokerus: [false, false],
+            warning: [false, false],
             speciesNameList: [],
             abilityNameList: [],
             moveNameList: [],
@@ -89,6 +91,15 @@ export class Search extends Component
     isHomeBox()
     {
         return this.state.boxType === BOX_HOME;
+    }
+
+    /**
+     * Gets whether or not the search filter is for save data boxes.
+     * @returns {Boolean} True if the search will be applied to a save box. False otherwise.
+     */
+    isSaveBox()
+    {
+        return this.state.boxType === BOX_SAVE;
     }
 
     /**
@@ -318,6 +329,21 @@ export class Search extends Component
     }
 
     /**
+     * Adds a checkmark for a specific data loss warning selection.
+     * @param {Object} e - The checkbox event.
+     * @param {Number} warningId - The number in the data loss warning selection to check off.
+     */
+    checkOffWarningChoice(e, warningId)
+    {
+        var isChecked = e.target.checked;
+        var warningChoice = [false, false];
+
+        if (warningId >= 0)
+            warningChoice[warningId] = isChecked; //Max one choice at a time
+        this.setState({warning: warningChoice});
+    }
+
+    /**
      * Closes a search menu without searching.
      */
     cancelSearch()
@@ -397,6 +423,14 @@ export class Search extends Component
                 criteria["pokerus"] = false; //No Pokerus
         }
 
+        if (this.state.warning.some((x) => x)) //At least one data loss warning option selected
+        {
+            if (this.state.warning[0])
+                criteria["warning"] = true; //Only with data loss warnings
+            else
+                criteria["warning"] = false; //No data loss warnings
+        }
+
         if (Object.keys(criteria).length === 0) //Nothing specified
             criteria = null;
 
@@ -440,7 +474,7 @@ export class Search extends Component
                 {titleBar}
 
                 <Form
-                        className={"search-form " + (this.isHomeBox() ? "home-box" : "save-box")}
+                        className={"search-form " + (this.isHomeBox() ? "home-box" : "save-box save-box-search")}
                         onSubmit={(e) => this.updateSearchCriteria(e)}
                 >
                     {/* Species Input */}
@@ -577,6 +611,7 @@ export class Search extends Component
                                         type="checkbox"
                                         label={gender}
                                         size="lg"
+                                        id={`gender-${gender}-radio-${this.state.boxSlot}`}
                                         onChange={e => this.checkOffGender(e, id)}
                                         checked={this.state.genders[id]}
                                         key={id}
@@ -594,6 +629,7 @@ export class Search extends Component
                             type="radio"
                             label="Either"
                             size="lg"
+                            id={`shiny-either-radio-${this.state.boxSlot}`}
                             onChange={e => this.checkOffShinyChoice(e, -1)}
                             checked={!this.state.shiny[0] && !this.state.shiny[1]}
                         />
@@ -606,6 +642,7 @@ export class Search extends Component
                                         type="radio"
                                         label={name}
                                         size="lg"
+                                        id={`shiny-${name}-radio-${this.state.boxSlot}`}
                                         onChange={e => this.checkOffShinyChoice(e, id)}
                                         checked={this.state.shiny[id]}
                                         key={"shiny-" + id}
@@ -623,6 +660,7 @@ export class Search extends Component
                             type="radio"
                             label="Either"
                             size="lg"
+                            id={`pokerus-either-radio-${this.state.boxSlot}`}
                             onChange={e => this.checkOffPokerusChoice(e, -1)}
                             checked={!this.state.pokerus[0] && !this.state.pokerus[1]}
                         />
@@ -635,6 +673,7 @@ export class Search extends Component
                                         type="radio"
                                         label={name}
                                         size="lg"
+                                        id={`pokerus-${name}-radio-${this.state.boxSlot}`}
                                         onChange={e => this.checkOffPokerusChoice(e, id)}
                                         checked={this.state.pokerus[id]}
                                         key={"pokerus-" + id}
@@ -642,6 +681,42 @@ export class Search extends Component
                             )
                         }
                     </Form.Group>
+
+                    {/* Warning Input */}
+                    {
+                        this.isSaveBox() ?
+                            <Form.Group>
+                                <Form.Label>Will Lose Data When Saved</Form.Label>
+                                <br/>
+                                <Form.Check
+                                    inline
+                                    type="radio"
+                                    label="Either"
+                                    size="lg"
+                                    id={`warning-either-radio-${this.state.boxSlot}`}
+                                    onChange={e => this.checkOffWarningChoice(e, -1)}
+                                    checked={!this.state.warning[0] && !this.state.warning[1]}
+                                />
+                                {
+                                    ["Only", "Exclude"].map
+                                    (
+                                        (name, id) =>
+                                            <Form.Check
+                                                inline
+                                                type="radio"
+                                                label={name}
+                                                size="lg"
+                                                id={`warning-${name}-radio-${this.state.boxSlot}`}
+                                                onChange={e => this.checkOffWarningChoice(e, id)}
+                                                checked={this.state.warning[id]}
+                                                key={"warning-" + id}
+                                            />
+                                    )
+                                }
+                            </Form.Group>
+                        :
+                            ""
+                    }
 
                     {/* Search Button */}
                     <div className = "search-form-buttons">
@@ -768,6 +843,13 @@ export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
     if ("pokerus" in searchCriteria)
     {
         if (HasPokerus(pokemon) !== searchCriteria["pokerus"])
+            return false;
+    }
+
+    //Check Has Data Loss Warning
+    if ("warning" in searchCriteria) //No need to check for save box since the choice can only be selected there
+    {
+        if (MonWillLoseDataInSave(pokemon, gameId) !== searchCriteria["warning"])
             return false;
     }
 

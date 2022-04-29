@@ -200,6 +200,14 @@
     z-index: 1;
 }
 
+.box-icon-warning-icon
+{
+    position: absolute;
+    top: 2px;
+    right: 0px;
+    z-index: 1;
+}
+
 .lower-icon-message
 {
     text-align: center;

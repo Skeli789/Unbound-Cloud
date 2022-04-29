@@ -7,10 +7,12 @@ import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
 import {CanMonGigantamax, ChangeMarking, GetAbility, /*GetBaseStats,*/ GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel,
         GetMarkings, GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleNature, GetVisibleOTId, GetVisibleStats,
-        GetEVs, GetIVs, GetMoveType, HasPokerus, IsEgg, WasCuredOfPokerus, HEART_FRIENDSHIP, MAX_FRIENDSHIP, NATURE_STAT_TABLE, GetSpecies} from "./PokemonUtil";
+        GetEVs, GetIVs, GetMoveType, HasPokerus, IsEgg, MonWillLoseMoveInSave, MonWillLoseItemInSave, GetSpecies, WasCuredOfPokerus,
+        HEART_FRIENDSHIP, MAX_FRIENDSHIP, NATURE_STAT_TABLE, MonWillLoseBallInSave} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetAbilityName, GetBallName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName, GetSpeciesName, GetTypeName} from "./Util";
 import MoveData from "./data/MoveData.json";
 
+import {AiFillWarning} from "react-icons/ai";
 import {BsCircle, BsSquare, BsTriangle, BsHeart, BsCircleFill, BsSquareFill, BsTriangleFill, BsHeartFill} from "react-icons/bs";
 
 import "./stylesheets/PokemonSummary.css";
@@ -45,6 +47,7 @@ export class PokemonSummary extends Component
             inTrade: props.inTrade,
             gameId: props.gameId,
             viewingEVsIVs: props.viewingEVsIVs,
+            isSaveBox: props.isSaveBox,
         };
 
         this.setGlobalState = props.setGlobalState;
@@ -241,11 +244,14 @@ export class PokemonSummary extends Component
         }
 
         return (
-            <OverlayTrigger placement="right" overlay={props => (<Tooltip {...props}>Markings</Tooltip>)}>
                 <span className="summary-markings">
-                    {displayMarkings}
+                    {/*Tooltip goes in here because otherwise it appears when moving mouse over half the summary view*/}
+                    <OverlayTrigger placement="right" overlay={props => (<Tooltip {...props}>Markings</Tooltip>)}>
+                        <span>
+                            {displayMarkings}
+                        </span>
+                    </OverlayTrigger>
                 </span>
-            </OverlayTrigger>
         );
     }
  
@@ -273,11 +279,29 @@ export class PokemonSummary extends Component
      */
     printBallAndItemIcon()
     {
+        var loseItemWarning, loseBallWarning;
+
         //Caught Ball Details
         var ballType = GetCaughtBall(this.state.pokemon);
         var ballName = GetBallName(ballType);
         var baseBallName = ballName.split(" Ball")[0].toLowerCase().replaceAll("é", "e");
         var ballNameTooltip = props => (<Tooltip {...props}>{ballName}</Tooltip>);
+
+        if (this.state.isSaveBox && MonWillLoseBallInSave(this.state.pokemon, this.state.gameId))
+        {
+            const loseItemTooltip = props => (<Tooltip {...props}>This Ball will disappear after saving</Tooltip>);
+
+            loseBallWarning=
+                <OverlayTrigger placement="top" overlay={loseItemTooltip}>
+                    <AiFillWarning className="summary-item-ball-warning summary-ball-warning"
+                                   fill="red" size={14}
+                                   aria-label="Will Lose Ball"/>
+                </OverlayTrigger>;
+        }
+        else
+        {
+            loseBallWarning = <span className="summary-item-ball-warning summary-ball-warning"/>;
+        }
 
         //Held Item Details
         var item = GetItem(this.state.pokemon);
@@ -285,21 +309,42 @@ export class PokemonSummary extends Component
         var itemLink = GetItemIconLink(item);
         var itemTooltip = props => (<Tooltip {...props}>{itemName}</Tooltip>);
 
+        if (this.state.isSaveBox && MonWillLoseItemInSave(this.state.pokemon, this.state.gameId))
+        {
+            const loseItemTooltip = props => (<Tooltip {...props}>This item will disappear after saving</Tooltip>);
+
+            loseItemWarning=
+                <OverlayTrigger placement="top" overlay={loseItemTooltip}>
+                    <AiFillWarning className="summary-item-ball-warning summary-item-warning"
+                                   fill="red" size={14}
+                                   aria-label="Will Lose Item"/>
+                </OverlayTrigger>;
+        }
+        else
+        {
+            loseItemWarning = <span className="summary-item-ball-warning summary-item-warning"/>;
+        }
+
         return (
             <div className="summary-ball-icon-container">
                 {   //Held Item
                     itemLink !== "" ?
-                        <OverlayTrigger placement="top" overlay={itemTooltip}>
-                            <img src={itemLink} alt="" onMouseDown={(e) => e.preventDefault()}/>
-                        </OverlayTrigger>
+                        <div style={{position: "relative"}}> {/*Relative allows the warning's absolute to function properly*/}
+                            {loseItemWarning}
+                            <OverlayTrigger placement="top" overlay={itemTooltip}>
+                                <img src={itemLink} alt="" onMouseDown={(e) => e.preventDefault()}/>
+                            </OverlayTrigger>
+                        </div>
                     :
                         ""
                 }
-                {   //Caught Ball
+                {/*Caught Ball*/}
+                <div style={{position: "relative"}}>
+                    {loseBallWarning}
                     <OverlayTrigger placement="top" overlay={ballNameTooltip}>
                         <img src={POKE_BALL_GFX_LINK + baseBallName + ".png"} alt="" onMouseDown={(e) => e.preventDefault()}/>
                     </OverlayTrigger>
-                }
+                </div>
             </div>
         )
     }
@@ -435,13 +480,32 @@ export class PokemonSummary extends Component
         {
             let move = rawMoves[i];
 
+            //Print warning icon if necessary
+            if (this.state.isSaveBox && MonWillLoseMoveInSave(move, this.state.gameId))
+            {
+                const loseMoveTooltip = props => (<Tooltip {...props}>This move will disappear after saving</Tooltip>);
+
+                moves.push(
+                    <OverlayTrigger placement="top" overlay={loseMoveTooltip} key={key++}>
+                        <AiFillWarning className="summary-move-warning"
+                                       fill="red"
+                                       size={18}
+                                       aria-label="Will Lose Move"/>
+                    </OverlayTrigger>
+                );
+            }
+            else
+            {
+                moves.push(<span className="summary-move-warning" key={key++}/>);
+            }
+
             //Print Type
             if (move in MoveData)
             {
                 var moveType = GetMoveType(move, this.state.pokemon, this.state.gameId);
                 typeNames[i] = GetTypeName(moveType);
                 var alt = typeNames[i].slice(0, 2);
-                var typeNameTooltip = props => (<Tooltip {...props}>{typeNames[i]}</Tooltip>);
+                const typeNameTooltip = props => (<Tooltip {...props}>{typeNames[i]}</Tooltip>);
 
                 moves.push(
                     <OverlayTrigger placement="left" overlay={typeNameTooltip} key={key++}>
@@ -467,7 +531,7 @@ export class PokemonSummary extends Component
                 //Print Move Split
                 var moveSplit = MoveData[move]["split"];
                 splitNames[i] = moveSplit.toLowerCase().charAt(6).toUpperCase() + moveSplit.toLowerCase().slice(7); //Start after SPLIT_
-                var splitNameTooltip = props => (<Tooltip {...props}>{splitNames[i]}</Tooltip>);
+                const splitNameTooltip = props => (<Tooltip {...props}>{splitNames[i]}</Tooltip>);
 
                 moves.push(
                     <OverlayTrigger placement={this.state.areBoxViewsVertical ? "top" : "right"} overlay={splitNameTooltip} key={key++}>
@@ -486,6 +550,7 @@ export class PokemonSummary extends Component
             <div className="summary-moves-container">
                 <span className="summary-moves-col-1-filler"/>
                 <span className="summary-moves-col-2-filler"/>
+                <span className="summary-moves-col-3-filler"/>
                 <span className="summary-moves-pp-title summary-pp">PP</span>
                 <span className="summary-moves-split-title">Split</span>
                 {moves}
