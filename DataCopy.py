@@ -17,7 +17,10 @@ def main():
     for gameDir in gameDirs:
         gameDirName = gameDir.split("\\")[-1]
         for file in entireFiles:
-            shutil.copy(os.path.join(gameDir, file), os.path.join(clientDataDir, gameDirName, file))
+            try:
+                shutil.copy(os.path.join(gameDir, file), os.path.join(clientDataDir, gameDirName, file))
+            except shutil.SameFileError:
+                pass
 
         for file in valuesOnly:
             with open(os.path.join(gameDir, file), "r") as jsonFile:
@@ -40,8 +43,10 @@ def main():
     # Copy Entire Files
     entireFiles = ["ExperienceCurves.json", "SpeciesNames.json", "SpeciesToDexNum.json"]
     for file in entireFiles:
-        shutil.copy(os.path.join(serverDataDir, file), os.path.join(clientDataDir, file))
-
+        try:
+            shutil.copy(os.path.join(serverDataDir, file), os.path.join(clientDataDir, file))
+        except shutil.SameFileError:
+            pass
     print("Data copied successfully!")
 
 
