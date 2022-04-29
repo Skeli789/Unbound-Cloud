@@ -24,7 +24,7 @@ import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 
 import {BiArrowBack} from "react-icons/bi";
 import {FaArrowAltCircleRight, FaCloud, FaGamepad} from "react-icons/fa";
-import {IoMdVolumeHigh, IoMdVolumeMute} from "react-icons/io"
+import {RiVolumeUpFill, RiVolumeMuteFill} from "react-icons/ri"
 import {MdSwapVert} from "react-icons/md"
 
 import "./stylesheets/MainPage.css";
@@ -2807,7 +2807,7 @@ export default class MainPage extends Component
     muteSoundsButton()
     {
         var size = 42;
-        var icon = (this.state.muted) ? <IoMdVolumeMute size={size} /> : <IoMdVolumeHigh size={size} />;
+        var icon = (this.state.muted) ? <RiVolumeMuteFill size={size} /> : <RiVolumeUpFill size={size} />;
         var tooltipText = (this.state.muted) ? "Sounds Are Off" : "Sounds Are On";
         const tooltip = props => (<Tooltip {...props}>{tooltipText}</Tooltip>);
 
