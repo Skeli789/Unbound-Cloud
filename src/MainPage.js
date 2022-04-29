@@ -16,7 +16,7 @@ import {BoxView, HIGHEST_HOME_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW}
 import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {FriendTrade} from "./FriendTrade";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetSpecies, HasEggLockeOT, IsBlankMon,
-        IsEgg, IsHoldingBannedItem, PokemonAreDuplicates} from "./PokemonUtil";
+        IsEgg, IsHoldingBannedItem, PokemonAreDuplicates, WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
@@ -2562,37 +2562,35 @@ export default class MainPage extends Component
      */
     async trySaveAndExit()
     {
-        /*if (this.isAnyMonInWonderTrade())
+        if (WillAtLeastOneMonLoseDataInSave(this.state.saveBoxes, this.state.saveGameId))
         {
-            let pokemon = this.getMonAtBoxPos(this.state.wonderTradeData.boxType,
-                                GetOffsetFromBoxNumAndPos(this.state.wonderTradeData.boxNum, this.state.wonderTradeData.boxPos));
-
             PopUp.fire
             ({
-                imageUrl: GetIconSpeciesLink(pokemon),
-                imageAlt: "",
-                title: `Saving can't be done while a Pokemon is up for a Wonder Trade!\nStop trying to Wonder Trade ${GetNickname(pokemon)}?`,
-                confirmButtonText: `No, keep it going.`,
-                denyButtonText: `Cancel the trade.`,
+                icon: 'warning',
+                title: "At least one Pokemon will lose data when the game is saved!",
+                denyButtonText: "Save Anyway",
+                cancelButtonText: "Cancel",
+                showConfirmButton: false,
                 showDenyButton: true,
+                showCancelButton: true,
                 scrollbarPadding: false,
-            }).then((result) =>
+            }).then(async (result) =>
             {
-                if (result.isDenied) //In this case it means agreed to cancel trade
+                if (result.isDenied) //Save Anyway - uses red colour
                 {
-                    //End previous Wonder Trade
-                    if (this.state.wonderTradeData != null)
-                        this.state.wonderTradeData.socket.close();
-    
-                    this.setState({wonderTradeData: null}, async () =>
-                    {
-                        PopUp.close(); //Close the "connection lost" pop up
-                        await this.saveAndExit();
+                    await this.saveAndExit();
+                }
+                else
+                {
+                    PopUp.fire
+                    ({
+                        title: 'Choose <b>Only</b> for the search option:\n<b>Will Lose Data When Saved</b>\nto find these Pokemon.',
+                        scrollbarPadding: false,
                     });
                 }
             });
         }
-        else*/
+        else
             await this.saveAndExit();
     }
 
@@ -2619,7 +2617,7 @@ export default class MainPage extends Component
                 //Force the save to end after this first one
                 this.wipeErrorMessage();
                 this.setState({savingMessage: "", isSaving: false});
-            });      
+            });
         }
         else
             PopUp.close();

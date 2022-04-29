@@ -10,7 +10,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 import {PokemonSummary} from "./PokemonSummary";
 import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, GetNickname, GetSpecies, IsBlankMon,
-        IsEgg, IsHoldingItem, IsShiny, IsValidPokemon} from "./PokemonUtil";
+        IsEgg, IsHoldingItem, IsShiny, IsValidPokemon, MonWillLoseDataInSave} from "./PokemonUtil";
 import {MatchesSearchCriteria, Search} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxPosBoxColumn, GetBoxPosBoxRow, GetBoxStartIndex,
@@ -19,7 +19,8 @@ import {WonderTrade} from "./WonderTrade";
 import gLivingDexOrder from "./data/LivingDexOrder.json";
 import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 
-import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
+import {AiFillWarning, AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCheckCircle,
+        AiOutlineCloseCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
 import {BiSearchAlt2} from "react-icons/bi";
 import {CgExport, CgPokemon} from "react-icons/cg";
 import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
@@ -53,6 +54,7 @@ const showdownTooltip = props => (<Tooltip {...props}>Showdown</Tooltip>);
 const releaseTooltip = props => (<Tooltip {...props}>Release</Tooltip>);
 const fixLivingDexTooltip = props => (<Tooltip {...props}>Sort Living Dex</Tooltip>);
 const tradeTooltip = props => (<Tooltip {...props}>Select For Trade</Tooltip>);
+const loseDataTooltip = props => (<Tooltip {...props}>Will lose data after saving</Tooltip>);
 
 
 export class BoxView extends Component
@@ -1292,8 +1294,9 @@ export class BoxView extends Component
             let species = GetIconSpeciesName(pokemon);
             let link = GetIconSpeciesLink(pokemon);
             let livingDexIcon = "";
-            let heldItemIcon = ""
-            let shinyIcon = ""
+            let heldItemIcon = "";
+            let shinyIcon = "";
+            let warningIcon = "";
 
             if (species === "none")
                 icon = "";
@@ -1335,12 +1338,17 @@ export class BoxView extends Component
                                       aria-label="Shiny">★</span> //Show shiny star
                 }
 
-                /* TODO: Warning icon (maybe yellow triangle or exclamation mark) when a Pokemon will lose data once the save file is updated
-                if (IsSaveBox() && MonWillLoseDataInSave(pokemon))
+                //Warning icon when a Pokemon will lose data once the save file is updated
+                if (this.isSaveBox() && MonWillLoseDataInSave(pokemon, this.getParentState().saveGameId))
                 {
                     warningIcon =
+                        <OverlayTrigger placement="top" overlay={loseDataTooltip}>
+                            <AiFillWarning className={"box-icon-warning-icon" + (!matchesSearchCriteria ? " box-icon-faded" : "")}
+                                                    fill={this.shouldShowIconImpossibleMoveWarning(key) ? "black" : "red"} size={14}
+                                                    hidden={hiddenImages}
+                                                    aria-label="Will Lose Data"/>
+                        </OverlayTrigger>;
                 }
-                */
             }
 
             if (addLivingDexIcon)
@@ -1372,7 +1380,7 @@ export class BoxView extends Component
                                 onMouseEnter = {this.handleSetDraggingOver.bind(this, i)}
                                 onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
                                 onContextMenu={(e) => this.handleSelectMonForViewing(e, key, pokemon)}
-                                key={key}>{shinyIcon} {icon} {heldItemIcon}
+                                key={key}>{shinyIcon} {icon} {heldItemIcon} {warningIcon}
                             </span>);
             }
             else
@@ -1383,7 +1391,7 @@ export class BoxView extends Component
                                 onMouseEnter = {this.handleSetDraggingOver.bind(this, i)}
                                 onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
                                 onContextMenu={(e) => this.handleSelectMonForViewing(e, key, pokemon)}
-                                key={key}>{shinyIcon} {icon} {heldItemIcon}
+                                key={key}>{shinyIcon} {icon} {heldItemIcon} {warningIcon}
                             </span>);
             }
         }
@@ -1433,6 +1441,7 @@ export class BoxView extends Component
                 return(<PokemonSummary pokemon={pokemon} areBoxViewsVertical={this.state.parent.areBoxViewsVertical()}
                                        boxType={this.state.boxType} changeWasMade={this.getParentState().changeWasMade}
                                        gameId={this.getParentState().saveGameId} viewingEVsIVs={this.getParentState().viewingSummaryEVsIVs}
+                                       isSaveBox={this.isSaveBox()}
                                        setGlobalState={this.state.parent.setState.bind(this.state.parent)}
                                        key={this.getSummaryMonKey()} inTrade={this.isTrading()}/>);
         }

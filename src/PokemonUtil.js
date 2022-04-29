@@ -9,8 +9,17 @@ import SpeciesToDexNum from "./data/SpeciesToDexNum.json";
 import ExperienceCurves from "./data/ExperienceCurves.json";
 import UnboundShinies from "./data/UnboundShinies.json";
 import CFRUBaseStats from "./data/cfru/BaseStats.json";
+import CFRUMoves from "./data/cfru/Moves.json";
+import CFRUItems from "./data/cfru/Items.json";
+import CFRUBallTypes from "./data/cfru/BallTypes.json";
 import UnboundBaseStats from "./data/unbound/BaseStats.json";
+import UnboundMoves from "./data/unbound/Moves.json";
+import UnboundItems from "./data/unbound/Items.json";
+import UnboundBallTypes from "./data/unbound/BallTypes.json";
 import MAGMBaseStats from "./data/magm/BaseStats.json";
+import MAGMMoves from "./data/magm/Moves.json";
+import MAGMItems from "./data/magm/Items.json";
+import MAGMBallTypes from "./data/magm/BallTypes.json";
 import {BASE_GFX_LINK, GetSpeciesName} from "./Util";
 
 const SPECIES_FORMS_ICON_NAMES =
@@ -193,14 +202,23 @@ const GAME_IDS_TO_DATA =
     "cfru":
     {
         "baseStats": CFRUBaseStats,
+        "moves": CFRUMoves,
+        "items": CFRUItems,
+        "ballTypes": CFRUBallTypes,
     },
     "unbound":
     {
         "baseStats": UnboundBaseStats,
+        "moves": UnboundMoves,
+        "items": UnboundItems,
+        "ballTypes": UnboundBallTypes,
     },
     "magm":
     {
         "baseStats": MAGMBaseStats,
+        "moves": MAGMMoves,
+        "items": MAGMItems,
+        "ballTypes": MAGMBallTypes,
     }
 }
 
@@ -1458,6 +1476,103 @@ export function DoesPokemonSpeciesExistInGame(pokemon, gameId)
     return species === "" //Always allow blank slots to be transferred in
         || species === "SPECIES_NONE"
         || GetBaseStats(pokemon, gameId) != null;
+}
+
+/**
+ * Checks if a Pokemon will lose a piece of data when saved in the current game.
+ * @param {Pokemon} pokemonData - The data to check if exists (eg. move, item, etc.).
+ * @param {String} gameId - The game the Pokemon will be saved in.
+ * @param {String} gameDataName - The submember in GAME_IDS_TO_DATA to load the data from.
+ * @returns {Boolean} True if the data will be lost. False if it won't.
+ */
+function DataWillBeLostInGame(pokemonData, gameId, gameDataName)
+{
+    var allData;
+
+    if (gameId in GAME_IDS_TO_DATA)
+        allData = GAME_IDS_TO_DATA[gameId][gameDataName];
+
+    return allData != null && !(pokemonData in allData);
+}
+
+/**
+ * Checks if a Pokemon will lose its held item when saved in the current game.
+ * @param {Pokemon} pokemon - The Pokemon to check.
+ * @param {String} gameId - The game the Pokemon will be saved in.
+ * @returns {Boolean} True if the Pokemon will lose its held item. False if it won't.
+ */
+export function MonWillLoseItemInSave(pokemon, gameId)
+{
+    return DataWillBeLostInGame(GetItem(pokemon), gameId, "items");
+}
+
+/**
+ * Checks if a Pokemon will lose its caught Ball when saved in the current game.
+ * @param {Pokemon} pokemon - The Pokemon to check.
+ * @param {String} gameId - The game the Pokemon will be saved in.
+ * @returns {Boolean} True if the Pokemon will lose its caught Ball. False if it won't.
+ */
+export function MonWillLoseBallInSave(pokemon, gameId)
+{
+    return DataWillBeLostInGame(GetCaughtBall(pokemon), gameId, "ballTypes");
+}
+
+/**
+ * Checks if a Pokemon will lose a certain move when saved in the current game.
+ * @param {String} move - The move to check.
+ * @param {String} gameId - The game the Pokemon will be saved in.
+ * @returns {Boolean} True if the Pokemon will lose the move. False if it won't.
+ */
+export function MonWillLoseMoveInSave(move, gameId)
+{
+    return DataWillBeLostInGame(move, gameId, "moves");
+}
+
+/**
+ * Checks if a Pokemon will lose a move when saved in the current game.
+ * @param {Pokemon} pokemon - The Pokemon to check.
+ * @param {String} gameId - The game the Pokemon will be saved in.
+ * @returns {Boolean} True if the Pokemon will lose at least one move. False if it won't.
+ */
+export function MonWillLoseSomeMoveInSave(pokemon, gameId)
+{
+    for (let move of GetMoves(pokemon))
+    {
+        if (MonWillLoseMoveInSave(move, gameId))
+            return true;
+    }
+
+    return false;
+}
+
+/**
+ * Checks if a Pokemon will lose any of its data when saved in the current game.
+ * @param {Pokemon} pokemon - The Pokemon to check.
+ * @param {String} gameId - The game the Pokemon will be saved in.
+ * @returns {Boolean} True if the Pokemon will lose some data. False if it won't.
+ */
+export function MonWillLoseDataInSave(pokemon, gameId)
+{
+    return MonWillLoseItemInSave(pokemon, gameId)
+        || MonWillLoseBallInSave(pokemon, gameId)
+        || MonWillLoseSomeMoveInSave(pokemon, gameId);
+}
+
+/**
+ * Checks if any Pokemon will lose any of its data when saved in the current game.
+ * @param {Array<Pokemon>} boxes - The list of Pokemon to check.
+ * @param {String} gameId - The game the Pokemon will be saved in.
+ * @returns {Boolean} True if any Pokemon will lose some data. False if none will.
+ */
+export function WillAtLeastOneMonLoseDataInSave(boxes, gameId)
+{
+    for (let pokemon of boxes)
+    {
+        if (MonWillLoseDataInSave(pokemon, gameId))
+            return true;
+    }
+
+    return false;
 }
 
 /**

@@ -17,8 +17,24 @@
     margin-bottom: 0px;
 }
 
+.form-check-input, .form-check-label
+{
+    cursor: pointer;
+    color: black;
+}
+
 .search-loading
 {
     text-align: center;
+    font-weight: bold;
+}
+
+.save-box-search
+{
+    color: white; /*Text colour*/
+}
+
+.form-label
+{
     font-weight: bold;
 }

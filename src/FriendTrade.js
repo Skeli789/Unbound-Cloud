@@ -702,6 +702,7 @@ export class FriendTrade extends Component
                         <PokemonSummary pokemon={pokemon} areBoxViewsVertical={this.getMainPage().areBoxViewsVertical()}
                                         boxType={BOX_HOME} changeWasMade={null}
                                         gameId={this.getGlobalState().saveGameId}  viewingEVsIVs={this.getGlobalState().viewingSummaryEVsIVs}
+                                        isSaveBox={false}
                                         setGlobalState={this.setGlobalState.bind(this)}
                                         key={0} inTrade={true}/>
                     :
