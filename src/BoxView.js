@@ -230,13 +230,15 @@ export class BoxView extends Component
     /**
      * Gets whether or not the mon at a specific box position is currently being dragged.
      * @param {Number} boxPos - The box position to check.
+     * @param {Boolean} leftCellAtLeastOnce - Whether or not the Pokemon has been dragged out its cell at least once.
      * @returns {Boolean} True if the mon is being dragged, False otherwise.
     */
-    isMonAtPosBeingDragged(boxPos)
+    isMonAtPosBeingDragged(boxPos, leftCellAtLeastOnce)
     {
         return this.getParentState().draggedAtLeastOnce //Icon is attached to mouse
             && this.getParentState().draggingMon === boxPos + this.getBoxStartIndex()
-            && this.getParentState().draggingFromBox === this.state.boxSlot;
+            && this.getParentState().draggingFromBox === this.state.boxSlot
+            && (!leftCellAtLeastOnce || this.getParentState().draggingLeftCell);
     }
 
     /**
@@ -542,7 +544,7 @@ export class BoxView extends Component
     doesClickingSpotDeselectChoice(boxPos)
     {
         if (this.isMonAtPosSelected(boxPos) //Already selected
-        && !this.isMonAtPosBeingDragged(boxPos)) //And isn't currently being dragged
+        && !this.isMonAtPosBeingDragged(boxPos, false)) //And isn't currently being dragged
             return true; //Clicking the same mon twice deselects it
 
         return false; //Keep selected
@@ -868,6 +870,7 @@ export class BoxView extends Component
             draggingMon: allBoxesPos,
             draggingImg: imgUrl,
             draggingFromBox: this.state.boxSlot,
+            draggingLeftCell: false,
             summaryMon: summaryMon,
         });
 
@@ -884,7 +887,9 @@ export class BoxView extends Component
         {
             this.state.parent.setState({
                 draggingOver: allBoxesPos,
-                draggingToBox: this.state.boxSlot
+                draggingToBox: this.state.boxSlot,
+                draggingLeftCell: this.getParentState().draggingLeftCell
+                               || this.getParentState().draggingOver !== allBoxesPos, //Changed cells
             });
         }
     }
@@ -1305,7 +1310,7 @@ export class BoxView extends Component
                 var matchesSearchCriteria = true;
                 var className = "box-icon-image";
                 var alt = GetNickname(pokemon);
-                var hiddenImages = this.isMonAtPosBeingDragged(i - startIndex); //Hide a mon that's being dragged (attached to mouse instead)
+                var hiddenImages = this.isMonAtPosBeingDragged(i - startIndex, true); //Hide a mon that's being dragged (attached to mouse instead)
 
                 if (!this.matchesSearchCriteria(pokemon))
                 {
@@ -1359,7 +1364,7 @@ export class BoxView extends Component
             }
 
             let spanClassName = "box-icon"
-                              + (!isMobile ? " box-icon-hoverable" : "") //Just changes cursor
+                              + (!isMobile && !this.state.parent.shouldViewDraggingImg() ? " box-icon-hoverable" : "") //Just changes cursor
                               + (!isMobile && this.shouldDisplayHoverOverPos(key) ? " selected-box-icon" : "")
                               + (this.isMonAtPosSelected(key) ? " selected-box-icon" : "")
                               + (isInWonderTrade ? " wonder-trade-box-icon" : "")
