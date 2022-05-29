@@ -3374,6 +3374,7 @@ export function CanUseFileHandleAPI()
 function IsMobileBrowser()
 {
     //Some mobile devices can be run in desktop mode, so this determines that
+    //X11 is not mobile specific, but it's needed to get Chrome on Android in desktop view working
     return isMobile
         || navigator.userAgent.match(/Mobile|Windows Phone|Lumia|Android|webOS|iPhone|iPod|Blackberry|PlayBook|BB10|X11|Opera Mini|\bCrMo\/|Opera Mobi|Tablet|iPad/i);
 }

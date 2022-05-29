@@ -1675,7 +1675,7 @@ export function GetIconSpeciesNameBySpecies(species)
 
     if (species in SPECIES_FORMS_ICON_NAMES)
         speciesName = SPECIES_FORMS_ICON_NAMES[species];
-    else if (typeof(species) == "string" && species.startsWith("SPECIES_"))
+    else if (typeof(species) == "string" && species in SpeciesNames)
     {
         speciesName = species.split("SPECIES_")[1];
 
