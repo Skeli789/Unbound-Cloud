@@ -483,12 +483,12 @@ def main():
     # file.close()
 
     ## Convert Base Stats C File ##
-    defines = Defines.CStructArrayToDict(f"{GAME_DATA_DIR}/magm/Base_Stats.c", "gBaseStats", {})
-    with open(f"{GAME_DATA_DIR}/magm/BaseStats.json", "w") as file:
+    defines = Defines.CStructArrayToDict(f"{GAME_DATA_DIR}/unbound/Base_Stats.c", "gBaseStats", {})
+    with open(f"{GAME_DATA_DIR}/unbound/BaseStats.json", "w") as file:
         file.write(json.dumps(defines, indent=4))
 
     ## Trim Base Stats JSON File ##
-    with open(f"{GAME_DATA_DIR}/magm/BaseStats.json", "r") as file:
+    with open(f"{GAME_DATA_DIR}/unbound/BaseStats.json", "r") as file:
         data = json.load(file)
         for key in data:
             try:
@@ -512,7 +512,7 @@ def main():
             except KeyError:
                 pass
 
-    with open(f"{GAME_DATA_DIR}/magm/BaseStats.json", "w") as file:
+    with open(f"{GAME_DATA_DIR}/unbound/BaseStats.json", "w") as file:
         file.write(json.dumps(data, indent=4))
 
 
