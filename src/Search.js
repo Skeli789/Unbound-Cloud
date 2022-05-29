@@ -762,7 +762,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
 
         for (i = 0; i < moves.length; ++i)
         {
-            if (!(moves[i] in searchCriteria["move"]))
+            if (moves[i] in searchCriteria["move"])
                 break; //Has at least one requested move
         }
 
