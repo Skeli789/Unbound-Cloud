@@ -271,6 +271,7 @@
 
     "ABILITY_NINELIVES": "Nine Lives",
     "ABILITY_FOCUSBELT": "Focus Belt",
+    "ABILITY_EVAPORATE": "Evaporate",
     "ABILITY_FIERYNEIGH": "Fiery Neigh",
     "ABILITY_SHOCKINGNEIGH": "Shocking Neigh",
     "ABILITY_PRIDE": "Pride",
@@ -278,6 +279,9 @@
     "ABILITY_SUBTERFUGE": "Subterfuge",
     "ABILITY_TANGLINGWOOL": "Tangling Wool",
     "ABILITY_BRAINBOND": "Brain Bond",
+    "ABILITY_GRASSDASH": "Grass Dash",
+    "ABILITY_SLIPPERYTAIL": "Slippery Tail",
+    "ABILITY_DRILLBEAK": "Drill Beak",
     "ABILITY_COTTONCLOUD": "Cotton Cloud",
     "ABILITY_BELLOW": "Bellow",
     "ABILITY_SOUNDWAVES": "Sound Waves",

@@ -312,7 +312,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_KEENEYE",
         "ability2": "ABILITY_SNIPER",
-        "hiddenAbility": "ABILITY_SUPERLUCK"
+        "hiddenAbility": "ABILITY_DRILLBEAK"
     },
     "SPECIES_FEAROW": {
         "baseHP": 65,
@@ -327,7 +327,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_KEENEYE",
         "ability2": "ABILITY_SNIPER",
-        "hiddenAbility": "ABILITY_SUPERLUCK"
+        "hiddenAbility": "ABILITY_DRILLBEAK"
     },
     "SPECIES_EKANS": {
         "baseHP": 35,
@@ -2877,7 +2877,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_CHLOROPHYLL",
         "ability2": "ABILITY_SOLARPOWER",
-        "hiddenAbility": "ABILITY_FLOWERVEIL"
+        "hiddenAbility": "ABILITY_GRASSDASH"
     },
     "SPECIES_YANMA": {
         "baseHP": 65,
@@ -3280,7 +3280,7 @@
         "type2": "TYPE_ROCK",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SOLIDROCK",
+        "ability1": "ABILITY_EVAPORATE",
         "ability2": "ABILITY_FLAMEBODY",
         "hiddenAbility": "ABILITY_WEAKARMOR"
     },
@@ -3763,24 +3763,6 @@
         "ability1": "ABILITY_NATURALCURE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_REGENERATOR"
-    },
-    "SPECIES_MANAPHY_EGG": {
-        "noFlip": "TRUE"
-    },
-    "SPECIES_MISSINGNO": {
-        "baseHP": 255,
-        "baseAttack": 255,
-        "baseDefense": 255,
-        "baseSpAttack": 255,
-        "baseSpDefense": 255,
-        "baseSpeed": 255,
-        "type1": "TYPE_MYSTERY",
-        "type2": "TYPE_MYSTERY",
-        "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_DOWNLOAD",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_TREECKO": {
         "baseHP": 40,
@@ -5325,7 +5307,7 @@
         "growthRate": "GROWTH_FLUCTUATING",
         "ability1": "ABILITY_SHEDSKIN",
         "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_POISONTOUCH"
+        "hiddenAbility": "ABILITY_SLIPPERYTAIL"
     },
     "SPECIES_ZANGOOSE": {
         "baseHP": 73,
@@ -10725,7 +10707,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_ROCKHEAD",
         "ability2": "ABILITY_ADAPTABILITY",
-        "hiddenAbility": "ABILITY_ROCKHEAD"
+        "hiddenAbility": "ABILITY_SPEEDBOOST"
     },
     "SPECIES_DARMANITANZEN": {
         "baseHP": 105,
