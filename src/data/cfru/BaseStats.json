@@ -12119,36 +12119,6 @@
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
-    "SPECIES_ZYGARDE_CELL": {
-        "baseHP": 50,
-        "baseAttack": 50,
-        "baseDefense": 50,
-        "baseSpAttack": 50,
-        "baseSpDefense": 50,
-        "baseSpeed": 50,
-        "type1": "TYPE_DRAGON",
-        "type2": "TYPE_GROUND",
-        "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_AURABREAK",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_NONE"
-    },
-    "SPECIES_ZYGARDE_CORE": {
-        "baseHP": 75,
-        "baseAttack": 75,
-        "baseDefense": 75,
-        "baseSpAttack": 75,
-        "baseSpDefense": 75,
-        "baseSpeed": 75,
-        "type1": "TYPE_DRAGON",
-        "type2": "TYPE_GROUND",
-        "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_AURABREAK",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_NONE"
-    },
     "SPECIES_ZYGARDE_10": {
         "baseHP": 54,
         "baseAttack": 100,
