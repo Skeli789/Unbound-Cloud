@@ -20,6 +20,10 @@ import MAGMBaseStats from "./data/magm/BaseStats.json";
 import MAGMMoves from "./data/magm/Moves.json";
 import MAGMItems from "./data/magm/Items.json";
 import MAGMBallTypes from "./data/magm/BallTypes.json";
+import InflamedRedBaseStats from "./data/inflamedred/BaseStats.json";
+import InflamedRedMoves from "./data/inflamedred/Moves.json";
+import InflamedRedItems from "./data/inflamedred/Items.json";
+import InflamedRedBallTypes from "./data/inflamedred/BallTypes.json";
 import {BASE_GFX_LINK, GetSpeciesName} from "./Util";
 
 const SPECIES_FORMS_ICON_NAMES =
@@ -219,6 +223,13 @@ const GAME_IDS_TO_DATA =
         "moves": MAGMMoves,
         "items": MAGMItems,
         "ballTypes": MAGMBallTypes,
+    },
+    "inflamedred":
+    {
+        "baseStats": InflamedRedBaseStats,
+        "moves": InflamedRedMoves,
+        "items": InflamedRedItems,
+        "ballTypes": InflamedRedBallTypes,
     }
 }
 

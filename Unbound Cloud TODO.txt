@@ -6,6 +6,7 @@ Feature Modifications:
 -Timeout if friend trade connection has gone on too long
 -Print loading while friend code is being fetched (after clicking create code)
 -Ask if done using site after saving (but not if for a segue into trading)
+-Shaymin and Hoopa should revert to their base forms when not saved in the preset box
 
 Server Changes:
 -Change the file signature for Unbound

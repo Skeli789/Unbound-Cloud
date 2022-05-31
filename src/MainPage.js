@@ -55,7 +55,9 @@ const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="ht
 const PopUp = withReactContent(Swal);
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
 
-const SUPPORTED_HACKS = ["Unbound", "Magical Altering Gym Menagerie"];
+const SUPPORTED_HACKS = ["Unbound >= v2.0.4",
+                         "Magical Altering Gym Menagerie >= v1.2",
+                         "Inflamed Red >= v1.1"];
 
 //TODO: Make sure Wonder Trading can't be hijacked
 
