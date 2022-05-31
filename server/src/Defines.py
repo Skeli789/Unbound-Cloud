@@ -24,6 +24,7 @@ CFRE_FILE_SIGNATURE = 0x29012004
 UNBOUND_FILE_SIGNATURE = 0x01121998
 WISH_FILE_SIGNATURE = 0x18190804
 MAGM_FILE_SIGNATURE = 0xC7BBC1C7
+IR_FILE_SIGNATURE = 0x14B66BBC
 
 ## Flags and Vars ##
 FLAG_FR_GAME_CLEAR = 0x82C
@@ -37,8 +38,9 @@ VAR_UNBOUND_GAME_DIFFICULTY = 0x50DF
 FLAG_MAGM_PC_ACCESSED = 0x215
 
 ## Other Constants ##
-OLD_SHINY_ODDS = 8
-MODERN_SHINY_ODDS = 16
+OLD_SHINY_ODDS = 8  # 1/8192
+MODERN_SHINY_ODDS = 16  # 1/4096
+INFLAMED_RED_SHINY_ODDS = 64 # 1/1024
 INSANE_DIFFICULTY_UNBOUND = 3
 
 # Game Versions
@@ -127,6 +129,17 @@ GameDetails = {
                 "flagNotSet": FLAG_MAGM_PC_ACCESSED,
             }
         ]
+    },
+    IR_FILE_SIGNATURE: {
+        "name": "inflamedred",
+        "version": VERSION_FIRERED,
+        "baseVersion": VERSION_FIRERED,
+        "region": REGION_KANTO,
+        "cfru": True,
+        "definesDir": "inflamedred",
+        "shinyOdds": INFLAMED_RED_SHINY_ODDS,
+        "boxCount": 25,
+        "randomizerFlags": [FLAG_CFRU_SPECIES_RANDOMIZER, FLAG_CFRU_LEARNSET_RANDOMIZER],
     },
 }
 
@@ -475,20 +488,22 @@ class Defines:
 
 # Helper code
 def main():
+    version = "inflamedred"
+
     ## Convert Defines File ##
-    # dicty = Defines.DictMaker(f"{PUBLIC_DATA_DIR}/magm/moves.h")
+    # dicty = Defines.DictMaker(f"{GAME_DATA_DIR}/{version}/species.h")
     # dict(sorted(dicty.items(), key=lambda item: item[1]))
-    # file = open(f"{PUBLIC_DATA_DIR}/magm/Moves.json", "w")
+    # file = open(f"{GAME_DATA_DIR}/{version}/Species.json", "w")
     # file.write(json.dumps(dicty, indent=4))
     # file.close()
 
     ## Convert Base Stats C File ##
-    defines = Defines.CStructArrayToDict(f"{GAME_DATA_DIR}/unbound/Base_Stats.c", "gBaseStats", {})
-    with open(f"{GAME_DATA_DIR}/unbound/BaseStats.json", "w") as file:
+    defines = Defines.CStructArrayToDict(f"{GAME_DATA_DIR}/{version}/Base_Stats.c", "gBaseStats", {})
+    with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "w") as file:
         file.write(json.dumps(defines, indent=4))
 
     ## Trim Base Stats JSON File ##
-    with open(f"{GAME_DATA_DIR}/unbound/BaseStats.json", "r") as file:
+    with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "r") as file:
         data = json.load(file)
         for key in data:
             try:
@@ -512,7 +527,7 @@ def main():
             except KeyError:
                 pass
 
-    with open(f"{GAME_DATA_DIR}/unbound/BaseStats.json", "w") as file:
+    with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "w") as file:
         file.write(json.dumps(data, indent=4))
 
 

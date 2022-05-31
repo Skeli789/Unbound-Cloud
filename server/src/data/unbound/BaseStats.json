@@ -5789,21 +5789,6 @@
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_PRANKSTER"
     },
-    "SPECIES_EGG": {
-        "baseHP": 0,
-        "baseAttack": 0,
-        "baseDefense": 0,
-        "baseSpAttack": 0,
-        "baseSpDefense": 0,
-        "baseSpeed": 0,
-        "type1": "TYPE_NORMAL",
-        "type2": "TYPE_NORMAL",
-        "genderRatio": "PERCENT_FEMALE(0)",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_NONE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_NONE"
-    },
     "SPECIES_UNOWN_B": {
         "baseHP": 48,
         "baseAttack": 72,

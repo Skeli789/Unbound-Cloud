@@ -676,6 +676,19 @@
 	"MOVE_SKYDROP": {"type": "TYPE_FLYING", "split": "SPLIT_PHYSICAL", "pp": 10},
 	"MOVE_CELEBRATE": {"type": "TYPE_NORMAL", "split": "SPLIT_STATUS", "pp": 40},
 	"MOVE_HOLDHANDS": {"type": "TYPE_NORMAL", "split": "SPLIT_STATUS", "pp": 40},
+	"MOVE_BADDYBAD": {"type": "TYPE_DARK", "split": "SPLIT_SPECIAL", "pp": 15},
+	"MOVE_BOUNCYBUBBLE": {"type": "TYPE_WATER", "split": "SPLIT_SPECIAL", "pp": 15},
+	"MOVE_BUZZYBUZZ": {"type": "TYPE_ELECTRIC", "split": "SPLIT_SPECIAL", "pp": 15},
+	"MOVE_FLOATYFALL": {"type": "TYPE_FLYING", "split": "SPLIT_PHYSICAL", "pp": 15},
+	"MOVE_FREEZYFROST": {"type": "TYPE_ICE", "split": "SPLIT_SPECIAL", "pp": 15},
+	"MOVE_GLITZYGLOW": {"type": "TYPE_PSYCHIC", "split": "SPLIT_SPECIAL", "pp": 15},
+	"MOVE_PIKAPAPOW": {"type": "TYPE_ELECTRIC", "split": "SPLIT_SPECIAL", "pp": 20},
+	"MOVE_SAPPYSEED": {"type": "TYPE_GRASS", "split": "SPLIT_PHYSICAL", "pp": 15},
+	"MOVE_SIZZLYSLIDE": {"type": "TYPE_FIRE", "split": "SPLIT_PHYSICAL", "pp": 15},
+	"MOVE_SPARKLYSWIRL": {"type": "TYPE_FAIRY", "split": "SPLIT_SPECIAL", "pp": 15},
+	"MOVE_SPLISHYSPLASH": {"type": "TYPE_WATER", "split": "SPLIT_SPECIAL", "pp": 15},
+	"MOVE_VEEVEEVOLLEY": {"type": "TYPE_NORMAL", "split": "SPLIT_PHYSICAL", "pp": 20},
+	"MOVE_ZIPPYZAP": {"type": "TYPE_ELECTRIC", "split": "SPLIT_PHYSICAL", "pp": 15},
 	"MOVE_DYNAMAXCANNON": {"type": "TYPE_DRAGON", "split": "SPLIT_SPECIAL", "pp": 5},
 	"MOVE_SNIPESHOT": {"type": "TYPE_WATER", "split": "SPLIT_SPECIAL", "pp": 15},
 	"MOVE_JAWLOCK": {"type": "TYPE_DARK", "split": "SPLIT_PHYSICAL", "pp": 10},
@@ -764,5 +777,11 @@
 	"MOVE_SANDSEARSTORM": {"type": "TYPE_GROUND", "split": "SPLIT_SPECIAL", "pp": 5},
 	"MOVE_SPRINGTIDESTORM": {"type": "TYPE_FAIRY", "split": "SPLIT_SPECIAL", "pp": 5},
 	"MOVE_LUNARBLESSING": {"type": "TYPE_PSYCHIC", "split": "SPLIT_STATUS", "pp": 10},
-	"MOVE_TAKEHEART": {"type": "TYPE_PSYCHIC", "split": "SPLIT_STATUS", "pp": 20}
+	"MOVE_TAKEHEART": {"type": "TYPE_PSYCHIC", "split": "SPLIT_STATUS", "pp": 20},
+
+	"MOVE_DARKINTENTS": {"type": "TYPE_DARK", "split": "SPLIT_PHYSICAL", "pp": 10},
+	"MOVE_FIERYDOOM": {"type": "TYPE_FIRE", "split": "SPLIT_SPECIAL", "pp": 5},
+	"MOVE_REALITYSHIFT": {"type": "TYPE_MYSTERY", "split": "SPLIT_SPECIAL", "pp": 5},
+	"MOVE_STRIPEDDIVE": {"type": "TYPE_WATER", "split": "SPLIT_PHYSICAL", "pp": 10},
+	"MOVE_SHADOWSTORM": {"type": "TYPE_DARK", "split": "SPLIT_SPECIAL", "pp": 10}
 }

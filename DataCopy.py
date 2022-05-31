@@ -16,16 +16,23 @@ def main():
     # Copy all game data
     for gameDir in gameDirs:
         gameDirName = gameDir.split("\\")[-1]
+        targetDir = os.path.join(clientDataDir, gameDirName)
+
+        try:
+            os.makedirs(targetDir)
+        except FileExistsError:
+            pass
+
         for file in entireFiles:
             try:
-                shutil.copy(os.path.join(gameDir, file), os.path.join(clientDataDir, gameDirName, file))
+                shutil.copy(os.path.join(gameDir, file), os.path.join(targetDir, file))
             except shutil.SameFileError:
                 pass
 
         for file in valuesOnly:
             with open(os.path.join(gameDir, file), "r") as jsonFile:
                 jsonData = json.load(jsonFile)
-            with open(os.path.join(clientDataDir, gameDirName, file), "w") as jsonFile:
+            with open(os.path.join(targetDir, file), "w") as jsonFile:
                 if type(jsonData) == list:
                     jsonData = {x: True for x in jsonData}  # Just the values, ignore the keys
                 else:

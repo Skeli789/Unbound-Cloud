@@ -677,6 +677,19 @@
 	"MOVE_SKYDROP": "Sky Drop",
 	"MOVE_CELEBRATE": "Celebrate",
 	"MOVE_HOLDHANDS": "Hold Hands",
+	"MOVE_BADDYBAD": "Baddy Bad",
+	"MOVE_BOUNCYBUBBLE": "Bouncy Bubble",
+	"MOVE_BUZZYBUZZ": "Buzzy Buzz",
+	"MOVE_FLOATYFALL": "Floaty Fall",
+	"MOVE_FREEZYFROST": "Freezy Frost",
+	"MOVE_GLITZYGLOW": "Glitzy Glow",
+	"MOVE_PIKAPAPOW": "Pika Papow",
+	"MOVE_SAPPYSEED": "Sappy Seed",
+	"MOVE_SIZZLYSLIDE": "Sizzly Slide",
+	"MOVE_SPARKLYSWIRL": "Sparkly Swirl",
+	"MOVE_SPLISHYSPLASH": "Splishy Splash",
+	"MOVE_VEEVEEVOLLEY": "Veevee Volley",
+	"MOVE_ZIPPYZAP": "Zippy Zap",
 	"MOVE_DYNAMAXCANNON": "Dynamax Cannon",
 	"MOVE_SNIPESHOT": "Snipe Shot",
 	"MOVE_JAWLOCK": "Jaw Lock",
@@ -765,5 +778,11 @@
 	"MOVE_SANDSEARSTORM": "Sandsear Storm",
 	"MOVE_SPRINGTIDESTORM": "Springtide Storm",
 	"MOVE_LUNARBLESSING": "Lunar Blessing",
-	"MOVE_TAKEHEART": "Take Heart"
+	"MOVE_TAKEHEART": "Take Heart",
+
+	"MOVE_DARKINTENTS": "Dark Intents",
+	"MOVE_FIERYDOOM": "Fiery Doom",
+	"MOVE_REALITYSHIFT": "Reality Shift",
+	"MOVE_STRIPEDDIVE": "Striped Dive",
+	"MOVE_SHADOWSTORM": "Shadow Storm"
 }

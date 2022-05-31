@@ -873,6 +873,26 @@
 		"name": "Thick Club",
 		"link": "hold-item/thick-club"
 	},
+	"ITEM_RED_SCARF": {
+		"name": "Red Scarf",
+		"link": "scarf/red"
+	},
+	"ITEM_BLUE_SCARF": {
+		"name": "Blue Scarf",
+		"link": "scarf/blue"
+	},
+	"ITEM_PINK_SCARF": {
+		"name": "Pink Scarf",
+		"link": "scarf/pink"
+	},
+	"ITEM_GREEN_SCARF": {
+		"name": "Green Scarf",
+		"link": "scarf/green"
+	},
+	"ITEM_YELLOW_SCARF": {
+		"name": "Yellow Scarf",
+		"link": "scarf/yellow"
+	},
 	"ITEM_LEEK": {
 		"name": "Leek",
 		"link": "hold-item/stick"
@@ -1036,6 +1056,22 @@
 	"ITEM_DOME_FOSSIL": {
 		"name": "Dome Fossil",
 		"link": "fossil/dome"
+	},
+	"ITEM_FOSSILIZED_BIRD": {
+		"name": "Fossilized Bird",
+		"link": "fossil/bird"
+	},
+	"ITEM_FOSSILIZED_FISH": {
+		"name": "Fossilized Fish",
+		"link": "fossil/fish"
+	},
+	"ITEM_FOSSILIZED_DRAKE": {
+		"name": "Fossilized Drake",
+		"link": "fossil/drake"
+	},
+	"ITEM_FOSSILIZED_DINO": {
+		"name": "Fossilized Dino",
+		"link": "fossil/dino"
 	},
 	"ITEM_VENUSAURITE": {
 		"name": "Venusaurite",
@@ -2000,6 +2036,34 @@
 	"ITEM_ULTRANECROZIUM_Z": {
 		"name": "Ultranecrozium Z",
 		"link": "z-crystals/ultranecrozium-z--held"
+	},
+	"ITEM_BLACK_APRICORN": {
+		"name": "Black Apricorn",
+		"link": "apricorn/black"
+	},
+	"ITEM_BLUE_APRICORN": {
+		"name": "Blue Apricorn",
+		"link": "apricorn/blue"
+	},
+	"ITEM_GREEN_APRICORN": {
+		"name": "Green Apricorn",
+		"link": "apricorn/green"
+	},
+	"ITEM_PINK_APRICORN": {
+		"name": "Pink Apricorn",
+		"link": "apricorn/pink"
+	},
+	"ITEM_RED_APRICORN": {
+		"name": "Red Apricorn",
+		"link": "apricorn/red"
+	},
+	"ITEM_WHITE_APRICORN": {
+		"name": "White Apricorn",
+		"link": "apricorn/white"
+	},
+	"ITEM_YELLOW_APRICORN": {
+		"name": "Yellow Apricorn",
+		"link": "apricorn/yellow"
 	},
 	"ITEM_EJECT_PACK": {
 		"name": "Eject Pack",

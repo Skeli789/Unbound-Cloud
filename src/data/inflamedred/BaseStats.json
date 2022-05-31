@@ -11,7 +11,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SOLARPOWER",
         "hiddenAbility": "ABILITY_CHLOROPHYLL"
     },
     "SPECIES_IVYSAUR": {
@@ -26,7 +26,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SOLARPOWER",
         "hiddenAbility": "ABILITY_CHLOROPHYLL"
     },
     "SPECIES_VENUSAUR": {
@@ -41,7 +41,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SOLARPOWER",
         "hiddenAbility": "ABILITY_CHLOROPHYLL"
     },
     "SPECIES_CHARMANDER": {
@@ -56,7 +56,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_TOUGHCLAWS",
         "hiddenAbility": "ABILITY_SOLARPOWER"
     },
     "SPECIES_CHARMELEON": {
@@ -71,7 +71,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_TOUGHCLAWS",
         "hiddenAbility": "ABILITY_SOLARPOWER"
     },
     "SPECIES_CHARIZARD": {
@@ -86,7 +86,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_TOUGHCLAWS",
         "hiddenAbility": "ABILITY_SOLARPOWER"
     },
     "SPECIES_SQUIRTLE": {
@@ -101,7 +101,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_MEGALAUNCHER",
         "hiddenAbility": "ABILITY_RAINDISH"
     },
     "SPECIES_WARTORTLE": {
@@ -116,7 +116,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_MEGALAUNCHER",
         "hiddenAbility": "ABILITY_RAINDISH"
     },
     "SPECIES_BLASTOISE": {
@@ -131,7 +131,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_MEGALAUNCHER",
         "hiddenAbility": "ABILITY_RAINDISH"
     },
     "SPECIES_CATERPIE": {
@@ -147,7 +147,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SHIELDDUST",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_TECHNICIAN"
+        "hiddenAbility": "ABILITY_RUNAWAY"
     },
     "SPECIES_METAPOD": {
         "baseHP": 50,
@@ -168,9 +168,9 @@
         "baseHP": 60,
         "baseAttack": 45,
         "baseDefense": 50,
-        "baseSpAttack": 90,
+        "baseSpAttack": 100,
         "baseSpDefense": 80,
-        "baseSpeed": 70,
+        "baseSpeed": 90,
         "type1": "TYPE_BUG",
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
@@ -191,8 +191,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SHIELDDUST",
-        "ability2": "ABILITY_SHIELDDUST",
-        "hiddenAbility": "ABILITY_TECHNICIAN"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_RUNAWAY"
     },
     "SPECIES_KAKUNA": {
         "baseHP": 45,
@@ -206,23 +206,23 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SHEDSKIN",
-        "ability2": "ABILITY_SHEDSKIN",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SHEDSKIN"
     },
     "SPECIES_BEEDRILL": {
         "baseHP": 65,
-        "baseAttack": 90,
+        "baseAttack": 110,
         "baseDefense": 40,
         "baseSpAttack": 45,
-        "baseSpDefense": 80,
+        "baseSpDefense": 90,
         "baseSpeed": 75,
         "type1": "TYPE_BUG",
         "type2": "TYPE_POISON",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SWARM",
-        "ability2": "ABILITY_SNIPER",
-        "hiddenAbility": "ABILITY_TECHNICIAN"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_SNIPER"
     },
     "SPECIES_PIDGEY": {
         "baseHP": 40,
@@ -236,7 +236,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_KEENEYE",
-        "ability2": "ABILITY_TANGLEDFEET",
+        "ability2": "ABILITY_BIGPECKS",
         "hiddenAbility": "ABILITY_GALEWINGS"
     },
     "SPECIES_PIDGEOTTO": {
@@ -251,14 +251,14 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_KEENEYE",
-        "ability2": "ABILITY_TANGLEDFEET",
+        "ability2": "ABILITY_BIGPECKS",
         "hiddenAbility": "ABILITY_GALEWINGS"
     },
     "SPECIES_PIDGEOT": {
         "baseHP": 83,
-        "baseAttack": 80,
+        "baseAttack": 90,
         "baseDefense": 75,
-        "baseSpAttack": 70,
+        "baseSpAttack": 90,
         "baseSpDefense": 70,
         "baseSpeed": 101,
         "type1": "TYPE_NORMAL",
@@ -266,7 +266,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_KEENEYE",
-        "ability2": "ABILITY_TANGLEDFEET",
+        "ability2": "ABILITY_BIGPECKS",
         "hiddenAbility": "ABILITY_GALEWINGS"
     },
     "SPECIES_RATTATA": {
@@ -280,13 +280,13 @@
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_STRONGJAW",
+        "ability1": "ABILITY_RUNAWAY",
         "ability2": "ABILITY_GUTS",
         "hiddenAbility": "ABILITY_HUSTLE"
     },
     "SPECIES_RATICATE": {
         "baseHP": 55,
-        "baseAttack": 81,
+        "baseAttack": 100,
         "baseDefense": 60,
         "baseSpAttack": 50,
         "baseSpDefense": 70,
@@ -295,7 +295,7 @@
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_STRONGJAW",
+        "ability1": "ABILITY_RUNAWAY",
         "ability2": "ABILITY_GUTS",
         "hiddenAbility": "ABILITY_HUSTLE"
     },
@@ -311,23 +311,23 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_KEENEYE",
-        "ability2": "ABILITY_SNIPER",
-        "hiddenAbility": "ABILITY_DRILLBEAK"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_SNIPER"
     },
     "SPECIES_FEAROW": {
         "baseHP": 65,
-        "baseAttack": 90,
+        "baseAttack": 120,
         "baseDefense": 65,
         "baseSpAttack": 61,
         "baseSpDefense": 61,
-        "baseSpeed": 100,
+        "baseSpeed": 110,
         "type1": "TYPE_NORMAL",
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_KEENEYE",
-        "ability2": "ABILITY_SNIPER",
-        "hiddenAbility": "ABILITY_DRILLBEAK"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_SNIPER"
     },
     "SPECIES_EKANS": {
         "baseHP": 35,
@@ -342,22 +342,22 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_INTIMIDATE",
         "ability2": "ABILITY_SHEDSKIN",
-        "hiddenAbility": "ABILITY_MERCILESS"
+        "hiddenAbility": "ABILITY_UNNERVE"
     },
     "SPECIES_ARBOK": {
-        "baseHP": 60,
+        "baseHP": 70,
         "baseAttack": 95,
         "baseDefense": 69,
         "baseSpAttack": 65,
         "baseSpDefense": 79,
         "baseSpeed": 80,
         "type1": "TYPE_POISON",
-        "type2": "TYPE_POISON",
+        "type2": "TYPE_DARK",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_INTIMIDATE",
         "ability2": "ABILITY_SHEDSKIN",
-        "hiddenAbility": "ABILITY_MERCILESS"
+        "hiddenAbility": "ABILITY_UNNERVE"
     },
     "SPECIES_PIKACHU": {
         "baseHP": 35,
@@ -376,9 +376,9 @@
     },
     "SPECIES_RAICHU": {
         "baseHP": 60,
-        "baseAttack": 90,
+        "baseAttack": 80,
         "baseDefense": 55,
-        "baseSpAttack": 90,
+        "baseSpAttack": 100,
         "baseSpDefense": 80,
         "baseSpeed": 110,
         "type1": "TYPE_ELECTRIC",
@@ -406,11 +406,11 @@
     },
     "SPECIES_SANDSLASH": {
         "baseHP": 75,
-        "baseAttack": 100,
-        "baseDefense": 110,
+        "baseAttack": 110,
+        "baseDefense": 100,
         "baseSpAttack": 45,
         "baseSpDefense": 55,
-        "baseSpeed": 65,
+        "baseSpeed": 85,
         "type1": "TYPE_GROUND",
         "type2": "TYPE_GROUND",
         "genderRatio": "PERCENT_FEMALE(50)",
@@ -461,7 +461,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_POISONPOINT",
-        "ability2": "ABILITY_QUEENLYMAJESTY",
+        "ability2": "ABILITY_RIVALRY",
         "hiddenAbility": "ABILITY_SHEERFORCE"
     },
     "SPECIES_NIDORAN_M": {
@@ -582,22 +582,22 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_CUTECHARM",
         "ability2": "ABILITY_COMPETITIVE",
-        "hiddenAbility": "ABILITY_FRISK"
+        "hiddenAbility": "ABILITY_FRIENDGUARD"
     },
     "SPECIES_WIGGLYTUFF": {
-        "baseHP": 140,
+        "baseHP": 130,
         "baseAttack": 70,
         "baseDefense": 45,
-        "baseSpAttack": 85,
-        "baseSpDefense": 50,
-        "baseSpeed": 45,
+        "baseSpAttack": 95,
+        "baseSpDefense": 60,
+        "baseSpeed": 55,
         "type1": "TYPE_NORMAL",
         "type2": "TYPE_FAIRY",
         "genderRatio": "PERCENT_FEMALE(75)",
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_CUTECHARM",
         "ability2": "ABILITY_COMPETITIVE",
-        "hiddenAbility": "ABILITY_HUGEPOWER"
+        "hiddenAbility": "ABILITY_FURCOAT"
     },
     "SPECIES_ZUBAT": {
         "baseHP": 40,
@@ -660,12 +660,12 @@
         "hiddenAbility": "ABILITY_STENCH"
     },
     "SPECIES_VILEPLUME": {
-        "baseHP": 75,
-        "baseAttack": 80,
-        "baseDefense": 85,
-        "baseSpAttack": 110,
-        "baseSpDefense": 90,
-        "baseSpeed": 50,
+        "baseHP": 85,
+        "baseAttack": 70,
+        "baseDefense": 95,
+        "baseSpAttack": 120,
+        "baseSpDefense": 100,
+        "baseSpeed": 60,
         "type1": "TYPE_GRASS",
         "type2": "TYPE_POISON",
         "genderRatio": "PERCENT_FEMALE(50)",
@@ -687,14 +687,14 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_EFFECTSPORE",
         "ability2": "ABILITY_DRYSKIN",
-        "hiddenAbility": "ABILITY_TOXICBOOST"
+        "hiddenAbility": "ABILITY_DAMP"
     },
     "SPECIES_PARASECT": {
         "baseHP": 60,
-        "baseAttack": 95,
-        "baseDefense": 80,
+        "baseAttack": 105,
+        "baseDefense": 100,
         "baseSpAttack": 60,
-        "baseSpDefense": 80,
+        "baseSpDefense": 100,
         "baseSpeed": 30,
         "type1": "TYPE_BUG",
         "type2": "TYPE_GRASS",
@@ -702,7 +702,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_EFFECTSPORE",
         "ability2": "ABILITY_DRYSKIN",
-        "hiddenAbility": "ABILITY_TOXICBOOST"
+        "hiddenAbility": "ABILITY_DAMP"
     },
     "SPECIES_VENONAT": {
         "baseHP": 60,
@@ -732,7 +732,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SHIELDDUST",
         "ability2": "ABILITY_TINTEDLENS",
-        "hiddenAbility": "ABILITY_LEVITATE"
+        "hiddenAbility": "ABILITY_WONDERSKIN"
     },
     "SPECIES_DIGLETT": {
         "baseHP": 10,
@@ -750,8 +750,8 @@
         "hiddenAbility": "ABILITY_SANDFORCE"
     },
     "SPECIES_DUGTRIO": {
-        "baseHP": 35,
-        "baseAttack": 100,
+        "baseHP": 55,
+        "baseAttack": 130,
         "baseDefense": 50,
         "baseSpAttack": 50,
         "baseSpDefense": 70,
@@ -777,7 +777,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PICKUP",
         "ability2": "ABILITY_TECHNICIAN",
-        "hiddenAbility": "ABILITY_NINELIVES"
+        "hiddenAbility": "ABILITY_UNNERVE"
     },
     "SPECIES_PERSIAN": {
         "baseHP": 65,
@@ -792,7 +792,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LIMBER",
         "ability2": "ABILITY_TECHNICIAN",
-        "hiddenAbility": "ABILITY_NINELIVES"
+        "hiddenAbility": "ABILITY_UNNERVE"
     },
     "SPECIES_PSYDUCK": {
         "baseHP": 50,
@@ -802,27 +802,27 @@
         "baseSpDefense": 50,
         "baseSpeed": 55,
         "type1": "TYPE_WATER",
-        "type2": "TYPE_WATER",
+        "type2": "TYPE_PSYCHIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SWIFTSWIM",
+        "ability1": "ABILITY_DAMP",
         "ability2": "ABILITY_CLOUDNINE",
-        "hiddenAbility": "ABILITY_DAMP"
+        "hiddenAbility": "ABILITY_SWIFTSWIM"
     },
     "SPECIES_GOLDUCK": {
         "baseHP": 80,
-        "baseAttack": 82,
+        "baseAttack": 62,
         "baseDefense": 78,
-        "baseSpAttack": 95,
+        "baseSpAttack": 110,
         "baseSpDefense": 80,
-        "baseSpeed": 85,
+        "baseSpeed": 95,
         "type1": "TYPE_WATER",
-        "type2": "TYPE_WATER",
+        "type2": "TYPE_PSYCHIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SWIFTSWIM",
+        "ability1": "ABILITY_DAMP",
         "ability2": "ABILITY_CLOUDNINE",
-        "hiddenAbility": "ABILITY_NEUROFORCE"
+        "hiddenAbility": "ABILITY_SWIFTSWIM"
     },
     "SPECIES_MANKEY": {
         "baseHP": 40,
@@ -841,16 +841,16 @@
     },
     "SPECIES_PRIMEAPE": {
         "baseHP": 65,
-        "baseAttack": 105,
-        "baseDefense": 60,
-        "baseSpAttack": 60,
+        "baseAttack": 125,
+        "baseDefense": 70,
+        "baseSpAttack": 80,
         "baseSpDefense": 70,
-        "baseSpeed": 95,
+        "baseSpeed": 115,
         "type1": "TYPE_FIGHTING",
         "type2": "TYPE_FIGHTING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_VITALSPIRIT",
+        "ability1": "ABILITY_IRONFIST",
         "ability2": "ABILITY_ANGERPOINT",
         "hiddenAbility": "ABILITY_DEFIANT"
     },
@@ -1002,7 +1002,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_GUTS",
         "ability2": "ABILITY_NOGUARD",
-        "hiddenAbility": "ABILITY_FOCUSBELT"
+        "hiddenAbility": "ABILITY_STEADFAST"
     },
     "SPECIES_MACHAMP": {
         "baseHP": 90,
@@ -1017,7 +1017,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_GUTS",
         "ability2": "ABILITY_NOGUARD",
-        "hiddenAbility": "ABILITY_FOCUSBELT"
+        "hiddenAbility": "ABILITY_STEADFAST"
     },
     "SPECIES_BELLSPROUT": {
         "baseHP": 50,
@@ -1031,8 +1031,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_CHLOROPHYLL",
-        "ability2": "ABILITY_GLUTTONY",
-        "hiddenAbility": "ABILITY_UNNERVE"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_GLUTTONY"
     },
     "SPECIES_WEEPINBELL": {
         "baseHP": 65,
@@ -1046,8 +1046,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_CHLOROPHYLL",
-        "ability2": "ABILITY_GLUTTONY",
-        "hiddenAbility": "ABILITY_UNNERVE"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_GLUTTONY"
     },
     "SPECIES_VICTREEBEL": {
         "baseHP": 80,
@@ -1061,8 +1061,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_CHLOROPHYLL",
-        "ability2": "ABILITY_GLUTTONY",
-        "hiddenAbility": "ABILITY_CORROSION"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_GLUTTONY"
     },
     "SPECIES_TENTACOOL": {
         "baseHP": 40,
@@ -1107,7 +1107,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_ROCKHEAD",
         "ability2": "ABILITY_STURDY",
-        "hiddenAbility": "ABILITY_SANDSPIT"
+        "hiddenAbility": "ABILITY_SANDVEIL"
     },
     "SPECIES_GRAVELER": {
         "baseHP": 55,
@@ -1122,7 +1122,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_ROCKHEAD",
         "ability2": "ABILITY_STURDY",
-        "hiddenAbility": "ABILITY_SANDSPIT"
+        "hiddenAbility": "ABILITY_SANDVEIL"
     },
     "SPECIES_GOLEM": {
         "baseHP": 80,
@@ -1137,7 +1137,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_ROCKHEAD",
         "ability2": "ABILITY_STURDY",
-        "hiddenAbility": "ABILITY_SANDSPIT"
+        "hiddenAbility": "ABILITY_SANDVEIL"
     },
     "SPECIES_PONYTA": {
         "baseHP": 50,
@@ -1150,13 +1150,13 @@
         "type2": "TYPE_FIRE",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_FLAMEBODY",
+        "ability1": "ABILITY_RUNAWAY",
         "ability2": "ABILITY_FLASHFIRE",
-        "hiddenAbility": "ABILITY_FIERYNEIGH"
+        "hiddenAbility": "ABILITY_FLAMEBODY"
     },
     "SPECIES_RAPIDASH": {
         "baseHP": 65,
-        "baseAttack": 100,
+        "baseAttack": 110,
         "baseDefense": 70,
         "baseSpAttack": 80,
         "baseSpDefense": 80,
@@ -1165,9 +1165,9 @@
         "type2": "TYPE_FIRE",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_FLAMEBODY",
+        "ability1": "ABILITY_RUNAWAY",
         "ability2": "ABILITY_FLASHFIRE",
-        "hiddenAbility": "ABILITY_FIERYNEIGH"
+        "hiddenAbility": "ABILITY_FLAMEBODY"
     },
     "SPECIES_SLOWPOKE": {
         "baseHP": 90,
@@ -1255,9 +1255,9 @@
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_TANGLEDFEET",
+        "ability1": "ABILITY_RUNAWAY",
         "ability2": "ABILITY_EARLYBIRD",
-        "hiddenAbility": "ABILITY_RECKLESS"
+        "hiddenAbility": "ABILITY_TANGLEDFEET"
     },
     "SPECIES_DODRIO": {
         "baseHP": 60,
@@ -1270,9 +1270,9 @@
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_TANGLEDFEET",
+        "ability1": "ABILITY_RUNAWAY",
         "ability2": "ABILITY_EARLYBIRD",
-        "hiddenAbility": "ABILITY_RECKLESS"
+        "hiddenAbility": "ABILITY_TANGLEDFEET"
     },
     "SPECIES_SEEL": {
         "baseHP": 65,
@@ -1286,8 +1286,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_THICKFAT",
-        "ability2": "ABILITY_ICEBODY",
-        "hiddenAbility": "ABILITY_ICESCALES"
+        "ability2": "ABILITY_HYDRATION",
+        "hiddenAbility": "ABILITY_ICEBODY"
     },
     "SPECIES_DEWGONG": {
         "baseHP": 90,
@@ -1301,8 +1301,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_THICKFAT",
-        "ability2": "ABILITY_ICEBODY",
-        "hiddenAbility": "ABILITY_ICESCALES"
+        "ability2": "ABILITY_HYDRATION",
+        "hiddenAbility": "ABILITY_ICEBODY"
     },
     "SPECIES_GRIMER": {
         "baseHP": 80,
@@ -1315,7 +1315,7 @@
         "type2": "TYPE_POISON",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_GOOEY",
+        "ability1": "ABILITY_STENCH",
         "ability2": "ABILITY_STICKYHOLD",
         "hiddenAbility": "ABILITY_POISONTOUCH"
     },
@@ -1330,7 +1330,7 @@
         "type2": "TYPE_POISON",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_GOOEY",
+        "ability1": "ABILITY_STENCH",
         "ability2": "ABILITY_STICKYHOLD",
         "hiddenAbility": "ABILITY_POISONTOUCH"
     },
@@ -1405,9 +1405,9 @@
         "type2": "TYPE_POISON",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_LEVITATE",
+        "ability1": "ABILITY_CURSEDBODY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_CURSEDBODY"
+        "hiddenAbility": "ABILITY_LEVITATE"
     },
     "SPECIES_ONIX": {
         "baseHP": 35,
@@ -1436,8 +1436,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_INSOMNIA",
-        "ability2": "ABILITY_INNERFOCUS",
-        "hiddenAbility": "ABILITY_FOREWARN"
+        "ability2": "ABILITY_FOREWARN",
+        "hiddenAbility": "ABILITY_INNERFOCUS"
     },
     "SPECIES_HYPNO": {
         "baseHP": 85,
@@ -1451,8 +1451,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_INSOMNIA",
-        "ability2": "ABILITY_INNERFOCUS",
-        "hiddenAbility": "ABILITY_PSYCHICSURGE"
+        "ability2": "ABILITY_FOREWARN",
+        "hiddenAbility": "ABILITY_INNERFOCUS"
     },
     "SPECIES_KRABBY": {
         "baseHP": 30,
@@ -1480,9 +1480,9 @@
         "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_HYPERCUTTER",
+        "ability1": "ABILITY_SHEERFORCE",
         "ability2": "ABILITY_SHELLARMOR",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_CRABBYTACTICS"
     },
     "SPECIES_VOLTORB": {
         "baseHP": 40,
@@ -1556,12 +1556,12 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_ROCKHEAD",
-        "ability2": "ABILITY_BATTLEARMOR",
-        "hiddenAbility": "ABILITY_SKILLLINK"
+        "ability2": "ABILITY_LIGHTNINGROD",
+        "hiddenAbility": "ABILITY_BATTLEARMOR"
     },
     "SPECIES_MAROWAK": {
-        "baseHP": 60,
-        "baseAttack": 80,
+        "baseHP": 80,
+        "baseAttack": 90,
         "baseDefense": 110,
         "baseSpAttack": 50,
         "baseSpDefense": 80,
@@ -1571,8 +1571,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_ROCKHEAD",
-        "ability2": "ABILITY_BATTLEARMOR",
-        "hiddenAbility": "ABILITY_SKILLLINK"
+        "ability2": "ABILITY_LIGHTNINGROD",
+        "hiddenAbility": "ABILITY_BATTLEARMOR"
     },
     "SPECIES_HITMONLEE": {
         "baseHP": 50,
@@ -1580,13 +1580,13 @@
         "baseDefense": 53,
         "baseSpAttack": 35,
         "baseSpDefense": 110,
-        "baseSpeed": 87,
+        "baseSpeed": 107,
         "type1": "TYPE_FIGHTING",
         "type2": "TYPE_FIGHTING",
         "genderRatio": "PERCENT_FEMALE(0)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_LIMBER",
-        "ability2": "ABILITY_RECKLESS",
+        "ability1": "ABILITY_RECKLESS",
+        "ability2": "ABILITY_IRONKICK",
         "hiddenAbility": "ABILITY_UNBURDEN"
     },
     "SPECIES_HITMONCHAN": {
@@ -1595,14 +1595,14 @@
         "baseDefense": 79,
         "baseSpAttack": 35,
         "baseSpDefense": 110,
-        "baseSpeed": 76,
+        "baseSpeed": 96,
         "type1": "TYPE_FIGHTING",
         "type2": "TYPE_FIGHTING",
         "genderRatio": "PERCENT_FEMALE(0)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_INNERFOCUS",
+        "ability1": "ABILITY_KEENEYE",
         "ability2": "ABILITY_IRONFIST",
-        "hiddenAbility": "ABILITY_UNSEENFIST"
+        "hiddenAbility": "ABILITY_INNERFOCUS"
     },
     "SPECIES_LICKITUNG": {
         "baseHP": 90,
@@ -1615,7 +1615,7 @@
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_THICKFAT",
+        "ability1": "ABILITY_OWNTEMPO",
         "ability2": "ABILITY_OBLIVIOUS",
         "hiddenAbility": "ABILITY_CLOUDNINE"
     },
@@ -1632,7 +1632,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NEUTRALIZINGGAS",
-        "hiddenAbility": "ABILITY_STENCH"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_WEEZING": {
         "baseHP": 65,
@@ -1647,7 +1647,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NEUTRALIZINGGAS",
-        "hiddenAbility": "ABILITY_STENCH"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_RHYHORN": {
         "baseHP": 80,
@@ -1795,7 +1795,7 @@
         "type2": "TYPE_WATER",
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_VICTORYSTAR",
+        "ability1": "ABILITY_ILLUMINATE",
         "ability2": "ABILITY_NATURALCURE",
         "hiddenAbility": "ABILITY_ANALYTIC"
     },
@@ -1810,7 +1810,7 @@
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_VICTORYSTAR",
+        "ability1": "ABILITY_ILLUMINATE",
         "ability2": "ABILITY_NATURALCURE",
         "hiddenAbility": "ABILITY_ANALYTIC"
     },
@@ -1856,8 +1856,8 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_OBLIVIOUS",
-        "ability2": "ABILITY_DRYSKIN",
-        "hiddenAbility": "ABILITY_ICYSKIN"
+        "ability2": "ABILITY_FOREWARN",
+        "hiddenAbility": "ABILITY_DRYSKIN"
     },
     "SPECIES_ELECTABUZZ": {
         "baseHP": 65,
@@ -2006,8 +2006,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_WATERABSORB",
-        "ability2": "ABILITY_WATERABSORB",
-        "hiddenAbility": "ABILITY_HYDRATION"
+        "ability2": "ABILITY_HYDRATION",
+        "hiddenAbility": "ABILITY_DRIZZLE"
     },
     "SPECIES_JOLTEON": {
         "baseHP": 65,
@@ -2021,8 +2021,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_VOLTABSORB",
-        "ability2": "ABILITY_VOLTABSORB",
-        "hiddenAbility": "ABILITY_QUICKFEET"
+        "ability2": "ABILITY_QUICKFEET",
+        "hiddenAbility": "ABILITY_ELECTRICSURGE"
     },
     "SPECIES_FLAREON": {
         "baseHP": 65,
@@ -2036,8 +2036,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLASHFIRE",
-        "ability2": "ABILITY_FLASHFIRE",
-        "hiddenAbility": "ABILITY_GUTS"
+        "ability2": "ABILITY_GUTS",
+        "hiddenAbility": "ABILITY_DROUGHT"
     },
     "SPECIES_PORYGON": {
         "baseHP": 65,
@@ -2156,8 +2156,8 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
-        "ability2": "ABILITY_SNOWCLOAK",
-        "hiddenAbility": "ABILITY_COMPETITIVE"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_SNOWCLOAK"
     },
     "SPECIES_ZAPDOS": {
         "baseHP": 90,
@@ -2171,8 +2171,8 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
-        "ability2": "ABILITY_STATIC",
-        "hiddenAbility": "ABILITY_DEFIANT"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_STATIC"
     },
     "SPECIES_MOLTRES": {
         "baseHP": 90,
@@ -2186,8 +2186,8 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
-        "ability2": "ABILITY_FLAMEBODY",
-        "hiddenAbility": "ABILITY_BERSERK"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_FLAMEBODY"
     },
     "SPECIES_DRATINI": {
         "baseHP": 41,
@@ -2276,7 +2276,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_FLOWERVEIL",
         "hiddenAbility": "ABILITY_LEAFGUARD"
     },
     "SPECIES_BAYLEEF": {
@@ -2291,7 +2291,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_FLOWERVEIL",
         "hiddenAbility": "ABILITY_LEAFGUARD"
     },
     "SPECIES_MEGANIUM": {
@@ -2302,12 +2302,12 @@
         "baseSpDefense": 100,
         "baseSpeed": 80,
         "type1": "TYPE_GRASS",
-        "type2": "TYPE_GRASS",
+        "type2": "TYPE_FAIRY",
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_GRASSYSURGE"
+        "ability2": "ABILITY_FLOWERVEIL",
+        "hiddenAbility": "ABILITY_LEAFGUARD"
     },
     "SPECIES_CYNDAQUIL": {
         "baseHP": 39,
@@ -2321,7 +2321,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_INTIMIDATE",
         "hiddenAbility": "ABILITY_FLASHFIRE"
     },
     "SPECIES_QUILAVA": {
@@ -2336,7 +2336,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_INTIMIDATE",
         "hiddenAbility": "ABILITY_FLASHFIRE"
     },
     "SPECIES_TYPHLOSION": {
@@ -2351,8 +2351,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_DROUGHT"
+        "ability2": "ABILITY_INTIMIDATE",
+        "hiddenAbility": "ABILITY_FLASHFIRE"
     },
     "SPECIES_TOTODILE": {
         "baseHP": 50,
@@ -2366,7 +2366,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_RAINDISH",
         "hiddenAbility": "ABILITY_SHEERFORCE"
     },
     "SPECIES_CROCONAW": {
@@ -2381,7 +2381,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_RAINDISH",
         "hiddenAbility": "ABILITY_SHEERFORCE"
     },
     "SPECIES_FERALIGATR": {
@@ -2396,12 +2396,12 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_RAINDISH",
         "hiddenAbility": "ABILITY_SHEERFORCE"
     },
     "SPECIES_SENTRET": {
         "baseHP": 35,
-        "baseAttack": 46,
+        "baseAttack": 56,
         "baseDefense": 34,
         "baseSpAttack": 35,
         "baseSpDefense": 45,
@@ -2410,13 +2410,13 @@
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_FRISK",
+        "ability1": "ABILITY_FURCOAT",
         "ability2": "ABILITY_KEENEYE",
-        "hiddenAbility": "ABILITY_HUSTLE"
+        "hiddenAbility": "ABILITY_FRISK"
     },
     "SPECIES_FURRET": {
         "baseHP": 85,
-        "baseAttack": 76,
+        "baseAttack": 86,
         "baseDefense": 64,
         "baseSpAttack": 45,
         "baseSpDefense": 55,
@@ -2425,9 +2425,9 @@
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_FRISK",
+        "ability1": "ABILITY_FURCOAT",
         "ability2": "ABILITY_KEENEYE",
-        "hiddenAbility": "ABILITY_HUSTLE"
+        "hiddenAbility": "ABILITY_FRISK"
     },
     "SPECIES_HOOTHOOT": {
         "baseHP": 60,
@@ -2448,10 +2448,10 @@
         "baseHP": 100,
         "baseAttack": 50,
         "baseDefense": 50,
-        "baseSpAttack": 86,
+        "baseSpAttack": 106,
         "baseSpDefense": 96,
-        "baseSpeed": 70,
-        "type1": "TYPE_NORMAL",
+        "baseSpeed": 100,
+        "type1": "TYPE_PSYCHIC",
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
@@ -2461,9 +2461,9 @@
     },
     "SPECIES_LEDYBA": {
         "baseHP": 40,
-        "baseAttack": 20,
+        "baseAttack": 50,
         "baseDefense": 30,
-        "baseSpAttack": 40,
+        "baseSpAttack": 20,
         "baseSpDefense": 80,
         "baseSpeed": 55,
         "type1": "TYPE_BUG",
@@ -2471,23 +2471,23 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_SWARM",
-        "ability2": "ABILITY_RATTLED",
-        "hiddenAbility": "ABILITY_HUGEPOWER"
+        "ability2": "ABILITY_EARLYBIRD",
+        "hiddenAbility": "ABILITY_RATTLED"
     },
     "SPECIES_LEDIAN": {
         "baseHP": 55,
-        "baseAttack": 35,
+        "baseAttack": 115,
         "baseDefense": 50,
-        "baseSpAttack": 55,
+        "baseSpAttack": 15,
         "baseSpDefense": 110,
-        "baseSpeed": 85,
+        "baseSpeed": 110,
         "type1": "TYPE_BUG",
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_SWARM",
         "ability2": "ABILITY_EARLYBIRD",
-        "hiddenAbility": "ABILITY_HUGEPOWER"
+        "hiddenAbility": "ABILITY_IRONFIST"
     },
     "SPECIES_SPINARAK": {
         "baseHP": 40,
@@ -2500,9 +2500,9 @@
         "type2": "TYPE_POISON",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
-        "ability1": "ABILITY_SNIPER",
+        "ability1": "ABILITY_SWARM",
         "ability2": "ABILITY_INSOMNIA",
-        "hiddenAbility": "ABILITY_MERCILESS"
+        "hiddenAbility": "ABILITY_SNIPER"
     },
     "SPECIES_ARIADOS": {
         "baseHP": 70,
@@ -2510,14 +2510,14 @@
         "baseDefense": 70,
         "baseSpAttack": 60,
         "baseSpDefense": 70,
-        "baseSpeed": 40,
+        "baseSpeed": 110,
         "type1": "TYPE_BUG",
         "type2": "TYPE_POISON",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
-        "ability1": "ABILITY_SNIPER",
+        "ability1": "ABILITY_SWARM",
         "ability2": "ABILITY_INSOMNIA",
-        "hiddenAbility": "ABILITY_MERCILESS"
+        "hiddenAbility": "ABILITY_SNIPER"
     },
     "SPECIES_CROBAT": {
         "baseHP": 85,
@@ -2546,14 +2546,14 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_VOLTABSORB",
-        "ability2": "ABILITY_WATERABSORB",
-        "hiddenAbility": "ABILITY_LIGHTNINGROD"
+        "ability2": "ABILITY_ILLUMINATE",
+        "hiddenAbility": "ABILITY_WATERABSORB"
     },
     "SPECIES_LANTURN": {
         "baseHP": 125,
         "baseAttack": 58,
         "baseDefense": 58,
-        "baseSpAttack": 76,
+        "baseSpAttack": 86,
         "baseSpDefense": 76,
         "baseSpeed": 67,
         "type1": "TYPE_WATER",
@@ -2561,8 +2561,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_VOLTABSORB",
-        "ability2": "ABILITY_WATERABSORB",
-        "hiddenAbility": "ABILITY_LIGHTNINGROD"
+        "ability2": "ABILITY_ILLUMINATE",
+        "hiddenAbility": "ABILITY_WATERABSORB"
     },
     "SPECIES_PICHU": {
         "baseHP": 20,
@@ -2576,7 +2576,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_STATIC",
-        "ability2": "ABILITY_STATIC",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_LIGHTNINGROD"
     },
     "SPECIES_CLEFFA": {
@@ -2682,7 +2682,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_STATIC",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_TANGLINGWOOL"
+        "hiddenAbility": "ABILITY_PLUS"
     },
     "SPECIES_FLAAFFY": {
         "baseHP": 70,
@@ -2697,7 +2697,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_STATIC",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_TANGLINGWOOL"
+        "hiddenAbility": "ABILITY_PLUS"
     },
     "SPECIES_AMPHAROS": {
         "baseHP": 90,
@@ -2712,7 +2712,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_STATIC",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_TANGLINGWOOL"
+        "hiddenAbility": "ABILITY_PLUS"
     },
     "SPECIES_BELLOSSOM": {
         "baseHP": 75,
@@ -2727,7 +2727,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_CHLOROPHYLL",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_TRIAGE"
+        "hiddenAbility": "ABILITY_HEALER"
     },
     "SPECIES_MARILL": {
         "baseHP": 70,
@@ -2772,7 +2772,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_STURDY",
         "ability2": "ABILITY_ROCKHEAD",
-        "hiddenAbility": "ABILITY_SAPSIPPER"
+        "hiddenAbility": "ABILITY_RATTLED"
     },
     "SPECIES_POLITOED": {
         "baseHP": 90,
@@ -2801,8 +2801,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_CHLOROPHYLL",
-        "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_SIMPLE"
+        "ability2": "ABILITY_LEAFGUARD",
+        "hiddenAbility": "ABILITY_INFILTRATOR"
     },
     "SPECIES_SKIPLOOM": {
         "baseHP": 55,
@@ -2816,8 +2816,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_CHLOROPHYLL",
-        "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_SIMPLE"
+        "ability2": "ABILITY_LEAFGUARD",
+        "hiddenAbility": "ABILITY_INFILTRATOR"
     },
     "SPECIES_JUMPLUFF": {
         "baseHP": 75,
@@ -2831,8 +2831,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_CHLOROPHYLL",
-        "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_SIMPLE"
+        "ability2": "ABILITY_LEAFGUARD",
+        "hiddenAbility": "ABILITY_INFILTRATOR"
     },
     "SPECIES_AIPOM": {
         "baseHP": 55,
@@ -2870,14 +2870,14 @@
         "baseDefense": 55,
         "baseSpAttack": 105,
         "baseSpDefense": 85,
-        "baseSpeed": 30,
+        "baseSpeed": 95,
         "type1": "TYPE_GRASS",
-        "type2": "TYPE_GRASS",
+        "type2": "TYPE_FIRE",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_CHLOROPHYLL",
-        "ability2": "ABILITY_SOLARPOWER",
-        "hiddenAbility": "ABILITY_GRASSDASH"
+        "ability2": "ABILITY_DROUGHT",
+        "hiddenAbility": "ABILITY_EARLYBIRD"
     },
     "SPECIES_YANMA": {
         "baseHP": 65,
@@ -2936,8 +2936,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SYNCHRONIZE",
-        "ability2": "ABILITY_SYNCHRONIZE",
-        "hiddenAbility": "ABILITY_MAGICBOUNCE"
+        "ability2": "ABILITY_MAGICBOUNCE",
+        "hiddenAbility": "ABILITY_PSYCHICSURGE"
     },
     "SPECIES_UMBREON": {
         "baseHP": 95,
@@ -2951,8 +2951,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SYNCHRONIZE",
-        "ability2": "ABILITY_SYNCHRONIZE",
-        "hiddenAbility": "ABILITY_INNERFOCUS"
+        "ability2": "ABILITY_INNERFOCUS",
+        "hiddenAbility": "ABILITY_DARKAURA"
     },
     "SPECIES_MURKROW": {
         "baseHP": 60,
@@ -2997,7 +2997,7 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MAGICIAN"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_UNOWN": {
         "baseHP": 48,
@@ -3012,7 +3012,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_WOBBUFFET": {
         "baseHP": 190,
@@ -3041,8 +3041,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_INNERFOCUS",
-        "ability2": "ABILITY_SAPSIPPER",
-        "hiddenAbility": "ABILITY_BRAINBOND"
+        "ability2": "ABILITY_EARLYBIRD",
+        "hiddenAbility": "ABILITY_SAPSIPPER"
     },
     "SPECIES_PINECO": {
         "baseHP": 50,
@@ -3132,7 +3132,7 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_INTIMIDATE",
         "ability2": "ABILITY_RUNAWAY",
-        "hiddenAbility": "ABILITY_STRONGJAW"
+        "hiddenAbility": "ABILITY_RATTLED"
     },
     "SPECIES_GRANBULL": {
         "baseHP": 90,
@@ -3147,7 +3147,7 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_INTIMIDATE",
         "ability2": "ABILITY_QUICKFEET",
-        "hiddenAbility": "ABILITY_STRONGJAW"
+        "hiddenAbility": "ABILITY_RATTLED"
     },
     "SPECIES_QWILFISH": {
         "baseHP": 65,
@@ -3252,7 +3252,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_GUTS",
         "ability2": "ABILITY_QUICKFEET",
-        "hiddenAbility": "ABILITY_TOUGHCLAWS"
+        "hiddenAbility": "ABILITY_UNNERVE"
     },
     "SPECIES_SLUGMA": {
         "baseHP": 40,
@@ -3280,7 +3280,7 @@
         "type2": "TYPE_ROCK",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_EVAPORATE",
+        "ability1": "ABILITY_MAGMAARMOR",
         "ability2": "ABILITY_FLAMEBODY",
         "hiddenAbility": "ABILITY_WEAKARMOR"
     },
@@ -3341,38 +3341,38 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_HUSTLE",
-        "ability2": "ABILITY_SKILLLINK",
+        "ability2": "ABILITY_SNIPER",
         "hiddenAbility": "ABILITY_MOODY"
     },
     "SPECIES_OCTILLERY": {
         "baseHP": 75,
         "baseAttack": 105,
-        "baseDefense": 75,
+        "baseDefense": 85,
         "baseSpAttack": 105,
-        "baseSpDefense": 75,
+        "baseSpDefense": 85,
         "baseSpeed": 45,
         "type1": "TYPE_WATER",
         "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SUCTIONCUPS",
-        "ability2": "ABILITY_SKILLLINK",
+        "ability2": "ABILITY_SNIPER",
         "hiddenAbility": "ABILITY_MOODY"
     },
     "SPECIES_DELIBIRD": {
-        "baseHP": 45,
+        "baseHP": 85,
         "baseAttack": 55,
-        "baseDefense": 45,
-        "baseSpAttack": 65,
-        "baseSpDefense": 45,
-        "baseSpeed": 75,
+        "baseDefense": 75,
+        "baseSpAttack": 105,
+        "baseSpDefense": 75,
+        "baseSpeed": 100,
         "type1": "TYPE_ICE",
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_VITALSPIRIT",
         "ability2": "ABILITY_HUSTLE",
-        "hiddenAbility": "ABILITY_PRANKSTER"
+        "hiddenAbility": "ABILITY_SLUSHRUSH"
     },
     "SPECIES_MANTINE": {
         "baseHP": 85,
@@ -3506,8 +3506,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_INTIMIDATE",
-        "ability2": "ABILITY_SAPSIPPER",
-        "hiddenAbility": "ABILITY_SCRAPPY"
+        "ability2": "ABILITY_FRISK",
+        "hiddenAbility": "ABILITY_SAPSIPPER"
     },
     "SPECIES_SMEARGLE": {
         "baseHP": 55,
@@ -3521,7 +3521,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_OWNTEMPO",
-        "ability2": "ABILITY_TRACE",
+        "ability2": "ABILITY_TECHNICIAN",
         "hiddenAbility": "ABILITY_MOODY"
     },
     "SPECIES_TYROGUE": {
@@ -3541,8 +3541,8 @@
     },
     "SPECIES_HITMONTOP": {
         "baseHP": 50,
-        "baseAttack": 95,
-        "baseDefense": 95,
+        "baseAttack": 105,
+        "baseDefense": 105,
         "baseSpAttack": 35,
         "baseSpDefense": 110,
         "baseSpeed": 70,
@@ -3566,8 +3566,8 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_OBLIVIOUS",
-        "ability2": "ABILITY_HYDRATION",
-        "hiddenAbility": "ABILITY_ICYSKIN"
+        "ability2": "ABILITY_FOREWARN",
+        "hiddenAbility": "ABILITY_HYDRATION"
     },
     "SPECIES_ELEKID": {
         "baseHP": 45,
@@ -3641,7 +3641,7 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
-        "ability2": "ABILITY_INNERFOCUS",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_VOLTABSORB"
     },
     "SPECIES_ENTEI": {
@@ -3656,7 +3656,7 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
-        "ability2": "ABILITY_INNERFOCUS",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_FLASHFIRE"
     },
     "SPECIES_SUICUNE": {
@@ -3671,7 +3671,7 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
-        "ability2": "ABILITY_INNERFOCUS",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_WATERABSORB"
     },
     "SPECIES_LARVITAR": {
@@ -3684,7 +3684,7 @@
         "type1": "TYPE_ROCK",
         "type2": "TYPE_GROUND",
         "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_GUTS",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SANDVEIL"
@@ -3699,7 +3699,7 @@
         "type1": "TYPE_ROCK",
         "type2": "TYPE_GROUND",
         "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SHEDSKIN",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
@@ -3714,7 +3714,7 @@
         "type1": "TYPE_ROCK",
         "type2": "TYPE_DARK",
         "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SANDSTREAM",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_UNNERVE"
@@ -3762,7 +3762,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_NATURALCURE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_REGENERATOR"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_TREECKO": {
         "baseHP": 40,
@@ -3776,7 +3776,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_LEAFGUARD",
         "hiddenAbility": "ABILITY_UNBURDEN"
     },
     "SPECIES_GROVYLE": {
@@ -3791,7 +3791,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_LEAFGUARD",
         "hiddenAbility": "ABILITY_UNBURDEN"
     },
     "SPECIES_SCEPTILE": {
@@ -3806,7 +3806,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_LEAFGUARD",
         "hiddenAbility": "ABILITY_UNBURDEN"
     },
     "SPECIES_TORCHIC": {
@@ -3821,7 +3821,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_GUTS",
         "hiddenAbility": "ABILITY_SPEEDBOOST"
     },
     "SPECIES_COMBUSKEN": {
@@ -3836,7 +3836,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_GUTS",
         "hiddenAbility": "ABILITY_SPEEDBOOST"
     },
     "SPECIES_BLAZIKEN": {
@@ -3851,7 +3851,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_GUTS",
         "hiddenAbility": "ABILITY_SPEEDBOOST"
     },
     "SPECIES_MUDKIP": {
@@ -3866,7 +3866,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SWIFTSWIM",
         "hiddenAbility": "ABILITY_DAMP"
     },
     "SPECIES_MARSHTOMP": {
@@ -3881,7 +3881,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SWIFTSWIM",
         "hiddenAbility": "ABILITY_DAMP"
     },
     "SPECIES_SWAMPERT": {
@@ -3896,7 +3896,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SWIFTSWIM",
         "hiddenAbility": "ABILITY_DAMP"
     },
     "SPECIES_POOCHYENA": {
@@ -3911,8 +3911,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_RUNAWAY",
-        "ability2": "ABILITY_STRONGJAW",
-        "hiddenAbility": "ABILITY_QUICKFEET"
+        "ability2": "ABILITY_QUICKFEET",
+        "hiddenAbility": "ABILITY_RATTLED"
     },
     "SPECIES_MIGHTYENA": {
         "baseHP": 70,
@@ -3926,7 +3926,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_INTIMIDATE",
-        "ability2": "ABILITY_STRONGJAW",
+        "ability2": "ABILITY_QUICKFEET",
         "hiddenAbility": "ABILITY_MOXIE"
     },
     "SPECIES_ZIGZAGOON": {
@@ -3972,7 +3972,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SHIELDDUST",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_TECHNICIAN"
+        "hiddenAbility": "ABILITY_RUNAWAY"
     },
     "SPECIES_SILCOON": {
         "baseHP": 50,
@@ -4002,7 +4002,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SWARM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SERENEGRACE"
+        "hiddenAbility": "ABILITY_RIVALRY"
     },
     "SPECIES_CASCOON": {
         "baseHP": 50,
@@ -4032,7 +4032,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SHIELDDUST",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_DUSTYSCALES"
+        "hiddenAbility": "ABILITY_COMPOUNDEYES"
     },
     "SPECIES_LOTAD": {
         "baseHP": 40,
@@ -4230,18 +4230,18 @@
         "hiddenAbility": "ABILITY_TECHNICIAN"
     },
     "SPECIES_SPINDA": {
-        "baseHP": 60,
-        "baseAttack": 60,
-        "baseDefense": 60,
-        "baseSpAttack": 60,
-        "baseSpDefense": 60,
-        "baseSpeed": 60,
+        "baseHP": 80,
+        "baseAttack": 80,
+        "baseDefense": 80,
+        "baseSpAttack": 80,
+        "baseSpDefense": 80,
+        "baseSpeed": 80,
         "type1": "TYPE_NORMAL",
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_OWNTEMPO",
-        "ability2": "ABILITY_HUGEPOWER",
+        "ability2": "ABILITY_TANGLEDFEET",
         "hiddenAbility": "ABILITY_CONTRARY"
     },
     "SPECIES_WINGULL": {
@@ -4286,7 +4286,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SWIFTSWIM",
-        "ability2": "ABILITY_SWIFTSWIM",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_RAINDISH"
     },
     "SPECIES_MASQUERAIN": {
@@ -4301,7 +4301,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_INTIMIDATE",
-        "ability2": "ABILITY_COMPOUNDEYES",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_UNNERVE"
     },
     "SPECIES_WAILMER": {
@@ -4317,7 +4317,7 @@
         "growthRate": "GROWTH_FLUCTUATING",
         "ability1": "ABILITY_WATERVEIL",
         "ability2": "ABILITY_OBLIVIOUS",
-        "hiddenAbility": "ABILITY_REGENERATOR"
+        "hiddenAbility": "ABILITY_PRESSURE"
     },
     "SPECIES_WAILORD": {
         "baseHP": 170,
@@ -4332,7 +4332,7 @@
         "growthRate": "GROWTH_FLUCTUATING",
         "ability1": "ABILITY_WATERVEIL",
         "ability2": "ABILITY_OBLIVIOUS",
-        "hiddenAbility": "ABILITY_REGENERATOR"
+        "hiddenAbility": "ABILITY_PRESSURE"
     },
     "SPECIES_SKITTY": {
         "baseHP": 50,
@@ -4351,11 +4351,11 @@
     },
     "SPECIES_DELCATTY": {
         "baseHP": 70,
-        "baseAttack": 65,
+        "baseAttack": 95,
         "baseDefense": 65,
         "baseSpAttack": 55,
         "baseSpDefense": 55,
-        "baseSpeed": 90,
+        "baseSpeed": 100,
         "type1": "TYPE_NORMAL",
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(75)",
@@ -4392,13 +4392,13 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MULTIEYE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_CLAYDOL": {
         "baseHP": 60,
         "baseAttack": 70,
         "baseDefense": 105,
-        "baseSpAttack": 70,
+        "baseSpAttack": 100,
         "baseSpDefense": 120,
         "baseSpeed": 75,
         "type1": "TYPE_GROUND",
@@ -4407,7 +4407,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MULTIEYE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_NOSEPASS": {
         "baseHP": 30,
@@ -4467,7 +4467,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_OBLIVIOUS",
         "ability2": "ABILITY_ANTICIPATION",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_HYDRATION"
     },
     "SPECIES_WHISCASH": {
         "baseHP": 110,
@@ -4482,13 +4482,13 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_OBLIVIOUS",
         "ability2": "ABILITY_ANTICIPATION",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_HYDRATION"
     },
     "SPECIES_LUVDISC": {
         "baseHP": 43,
         "baseAttack": 30,
-        "baseDefense": 55,
-        "baseSpAttack": 40,
+        "baseDefense": 85,
+        "baseSpAttack": 90,
         "baseSpDefense": 65,
         "baseSpeed": 97,
         "type1": "TYPE_WATER",
@@ -4496,8 +4496,8 @@
         "genderRatio": "PERCENT_FEMALE(75)",
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_SWIFTSWIM",
-        "ability2": "ABILITY_HYDRATION",
-        "hiddenAbility": "ABILITY_DRIZZLE"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_HYDRATION"
     },
     "SPECIES_CORPHISH": {
         "baseHP": 43,
@@ -4557,7 +4557,7 @@
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_MARVELSCALE",
         "ability2": "ABILITY_COMPETITIVE",
-        "hiddenAbility": "ABILITY_MULTISCALE"
+        "hiddenAbility": "ABILITY_CUTECHARM"
     },
     "SPECIES_CARVANHA": {
         "baseHP": 45,
@@ -4617,7 +4617,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_LEVITATE",
-        "hiddenAbility": "ABILITY_SOUNDWAVES"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_FLYGON": {
         "baseHP": 80,
@@ -4632,7 +4632,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_LEVITATE",
-        "hiddenAbility": "ABILITY_SOUNDWAVES"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_MAKUHITA": {
         "baseHP": 72,
@@ -4677,7 +4677,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_STATIC",
         "ability2": "ABILITY_LIGHTNINGROD",
-        "hiddenAbility": "ABILITY_FLAREBOOST"
+        "hiddenAbility": "ABILITY_MINUS"
     },
     "SPECIES_MANECTRIC": {
         "baseHP": 70,
@@ -4692,7 +4692,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_STATIC",
         "ability2": "ABILITY_LIGHTNINGROD",
-        "hiddenAbility": "ABILITY_FLAREBOOST"
+        "hiddenAbility": "ABILITY_MINUS"
     },
     "SPECIES_NUMEL": {
         "baseHP": 60,
@@ -4767,7 +4767,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_THICKFAT",
         "ability2": "ABILITY_ICEBODY",
-        "hiddenAbility": "ABILITY_REGENERATOR"
+        "hiddenAbility": "ABILITY_OBLIVIOUS"
     },
     "SPECIES_CACNEA": {
         "baseHP": 50,
@@ -4781,7 +4781,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_SANDVEIL",
-        "ability2": "ABILITY_OVERCOAT",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_WATERABSORB"
     },
     "SPECIES_CACTURNE": {
@@ -4796,7 +4796,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_SANDVEIL",
-        "ability2": "ABILITY_PRANKSTER",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_WATERABSORB"
     },
     "SPECIES_SNORUNT": {
@@ -4868,7 +4868,7 @@
         "baseSpeed": 20,
         "type1": "TYPE_NORMAL",
         "type2": "TYPE_FAIRY",
-        "genderRatio": "PERCENT_FEMALE(50)",
+        "genderRatio": "PERCENT_FEMALE(75)",
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_THICKFAT",
         "ability2": "ABILITY_HUGEPOWER",
@@ -4887,7 +4887,7 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_THICKFAT",
         "ability2": "ABILITY_OWNTEMPO",
-        "hiddenAbility": "ABILITY_MAGICBOUNCE"
+        "hiddenAbility": "ABILITY_GLUTTONY"
     },
     "SPECIES_GRUMPIG": {
         "baseHP": 80,
@@ -4902,7 +4902,7 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_THICKFAT",
         "ability2": "ABILITY_OWNTEMPO",
-        "hiddenAbility": "ABILITY_MAGICBOUNCE"
+        "hiddenAbility": "ABILITY_GLUTTONY"
     },
     "SPECIES_PLUSLE": {
         "baseHP": 60,
@@ -4916,8 +4916,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PLUS",
-        "ability2": "ABILITY_LIGHTNINGROD",
-        "hiddenAbility": "ABILITY_ELECTRICSURGE"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_LIGHTNINGROD"
     },
     "SPECIES_MINUN": {
         "baseHP": 60,
@@ -4931,8 +4931,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_MINUS",
-        "ability2": "ABILITY_VOLTABSORB",
-        "hiddenAbility": "ABILITY_ELECTRICSURGE"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_VOLTABSORB"
     },
     "SPECIES_MAWILE": {
         "baseHP": 50,
@@ -4991,23 +4991,23 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_NATURALCURE",
-        "ability2": "ABILITY_CLOUDNINE",
-        "hiddenAbility": "ABILITY_COTTONCLOUD"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_CLOUDNINE"
     },
     "SPECIES_ALTARIA": {
-        "baseHP": 75,
-        "baseAttack": 70,
-        "baseDefense": 90,
-        "baseSpAttack": 70,
-        "baseSpDefense": 105,
+        "baseHP": 95,
+        "baseAttack": 40,
+        "baseDefense": 100,
+        "baseSpAttack": 80,
+        "baseSpDefense": 115,
         "baseSpeed": 80,
         "type1": "TYPE_DRAGON",
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_NATURALCURE",
-        "ability2": "ABILITY_CLOUDNINE",
-        "hiddenAbility": "ABILITY_COTTONCLOUD"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_CLOUDNINE"
     },
     "SPECIES_WYNAUT": {
         "baseHP": 95,
@@ -5125,7 +5125,7 @@
         "type2": "TYPE_POISON",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FLUCTUATING",
-        "ability1": "ABILITY_GOOEY",
+        "ability1": "ABILITY_LIQUIDOOZE",
         "ability2": "ABILITY_STICKYHOLD",
         "hiddenAbility": "ABILITY_GLUTTONY"
     },
@@ -5140,7 +5140,7 @@
         "type2": "TYPE_POISON",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FLUCTUATING",
-        "ability1": "ABILITY_GOOEY",
+        "ability1": "ABILITY_LIQUIDOOZE",
         "ability2": "ABILITY_STICKYHOLD",
         "hiddenAbility": "ABILITY_GLUTTONY"
     },
@@ -5156,7 +5156,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_CHLOROPHYLL",
-        "ability2": "ABILITY_RIPEN",
+        "ability2": "ABILITY_SOLARPOWER",
         "hiddenAbility": "ABILITY_HARVEST"
     },
     "SPECIES_WHISMUR": {
@@ -5171,7 +5171,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_SOUNDPROOF",
-        "ability2": "ABILITY_BELLOW",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_RATTLED"
     },
     "SPECIES_LOUDRED": {
@@ -5186,7 +5186,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_SOUNDPROOF",
-        "ability2": "ABILITY_BELLOW",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SCRAPPY"
     },
     "SPECIES_EXPLOUD": {
@@ -5201,7 +5201,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_SOUNDPROOF",
-        "ability2": "ABILITY_BELLOW",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SCRAPPY"
     },
     "SPECIES_CLAMPERL": {
@@ -5255,7 +5255,7 @@
         "baseDefense": 60,
         "baseSpAttack": 75,
         "baseSpDefense": 60,
-        "baseSpeed": 75,
+        "baseSpeed": 95,
         "type1": "TYPE_DARK",
         "type2": "TYPE_DARK",
         "genderRatio": "PERCENT_FEMALE(50)",
@@ -5306,8 +5306,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FLUCTUATING",
         "ability1": "ABILITY_SHEDSKIN",
-        "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_SLIPPERYTAIL"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_INFILTRATOR"
     },
     "SPECIES_ZANGOOSE": {
         "baseHP": 73,
@@ -5321,8 +5321,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_IMMUNITY",
-        "ability2": "ABILITY_TOXICBOOST",
-        "hiddenAbility": "ABILITY_TOUGHCLAWS"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_TOXICBOOST"
     },
     "SPECIES_RELICANTH": {
         "baseHP": 100,
@@ -5441,7 +5441,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_SUCTIONCUPS",
-        "ability2": "ABILITY_SIMPLE",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_STORMDRAIN"
     },
     "SPECIES_CRADILY": {
@@ -5456,7 +5456,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_SUCTIONCUPS",
-        "ability2": "ABILITY_SIMPLE",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_STORMDRAIN"
     },
     "SPECIES_ANORITH": {
@@ -5471,7 +5471,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_BATTLEARMOR",
-        "ability2": "ABILITY_TOUGHCLAWS",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SWIFTSWIM"
     },
     "SPECIES_ARMALDO": {
@@ -5486,7 +5486,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_BATTLEARMOR",
-        "ability2": "ABILITY_TOUGHCLAWS",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SWIFTSWIM"
     },
     "SPECIES_RALTS": {
@@ -5589,7 +5589,7 @@
         "type1": "TYPE_STEEL",
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_CLEARBODY",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_LIGHTMETAL"
@@ -5604,7 +5604,7 @@
         "type1": "TYPE_STEEL",
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_CLEARBODY",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_LIGHTMETAL"
@@ -5619,7 +5619,7 @@
         "type1": "TYPE_STEEL",
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_CLEARBODY",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_LIGHTMETAL"
@@ -5652,7 +5652,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_CLEARBODY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_FILTER"
+        "hiddenAbility": "ABILITY_ICEBODY"
     },
     "SPECIES_REGISTEEL": {
         "baseHP": 80,
@@ -5667,7 +5667,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_CLEARBODY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_FILTER"
+        "hiddenAbility": "ABILITY_LIGHTMETAL"
     },
     "SPECIES_KYOGRE": {
         "baseHP": 100,
@@ -5682,7 +5682,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_DRIZZLE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_HYDRATION"
+        "hiddenAbility": "ABILITY_SWIFTSWIM"
     },
     "SPECIES_GROUDON": {
         "baseHP": 100,
@@ -5712,7 +5712,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_AIRLOCK",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEDSKIN"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_LATIAS": {
         "baseHP": 80,
@@ -5727,7 +5727,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SERENEGRACE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_LATIOS": {
         "baseHP": 80,
@@ -5742,7 +5742,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SERENEGRACE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_JIRACHI": {
         "baseHP": 100,
@@ -5757,7 +5757,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SERENEGRACE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SUPERLUCK"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_DEOXYS": {
         "baseHP": 50,
@@ -5772,7 +5772,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_LIMBER"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_CHIMECHO": {
         "baseHP": 75,
@@ -5787,7 +5787,7 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_PRANKSTER"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_UNOWN_B": {
         "baseHP": 48,
@@ -6206,7 +6206,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SOLIDROCK",
         "hiddenAbility": "ABILITY_SHELLARMOR"
     },
     "SPECIES_GROTLE": {
@@ -6221,7 +6221,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SOLIDROCK",
         "hiddenAbility": "ABILITY_SHELLARMOR"
     },
     "SPECIES_TORTERRA": {
@@ -6236,7 +6236,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SOLIDROCK",
         "hiddenAbility": "ABILITY_SHELLARMOR"
     },
     "SPECIES_CHIMCHAR": {
@@ -6251,8 +6251,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_IRONFIST"
+        "ability2": "ABILITY_IRONFIST",
+        "hiddenAbility": "ABILITY_MOXIE"
     },
     "SPECIES_MONFERNO": {
         "baseHP": 64,
@@ -6266,8 +6266,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_IRONFIST"
+        "ability2": "ABILITY_IRONFIST",
+        "hiddenAbility": "ABILITY_MOXIE"
     },
     "SPECIES_INFERNAPE": {
         "baseHP": 76,
@@ -6281,8 +6281,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_IRONFIST"
+        "ability2": "ABILITY_IRONFIST",
+        "hiddenAbility": "ABILITY_MOXIE"
     },
     "SPECIES_PIPLUP": {
         "baseHP": 53,
@@ -6296,7 +6296,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_HYDRATION",
         "hiddenAbility": "ABILITY_DEFIANT"
     },
     "SPECIES_PRINPLUP": {
@@ -6311,8 +6311,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_DEFIANT"
+        "ability2": "ABILITY_HYDRATION",
+        "hiddenAbility": "ABILITY_COMPETITIVE"
     },
     "SPECIES_EMPOLEON": {
         "baseHP": 84,
@@ -6326,8 +6326,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_DEFIANT"
+        "ability2": "ABILITY_HYDRATION",
+        "hiddenAbility": "ABILITY_COMPETITIVE"
     },
     "SPECIES_STARLY": {
         "baseHP": 40,
@@ -6417,7 +6417,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_SHEDSKIN",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_TECHNICIAN"
+        "hiddenAbility": "ABILITY_RUNAWAY"
     },
     "SPECIES_KRICKETUNE": {
         "baseHP": 77,
@@ -6468,14 +6468,14 @@
         "baseHP": 80,
         "baseAttack": 120,
         "baseDefense": 79,
-        "baseSpAttack": 95,
+        "baseSpAttack": 85,
         "baseSpDefense": 79,
-        "baseSpeed": 70,
+        "baseSpeed": 120,
         "type1": "TYPE_ELECTRIC",
         "type2": "TYPE_ELECTRIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_STRONGJAW",
+        "ability1": "ABILITY_RIVALRY",
         "ability2": "ABILITY_INTIMIDATE",
         "hiddenAbility": "ABILITY_GUTS"
     },
@@ -6521,7 +6521,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_MOLDBREAKER",
-        "ability2": "ABILITY_RECKLESS",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SHEERFORCE"
     },
     "SPECIES_RAMPARDOS": {
@@ -6536,7 +6536,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_MOLDBREAKER",
-        "ability2": "ABILITY_RECKLESS",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SHEERFORCE"
     },
     "SPECIES_SHIELDON": {
@@ -6551,8 +6551,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_STURDY",
-        "ability2": "ABILITY_SOUNDPROOF",
-        "hiddenAbility": "ABILITY_FACESHIELD"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_SOUNDPROOF"
     },
     "SPECIES_BASTIODON": {
         "baseHP": 60,
@@ -6566,8 +6566,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_STURDY",
-        "ability2": "ABILITY_SOUNDPROOF",
-        "hiddenAbility": "ABILITY_FACESHIELD"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_SOUNDPROOF"
     },
     "SPECIES_BURMY": {
         "baseHP": 40,
@@ -6595,7 +6595,7 @@
         "type2": "TYPE_GRASS",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_TECHNICIAN",
+        "ability1": "ABILITY_ANTICIPATION",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_OVERCOAT"
     },
@@ -6610,9 +6610,9 @@
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(0)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_ADAPTABILITY",
-        "ability2": "ABILITY_COMPOUNDEYES",
-        "hiddenAbility": "ABILITY_SUBTERFUGE"
+        "ability1": "ABILITY_SWARM",
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_TINTEDLENS"
     },
     "SPECIES_COMBEE": {
         "baseHP": 30,
@@ -6626,7 +6626,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_HONEYGATHER",
-        "ability2": "ABILITY_HONEYGATHER",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_HUSTLE"
     },
     "SPECIES_VESPIQUEN": {
@@ -6641,8 +6641,8 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_PRESSURE",
-        "ability2": "ABILITY_QUEENLYMAJESTY",
-        "hiddenAbility": "ABILITY_HONEYARMOR"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_UNNERVE"
     },
     "SPECIES_PACHIRISU": {
         "baseHP": 60,
@@ -6655,7 +6655,7 @@
         "type2": "TYPE_ELECTRIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SERENEGRACE",
+        "ability1": "ABILITY_RUNAWAY",
         "ability2": "ABILITY_PICKUP",
         "hiddenAbility": "ABILITY_VOLTABSORB"
     },
@@ -6671,8 +6671,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SWIFTSWIM",
-        "ability2": "ABILITY_WATERVEIL",
-        "hiddenAbility": "ABILITY_TECHNICIAN"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_WATERVEIL"
     },
     "SPECIES_FLOATZEL": {
         "baseHP": 85,
@@ -6686,8 +6686,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SWIFTSWIM",
-        "ability2": "ABILITY_WATERVEIL",
-        "hiddenAbility": "ABILITY_TECHNICIAN"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_WATERVEIL"
     },
     "SPECIES_CHERUBI": {
         "baseHP": 45,
@@ -6837,7 +6837,7 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MAGICBOUNCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_HONCHKROW": {
         "baseHP": 100,
@@ -6897,7 +6897,7 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_FOREWARN"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_STUNKY": {
         "baseHP": 63,
@@ -6927,7 +6927,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_STENCH",
         "ability2": "ABILITY_AFTERMATH",
-        "hiddenAbility": "ABILITY_POISONTOUCH"
+        "hiddenAbility": "ABILITY_KEENEYE"
     },
     "SPECIES_BRONZOR": {
         "baseHP": 57,
@@ -6972,7 +6972,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_STURDY",
         "ability2": "ABILITY_ROCKHEAD",
-        "hiddenAbility": "ABILITY_SAPSIPPER"
+        "hiddenAbility": "ABILITY_RATTLED"
     },
     "SPECIES_MIME_JR": {
         "baseHP": 20,
@@ -7017,13 +7017,13 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_KEENEYE",
         "ability2": "ABILITY_TANGLEDFEET",
-        "hiddenAbility": "ABILITY_PUNKROCK"
+        "hiddenAbility": "ABILITY_BIGPECKS"
     },
     "SPECIES_SPIRITOMB": {
         "baseHP": 50,
-        "baseAttack": 92,
+        "baseAttack": 97,
         "baseDefense": 108,
-        "baseSpAttack": 92,
+        "baseSpAttack": 97,
         "baseSpDefense": 108,
         "baseSpeed": 35,
         "type1": "TYPE_GHOST",
@@ -7032,7 +7032,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PRESSURE",
         "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_BADDREAMS"
+        "hiddenAbility": "ABILITY_DARKAURA"
     },
     "SPECIES_GIBLE": {
         "baseHP": 58,
@@ -7044,7 +7044,7 @@
         "type1": "TYPE_DRAGON",
         "type2": "TYPE_GROUND",
         "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SANDVEIL",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_ROUGHSKIN"
@@ -7059,7 +7059,7 @@
         "type1": "TYPE_DRAGON",
         "type2": "TYPE_GROUND",
         "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SANDVEIL",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_ROUGHSKIN"
@@ -7074,70 +7074,10 @@
         "type1": "TYPE_DRAGON",
         "type2": "TYPE_GROUND",
         "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SANDVEIL",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_ROUGHSKIN"
-    },
-    "SPECIES_GIBLE_B": {
-        "baseHP": 58,
-        "baseAttack": 70,
-        "baseDefense": 45,
-        "baseSpAttack": 45,
-        "baseSpDefense": 45,
-        "baseSpeed": 42,
-        "type1": "TYPE_DRAGON",
-        "type2": "TYPE_FIRE",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_FLASHFIRE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ROUGHSKIN"
-    },
-    "SPECIES_GABITE_B": {
-        "baseHP": 68,
-        "baseAttack": 90,
-        "baseDefense": 65,
-        "baseSpAttack": 50,
-        "baseSpDefense": 55,
-        "baseSpeed": 82,
-        "type1": "TYPE_DRAGON",
-        "type2": "TYPE_FIRE",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_FLASHFIRE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ROUGHSKIN"
-    },
-    "SPECIES_GARCHOMP_B": {
-        "baseHP": 108,
-        "baseAttack": 130,
-        "baseDefense": 95,
-        "baseSpAttack": 80,
-        "baseSpDefense": 85,
-        "baseSpeed": 102,
-        "type1": "TYPE_DRAGON",
-        "type2": "TYPE_FIRE",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_FLASHFIRE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ROUGHSKIN"
-    },
-    "SPECIES_GARCHOMP_B_MEGA": {
-        "baseHP": 108,
-        "baseAttack": 145,
-        "baseDefense": 115,
-        "baseSpAttack": 135,
-        "baseSpDefense": 95,
-        "baseSpeed": 102,
-        "type1": "TYPE_DRAGON",
-        "type2": "TYPE_FIRE",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_SOLARPOWER",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_MUNCHLAX": {
         "baseHP": 135,
@@ -7242,7 +7182,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_BATTLEARMOR",
         "ability2": "ABILITY_SNIPER",
-        "hiddenAbility": "ABILITY_SUPERLUCK"
+        "hiddenAbility": "ABILITY_KEENEYE"
     },
     "SPECIES_CROAGUNK": {
         "baseHP": 48,
@@ -7287,7 +7227,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_GRASSYSURGE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_FINNEON": {
         "baseHP": 49,
@@ -7302,14 +7242,14 @@
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_SWIFTSWIM",
         "ability2": "ABILITY_STORMDRAIN",
-        "hiddenAbility": "ABILITY_WATERBUBBLE"
+        "hiddenAbility": "ABILITY_WATERVEIL"
     },
     "SPECIES_LUMINEON": {
-        "baseHP": 69,
+        "baseHP": 89,
         "baseAttack": 69,
-        "baseDefense": 76,
-        "baseSpAttack": 69,
-        "baseSpDefense": 86,
+        "baseDefense": 96,
+        "baseSpAttack": 89,
+        "baseSpDefense": 106,
         "baseSpeed": 91,
         "type1": "TYPE_WATER",
         "type2": "TYPE_WATER",
@@ -7317,7 +7257,7 @@
         "growthRate": "GROWTH_ERRATIC",
         "ability1": "ABILITY_SWIFTSWIM",
         "ability2": "ABILITY_STORMDRAIN",
-        "hiddenAbility": "ABILITY_WATERBUBBLE"
+        "hiddenAbility": "ABILITY_DAZZLING"
     },
     "SPECIES_MANTYKE": {
         "baseHP": 45,
@@ -7405,7 +7345,7 @@
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_THICKFAT",
+        "ability1": "ABILITY_OWNTEMPO",
         "ability2": "ABILITY_OBLIVIOUS",
         "hiddenAbility": "ABILITY_CLOUDNINE"
     },
@@ -7467,7 +7407,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLAMEBODY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_VITALSPIRIT"
     },
     "SPECIES_TOGEKISS": {
         "baseHP": 85,
@@ -7510,9 +7450,9 @@
         "type2": "TYPE_GRASS",
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SAPSIPPER",
-        "ability2": "ABILITY_SAPSIPPER",
-        "hiddenAbility": "ABILITY_CHLOROPHYLL"
+        "ability1": "ABILITY_LEAFGUARD",
+        "ability2": "ABILITY_CHLOROPHYLL",
+        "hiddenAbility": "ABILITY_GRASSYSURGE"
     },
     "SPECIES_GLACEON": {
         "baseHP": 65,
@@ -7526,8 +7466,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SNOWCLOAK",
-        "ability2": "ABILITY_SNOWCLOAK",
-        "hiddenAbility": "ABILITY_ICYSKIN"
+        "ability2": "ABILITY_ICEBODY",
+        "hiddenAbility": "ABILITY_SNOWWARNING"
     },
     "SPECIES_GLISCOR": {
         "baseHP": 75,
@@ -7586,7 +7526,7 @@
         "genderRatio": "PERCENT_FEMALE(0)",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_STEADFAST",
-        "ability2": "ABILITY_MOXIE",
+        "ability2": "ABILITY_STEADFAST",
         "hiddenAbility": "ABILITY_JUSTIFIED"
     },
     "SPECIES_PROBOPASS": {
@@ -7602,7 +7542,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_STURDY",
         "ability2": "ABILITY_MAGNETPULL",
-        "hiddenAbility": "ABILITY_ANALYTIC"
+        "hiddenAbility": "ABILITY_SANDFORCE"
     },
     "SPECIES_DUSKNOIR": {
         "baseHP": 45,
@@ -7617,13 +7557,13 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_PRESSURE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_IRONFIST"
+        "hiddenAbility": "ABILITY_FRISK"
     },
     "SPECIES_FROSLASS": {
         "baseHP": 70,
-        "baseAttack": 80,
+        "baseAttack": 90,
         "baseDefense": 70,
-        "baseSpAttack": 80,
+        "baseSpAttack": 90,
         "baseSpDefense": 70,
         "baseSpeed": 110,
         "type1": "TYPE_ICE",
@@ -7631,8 +7571,8 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SNOWCLOAK",
-        "ability2": "ABILITY_CURSEDBODY",
-        "hiddenAbility": "ABILITY_PERISH_BODY"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_CURSEDBODY"
     },
     "SPECIES_ROTOM": {
         "baseHP": 50,
@@ -7662,7 +7602,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_COMATOSE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_MESPRIT": {
         "baseHP": 80,
@@ -7677,7 +7617,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MAGICBOUNCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_AZELF": {
         "baseHP": 75,
@@ -7692,7 +7632,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_INFILTRATOR"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_DIALGA": {
         "baseHP": 100,
@@ -7752,7 +7692,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SLOWSTART",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_STALL"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_GIRATINA": {
         "baseHP": 150,
@@ -7782,7 +7722,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MAGICIAN"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_PHIONE": {
         "baseHP": 80,
@@ -7797,7 +7737,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_HYDRATION",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_DRIZZLE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_MANAPHY": {
         "baseHP": 100,
@@ -7812,7 +7752,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_HYDRATION",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SOULHEART"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_DARKRAI": {
         "baseHP": 70,
@@ -7827,7 +7767,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_BADDREAMS",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_INFILTRATOR"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SHAYMIN": {
         "baseHP": 100,
@@ -7842,7 +7782,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_NATURALCURE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_FLOWERVEIL"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_ARCEUS": {
         "baseHP": 120,
@@ -7872,7 +7812,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_VICTORYSTAR",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SYNCHRONIZE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SNIVY": {
         "baseHP": 45,
@@ -7886,7 +7826,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_CHLOROPHYLL",
         "hiddenAbility": "ABILITY_CONTRARY"
     },
     "SPECIES_SERVINE": {
@@ -7901,7 +7841,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_CHLOROPHYLL",
         "hiddenAbility": "ABILITY_CONTRARY"
     },
     "SPECIES_SERPERIOR": {
@@ -7916,7 +7856,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_CHLOROPHYLL",
         "hiddenAbility": "ABILITY_CONTRARY"
     },
     "SPECIES_TEPIG": {
@@ -7931,8 +7871,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_THICKFAT"
+        "ability2": "ABILITY_RECKLESS",
+        "hiddenAbility": "ABILITY_ROCKHEAD"
     },
     "SPECIES_PIGNITE": {
         "baseHP": 90,
@@ -7946,8 +7886,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_THICKFAT"
+        "ability2": "ABILITY_RECKLESS",
+        "hiddenAbility": "ABILITY_ROCKHEAD"
     },
     "SPECIES_EMBOAR": {
         "baseHP": 110,
@@ -7961,8 +7901,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_RECKLESS"
+        "ability2": "ABILITY_RECKLESS",
+        "hiddenAbility": "ABILITY_ROCKHEAD"
     },
     "SPECIES_OSHAWOTT": {
         "baseHP": 55,
@@ -7976,7 +7916,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_JUSTIFIED",
         "hiddenAbility": "ABILITY_SHELLARMOR"
     },
     "SPECIES_DEWOTT": {
@@ -7991,7 +7931,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_JUSTIFIED",
         "hiddenAbility": "ABILITY_SHELLARMOR"
     },
     "SPECIES_SAMUROTT": {
@@ -8002,12 +7942,12 @@
         "baseSpDefense": 70,
         "baseSpeed": 70,
         "type1": "TYPE_WATER",
-        "type2": "TYPE_WATER",
+        "type2": "TYPE_FIGHTING",
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHELLARMOR"
+        "ability2": "ABILITY_JUSTIFIED",
+        "hiddenAbility": "ABILITY_INTREPIDSWORD"
     },
     "SPECIES_PATRAT": {
         "baseHP": 45,
@@ -8020,7 +7960,7 @@
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_STAKEOUT",
+        "ability1": "ABILITY_RUNAWAY",
         "ability2": "ABILITY_KEENEYE",
         "hiddenAbility": "ABILITY_ANALYTIC"
     },
@@ -8035,7 +7975,7 @@
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_STAKEOUT",
+        "ability1": "ABILITY_ILLUMINATE",
         "ability2": "ABILITY_KEENEYE",
         "hiddenAbility": "ABILITY_ANALYTIC"
     },
@@ -8127,7 +8067,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_GLUTTONY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_OVERGROW"
     },
     "SPECIES_SIMISAGE": {
         "baseHP": 75,
@@ -8142,7 +8082,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_GLUTTONY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_OVERGROW"
     },
     "SPECIES_PANSEAR": {
         "baseHP": 50,
@@ -8157,7 +8097,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_GLUTTONY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_BLAZE"
     },
     "SPECIES_SIMISEAR": {
         "baseHP": 75,
@@ -8172,7 +8112,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_GLUTTONY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_BLAZE"
     },
     "SPECIES_PANPOUR": {
         "baseHP": 50,
@@ -8187,7 +8127,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_GLUTTONY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_TORRENT"
     },
     "SPECIES_SIMIPOUR": {
         "baseHP": 75,
@@ -8202,7 +8142,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_GLUTTONY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_TORRENT"
     },
     "SPECIES_MUNNA": {
         "baseHP": 76,
@@ -8230,7 +8170,7 @@
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
-        "ability1": "ABILITY_MAGICGUARD",
+        "ability1": "ABILITY_FOREWARN",
         "ability2": "ABILITY_SYNCHRONIZE",
         "hiddenAbility": "ABILITY_TELEPATHY"
     },
@@ -8245,9 +8185,9 @@
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_RIVALRY",
+        "ability1": "ABILITY_BIGPECKS",
         "ability2": "ABILITY_SUPERLUCK",
-        "hiddenAbility": "ABILITY_PROUD"
+        "hiddenAbility": "ABILITY_RIVALRY"
     },
     "SPECIES_TRANQUILL": {
         "baseHP": 62,
@@ -8260,9 +8200,9 @@
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_RIVALRY",
+        "ability1": "ABILITY_BIGPECKS",
         "ability2": "ABILITY_SUPERLUCK",
-        "hiddenAbility": "ABILITY_PROUD"
+        "hiddenAbility": "ABILITY_RIVALRY"
     },
     "SPECIES_UNFEZANT": {
         "baseHP": 80,
@@ -8275,9 +8215,9 @@
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_RIVALRY",
+        "ability1": "ABILITY_DEFIANT",
         "ability2": "ABILITY_SUPERLUCK",
-        "hiddenAbility": "ABILITY_PRIDE"
+        "hiddenAbility": "ABILITY_RIVALRY"
     },
     "SPECIES_BLITZLE": {
         "baseHP": 45,
@@ -8290,7 +8230,7 @@
         "type2": "TYPE_ELECTRIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SHOCKINGNEIGH",
+        "ability1": "ABILITY_LIGHTNINGROD",
         "ability2": "ABILITY_MOTORDRIVE",
         "hiddenAbility": "ABILITY_SAPSIPPER"
     },
@@ -8305,7 +8245,7 @@
         "type2": "TYPE_ELECTRIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SHOCKINGNEIGH",
+        "ability1": "ABILITY_LIGHTNINGROD",
         "ability2": "ABILITY_MOTORDRIVE",
         "hiddenAbility": "ABILITY_SAPSIPPER"
     },
@@ -8340,7 +8280,7 @@
         "hiddenAbility": "ABILITY_SANDFORCE"
     },
     "SPECIES_GIGALITH": {
-        "baseHP": 85,
+        "baseHP": 95,
         "baseAttack": 135,
         "baseDefense": 130,
         "baseSpAttack": 60,
@@ -8371,10 +8311,10 @@
     },
     "SPECIES_SWOOBAT": {
         "baseHP": 67,
-        "baseAttack": 57,
-        "baseDefense": 55,
+        "baseAttack": 37,
+        "baseDefense": 65,
         "baseSpAttack": 77,
-        "baseSpDefense": 55,
+        "baseSpDefense": 65,
         "baseSpeed": 114,
         "type1": "TYPE_PSYCHIC",
         "type2": "TYPE_FLYING",
@@ -8416,10 +8356,10 @@
     },
     "SPECIES_AUDINO": {
         "baseHP": 103,
-        "baseAttack": 60,
-        "baseDefense": 86,
-        "baseSpAttack": 60,
-        "baseSpDefense": 86,
+        "baseAttack": 70,
+        "baseDefense": 90,
+        "baseSpAttack": 70,
+        "baseSpDefense": 90,
         "baseSpeed": 50,
         "type1": "TYPE_NORMAL",
         "type2": "TYPE_NORMAL",
@@ -8652,7 +8592,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PRANKSTER",
         "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_COTTONDOWN"
+        "hiddenAbility": "ABILITY_CHLOROPHYLL"
     },
     "SPECIES_WHIMSICOTT": {
         "baseHP": 60,
@@ -8667,7 +8607,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PRANKSTER",
         "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_COTTONDOWN"
+        "hiddenAbility": "ABILITY_CHLOROPHYLL"
     },
     "SPECIES_PETILIL": {
         "baseHP": 45,
@@ -8682,7 +8622,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_CHLOROPHYLL",
         "ability2": "ABILITY_OWNTEMPO",
-        "hiddenAbility": "ABILITY_DANCER"
+        "hiddenAbility": "ABILITY_LEAFGUARD"
     },
     "SPECIES_LILLIGANT": {
         "baseHP": 70,
@@ -8697,7 +8637,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_CHLOROPHYLL",
         "ability2": "ABILITY_OWNTEMPO",
-        "hiddenAbility": "ABILITY_DANCER"
+        "hiddenAbility": "ABILITY_LEAFGUARD"
     },
     "SPECIES_BASCULIN_RED": {
         "baseHP": 70,
@@ -8712,7 +8652,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_RECKLESS",
         "ability2": "ABILITY_ADAPTABILITY",
-        "hiddenAbility": "ABILITY_SPEEDBOOST"
+        "hiddenAbility": "ABILITY_MOLDBREAKER"
     },
     "SPECIES_SANDILE": {
         "baseHP": 50,
@@ -8790,11 +8730,11 @@
         "hiddenAbility": "ABILITY_ZENMODE"
     },
     "SPECIES_MARACTUS": {
-        "baseHP": 75,
+        "baseHP": 95,
         "baseAttack": 86,
-        "baseDefense": 67,
+        "baseDefense": 97,
         "baseSpAttack": 106,
-        "baseSpDefense": 67,
+        "baseSpDefense": 97,
         "baseSpeed": 60,
         "type1": "TYPE_GRASS",
         "type2": "TYPE_GRASS",
@@ -8802,7 +8742,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_WATERABSORB",
         "ability2": "ABILITY_CHLOROPHYLL",
-        "hiddenAbility": "ABILITY_STORMDRAIN"
+        "hiddenAbility": "ABILITY_ROUGHSKIN"
     },
     "SPECIES_DWEBBLE": {
         "baseHP": 50,
@@ -8950,9 +8890,9 @@
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_DEFEATIST",
+        "ability1": "ABILITY_EARLYBIRD",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_KLUTZ"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_ARCHEOPS": {
         "baseHP": 75,
@@ -8965,9 +8905,9 @@
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_DEFEATIST",
+        "ability1": "ABILITY_EARLYBIRD",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_KLUTZ"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_TRUBBISH": {
         "baseHP": 50,
@@ -9161,8 +9101,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_KEENEYE",
-        "ability2": "ABILITY_HYDRATION",
-        "hiddenAbility": "ABILITY_COMPETITIVE"
+        "ability2": "ABILITY_BIGPECKS",
+        "hiddenAbility": "ABILITY_HYDRATION"
     },
     "SPECIES_SWANNA": {
         "baseHP": 75,
@@ -9176,8 +9116,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_KEENEYE",
-        "ability2": "ABILITY_HYDRATION",
-        "hiddenAbility": "ABILITY_COMPETITIVE"
+        "ability2": "ABILITY_BIGPECKS",
+        "hiddenAbility": "ABILITY_HYDRATION"
     },
     "SPECIES_VANILLITE": {
         "baseHP": 36,
@@ -9266,8 +9206,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_STATIC",
-        "ability2": "ABILITY_MOTORDRIVE",
-        "hiddenAbility": "ABILITY_ELECTRICSURGE"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_MOTORDRIVE"
     },
     "SPECIES_KARRABLAST": {
         "baseHP": 50,
@@ -9342,13 +9282,13 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_WATERABSORB",
         "ability2": "ABILITY_CURSEDBODY",
-        "hiddenAbility": "ABILITY_WATERBUBBLE"
+        "hiddenAbility": "ABILITY_DAMP"
     },
     "SPECIES_JELLICENT": {
         "baseHP": 100,
         "baseAttack": 60,
         "baseDefense": 70,
-        "baseSpAttack": 85,
+        "baseSpAttack": 100,
         "baseSpDefense": 105,
         "baseSpeed": 60,
         "type1": "TYPE_WATER",
@@ -9446,8 +9386,8 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_PLUS",
-        "ability2": "ABILITY_CLEARBODY",
-        "hiddenAbility": "ABILITY_MOTORDRIVE"
+        "ability2": "ABILITY_MINUS",
+        "hiddenAbility": "ABILITY_CLEARBODY"
     },
     "SPECIES_KLANG": {
         "baseHP": 60,
@@ -9461,8 +9401,8 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_PLUS",
-        "ability2": "ABILITY_CLEARBODY",
-        "hiddenAbility": "ABILITY_MOTORDRIVE"
+        "ability2": "ABILITY_MINUS",
+        "hiddenAbility": "ABILITY_CLEARBODY"
     },
     "SPECIES_KLINKLANG": {
         "baseHP": 60,
@@ -9476,8 +9416,8 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_PLUS",
-        "ability2": "ABILITY_CLEARBODY",
-        "hiddenAbility": "ABILITY_MOTORDRIVE"
+        "ability2": "ABILITY_MINUS",
+        "hiddenAbility": "ABILITY_CLEARBODY"
     },
     "SPECIES_TYNAMO": {
         "baseHP": 35,
@@ -9536,8 +9476,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_TELEPATHY",
-        "ability2": "ABILITY_ANALYTIC",
-        "hiddenAbility": "ABILITY_SYNCHRONIZE"
+        "ability2": "ABILITY_SYNCHRONIZE",
+        "hiddenAbility": "ABILITY_ANALYTIC"
     },
     "SPECIES_BEHEEYEM": {
         "baseHP": 75,
@@ -9551,8 +9491,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_TELEPATHY",
-        "ability2": "ABILITY_ANALYTIC",
-        "hiddenAbility": "ABILITY_PSYCHICSURGE"
+        "ability2": "ABILITY_SYNCHRONIZE",
+        "hiddenAbility": "ABILITY_ANALYTIC"
     },
     "SPECIES_LITWICK": {
         "baseHP": 50,
@@ -9663,11 +9603,11 @@
         "baseHP": 95,
         "baseAttack": 130,
         "baseDefense": 80,
-        "baseSpAttack": 70,
+        "baseSpAttack": 50,
         "baseSpDefense": 80,
-        "baseSpeed": 50,
+        "baseSpeed": 90,
         "type1": "TYPE_ICE",
-        "type2": "TYPE_ICE",
+        "type2": "TYPE_FIGHTING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SNOWCLOAK",
@@ -9687,7 +9627,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_FILTER"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SHELMET": {
         "baseHP": 50,
@@ -9706,10 +9646,10 @@
     },
     "SPECIES_ACCELGOR": {
         "baseHP": 80,
-        "baseAttack": 70,
-        "baseDefense": 40,
-        "baseSpAttack": 100,
-        "baseSpDefense": 60,
+        "baseAttack": 50,
+        "baseDefense": 70,
+        "baseSpAttack": 80,
+        "baseSpDefense": 80,
         "baseSpeed": 145,
         "type1": "TYPE_BUG",
         "type2": "TYPE_BUG",
@@ -9731,7 +9671,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_STATIC",
-        "ability2": "ABILITY_WATERABSORB",
+        "ability2": "ABILITY_LIMBER",
         "hiddenAbility": "ABILITY_SANDVEIL"
     },
     "SPECIES_MIENFOO": {
@@ -9765,11 +9705,11 @@
         "hiddenAbility": "ABILITY_RECKLESS"
     },
     "SPECIES_DRUDDIGON": {
-        "baseHP": 77,
+        "baseHP": 90,
         "baseAttack": 120,
-        "baseDefense": 90,
-        "baseSpAttack": 60,
-        "baseSpDefense": 90,
+        "baseDefense": 100,
+        "baseSpAttack": 30,
+        "baseSpDefense": 100,
         "baseSpeed": 48,
         "type1": "TYPE_DRAGON",
         "type2": "TYPE_DRAGON",
@@ -9791,7 +9731,7 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_IRONFIST",
-        "ability2": "ABILITY_POWERSPOT",
+        "ability2": "ABILITY_KLUTZ",
         "hiddenAbility": "ABILITY_NOGUARD"
     },
     "SPECIES_GOLURK": {
@@ -9806,7 +9746,7 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_IRONFIST",
-        "ability2": "ABILITY_POWERSPOT",
+        "ability2": "ABILITY_KLUTZ",
         "hiddenAbility": "ABILITY_NOGUARD"
     },
     "SPECIES_PAWNIARD": {
@@ -9852,7 +9792,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_RECKLESS",
         "ability2": "ABILITY_SAPSIPPER",
-        "hiddenAbility": "ABILITY_STAMINA"
+        "hiddenAbility": "ABILITY_SOUNDPROOF"
     },
     "SPECIES_RUFFLET": {
         "baseHP": 70,
@@ -9927,7 +9867,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_GLUTTONY",
         "ability2": "ABILITY_FLASHFIRE",
-        "hiddenAbility": "ABILITY_BERSERK"
+        "hiddenAbility": "ABILITY_WHITESMOKE"
     },
     "SPECIES_DURANT": {
         "baseHP": 58,
@@ -10032,7 +9972,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_JUSTIFIED",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_NOGUARD"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_TERRAKION": {
         "baseHP": 91,
@@ -10047,7 +9987,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_JUSTIFIED",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_STEADFAST"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_VIRIZION": {
         "baseHP": 91,
@@ -10062,7 +10002,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_JUSTIFIED",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_NOGUARD"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_TORNADUS": {
         "baseHP": 79,
@@ -10107,7 +10047,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_TURBOBLAZE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_FLASHFIRE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_ZEKROM": {
         "baseHP": 100,
@@ -10122,7 +10062,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_TERAVOLT",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_LIGHTNINGROD"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_LANDORUS": {
         "baseHP": 89,
@@ -10152,7 +10092,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_REFRIGERATE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_KELDEO": {
         "baseHP": 91,
@@ -10167,7 +10107,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_JUSTIFIED",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_INTREPIDSWORD"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_MELOETTA": {
         "baseHP": 100,
@@ -10182,7 +10122,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SERENEGRACE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_COMPETITIVE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_GENESECT": {
         "baseHP": 71,
@@ -10197,7 +10137,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_DOWNLOAD",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ANALYTIC"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_UNFEZANT_F": {
         "baseHP": 80,
@@ -10210,9 +10150,9 @@
         "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_BIGPECKS",
+        "ability1": "ABILITY_DEFIANT",
         "ability2": "ABILITY_SUPERLUCK",
-        "hiddenAbility": "ABILITY_PRIDE"
+        "hiddenAbility": "ABILITY_RIVALRY"
     },
     "SPECIES_FRILLISH_F": {
         "baseHP": 55,
@@ -10285,7 +10225,7 @@
         "type2": "TYPE_GROUND",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_TECHNICIAN",
+        "ability1": "ABILITY_ANTICIPATION",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_OVERCOAT"
     },
@@ -10300,7 +10240,7 @@
         "type2": "TYPE_STEEL",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_TECHNICIAN",
+        "ability1": "ABILITY_ANTICIPATION",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_OVERCOAT"
     },
@@ -10347,7 +10287,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MOTORDRIVE"
+        "hiddenAbility": "ABILITY_FLASHFIRE"
     },
     "SPECIES_ROTOM_WASH": {
         "baseHP": 50,
@@ -10362,7 +10302,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MOTORDRIVE"
+        "hiddenAbility": "ABILITY_WATERABSORB"
     },
     "SPECIES_ROTOM_FROST": {
         "baseHP": 50,
@@ -10377,7 +10317,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MOTORDRIVE"
+        "hiddenAbility": "ABILITY_REFRIGERATE"
     },
     "SPECIES_ROTOM_FAN": {
         "baseHP": 50,
@@ -10392,7 +10332,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MOTORDRIVE"
+        "hiddenAbility": "ABILITY_AERILATE"
     },
     "SPECIES_ROTOM_MOW": {
         "baseHP": 50,
@@ -10407,7 +10347,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MOTORDRIVE"
+        "hiddenAbility": "ABILITY_SAPSIPPER"
     },
     "SPECIES_GIRATINA_ORIGIN": {
         "baseHP": 150,
@@ -10437,7 +10377,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_SERENEGRACE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_FLOWERVEIL"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_ARCEUS_FIGHT": {
         "baseHP": 120,
@@ -10692,7 +10632,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_ROCKHEAD",
         "ability2": "ABILITY_ADAPTABILITY",
-        "hiddenAbility": "ABILITY_SPEEDBOOST"
+        "hiddenAbility": "ABILITY_MOLDBREAKER"
     },
     "SPECIES_DARMANITANZEN": {
         "baseHP": 105,
@@ -10842,7 +10782,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SERENEGRACE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_DEFIANT"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_GENESECT_SHOCK": {
         "baseHP": 71,
@@ -10857,7 +10797,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_DOWNLOAD",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ANALYTIC"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_GENESECT_BURN": {
         "baseHP": 71,
@@ -10872,7 +10812,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_DOWNLOAD",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ANALYTIC"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_GENESECT_CHILL": {
         "baseHP": 71,
@@ -10887,7 +10827,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_DOWNLOAD",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ANALYTIC"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_GENESECT_DOUSE": {
         "baseHP": 71,
@@ -10902,7 +10842,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_DOWNLOAD",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ANALYTIC"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_CHERRIM_SUN": {
         "baseHP": 70,
@@ -11007,7 +10947,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_JUSTIFIED",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_INTREPIDSWORD"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_CHESPIN": {
         "baseHP": 56,
@@ -11021,7 +10961,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SHELLARMOR",
         "hiddenAbility": "ABILITY_BULLETPROOF"
     },
     "SPECIES_QUILLADIN": {
@@ -11036,7 +10976,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SHELLARMOR",
         "hiddenAbility": "ABILITY_BULLETPROOF"
     },
     "SPECIES_CHESNAUGHT": {
@@ -11051,8 +10991,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_BULLETPROOF"
+        "ability2": "ABILITY_BULLETPROOF",
+        "hiddenAbility": "ABILITY_DAUNTLESSSHIELD"
     },
     "SPECIES_FENNEKIN": {
         "baseHP": 40,
@@ -11066,8 +11006,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MAGICIAN"
+        "ability2": "ABILITY_MAGICIAN",
+        "hiddenAbility": "ABILITY_MAGICGUARD"
     },
     "SPECIES_BRAIXEN": {
         "baseHP": 59,
@@ -11081,8 +11021,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MAGICIAN"
+        "ability2": "ABILITY_MAGICIAN",
+        "hiddenAbility": "ABILITY_MAGICGUARD"
     },
     "SPECIES_DELPHOX": {
         "baseHP": 75,
@@ -11096,7 +11036,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_FURCOAT",
         "hiddenAbility": "ABILITY_MAGICGUARD"
     },
     "SPECIES_FROAKIE": {
@@ -11111,7 +11051,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_WATERBUBBLE",
         "hiddenAbility": "ABILITY_PROTEAN"
     },
     "SPECIES_FROGADIER": {
@@ -11126,7 +11066,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_WATERBUBBLE",
         "hiddenAbility": "ABILITY_PROTEAN"
     },
     "SPECIES_GRENINJA": {
@@ -11153,7 +11093,7 @@
         "baseSpeed": 57,
         "type1": "TYPE_NORMAL",
         "type2": "TYPE_NORMAL",
-        "genderRatio": "PERCENT_FEMALE(50)",
+        "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PICKUP",
         "ability2": "ABILITY_CHEEKPOUCH",
@@ -11277,7 +11217,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_RIVALRY",
         "ability2": "ABILITY_UNNERVE",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_MOXIE"
     },
     "SPECIES_PYROAR": {
         "baseHP": 86,
@@ -11290,9 +11230,9 @@
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(87.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_ROYALROAR",
+        "ability1": "ABILITY_RIVALRY",
         "ability2": "ABILITY_UNNERVE",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_MOXIE"
     },
     "SPECIES_FLABEBE": {
         "baseHP": 44,
@@ -11306,7 +11246,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLOETTE": {
@@ -11321,7 +11261,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLORGES": {
@@ -11336,7 +11276,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_SKIDDO": {
@@ -11351,8 +11291,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SAPSIPPER",
-        "ability2": "ABILITY_GRASSPELT",
-        "hiddenAbility": "ABILITY_RUNAWAY"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_GRASSPELT"
     },
     "SPECIES_GOGOAT": {
         "baseHP": 123,
@@ -11366,8 +11306,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SAPSIPPER",
-        "ability2": "ABILITY_GRASSPELT",
-        "hiddenAbility": "ABILITY_GRASSYSURGE"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_GRASSPELT"
     },
     "SPECIES_PANCHAM": {
         "baseHP": 67,
@@ -11501,14 +11441,14 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_HEALER",
-        "ability2": "ABILITY_AROMAVEIL",
-        "hiddenAbility": "ABILITY_REGENERATOR"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_AROMAVEIL"
     },
     "SPECIES_AROMATISSE": {
         "baseHP": 101,
-        "baseAttack": 72,
+        "baseAttack": 42,
         "baseDefense": 72,
-        "baseSpAttack": 99,
+        "baseSpAttack": 119,
         "baseSpDefense": 89,
         "baseSpeed": 29,
         "type1": "TYPE_FAIRY",
@@ -11516,8 +11456,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_HEALER",
-        "ability2": "ABILITY_AROMAVEIL",
-        "hiddenAbility": "ABILITY_REGENERATOR"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_AROMAVEIL"
     },
     "SPECIES_SWIRLIX": {
         "baseHP": 62,
@@ -11531,7 +11471,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SWEETVEIL",
-        "ability2": "ABILITY_COMPETITIVE",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_UNBURDEN"
     },
     "SPECIES_SLURPUFF": {
@@ -11546,7 +11486,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SWEETVEIL",
-        "ability2": "ABILITY_COMPETITIVE",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_UNBURDEN"
     },
     "SPECIES_INKAY": {
@@ -11771,8 +11711,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_CUTECHARM",
-        "ability2": "ABILITY_CUTECHARM",
-        "hiddenAbility": "ABILITY_PIXILATE"
+        "ability2": "ABILITY_PIXILATE",
+        "hiddenAbility": "ABILITY_FAIRYAURA"
     },
     "SPECIES_HAWLUCHA": {
         "baseHP": 78,
@@ -11802,7 +11742,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_CHEEKPOUCH",
         "ability2": "ABILITY_PICKUP",
-        "hiddenAbility": "ABILITY_MISTYSURGE"
+        "hiddenAbility": "ABILITY_PLUS"
     },
     "SPECIES_CARBINK": {
         "baseHP": 50,
@@ -11816,8 +11756,8 @@
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_CLEARBODY",
-        "ability2": "ABILITY_STURDY",
-        "hiddenAbility": "ABILITY_MISTYSURGE"
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_STURDY"
     },
     "SPECIES_GOOMY": {
         "baseHP": 45,
@@ -11906,8 +11846,8 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_NATURALCURE",
-        "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_HARVEST"
+        "ability2": "ABILITY_HARVEST",
+        "hiddenAbility": "ABILITY_CURSEDBODY"
     },
     "SPECIES_PUMPKABOO": {
         "baseHP": 44,
@@ -11922,7 +11862,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PICKUP",
         "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_HEATPROOF"
+        "hiddenAbility": "ABILITY_INSOMNIA"
     },
     "SPECIES_GOURGEIST": {
         "baseHP": 55,
@@ -11937,7 +11877,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PICKUP",
         "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_HEATPROOF"
+        "hiddenAbility": "ABILITY_INSOMNIA"
     },
     "SPECIES_BERGMITE": {
         "baseHP": 55,
@@ -11982,7 +11922,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FRISK",
         "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_PUNKROCK"
+        "hiddenAbility": "ABILITY_TELEPATHY"
     },
     "SPECIES_NOIVERN": {
         "baseHP": 85,
@@ -11997,7 +11937,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FRISK",
         "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_PUNKROCK"
+        "hiddenAbility": "ABILITY_TELEPATHY"
     },
     "SPECIES_XERNEAS": {
         "baseHP": 126,
@@ -12012,7 +11952,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_FAIRYAURA",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_PIXILATE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_YVELTAL": {
         "baseHP": 126,
@@ -12027,7 +11967,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_DARKAURA",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_AERILATE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_ZYGARDE": {
         "baseHP": 108,
@@ -12057,7 +11997,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_CLEARBODY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ANALYTIC"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_HOOPA": {
         "baseHP": 80,
@@ -12072,7 +12012,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_MAGICIAN",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_PRANKSTER"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_HOOPA_UNBOUND": {
         "baseHP": 80,
@@ -12087,7 +12027,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_MAGICIAN",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_PORTALPOWER"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_VOLCANION": {
         "baseHP": 80,
@@ -12102,7 +12042,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_WATERABSORB",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_STEAMENGINE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_PYROAR_FEMALE": {
         "baseHP": 86,
@@ -12115,9 +12055,9 @@
         "type2": "TYPE_NORMAL",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_ROYALROAR",
+        "ability1": "ABILITY_RIVALRY",
         "ability2": "ABILITY_UNNERVE",
-        "hiddenAbility": "ABILITY_ADAPTABILITY"
+        "hiddenAbility": "ABILITY_MOXIE"
     },
     "SPECIES_MEOWSTIC_FEMALE": {
         "baseHP": 74,
@@ -12130,9 +12070,9 @@
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_COMPETITIVE",
+        "ability1": "ABILITY_KEENEYE",
         "ability2": "ABILITY_INFILTRATOR",
-        "hiddenAbility": "ABILITY_PSYCHICSURGE"
+        "hiddenAbility": "ABILITY_COMPETITIVE"
     },
     "SPECIES_AEGISLASH_BLADE": {
         "baseHP": 60,
@@ -12221,7 +12161,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLABEBE_ORANGE": {
@@ -12236,7 +12176,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLABEBE_YELLOW": {
@@ -12251,7 +12191,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLABEBE_WHITE": {
@@ -12266,7 +12206,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLOETTE_BLUE": {
@@ -12281,7 +12221,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLOETTE_ORANGE": {
@@ -12296,7 +12236,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLOETTE_YELLOW": {
@@ -12311,7 +12251,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLOETTE_WHITE": {
@@ -12326,7 +12266,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLOETTE_ETERNAL": {
@@ -12341,7 +12281,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLORGES_BLUE": {
@@ -12356,7 +12296,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLORGES_ORANGE": {
@@ -12371,7 +12311,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLORGES_YELLOW": {
@@ -12386,7 +12326,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_FLORGES_WHITE": {
@@ -12401,7 +12341,7 @@
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_FLOWERVEIL",
-        "ability2": "ABILITY_AROMAVEIL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_SYMBIOSIS"
     },
     "SPECIES_PUMPKABOO_XL": {
@@ -12417,7 +12357,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PICKUP",
         "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_HEATPROOF"
+        "hiddenAbility": "ABILITY_INSOMNIA"
     },
     "SPECIES_PUMPKABOO_L": {
         "baseHP": 54,
@@ -12432,7 +12372,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PICKUP",
         "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_HEATPROOF"
+        "hiddenAbility": "ABILITY_INSOMNIA"
     },
     "SPECIES_PUMPKABOO_M": {
         "baseHP": 49,
@@ -12447,7 +12387,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PICKUP",
         "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_HEATPROOF"
+        "hiddenAbility": "ABILITY_INSOMNIA"
     },
     "SPECIES_GOURGEIST_XL": {
         "baseHP": 85,
@@ -12462,7 +12402,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PICKUP",
         "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_HEATPROOF"
+        "hiddenAbility": "ABILITY_INSOMNIA"
     },
     "SPECIES_GOURGEIST_L": {
         "baseHP": 75,
@@ -12477,7 +12417,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PICKUP",
         "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_HEATPROOF"
+        "hiddenAbility": "ABILITY_INSOMNIA"
     },
     "SPECIES_GOURGEIST_M": {
         "baseHP": 65,
@@ -12492,7 +12432,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_PICKUP",
         "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_HEATPROOF"
+        "hiddenAbility": "ABILITY_INSOMNIA"
     },
     "SPECIES_FURFROU_HEART": {
         "baseHP": 75,
@@ -12954,7 +12894,7 @@
         "type1": "TYPE_ROCK",
         "type2": "TYPE_DARK",
         "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SANDSTREAM",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
@@ -12970,7 +12910,7 @@
         "type2": "TYPE_DRAGON",
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_TECHNICIAN",
+        "ability1": "ABILITY_LIGHTNINGROD",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -13075,7 +13015,7 @@
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_HUGEPOWER",
+        "ability1": "ABILITY_PUREPOWER",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -13125,7 +13065,7 @@
         "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_ALTARIA_MEGA": {
-        "baseHP": 75,
+        "baseHP": 95,
         "baseAttack": 110,
         "baseDefense": 110,
         "baseSpAttack": 110,
@@ -13209,7 +13149,7 @@
         "type1": "TYPE_STEEL",
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_TOUGHCLAWS",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
@@ -13314,7 +13254,7 @@
         "type1": "TYPE_DRAGON",
         "type2": "TYPE_GROUND",
         "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SANDFORCE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
@@ -13375,8 +13315,8 @@
         "type2": "TYPE_FAIRY",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
-        "ability1": "ABILITY_TRIAGE",
-        "ability2": "ABILITY_TRIAGE",
+        "ability1": "ABILITY_HEALER",
+        "ability2": "ABILITY_HEALER",
         "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_DIANCIE_MEGA": {
@@ -13393,6 +13333,36 @@
         "ability1": "ABILITY_MAGICBOUNCE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
+    },
+    "SPECIES_DIALGA_PRIMAL": {
+        "baseHP": 100,
+        "baseAttack": 100,
+        "baseDefense": 120,
+        "baseSpAttack": 150,
+        "baseSpDefense": 120,
+        "baseSpeed": 90,
+        "type1": "TYPE_STEEL",
+        "type2": "TYPE_DRAGON",
+        "genderRatio": "MON_GENDERLESS",
+        "growthRate": "GROWTH_SLOW",
+        "ability1": "ABILITY_PRESSURE",
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_TELEPATHY"
+    },
+    "SPECIES_PALKIA_PRIMAL": {
+        "baseHP": 90,
+        "baseAttack": 100,
+        "baseDefense": 100,
+        "baseSpAttack": 150,
+        "baseSpDefense": 120,
+        "baseSpeed": 120,
+        "type1": "TYPE_WATER",
+        "type2": "TYPE_DRAGON",
+        "genderRatio": "MON_GENDERLESS",
+        "growthRate": "GROWTH_SLOW",
+        "ability1": "ABILITY_PRESSURE",
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_TELEPATHY"
     },
     "SPECIES_VIVILLON_ARCHIPELAGO": {
         "baseHP": 80,
@@ -13676,7 +13646,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_AERILATE",
         "hiddenAbility": "ABILITY_LONGREACH"
     },
     "SPECIES_DARTRIX": {
@@ -13691,7 +13661,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_AERILATE",
         "hiddenAbility": "ABILITY_LONGREACH"
     },
     "SPECIES_DECIDUEYE": {
@@ -13706,7 +13676,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_AERILATE",
         "hiddenAbility": "ABILITY_LONGREACH"
     },
     "SPECIES_LITTEN": {
@@ -13721,8 +13691,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_INTIMIDATE"
+        "ability2": "ABILITY_INTIMIDATE",
+        "hiddenAbility": "ABILITY_MOXIE"
     },
     "SPECIES_TORRACAT": {
         "baseHP": 65,
@@ -13736,8 +13706,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_INTIMIDATE"
+        "ability2": "ABILITY_INTIMIDATE",
+        "hiddenAbility": "ABILITY_MOXIE"
     },
     "SPECIES_INCINEROAR": {
         "baseHP": 95,
@@ -13751,8 +13721,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_INTIMIDATE"
+        "ability2": "ABILITY_INTIMIDATE",
+        "hiddenAbility": "ABILITY_MOXIE"
     },
     "SPECIES_POPPLIO": {
         "baseHP": 50,
@@ -13766,7 +13736,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SWIFTSWIM",
         "hiddenAbility": "ABILITY_LIQUIDVOICE"
     },
     "SPECIES_BRIONNE": {
@@ -13781,7 +13751,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SWIFTSWIM",
         "hiddenAbility": "ABILITY_LIQUIDVOICE"
     },
     "SPECIES_PRIMARINA": {
@@ -13793,10 +13763,10 @@
         "baseSpeed": 60,
         "type1": "TYPE_WATER",
         "type2": "TYPE_FAIRY",
-        "genderRatio": "PERCENT_FEMALE(12.5)",
+        "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SERENEGRACE",
         "hiddenAbility": "ABILITY_LIQUIDVOICE"
     },
     "SPECIES_PIKIPEK": {
@@ -13917,7 +13887,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEVITATE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_COMPOUNDEYES"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_CRABRAWLER": {
         "baseHP": 47,
@@ -13962,7 +13932,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_DANCER",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SERENEGRACE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_CUTIEFLY": {
         "baseHP": 40,
@@ -13983,7 +13953,7 @@
         "baseHP": 60,
         "baseAttack": 55,
         "baseDefense": 60,
-        "baseSpAttack": 95,
+        "baseSpAttack": 115,
         "baseSpDefense": 70,
         "baseSpeed": 124,
         "type1": "TYPE_BUG",
@@ -14020,7 +13990,7 @@
         "type2": "TYPE_ROCK",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_TOUGHCLAWS",
+        "ability1": "ABILITY_KEENEYE",
         "ability2": "ABILITY_SANDRUSH",
         "hiddenAbility": "ABILITY_STEADFAST"
     },
@@ -14141,7 +14111,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEAFGUARD",
-        "ability2": "ABILITY_CHLOROPHYLL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_CONTRARY"
     },
     "SPECIES_LURANTIS": {
@@ -14156,7 +14126,7 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LEAFGUARD",
-        "ability2": "ABILITY_CHLOROPHYLL",
+        "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_CONTRARY"
     },
     "SPECIES_MORELULL": {
@@ -14170,24 +14140,24 @@
         "type2": "TYPE_FAIRY",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_RAINDISH",
+        "ability1": "ABILITY_ILLUMINATE",
         "ability2": "ABILITY_EFFECTSPORE",
-        "hiddenAbility": "ABILITY_MAGICBOUNCE"
+        "hiddenAbility": "ABILITY_RAINDISH"
     },
     "SPECIES_SHIINOTIC": {
-        "baseHP": 60,
+        "baseHP": 90,
         "baseAttack": 45,
-        "baseDefense": 80,
+        "baseDefense": 100,
         "baseSpAttack": 90,
         "baseSpDefense": 100,
         "baseSpeed": 30,
         "type1": "TYPE_GRASS",
         "type2": "TYPE_FAIRY",
-        "genderRatio": "PERCENT_FEMALE(50)",
+        "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_RAINDISH",
         "ability2": "ABILITY_EFFECTSPORE",
-        "hiddenAbility": "ABILITY_MAGICBOUNCE"
+        "hiddenAbility": "ABILITY_POISONHEAL"
     },
     "SPECIES_SALANDIT": {
         "baseHP": 48,
@@ -14310,19 +14280,19 @@
         "hiddenAbility": "ABILITY_NATURALCURE"
     },
     "SPECIES_ORANGURU": {
-        "baseHP": 90,
-        "baseAttack": 60,
+        "baseHP": 100,
+        "baseAttack": 40,
         "baseDefense": 80,
-        "baseSpAttack": 90,
-        "baseSpDefense": 110,
-        "baseSpeed": 60,
+        "baseSpAttack": 100,
+        "baseSpDefense": 120,
+        "baseSpeed": 50,
         "type1": "TYPE_NORMAL",
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_INNERFOCUS",
-        "ability2": "ABILITY_TELEPATHY",
-        "hiddenAbility": "ABILITY_SYMBIOSIS"
+        "ability1": "ABILITY_SYMBIOSIS",
+        "ability2": "ABILITY_TRACE",
+        "hiddenAbility": "ABILITY_COMPETITIVE"
     },
     "SPECIES_PASSIMIAN": {
         "baseHP": 100,
@@ -14350,7 +14320,7 @@
         "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_WIMPOUT",
+        "ability1": "ABILITY_EMERGENCYEXIT",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -14367,7 +14337,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_EMERGENCYEXIT",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHELLARMOR"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SANDYGAST": {
         "baseHP": 55,
@@ -14388,7 +14358,7 @@
         "baseHP": 85,
         "baseAttack": 75,
         "baseDefense": 110,
-        "baseSpAttack": 100,
+        "baseSpAttack": 120,
         "baseSpDefense": 75,
         "baseSpeed": 35,
         "type1": "TYPE_GHOST",
@@ -14442,7 +14412,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_MINIOR_SHIELD": {
         "baseHP": 60,
@@ -14472,7 +14442,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_COMATOSE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SCRAPPY"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_TURTONATOR": {
         "baseHP": 60,
@@ -14487,7 +14457,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_SHELLARMOR",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_WEAKARMOR"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_TOGEDEMARU": {
         "baseHP": 65,
@@ -14537,9 +14507,9 @@
     "SPECIES_DRAMPA": {
         "baseHP": 78,
         "baseAttack": 60,
-        "baseDefense": 85,
+        "baseDefense": 101,
         "baseSpAttack": 135,
-        "baseSpDefense": 91,
+        "baseSpDefense": 101,
         "baseSpeed": 36,
         "type1": "TYPE_NORMAL",
         "type2": "TYPE_DRAGON",
@@ -14562,7 +14532,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_STEELWORKER",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_AFTERMATH"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_JANGMO_O": {
         "baseHP": 45,
@@ -14710,9 +14680,9 @@
         "type2": "TYPE_STEEL",
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_FULLMETALBODY",
+        "ability1": "ABILITY_CLEARBODY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_BATTLEARMOR"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_LUNALA": {
         "baseHP": 137,
@@ -14727,7 +14697,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SHADOWSHIELD",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_LEVITATE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_NIHILEGO": {
         "baseHP": 109,
@@ -14847,7 +14817,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRISMARMOR",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_MIRRORARMOR"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_MAGEARNA": {
         "baseHP": 80,
@@ -14862,7 +14832,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SOULHEART",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ANALYTIC"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_MARSHADOW": {
         "baseHP": 90,
@@ -14877,7 +14847,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_TECHNICIAN",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_LONGREACH"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_RATTATA_A": {
         "baseHP": 30,
@@ -14896,7 +14866,7 @@
     },
     "SPECIES_RATICATE_A": {
         "baseHP": 75,
-        "baseAttack": 71,
+        "baseAttack": 90,
         "baseDefense": 70,
         "baseSpAttack": 40,
         "baseSpDefense": 80,
@@ -14941,11 +14911,11 @@
     },
     "SPECIES_SANDSLASH_A": {
         "baseHP": 75,
-        "baseAttack": 100,
-        "baseDefense": 120,
+        "baseAttack": 120,
+        "baseDefense": 100,
         "baseSpAttack": 25,
         "baseSpDefense": 65,
-        "baseSpeed": 65,
+        "baseSpeed": 75,
         "type1": "TYPE_ICE",
         "type2": "TYPE_STEEL",
         "genderRatio": "PERCENT_FEMALE(50)",
@@ -14995,24 +14965,24 @@
         "type2": "TYPE_STEEL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SANDFORCE",
+        "ability1": "ABILITY_SANDVEIL",
         "ability2": "ABILITY_TANGLINGHAIR",
-        "hiddenAbility": "ABILITY_STEELY_SPIRIT"
+        "hiddenAbility": "ABILITY_SANDFORCE"
     },
     "SPECIES_DUGTRIO_A": {
         "baseHP": 35,
-        "baseAttack": 100,
-        "baseDefense": 60,
+        "baseAttack": 130,
+        "baseDefense": 70,
         "baseSpAttack": 50,
-        "baseSpDefense": 70,
+        "baseSpDefense": 80,
         "baseSpeed": 110,
         "type1": "TYPE_GROUND",
         "type2": "TYPE_STEEL",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SANDFORCE",
+        "ability1": "ABILITY_SANDVEIL",
         "ability2": "ABILITY_TANGLINGHAIR",
-        "hiddenAbility": "ABILITY_STEELY_SPIRIT"
+        "hiddenAbility": "ABILITY_SANDFORCE"
     },
     "SPECIES_MEOWTH_A": {
         "baseHP": 40,
@@ -15162,11 +15132,11 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_ROCKHEAD",
         "ability2": "ABILITY_LIGHTNINGROD",
-        "hiddenAbility": "ABILITY_BATTLEARMOR"
+        "hiddenAbility": "ABILITY_SHELLARMOR"
     },
     "SPECIES_MAROWAK_A": {
-        "baseHP": 60,
-        "baseAttack": 80,
+        "baseHP": 80,
+        "baseAttack": 90,
         "baseDefense": 110,
         "baseSpAttack": 50,
         "baseSpDefense": 80,
@@ -15192,7 +15162,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_LIMBER"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_DEOXYS_DEFENSE": {
         "baseHP": 50,
@@ -15207,7 +15177,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_LIMBER"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_DEOXYS_SPEED": {
         "baseHP": 50,
@@ -15222,7 +15192,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_PRESSURE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_LIMBER"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_ORICORIO_Y": {
         "baseHP": 75,
@@ -15237,7 +15207,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_DANCER",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SERENEGRACE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_ORICORIO_P": {
         "baseHP": 75,
@@ -15252,7 +15222,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_DANCER",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SERENEGRACE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_ORICORIO_S": {
         "baseHP": 75,
@@ -15267,7 +15237,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_DANCER",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SERENEGRACE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_LYCANROC_N": {
         "baseHP": 85,
@@ -15280,7 +15250,7 @@
         "type2": "TYPE_ROCK",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_TOUGHCLAWS",
+        "ability1": "ABILITY_KEENEYE",
         "ability2": "ABILITY_VITALSPIRIT",
         "hiddenAbility": "ABILITY_NOGUARD"
     },
@@ -15312,7 +15282,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_FLYING": {
         "baseHP": 95,
@@ -15327,7 +15297,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_POISON": {
         "baseHP": 95,
@@ -15342,7 +15312,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_GROUND": {
         "baseHP": 95,
@@ -15357,7 +15327,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_ROCK": {
         "baseHP": 95,
@@ -15372,7 +15342,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_BUG": {
         "baseHP": 95,
@@ -15387,7 +15357,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_GHOST": {
         "baseHP": 95,
@@ -15402,7 +15372,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_STEEL": {
         "baseHP": 95,
@@ -15417,7 +15387,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_FIRE": {
         "baseHP": 95,
@@ -15432,7 +15402,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_WATER": {
         "baseHP": 95,
@@ -15447,7 +15417,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_GRASS": {
         "baseHP": 95,
@@ -15462,7 +15432,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_ELECTRIC": {
         "baseHP": 95,
@@ -15477,7 +15447,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_PSYCHIC": {
         "baseHP": 95,
@@ -15492,7 +15462,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_ICE": {
         "baseHP": 95,
@@ -15507,7 +15477,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_DRAGON": {
         "baseHP": 95,
@@ -15522,7 +15492,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_DARK": {
         "baseHP": 95,
@@ -15537,7 +15507,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_SILVALLY_FAIRY": {
         "baseHP": 95,
@@ -15552,7 +15522,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_RKS_SYSTEM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_MINIOR_RED": {
         "baseHP": 60,
@@ -15762,7 +15732,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_VOLTABSORB",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_ANTICIPATION"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_NECROZMA_DUSK_MANE": {
         "baseHP": 97,
@@ -15837,7 +15807,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_MAGNETPULL",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_CLEARBODY"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_MELMETAL": {
         "baseHP": 135,
@@ -15852,7 +15822,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_IRONFIST",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_CLEARBODY"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_PIKACHU_SURFING": {
         "baseHP": 35,
@@ -15862,10 +15832,10 @@
         "baseSpDefense": 50,
         "baseSpeed": 90,
         "type1": "TYPE_ELECTRIC",
-        "type2": "TYPE_ELECTRIC",
+        "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SURGESURFER",
+        "ability1": "ABILITY_STATIC",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_LIGHTNINGROD"
     },
@@ -15877,10 +15847,10 @@
         "baseSpDefense": 50,
         "baseSpeed": 90,
         "type1": "TYPE_ELECTRIC",
-        "type2": "TYPE_ELECTRIC",
+        "type2": "TYPE_FLYING",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_LEVITATE",
+        "ability1": "ABILITY_STATIC",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_LIGHTNINGROD"
     },
@@ -15907,7 +15877,7 @@
         "baseSpDefense": 50,
         "baseSpeed": 90,
         "type1": "TYPE_ELECTRIC",
-        "type2": "TYPE_ELECTRIC",
+        "type2": "TYPE_FIGHTING",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LIGHTNINGROD",
@@ -15922,7 +15892,7 @@
         "baseSpDefense": 50,
         "baseSpeed": 90,
         "type1": "TYPE_ELECTRIC",
-        "type2": "TYPE_ELECTRIC",
+        "type2": "TYPE_FAIRY",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LIGHTNINGROD",
@@ -15937,7 +15907,7 @@
         "baseSpDefense": 50,
         "baseSpeed": 90,
         "type1": "TYPE_ELECTRIC",
-        "type2": "TYPE_ELECTRIC",
+        "type2": "TYPE_STEEL",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LIGHTNINGROD",
@@ -15952,7 +15922,7 @@
         "baseSpDefense": 50,
         "baseSpeed": 90,
         "type1": "TYPE_ELECTRIC",
-        "type2": "TYPE_ELECTRIC",
+        "type2": "TYPE_ICE",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LIGHTNINGROD",
@@ -15967,7 +15937,7 @@
         "baseSpDefense": 50,
         "baseSpeed": 90,
         "type1": "TYPE_ELECTRIC",
-        "type2": "TYPE_ELECTRIC",
+        "type2": "TYPE_PSYCHIC",
         "genderRatio": "PERCENT_FEMALE(100)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_LIGHTNINGROD",
@@ -16121,7 +16091,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SOUNDPROOF",
         "hiddenAbility": "ABILITY_GRASSYSURGE"
     },
     "SPECIES_THWACKEY": {
@@ -16136,7 +16106,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SOUNDPROOF",
         "hiddenAbility": "ABILITY_GRASSYSURGE"
     },
     "SPECIES_RILLABOOM": {
@@ -16151,7 +16121,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_SOUNDPROOF",
         "hiddenAbility": "ABILITY_GRASSYSURGE"
     },
     "SPECIES_SCORBUNNY": {
@@ -16166,7 +16136,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_QUICKFEET",
         "hiddenAbility": "ABILITY_LIBERO"
     },
     "SPECIES_RABOOT": {
@@ -16181,7 +16151,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_QUICKFEET",
         "hiddenAbility": "ABILITY_LIBERO"
     },
     "SPECIES_CINDERACE": {
@@ -16196,7 +16166,7 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
+        "ability2": "ABILITY_QUICKFEET",
         "hiddenAbility": "ABILITY_LIBERO"
     },
     "SPECIES_SOBBLE": {
@@ -16211,8 +16181,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SNIPER"
+        "ability2": "ABILITY_SNIPER",
+        "hiddenAbility": "ABILITY_TINTEDLENS"
     },
     "SPECIES_DRIZZILE": {
         "baseHP": 65,
@@ -16226,8 +16196,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SNIPER"
+        "ability2": "ABILITY_SNIPER",
+        "hiddenAbility": "ABILITY_TINTEDLENS"
     },
     "SPECIES_INTELEON": {
         "baseHP": 70,
@@ -16241,8 +16211,8 @@
         "genderRatio": "PERCENT_FEMALE(12.5)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SNIPER"
+        "ability2": "ABILITY_SNIPER",
+        "hiddenAbility": "ABILITY_TINTEDLENS"
     },
     "SPECIES_SKWOVET": {
         "baseHP": 70,
@@ -16350,7 +16320,7 @@
         "hiddenAbility": "ABILITY_TELEPATHY"
     },
     "SPECIES_ORBEETLE": {
-        "baseHP": 60,
+        "baseHP": 70,
         "baseAttack": 45,
         "baseDefense": 110,
         "baseSpAttack": 80,
@@ -16360,9 +16330,9 @@
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SWARM",
+        "ability1": "ABILITY_TELEPATHY",
         "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_TELEPATHY"
+        "hiddenAbility": "ABILITY_MAGICGUARD"
     },
     "SPECIES_NICKIT": {
         "baseHP": 40,
@@ -16375,7 +16345,7 @@
         "type2": "TYPE_DARK",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
-        "ability1": "ABILITY_TECHNICIAN",
+        "ability1": "ABILITY_RUNAWAY",
         "ability2": "ABILITY_UNBURDEN",
         "hiddenAbility": "ABILITY_STAKEOUT"
     },
@@ -16390,7 +16360,7 @@
         "type2": "TYPE_DARK",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_FAST",
-        "ability1": "ABILITY_TECHNICIAN",
+        "ability1": "ABILITY_RUNAWAY",
         "ability2": "ABILITY_UNBURDEN",
         "hiddenAbility": "ABILITY_STAKEOUT"
     },
@@ -16590,12 +16560,12 @@
         "hiddenAbility": "ABILITY_HUSTLE"
     },
     "SPECIES_APPLETUN": {
-        "baseHP": 110,
-        "baseAttack": 85,
+        "baseHP": 130,
+        "baseAttack": 55,
         "baseDefense": 80,
-        "baseSpAttack": 100,
+        "baseSpAttack": 120,
         "baseSpDefense": 80,
-        "baseSpeed": 30,
+        "baseSpeed": 20,
         "type1": "TYPE_GRASS",
         "type2": "TYPE_DRAGON",
         "genderRatio": "PERCENT_FEMALE(50)",
@@ -16645,7 +16615,7 @@
         "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_GULPMISSILE",
+        "ability1": "ABILITY_GULPMISSLE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -16662,7 +16632,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SWIFTSWIM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_PROPELLERTAIL"
+        "hiddenAbility": "ABILITY_STALWART"
     },
     "SPECIES_BARRASKEWDA": {
         "baseHP": 61,
@@ -16677,7 +16647,7 @@
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_SWIFTSWIM",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_PROPELLERTAIL"
+        "hiddenAbility": "ABILITY_STALWART"
     },
     "SPECIES_TOXEL": {
         "baseHP": 40,
@@ -16975,7 +16945,7 @@
         "type2": "TYPE_GHOST",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_WANDERINGSPIRIT",
+        "ability1": "ABILITY_WANDERING_SPIRIT",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -17012,12 +16982,12 @@
     "SPECIES_FALINKS": {
         "baseHP": 65,
         "baseAttack": 100,
-        "baseDefense": 100,
-        "baseSpAttack": 70,
-        "baseSpDefense": 60,
-        "baseSpeed": 75,
+        "baseDefense": 120,
+        "baseSpAttack": 60,
+        "baseSpDefense": 80,
+        "baseSpeed": 65,
         "type1": "TYPE_FIGHTING",
-        "type2": "TYPE_FIGHTING",
+        "type2": "TYPE_STEEL",
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_BATTLEARMOR",
@@ -17074,20 +17044,20 @@
         "baseAttack": 125,
         "baseDefense": 135,
         "baseSpAttack": 20,
-        "baseSpDefense": 20,
-        "baseSpeed": 70,
+        "baseSpDefense": 50,
+        "baseSpeed": 80,
         "type1": "TYPE_ROCK",
         "type2": "TYPE_ROCK",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_SLOW",
         "ability1": "ABILITY_POWERSPOT",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SOLIDROCK"
+        "hiddenAbility": "ABILITY_MOLDBREAKER"
     },
     "SPECIES_EISCUE": {
-        "baseHP": 75,
+        "baseHP": 85,
         "baseAttack": 80,
-        "baseDefense": 110,
+        "baseDefense": 140,
         "baseSpAttack": 65,
         "baseSpDefense": 90,
         "baseSpeed": 50,
@@ -17455,7 +17425,7 @@
         "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_GULPMISSILE",
+        "ability1": "ABILITY_GULPMISSLE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -17470,7 +17440,7 @@
         "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_GULPMISSILE",
+        "ability1": "ABILITY_GULPMISSLE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -17740,7 +17710,7 @@
         "type2": "TYPE_ICE",
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_ASONE_CHILLING",
+        "ability1": "ABILITY_ASONE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -17755,7 +17725,7 @@
         "type2": "TYPE_GHOST",
         "genderRatio": "MON_GENDERLESS",
         "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_ASONE_GRIM",
+        "ability1": "ABILITY_ASONE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -17791,7 +17761,7 @@
     },
     "SPECIES_RAPIDASH_G": {
         "baseHP": 65,
-        "baseAttack": 100,
+        "baseAttack": 110,
         "baseDefense": 70,
         "baseSpAttack": 80,
         "baseSpDefense": 80,
@@ -17965,7 +17935,7 @@
         "type2": "TYPE_PSYCHIC",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_CURIOUSMEDICINE",
+        "ability1": "ABILITY_GLUTTONY",
         "ability2": "ABILITY_OWNTEMPO",
         "hiddenAbility": "ABILITY_REGENERATOR"
     },
@@ -18070,7 +18040,7 @@
         "type2": "TYPE_GHOST",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_WANDERINGSPIRIT",
+        "ability1": "ABILITY_WANDERING_SPIRIT",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -18086,426 +18056,6 @@
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_MIMICRY",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_NONE"
-    },
-    "SPECIES_GROWLITHE_H": {
-        "baseHP": 60,
-        "baseAttack": 75,
-        "baseDefense": 45,
-        "baseSpAttack": 65,
-        "baseSpDefense": 50,
-        "baseSpeed": 55,
-        "type1": "TYPE_FIRE",
-        "type2": "TYPE_ROCK",
-        "genderRatio": "PERCENT_FEMALE(25)",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_INTIMIDATE",
-        "ability2": "ABILITY_FLASHFIRE",
-        "hiddenAbility": "ABILITY_JUSTIFIED"
-    },
-    "SPECIES_ARCANINE_H": {
-        "baseHP": 95,
-        "baseAttack": 115,
-        "baseDefense": 80,
-        "baseSpAttack": 95,
-        "baseSpDefense": 80,
-        "baseSpeed": 90,
-        "type1": "TYPE_FIRE",
-        "type2": "TYPE_ROCK",
-        "genderRatio": "PERCENT_FEMALE(25)",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_INTIMIDATE",
-        "ability2": "ABILITY_FLASHFIRE",
-        "hiddenAbility": "ABILITY_JUSTIFIED"
-    },
-    "SPECIES_VOLTORB_H": {
-        "baseHP": 40,
-        "baseAttack": 30,
-        "baseDefense": 50,
-        "baseSpAttack": 55,
-        "baseSpDefense": 55,
-        "baseSpeed": 100,
-        "type1": "TYPE_ELECTRIC",
-        "type2": "TYPE_GRASS",
-        "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SOUNDPROOF",
-        "ability2": "ABILITY_STATIC",
-        "hiddenAbility": "ABILITY_AFTERMATH"
-    },
-    "SPECIES_ELECTRODE_H": {
-        "baseHP": 60,
-        "baseAttack": 50,
-        "baseDefense": 70,
-        "baseSpAttack": 80,
-        "baseSpDefense": 80,
-        "baseSpeed": 150,
-        "type1": "TYPE_ELECTRIC",
-        "type2": "TYPE_GRASS",
-        "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SOUNDPROOF",
-        "ability2": "ABILITY_STATIC",
-        "hiddenAbility": "ABILITY_AFTERMATH"
-    },
-    "SPECIES_TYPHLOSION_H": {
-        "baseHP": 73,
-        "baseAttack": 84,
-        "baseDefense": 78,
-        "baseSpAttack": 119,
-        "baseSpDefense": 85,
-        "baseSpeed": 95,
-        "type1": "TYPE_FIRE",
-        "type2": "TYPE_GHOST",
-        "genderRatio": "PERCENT_FEMALE(12.5)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_BLAZE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_FLASHFIRE"
-    },
-    "SPECIES_QWILFISH_H": {
-        "baseHP": 65,
-        "baseAttack": 95,
-        "baseDefense": 85,
-        "baseSpAttack": 55,
-        "baseSpDefense": 55,
-        "baseSpeed": 85,
-        "type1": "TYPE_DARK",
-        "type2": "TYPE_POISON",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_POISONPOINT",
-        "ability2": "ABILITY_SWIFTSWIM",
-        "hiddenAbility": "ABILITY_INTIMIDATE"
-    },
-    "SPECIES_SNEASEL_H": {
-        "baseHP": 55,
-        "baseAttack": 95,
-        "baseDefense": 55,
-        "baseSpAttack": 35,
-        "baseSpDefense": 75,
-        "baseSpeed": 115,
-        "type1": "TYPE_POISON",
-        "type2": "TYPE_FIGHTING",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_INNERFOCUS",
-        "ability2": "ABILITY_KEENEYE",
-        "hiddenAbility": "ABILITY_POISONTOUCH"
-    },
-    "SPECIES_DIALGA_ORIGIN": {
-        "baseHP": 100,
-        "baseAttack": 100,
-        "baseDefense": 120,
-        "baseSpAttack": 150,
-        "baseSpDefense": 120,
-        "baseSpeed": 90,
-        "type1": "TYPE_STEEL",
-        "type2": "TYPE_DRAGON",
-        "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_PRESSURE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_TELEPATHY"
-    },
-    "SPECIES_PALKIA_ORIGIN": {
-        "baseHP": 90,
-        "baseAttack": 100,
-        "baseDefense": 100,
-        "baseSpAttack": 150,
-        "baseSpDefense": 120,
-        "baseSpeed": 120,
-        "type1": "TYPE_WATER",
-        "type2": "TYPE_DRAGON",
-        "genderRatio": "MON_GENDERLESS",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_PRESSURE",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_TELEPATHY"
-    },
-    "SPECIES_SAMUROTT_H": {
-        "baseHP": 90,
-        "baseAttack": 108,
-        "baseDefense": 80,
-        "baseSpAttack": 100,
-        "baseSpDefense": 65,
-        "baseSpeed": 85,
-        "type1": "TYPE_WATER",
-        "type2": "TYPE_DARK",
-        "genderRatio": "PERCENT_FEMALE(12.5)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_TORRENT",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_SHELLARMOR"
-    },
-    "SPECIES_LILLIGANT_H": {
-        "baseHP": 70,
-        "baseAttack": 105,
-        "baseDefense": 75,
-        "baseSpAttack": 50,
-        "baseSpDefense": 75,
-        "baseSpeed": 105,
-        "type1": "TYPE_GRASS",
-        "type2": "TYPE_FIGHTING",
-        "genderRatio": "PERCENT_FEMALE(100)",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_CHLOROPHYLL",
-        "ability2": "ABILITY_HUSTLE",
-        "hiddenAbility": "ABILITY_LEAFGUARD"
-    },
-    "SPECIES_BASCULIN_H": {
-        "baseHP": 70,
-        "baseAttack": 92,
-        "baseDefense": 65,
-        "baseSpAttack": 80,
-        "baseSpDefense": 55,
-        "baseSpeed": 98,
-        "type1": "TYPE_WATER",
-        "type2": "TYPE_WATER",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_RATTLED",
-        "ability2": "ABILITY_ADAPTABILITY",
-        "hiddenAbility": "ABILITY_MOLDBREAKER"
-    },
-    "SPECIES_ZORUA_H": {
-        "baseHP": 35,
-        "baseAttack": 60,
-        "baseDefense": 40,
-        "baseSpAttack": 85,
-        "baseSpDefense": 40,
-        "baseSpeed": 70,
-        "type1": "TYPE_NORMAL",
-        "type2": "TYPE_GHOST",
-        "genderRatio": "PERCENT_FEMALE(12.5)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_ILLUSION",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_NONE"
-    },
-    "SPECIES_ZOROARK_H": {
-        "baseHP": 55,
-        "baseAttack": 100,
-        "baseDefense": 60,
-        "baseSpAttack": 125,
-        "baseSpDefense": 60,
-        "baseSpeed": 110,
-        "type1": "TYPE_NORMAL",
-        "type2": "TYPE_GHOST",
-        "genderRatio": "PERCENT_FEMALE(12.5)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_ILLUSION",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_NONE"
-    },
-    "SPECIES_BRAVIARY_H": {
-        "baseHP": 110,
-        "baseAttack": 83,
-        "baseDefense": 70,
-        "baseSpAttack": 112,
-        "baseSpDefense": 70,
-        "baseSpeed": 65,
-        "type1": "TYPE_PSYCHIC",
-        "type2": "TYPE_FLYING",
-        "genderRatio": "PERCENT_FEMALE(0)",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_KEENEYE",
-        "ability2": "ABILITY_SHEERFORCE",
-        "hiddenAbility": "ABILITY_COMPETITIVE"
-    },
-    "SPECIES_SLIGGOO_H": {
-        "baseHP": 58,
-        "baseAttack": 75,
-        "baseDefense": 83,
-        "baseSpAttack": 83,
-        "baseSpDefense": 113,
-        "baseSpeed": 40,
-        "type1": "TYPE_DRAGON",
-        "type2": "TYPE_STEEL",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_SAPSIPPER",
-        "ability2": "ABILITY_OVERCOAT",
-        "hiddenAbility": "ABILITY_GOOEY"
-    },
-    "SPECIES_GOODRA_H": {
-        "baseHP": 80,
-        "baseAttack": 100,
-        "baseDefense": 100,
-        "baseSpAttack": 110,
-        "baseSpDefense": 150,
-        "baseSpeed": 60,
-        "type1": "TYPE_DRAGON",
-        "type2": "TYPE_STEEL",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_SAPSIPPER",
-        "ability2": "ABILITY_OVERCOAT",
-        "hiddenAbility": "ABILITY_GOOEY"
-    },
-    "SPECIES_AVALUGG_H": {
-        "baseHP": 95,
-        "baseAttack": 127,
-        "baseDefense": 184,
-        "baseSpAttack": 34,
-        "baseSpDefense": 36,
-        "baseSpeed": 38,
-        "type1": "TYPE_ICE",
-        "type2": "TYPE_ROCK",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_STRONGJAW",
-        "ability2": "ABILITY_ICEBODY",
-        "hiddenAbility": "ABILITY_STURDY"
-    },
-    "SPECIES_DECIDUEYE_H": {
-        "baseHP": 88,
-        "baseAttack": 112,
-        "baseDefense": 80,
-        "baseSpAttack": 95,
-        "baseSpDefense": 95,
-        "baseSpeed": 60,
-        "type1": "TYPE_GRASS",
-        "type2": "TYPE_FIGHTING",
-        "genderRatio": "PERCENT_FEMALE(12.5)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_OVERGROW",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_LONGREACH"
-    },
-    "SPECIES_WYRDEER": {
-        "baseHP": 103,
-        "baseAttack": 105,
-        "baseDefense": 72,
-        "baseSpAttack": 105,
-        "baseSpDefense": 75,
-        "baseSpeed": 65,
-        "type1": "TYPE_NORMAL",
-        "type2": "TYPE_PSYCHIC",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_INTIMIDATE",
-        "ability2": "ABILITY_FRISK",
-        "hiddenAbility": "ABILITY_SAPSIPPER"
-    },
-    "SPECIES_KLEAVOR": {
-        "baseHP": 70,
-        "baseAttack": 135,
-        "baseDefense": 95,
-        "baseSpAttack": 45,
-        "baseSpDefense": 70,
-        "baseSpeed": 85,
-        "type1": "TYPE_BUG",
-        "type2": "TYPE_ROCK",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_SWARM",
-        "ability2": "ABILITY_SHEERFORCE",
-        "hiddenAbility": "ABILITY_STEADFAST"
-    },
-    "SPECIES_URSALUNA": {
-        "baseHP": 130,
-        "baseAttack": 140,
-        "baseDefense": 105,
-        "baseSpAttack": 45,
-        "baseSpDefense": 80,
-        "baseSpeed": 50,
-        "type1": "TYPE_NORMAL",
-        "type2": "TYPE_GROUND",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_GUTS",
-        "ability2": "ABILITY_BULLETPROOF",
-        "hiddenAbility": "ABILITY_UNNERVE"
-    },
-    "SPECIES_BASCULEGION_M": {
-        "baseHP": 120,
-        "baseAttack": 112,
-        "baseDefense": 65,
-        "baseSpAttack": 80,
-        "baseSpDefense": 75,
-        "baseSpeed": 78,
-        "type1": "TYPE_WATER",
-        "type2": "TYPE_GHOST",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_RATTLED",
-        "ability2": "ABILITY_ADAPTABILITY",
-        "hiddenAbility": "ABILITY_MOLDBREAKER"
-    },
-    "SPECIES_BASCULEGION_F": {
-        "baseHP": 120,
-        "baseAttack": 92,
-        "baseDefense": 65,
-        "baseSpAttack": 100,
-        "baseSpDefense": 75,
-        "baseSpeed": 78,
-        "type1": "TYPE_WATER",
-        "type2": "TYPE_GHOST",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_RATTLED",
-        "ability2": "ABILITY_ADAPTABILITY",
-        "hiddenAbility": "ABILITY_MOLDBREAKER"
-    },
-    "SPECIES_SNEASLER": {
-        "baseHP": 80,
-        "baseAttack": 130,
-        "baseDefense": 60,
-        "baseSpAttack": 40,
-        "baseSpDefense": 80,
-        "baseSpeed": 120,
-        "type1": "TYPE_POISON",
-        "type2": "TYPE_FIGHTING",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_PRESSURE",
-        "ability2": "ABILITY_PRESSURE",
-        "hiddenAbility": "ABILITY_POISONTOUCH"
-    },
-    "SPECIES_OVERQWIL": {
-        "baseHP": 85,
-        "baseAttack": 115,
-        "baseDefense": 95,
-        "baseSpAttack": 65,
-        "baseSpDefense": 65,
-        "baseSpeed": 85,
-        "type1": "TYPE_DARK",
-        "type2": "TYPE_POISON",
-        "genderRatio": "PERCENT_FEMALE(50)",
-        "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_POISONPOINT",
-        "ability2": "ABILITY_SWIFTSWIM",
-        "hiddenAbility": "ABILITY_INTIMIDATE"
-    },
-    "SPECIES_ENAMORUS": {
-        "baseHP": 74,
-        "baseAttack": 115,
-        "baseDefense": 70,
-        "baseSpAttack": 135,
-        "baseSpDefense": 80,
-        "baseSpeed": 106,
-        "type1": "TYPE_FAIRY",
-        "type2": "TYPE_FLYING",
-        "genderRatio": "PERCENT_FEMALE(100)",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_HEALER",
-        "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_CONTRARY"
-    },
-    "SPECIES_ENAMORUS_THERIAN": {
-        "baseHP": 74,
-        "baseAttack": 115,
-        "baseDefense": 110,
-        "baseSpAttack": 135,
-        "baseSpDefense": 100,
-        "baseSpeed": 46,
-        "type1": "TYPE_FAIRY",
-        "type2": "TYPE_FLYING",
-        "genderRatio": "PERCENT_FEMALE(100)",
-        "growthRate": "GROWTH_SLOW",
-        "ability1": "ABILITY_OVERCOAT",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -18612,7 +18162,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_GUTS",
         "ability2": "ABILITY_NOGUARD",
-        "hiddenAbility": "ABILITY_IRONFIST"
+        "hiddenAbility": "ABILITY_STEADFAST"
     },
     "SPECIES_GENGAR_GIGA": {
         "baseHP": 60,
@@ -18625,9 +18175,9 @@
         "type2": "TYPE_POISON",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_SLOW",
-        "ability1": "ABILITY_LEVITATE",
+        "ability1": "ABILITY_CURSEDBODY",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_CURSEDBODY"
+        "hiddenAbility": "ABILITY_NONE"
     },
     "SPECIES_KINGLER_GIGA": {
         "baseHP": 55,
@@ -18640,9 +18190,9 @@
         "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_HYPERCUTTER",
+        "ability1": "ABILITY_SHEERFORCE",
         "ability2": "ABILITY_SHELLARMOR",
-        "hiddenAbility": "ABILITY_SHEERFORCE"
+        "hiddenAbility": "ABILITY_CRABBYTACTICS"
     },
     "SPECIES_LAPRAS_GIGA": {
         "baseHP": 130,
@@ -18747,7 +18297,7 @@
         "growthRate": "GROWTH_MEDIUM_SLOW",
         "ability1": "ABILITY_BLAZE",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_LIBERO"
+        "hiddenAbility": "ABILITY_PROTEAN"
     },
     "SPECIES_INTELEON_GIGA": {
         "baseHP": 70,
@@ -19018,5 +18568,380 @@
         "ability1": "ABILITY_UNSEENFIST",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
+    },
+    "SPECIES_WYRDEER": {
+        "baseHP": 103,
+        "baseAttack": 105,
+        "baseDefense": 72,
+        "baseSpAttack": 105,
+        "baseSpDefense": 75,
+        "baseSpeed": 65,
+        "type1": "TYPE_NORMAL",
+        "type2": "TYPE_PSYCHIC",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_SLOW",
+        "ability1": "ABILITY_INTIMIDATE",
+        "ability2": "ABILITY_FRISK",
+        "hiddenAbility": "ABILITY_SAPSIPPER"
+    },
+    "SPECIES_VOLTORB_H": {
+        "baseHP": 40,
+        "baseAttack": 30,
+        "baseDefense": 50,
+        "baseSpAttack": 55,
+        "baseSpDefense": 55,
+        "baseSpeed": 100,
+        "type1": "TYPE_ELECTRIC",
+        "type2": "TYPE_GRASS",
+        "genderRatio": "MON_GENDERLESS",
+        "growthRate": "GROWTH_MEDIUM_FAST",
+        "ability1": "ABILITY_SOUNDPROOF",
+        "ability2": "ABILITY_STATIC",
+        "hiddenAbility": "ABILITY_AFTERMATH"
+    },
+    "SPECIES_ELECTRODE_H": {
+        "baseHP": 60,
+        "baseAttack": 50,
+        "baseDefense": 70,
+        "baseSpAttack": 80,
+        "baseSpDefense": 80,
+        "baseSpeed": 150,
+        "type1": "TYPE_ELECTRIC",
+        "type2": "TYPE_GRASS",
+        "genderRatio": "MON_GENDERLESS",
+        "growthRate": "GROWTH_MEDIUM_FAST",
+        "ability1": "ABILITY_SOUNDPROOF",
+        "ability2": "ABILITY_STATIC",
+        "hiddenAbility": "ABILITY_AFTERMATH"
+    },
+    "SPECIES_URSALUNA": {
+        "baseHP": 130,
+        "baseAttack": 140,
+        "baseDefense": 105,
+        "baseSpAttack": 45,
+        "baseSpDefense": 80,
+        "baseSpeed": 50,
+        "type1": "TYPE_NORMAL",
+        "type2": "TYPE_GROUND",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_MEDIUM_FAST",
+        "ability1": "ABILITY_GUTS",
+        "ability2": "ABILITY_BULLETPROOF",
+        "hiddenAbility": "ABILITY_UNNERVE"
+    },
+    "SPECIES_BRAVIARY_H": {
+        "baseHP": 110,
+        "baseAttack": 83,
+        "baseDefense": 70,
+        "baseSpAttack": 112,
+        "baseSpDefense": 70,
+        "baseSpeed": 65,
+        "type1": "TYPE_PSYCHIC",
+        "type2": "TYPE_FLYING",
+        "genderRatio": "PERCENT_FEMALE(0)",
+        "growthRate": "GROWTH_SLOW",
+        "ability1": "ABILITY_KEENEYE",
+        "ability2": "ABILITY_SHEERFORCE",
+        "hiddenAbility": "ABILITY_DEFIANT"
+    },
+    "SPECIES_QWILFISH_H": {
+        "baseHP": 65,
+        "baseAttack": 95,
+        "baseDefense": 85,
+        "baseSpAttack": 55,
+        "baseSpDefense": 55,
+        "baseSpeed": 85,
+        "type1": "TYPE_DARK",
+        "type2": "TYPE_POISON",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_MEDIUM_FAST",
+        "ability1": "ABILITY_POISONPOINT",
+        "ability2": "ABILITY_SWIFTSWIM",
+        "hiddenAbility": "ABILITY_INTIMIDATE"
+    },
+    "SPECIES_OVERQWIL": {
+        "baseHP": 85,
+        "baseAttack": 115,
+        "baseDefense": 95,
+        "baseSpAttack": 65,
+        "baseSpDefense": 65,
+        "baseSpeed": 85,
+        "type1": "TYPE_DARK",
+        "type2": "TYPE_POISON",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_MEDIUM_FAST",
+        "ability1": "ABILITY_POISONPOINT",
+        "ability2": "ABILITY_SWIFTSWIM",
+        "hiddenAbility": "ABILITY_INTIMIDATE"
+    },
+    "SPECIES_DECIDUEYE_H": {
+        "baseHP": 88,
+        "baseAttack": 112,
+        "baseDefense": 80,
+        "baseSpAttack": 95,
+        "baseSpDefense": 95,
+        "baseSpeed": 60,
+        "type1": "TYPE_GRASS",
+        "type2": "TYPE_FIGHTING",
+        "genderRatio": "PERCENT_FEMALE(12.5)",
+        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "ability1": "ABILITY_OVERGROW",
+        "ability2": "ABILITY_AERILATE",
+        "hiddenAbility": "ABILITY_LONGREACH"
+    },
+    "SPECIES_SAMUROTT_H": {
+        "baseHP": 90,
+        "baseAttack": 108,
+        "baseDefense": 80,
+        "baseSpAttack": 100,
+        "baseSpDefense": 65,
+        "baseSpeed": 85,
+        "type1": "TYPE_WATER",
+        "type2": "TYPE_DARK",
+        "genderRatio": "PERCENT_FEMALE(12.5)",
+        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "ability1": "ABILITY_TORRENT",
+        "ability2": "ABILITY_JUSTIFIED",
+        "hiddenAbility": "ABILITY_INTREPIDSWORD"
+    },
+    "SPECIES_TYPHLOSION_H": {
+        "baseHP": 73,
+        "baseAttack": 84,
+        "baseDefense": 78,
+        "baseSpAttack": 119,
+        "baseSpDefense": 85,
+        "baseSpeed": 95,
+        "type1": "TYPE_FIRE",
+        "type2": "TYPE_GHOST",
+        "genderRatio": "PERCENT_FEMALE(12.5)",
+        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "ability1": "ABILITY_BLAZE",
+        "ability2": "ABILITY_INTIMIDATE",
+        "hiddenAbility": "ABILITY_FLASHFIRE"
+    },
+    "SPECIES_SNEASEL_H": {
+        "baseHP": 55,
+        "baseAttack": 95,
+        "baseDefense": 55,
+        "baseSpAttack": 35,
+        "baseSpDefense": 75,
+        "baseSpeed": 115,
+        "type1": "TYPE_POISON",
+        "type2": "TYPE_FIGHTING",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "ability1": "ABILITY_INNERFOCUS",
+        "ability2": "ABILITY_KEENEYE",
+        "hiddenAbility": "ABILITY_POISONTOUCH"
+    },
+    "SPECIES_SNEASLER": {
+        "baseHP": 80,
+        "baseAttack": 130,
+        "baseDefense": 60,
+        "baseSpAttack": 40,
+        "baseSpDefense": 80,
+        "baseSpeed": 120,
+        "type1": "TYPE_POISON",
+        "type2": "TYPE_FIGHTING",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "ability1": "ABILITY_PRESSURE",
+        "ability2": "ABILITY_PRESSURE",
+        "hiddenAbility": "ABILITY_POISONTOUCH"
+    },
+    "SPECIES_ZORUA_H": {
+        "baseHP": 35,
+        "baseAttack": 60,
+        "baseDefense": 40,
+        "baseSpAttack": 85,
+        "baseSpDefense": 40,
+        "baseSpeed": 70,
+        "type1": "TYPE_NORMAL",
+        "type2": "TYPE_GHOST",
+        "genderRatio": "PERCENT_FEMALE(12.5)",
+        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "ability1": "ABILITY_ILLUSION",
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_NONE"
+    },
+    "SPECIES_ZOROARK_H": {
+        "baseHP": 55,
+        "baseAttack": 100,
+        "baseDefense": 60,
+        "baseSpAttack": 125,
+        "baseSpDefense": 60,
+        "baseSpeed": 110,
+        "type1": "TYPE_NORMAL",
+        "type2": "TYPE_GHOST",
+        "genderRatio": "PERCENT_FEMALE(12.5)",
+        "growthRate": "GROWTH_MEDIUM_SLOW",
+        "ability1": "ABILITY_ILLUSION",
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_NONE"
+    },
+    "SPECIES_GROWLITHE_H": {
+        "baseHP": 60,
+        "baseAttack": 75,
+        "baseDefense": 45,
+        "baseSpAttack": 65,
+        "baseSpDefense": 50,
+        "baseSpeed": 55,
+        "type1": "TYPE_FIRE",
+        "type2": "TYPE_ROCK",
+        "genderRatio": "PERCENT_FEMALE(25)",
+        "growthRate": "GROWTH_SLOW",
+        "ability1": "ABILITY_INTIMIDATE",
+        "ability2": "ABILITY_FLASHFIRE",
+        "hiddenAbility": "ABILITY_JUSTIFIED"
+    },
+    "SPECIES_ARCANINE_H": {
+        "baseHP": 95,
+        "baseAttack": 115,
+        "baseDefense": 80,
+        "baseSpAttack": 95,
+        "baseSpDefense": 80,
+        "baseSpeed": 90,
+        "type1": "TYPE_FIRE",
+        "type2": "TYPE_ROCK",
+        "genderRatio": "PERCENT_FEMALE(25)",
+        "growthRate": "GROWTH_SLOW",
+        "ability1": "ABILITY_INTIMIDATE",
+        "ability2": "ABILITY_FLASHFIRE",
+        "hiddenAbility": "ABILITY_ROCKHEAD"
+    },
+    "SPECIES_BASCULIN_H": {
+        "baseHP": 70,
+        "baseAttack": 92,
+        "baseDefense": 65,
+        "baseSpAttack": 80,
+        "baseSpDefense": 55,
+        "baseSpeed": 98,
+        "type1": "TYPE_WATER",
+        "type2": "TYPE_WATER",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_MEDIUM_FAST",
+        "ability1": "ABILITY_RATTLED",
+        "ability2": "ABILITY_ADAPTABILITY",
+        "hiddenAbility": "ABILITY_MOLDBREAKER"
+    },
+    "SPECIES_BASCULEGION_M": {
+        "baseHP": 120,
+        "baseAttack": 112,
+        "baseDefense": 65,
+        "baseSpAttack": 80,
+        "baseSpDefense": 75,
+        "baseSpeed": 78,
+        "type1": "TYPE_WATER",
+        "type2": "TYPE_GHOST",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_MEDIUM_FAST",
+        "ability1": "ABILITY_RATTLED",
+        "ability2": "ABILITY_ADAPTABILITY",
+        "hiddenAbility": "ABILITY_MOLDBREAKER"
+    },
+    "SPECIES_KLEAVOR": {
+        "baseHP": 70,
+        "baseAttack": 135,
+        "baseDefense": 95,
+        "baseSpAttack": 45,
+        "baseSpDefense": 70,
+        "baseSpeed": 85,
+        "type1": "TYPE_BUG",
+        "type2": "TYPE_ROCK",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_MEDIUM_FAST",
+        "ability1": "ABILITY_SWARM",
+        "ability2": "ABILITY_SHEERFORCE",
+        "hiddenAbility": "ABILITY_STEADFAST"
+    },
+    "SPECIES_AVALUGG_H": {
+        "baseHP": 95,
+        "baseAttack": 127,
+        "baseDefense": 184,
+        "baseSpAttack": 34,
+        "baseSpDefense": 36,
+        "baseSpeed": 38,
+        "type1": "TYPE_ICE",
+        "type2": "TYPE_ROCK",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_MEDIUM_FAST",
+        "ability1": "ABILITY_STRONGJAW",
+        "ability2": "ABILITY_ICEBODY",
+        "hiddenAbility": "ABILITY_STURDY"
+    },
+    "SPECIES_LILLIGANT_H": {
+        "baseHP": 70,
+        "baseAttack": 100,
+        "baseDefense": 75,
+        "baseSpAttack": 50,
+        "baseSpDefense": 75,
+        "baseSpeed": 105,
+        "type1": "TYPE_GRASS",
+        "type2": "TYPE_FIGHTING",
+        "genderRatio": "PERCENT_FEMALE(100)",
+        "growthRate": "GROWTH_MEDIUM_FAST",
+        "ability1": "ABILITY_CHLOROPHYLL",
+        "ability2": "ABILITY_HUSTLE",
+        "hiddenAbility": "ABILITY_LEAFGUARD"
+    },
+    "SPECIES_SLIGGOO_H": {
+        "baseHP": 58,
+        "baseAttack": 75,
+        "baseDefense": 73,
+        "baseSpAttack": 83,
+        "baseSpDefense": 113,
+        "baseSpeed": 40,
+        "type1": "TYPE_STEEL",
+        "type2": "TYPE_DRAGON",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_SLOW",
+        "ability1": "ABILITY_SAPSIPPER",
+        "ability2": "ABILITY_OVERCOAT",
+        "hiddenAbility": "ABILITY_GOOEY"
+    },
+    "SPECIES_GOODRA_H": {
+        "baseHP": 80,
+        "baseAttack": 100,
+        "baseDefense": 100,
+        "baseSpAttack": 110,
+        "baseSpDefense": 150,
+        "baseSpeed": 60,
+        "type1": "TYPE_STEEL",
+        "type2": "TYPE_DRAGON",
+        "genderRatio": "PERCENT_FEMALE(50)",
+        "growthRate": "GROWTH_SLOW",
+        "ability1": "ABILITY_SAPSIPPER",
+        "ability2": "ABILITY_OVERCOAT",
+        "hiddenAbility": "ABILITY_GOOEY"
+    },
+    "SPECIES_ENAMORUS": {
+        "baseHP": 74,
+        "baseAttack": 115,
+        "baseDefense": 70,
+        "baseSpAttack": 135,
+        "baseSpDefense": 80,
+        "baseSpeed": 106,
+        "type1": "TYPE_FAIRY",
+        "type2": "TYPE_FLYING",
+        "genderRatio": "PERCENT_FEMALE(100)",
+        "growthRate": "GROWTH_SLOW",
+        "ability1": "ABILITY_HEALER",
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_CONTRARY"
+    },
+    "SPECIES_ENAMORUS_THERIAN": {
+        "baseHP": 74,
+        "baseAttack": 115,
+        "baseDefense": 110,
+        "baseSpAttack": 135,
+        "baseSpDefense": 100,
+        "baseSpeed": 46,
+        "type1": "TYPE_FAIRY",
+        "type2": "TYPE_FLYING",
+        "genderRatio": "PERCENT_FEMALE(100)",
+        "growthRate": "GROWTH_SLOW",
+        "ability1": "ABILITY_OVERCOAT",
+        "ability2": "ABILITY_NONE",
+        "hiddenAbility": "ABILITY_CONTRARY"
     }
 }
