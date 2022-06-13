@@ -31,6 +31,9 @@ class TestIntegrated:
     def testLoadAllPokemonNGPlus(self):
         LoadAllTest("ng+")
 
+    def testLoadAllHoopaShayminPresetBox(self):
+        LoadAllTest("test_hoopa_shaymin_preset_box")
+
     def testLoadAllPokemonMAGM(self):
         LoadAllTest("magm")
 
@@ -72,8 +75,8 @@ class TestIntegrated:
         def func():
             Defines.unofficialSpecies[253] = True
         LoadAndReplaceTest("missingno", func)
-    
-    def testReplaceHoopaShayminPresetBox(self):
+
+    def testReplaceAllHoopaShayminPresetBox(self):
         LoadAndReplaceTest("test_hoopa_shaymin_preset_box")
 
     def testTransferPokemonFromCFREToUnbound(self):
