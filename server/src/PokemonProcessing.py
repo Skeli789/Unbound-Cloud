@@ -40,7 +40,6 @@ BASE_FORMS_OF_BANNED_SPECIES = {  # All forms that can't exist outside of battle
     "SPECIES_CHERRIM_SUN": "SPECIES_CHERRIM",
     "SPECIES_HIPPOPOTAS_F": "SPECIES_HIPPOPOTAS",
     "SPECIES_HIPPOWDON_F": "SPECIES_HIPPOWDON",
-    "SPECIES_SHAYMIN_SKY": "SPECIES_SHAYMIN",  # Can exist outside of battle, just not in the PC (ignore Preset Box)
     "SPECIES_UNFEZANT_F": "SPECIES_UNFEZANT",
     "SPECIES_DARMANITANZEN": "SPECIES_DARMANITAN",
     "SPECIES_DARMANITAN_G_ZEN": "SPECIES_DARMANITAN_G",
@@ -52,7 +51,6 @@ BASE_FORMS_OF_BANNED_SPECIES = {  # All forms that can't exist outside of battle
     "SPECIES_PYROAR_FEMALE": "SPECIES_PYROAR",
     "SPECIES_XERNEAS_NATURAL": "SPECIES_XERNEAS", # Just an aesthetic species, should be SPECIES_XERNEAS always
     "SPECIES_ZYGARDE_COMPLETE": "SPECIES_ZYGARDE",
-    "SPECIES_HOOPA_UNBOUND": "SPECIES_HOOPA",  # Can exist outside of battle, just not in the PC (ignore Preset Box)
     "SPECIES_WISHIWASHI_S": "SPECIES_WISHIWASHI",
     "SPECIES_MIMIKYU_BUSTED": "SPECIES_MIMIKYU",
     "SPECIES_NECROZMA_ULTRA": "SPECIES_NECROZMA",
@@ -100,6 +98,9 @@ BLANK_CONVERTED_POKEMON = \
     "otGender": "M",
     "checksum": "b32f654d6f18fe7df816e52dc99f0089"
 }
+
+MONS_PER_BOX = 30
+UNBOUND_PRESET_BOX = 25
 
 
 class PokemonProcessing:
@@ -283,14 +284,15 @@ class PokemonProcessing:
     @staticmethod
     def GetAllCFRUCompressedMons(allPokemonData: List[dict]) -> List[int]:
         allCompressedMons = []
-        for pokemonData in allPokemonData:
-            allCompressedMons += PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemonData)
+        for i, pokemonData in enumerate(allPokemonData):
+            allCompressedMons += PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemonData, (i // MONS_PER_BOX) + 1)
         return allCompressedMons
 
     @staticmethod
-    def ConvertPokemonToCFRUCompressedMon(pokemonData: dict) -> List[int]:
+    def ConvertPokemonToCFRUCompressedMon(pokemonData: dict, boxId) -> List[int]:
         species = pokemonData["species"]
         finalData = [0] * CFRUCompressedPokemonSize
+        inPresetBox = boxId == UNBOUND_PRESET_BOX and Defines.GetCurrentGameName() == "unbound"
         if species == 0 or species == "SPECIES_NONE":
             return finalData  # No point in wasting time
 
@@ -336,6 +338,12 @@ class PokemonProcessing:
             reverse = True  # Data is stored in little endian
 
             if key == "species":
+                if not inPresetBox:
+                    if species == "SPECIES_HOOPA_UNBOUND":
+                        species = "SPECIES_HOOPA"  # Reverts when placed in the PC
+                    elif species == "SPECIES_SHAYMIN_SKY":
+                        species = "SPECIES_SHAYMIN"  # Reverts when placed in the PC
+
                 if species in Defines.reverseSpecies:
                     finalSpecies = Defines.reverseSpecies[species]
                 elif species in Defines.unofficialSpecies:
