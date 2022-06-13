@@ -168,8 +168,6 @@ class TestConvertPokemonToCFRUCompressedMon:
         assert convertedData == SHAYMIN_BYTE_LIST
 
 
-
-
 class TestUpdatePokedexFlags:
     def testVenusaur(self):
         Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
