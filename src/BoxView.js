@@ -1611,7 +1611,7 @@ export class BoxView extends Component
                 { /*Save Icon*/
                     this.getParentState().changeWasMade[this.state.boxType] && !this.isTrading() ?
                         <OverlayTrigger placement="bottom" overlay={saveTooltip}>
-                            <AiOutlineSave size={36} className="box-lower-icon" onClick={() => this.state.parent.trySaveAndExit()}/>
+                            <AiOutlineSave size={36} className="box-lower-icon" onClick={() => this.state.parent.trySaveAndExit(true)}/>
                         </OverlayTrigger>
                     :
                         ""

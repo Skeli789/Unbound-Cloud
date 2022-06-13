@@ -2025,7 +2025,9 @@ export default class MainPage extends Component
     startFriendTrade()
     {
         if (this.state.inFriendTrade)
+        {
             this.tryResetFriendTradeState();
+        }
         else if (CanUseFileHandleAPI() && this.state.changeWasMade.some((x) => x)) //Some boxes aren't saved
         {
             //Force a save
@@ -2040,15 +2042,15 @@ export default class MainPage extends Component
             }).then((result) =>
             {
                 if (result.isConfirmed)
-                    this.trySaveAndExit();
+                    this.trySaveAndExit(false);
             });
-
-            return;
         }
-
-        this.setState({inFriendTrade: !this.state.inFriendTrade});
-        this.resetStateForStartingFriendTrade(false);
-        this.wipeErrorMessage();
+        else
+        {
+            this.setState({inFriendTrade: !this.state.inFriendTrade});
+            this.resetStateForStartingFriendTrade(false);
+            this.wipeErrorMessage();
+        }
     }
 
     /**
@@ -2261,8 +2263,9 @@ export default class MainPage extends Component
     /**
      * Downloads any updated data.
      * @returns {Boolean} True if the save completed successfully. False if it did not.
+     * @param {Boolean} askDoneWithSite - Whether or not the player should be prompted to close the site after the save.
      */
-    async downloadSaveFileAndHomeData()
+    async downloadSaveFileAndHomeData(askDoneWithSite)
     {
         var encryptedHomeData = null;
         var dataBuffer = null;
@@ -2304,6 +2307,29 @@ export default class MainPage extends Component
         }
 
         this.setState({savingMessage: "", isSaving: false, changeWasMade: [false, false]});
+
+        if (askDoneWithSite)
+        {
+            PopUp.fire
+            ({
+                icon: "success",
+                title: "Saving complete!",
+                text: "Are you done editing your save file?",
+                showCancelButton: true,
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                scrollbarPadding: false,
+                didOpen: () =>
+                {
+                    PopUp.hideLoading(); //From previous pop-ups
+                }
+            }).then((result) =>
+            {
+                if (result.isConfirmed)
+                    window.location.reload(); //Reload page
+            });
+        }
+
         return true;
     }
 
@@ -2570,8 +2596,9 @@ export default class MainPage extends Component
 
     /**
      * Handles trying to download the updated data.
+     * @param {Boolean} askDoneWithSite - Whether or not the player should be prompted to close the site after the save.
      */
-    async trySaveAndExit()
+    async trySaveAndExit(askDoneWithSite)
     {
         if (WillAtLeastOneMonLoseDataInSave(this.state.saveBoxes, this.state.saveGameId))
         {
@@ -2589,7 +2616,7 @@ export default class MainPage extends Component
             {
                 if (result.isDenied) //Save Anyway - uses red colour
                 {
-                    await this.saveAndExit();
+                    await this.saveAndExit(askDoneWithSite);
                 }
                 else
                 {
@@ -2602,15 +2629,16 @@ export default class MainPage extends Component
             });
         }
         else
-            await this.saveAndExit();
+            await this.saveAndExit(askDoneWithSite);
     }
 
     /**
      * Handles downloading the updated data.
+     * @param {Boolean} askDoneWithSite - Whether or not the player should be prompted to close the site after the save.
      */
-    async saveAndExit()
+    async saveAndExit(askDoneWithSite)
     {
-        if (!(await this.downloadSaveFileAndHomeData()))
+        if (!(await this.downloadSaveFileAndHomeData(askDoneWithSite)))
         {
             PopUp.fire
             ({
@@ -2630,7 +2658,7 @@ export default class MainPage extends Component
                 this.setState({savingMessage: "", isSaving: false});
             });
         }
-        else
+        else if (!askDoneWithSite) //Otherwise it would close the pop-up asking the user if they're done
             PopUp.close();
     }
 
