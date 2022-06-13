@@ -10,7 +10,7 @@ import withReactContent from 'sweetalert2-react-content';
 
 import {PokemonSummary} from "./PokemonSummary";
 import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, GetNickname, GetSpecies, IsBlankMon,
-        IsEgg, IsHoldingItem, IsShiny, IsValidPokemon, MonWillLoseDataInSave} from "./PokemonUtil";
+        IsEgg, IsHoldingBannedItem, IsHoldingItem, IsShiny, IsValidPokemon, MonWillLoseDataInSave} from "./PokemonUtil";
 import {MatchesSearchCriteria, Search} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxPosBoxColumn, GetBoxPosBoxRow, GetBoxStartIndex,
@@ -1223,17 +1223,32 @@ export class BoxView extends Component
      */
     selectMonForTrade(pokemon)
     {
-        var tradeData = this.getParentState().tradeData;
-
-        if (tradeData == null)
-            tradeData = {};
-
-        tradeData.pokemon = pokemon;
-        tradeData.boxNum = this.getCurrentBoxId();
-        tradeData.boxPos = this.getOnlySelectedPos();
-
-        this.state.parent.setState({tradeData: tradeData});
-        this.state.tradeParent.offerPokemonToTrade(pokemon);
+        if (IsHoldingBannedItem(pokemon))
+        {
+            PopUp.fire(
+            {
+                icon: 'error',
+                title: "That Pokemon is holding an item that can't be traded!",
+                cancelButtonText: `Awww`,
+                showConfirmButton: false,
+                showCancelButton: true,
+                scrollbarPadding: false,
+            });
+        }
+        else
+        {
+            var tradeData = this.getParentState().tradeData;
+    
+            if (tradeData == null)
+                tradeData = {};
+    
+            tradeData.pokemon = pokemon;
+            tradeData.boxNum = this.getCurrentBoxId();
+            tradeData.boxPos = this.getOnlySelectedPos();
+    
+            this.state.parent.setState({tradeData: tradeData});
+            this.state.tradeParent.offerPokemonToTrade(pokemon);
+        }
     }
 
     /**
