@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
-import {GetIconSpeciesLink, GetNickname, GetSpecies, IsEgg, IsValidPokemon} from "./PokemonUtil";
+import {GetIconSpeciesLink, GetNickname, GetSpecies, IsEgg, IsHoldingBannedItem, IsValidPokemon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos, GetSpeciesName} from './Util';
 
 import {CgExport, CgImport} from "react-icons/cg";
@@ -80,6 +80,9 @@ export class WonderTrade extends Component
         if (IsEgg(this.state.pokemon))
             return false;
 
+        if (IsHoldingBannedItem(this.state.pokemon))
+            return false;
+
         return true;
     }
 
@@ -138,9 +141,14 @@ export class WonderTrade extends Component
         //Check illegal mon
         if (!this.canBeWonderTraded())
         {
+            let title = `${GetNickname(pokemon)} can't be traded.`
+
+            if (IsHoldingBannedItem(this.state.pokemon))
+                title = `${GetNickname(pokemon)} is holding an item that can't be traded!`
+
             PopUp.fire
             ({
-                title: `${GetNickname(pokemon)} can't be traded.`,
+                title: title,
                 cancelButtonText: `Awww`,
                 showConfirmButton: false,
                 showCancelButton: true,
