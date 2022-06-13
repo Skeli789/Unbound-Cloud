@@ -168,7 +168,8 @@ export class FriendTrade extends Component
                 {
                     navigator.clipboard.writeText(code).then((text) => //Copy to clipboard
                     {
-                        thisSetState({codeInput: code, codeCopied: true});
+                        thisSetState({codeInput: code, codeCopied: true, friendTradeState: FRIEND_TRADE_CREATED_CODE});
+                        PopUp.close(); //Closes "Connecting..." pop up
                     });
                 });
 
@@ -277,7 +278,7 @@ export class FriendTrade extends Component
     /**
      * Requests a friend code from the server.
      * @param {WebSocket} socket - The socket used to connect to the server.
-     * @param {*} unusedArg - An unused, but needed third argument.
+     * @param {*} unusedArg - An unused, but needed second argument.
      */
     getCreatedCode(socket, unusedArg)
     {
@@ -286,9 +287,6 @@ export class FriendTrade extends Component
         console.log("Requesting code...");
         socket.emit("createCode", this.getGlobalState().isRandomizedSave);
         console.log("Code request sent!");
-
-        PopUp.close(); //Closes "Connecting..." pop up
-        this.setState({friendTradeState: FRIEND_TRADE_CREATED_CODE});
     }
 
     /**
