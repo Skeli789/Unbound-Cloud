@@ -34,6 +34,9 @@ class TestIntegrated:
     def testLoadAllPokemonMAGM(self):
         LoadAllTest("magm")
 
+    def testLoadAllPokemonInflamedRed(self):
+        LoadAllTest("inflamed_red")
+
     def testCorruptsSaveBlocks30And31(self):
         LoadAllTest("corrupt_blocks_30_31")
 
@@ -69,6 +72,9 @@ class TestIntegrated:
         def func():
             Defines.unofficialSpecies[253] = True
         LoadAndReplaceTest("missingno", func)
+    
+    def testReplaceHoopaShayminPresetBox(self):
+        LoadAndReplaceTest("test_hoopa_shaymin_preset_box")
 
     def testTransferPokemonFromCFREToUnbound(self):
         TransferTest("all_pokemon", "cfre", "firered", "unbound")

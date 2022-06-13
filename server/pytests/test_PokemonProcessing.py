@@ -72,42 +72,42 @@ class TestGetAllCFRUCompressedMons:
 class TestConvertPokemonToCFRUCompressedMon:
     def testNormalPokemon(self):
         Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
-        assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(TEST_POKEMON) == TEST_POKEMON_BYTE_LIST
+        assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(TEST_POKEMON, 0) == TEST_POKEMON_BYTE_LIST
 
     def testBlankPokemon(self):
         Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
-        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(BLANK_TEST_POKEMON_CONVERTED)
+        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(BLANK_TEST_POKEMON_CONVERTED, 0)
         assert convertedData == [0] * CFRUCompressedPokemonSize
 
     def testBadChecksum(self):
         Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         pokemon["hiddenAbility"] = True
-        assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon) == [0] * CFRUCompressedPokemonSize
+        assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0) == [0] * CFRUCompressedPokemonSize
 
     def testMissingChecksum(self):
         Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         del pokemon["checksum"]
-        assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon) == [0] * CFRUCompressedPokemonSize
+        assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0) == [0] * CFRUCompressedPokemonSize
 
     def testFakeSpecies(self):
         Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         pokemon["species"] = "SPECIES_FAKE"
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
-        assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon) == [0] * CFRUCompressedPokemonSize
+        assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0) == [0] * CFRUCompressedPokemonSize
 
     def testMovesThatsANumber(self):
         Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         pokemon["moves"] = 1
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
-        assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon) == [0] * CFRUCompressedPokemonSize
+        assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0) == [0] * CFRUCompressedPokemonSize
 
     def testPokemonWithNonUnboundData(self):
         Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
-        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(TEST_POKEMON_NON_UNBOUND_DATA)
+        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(TEST_POKEMON_NON_UNBOUND_DATA, 0)
         assert convertedData == TESTING_POKEMON_NON_UNBOUND_DATA_BYTE_LIST
 
     def testPokemonWithNoRealMoves(self):
@@ -115,7 +115,7 @@ class TestConvertPokemonToCFRUCompressedMon:
         pokemon = TEST_POKEMON_NON_UNBOUND_DATA.copy()
         pokemon["moves"] = ["MOVE_FAKE"] * 4
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
-        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon)
+        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0)
         assert convertedData == TESTING_POKEMON_NO_REAL_MOVES_BYTE_LIST
 
     def testUnofficialSpecies(self):
@@ -123,8 +123,50 @@ class TestConvertPokemonToCFRUCompressedMon:
         Defines.unofficialSpecies[253] = True
         pokemon = TEST_MISSINGNO.copy()
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
-        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon)
+        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0)
         assert convertedData == MISSINGNO_BYTE_LIST
+
+    def testHoopaUnboundPresetBox(self):
+        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        pokemon = TEST_POKEMON.copy()
+        pokemon["species"] = "SPECIES_HOOPA_UNBOUND"
+        pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
+        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, UNBOUND_PRESET_BOX)
+        assert convertedData == HOOPA_UNBOUND_BYTE_LIST
+
+    def testHoopaUnboundNonPresetBox(self):
+        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        pokemon = TEST_POKEMON.copy()
+        pokemon["species"] = "SPECIES_HOOPA_UNBOUND"
+        pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
+        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0)
+        assert convertedData == HOOPA_BYTE_LIST
+
+    def testShayminPresetBox(self):
+        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        pokemon = TEST_POKEMON.copy()
+        pokemon["species"] = "SPECIES_SHAYMIN_SKY"
+        pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
+        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, UNBOUND_PRESET_BOX)
+        assert convertedData == SHAYMIN_SKY_BYTE_LIST
+
+    def testShayminNonPresetBox(self):
+        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        pokemon = TEST_POKEMON.copy()
+        pokemon["species"] = "SPECIES_SHAYMIN_SKY"
+        pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
+        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0)
+        assert convertedData == SHAYMIN_BYTE_LIST
+
+    def testShayminPresetBoxNonUnbound(self):
+        Defines.LoadAll(CFRE_FILE_SIGNATURE)
+        pokemon = TEST_POKEMON.copy()
+        pokemon["species"] = "SPECIES_SHAYMIN_SKY"
+        pokemon["metGame"] = "firered"
+        pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
+        convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, UNBOUND_PRESET_BOX)
+        assert convertedData == SHAYMIN_BYTE_LIST
+
 
 
 
