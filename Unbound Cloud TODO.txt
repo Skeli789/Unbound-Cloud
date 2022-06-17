@@ -6,4 +6,4 @@ Feature Modifications:
 -Timeout if friend trade connection has gone on too long
 
 Server Changes:
--Change the file signature for Unbound
+-Fix a save file with different file signatures per save (A and B)?
