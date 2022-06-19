@@ -167,6 +167,7 @@
 
 .box-lower-icons
 {
+    display: flex;
     margin-bottom: 2%;
 }
 
@@ -175,6 +176,10 @@
     cursor: pointer;
     user-select: none; /*Prevent text highlighting when button is clicked*/
     height: 36px;
+}
+
+.box-lower-icon-div
+{
     margin-right: 5%;
 }
 

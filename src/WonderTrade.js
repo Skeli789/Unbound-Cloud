@@ -443,23 +443,23 @@ export class WonderTrade extends Component
 
         if (!this.state.isMonInWonderTrade)
         {
-            return(
+            return (
                 <OverlayTrigger placement="bottom" overlay={wonderTradeTooltip}>
-                    {
+                    <div className="box-lower-icon-div">
                         <CgExport size={iconSize} className="box-lower-icon"
                                 onClick = {this.tryStartWonderTrade.bind(this)}/>
-                    }
+                    </div>
                 </OverlayTrigger>
             )
         }
         else
         {
-            return(
+            return (
                 <OverlayTrigger placement="bottom" overlay={cancelWonderTradeTooltip}>
-                    {
+                    <div className="box-lower-icon-div">
                         <CgImport size={iconSize} className="box-lower-icon cancel-wonder-trade-icon"
                                 onClick = {this.tryCancelWonderTrade.bind(this)}/>
-                    }
+                    </div>
                 </OverlayTrigger>
             )
         }

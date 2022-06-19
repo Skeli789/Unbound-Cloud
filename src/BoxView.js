@@ -1363,10 +1363,12 @@ export class BoxView extends Component
                 {
                     warningIcon =
                         <OverlayTrigger placement="top" overlay={loseDataTooltip}>
-                            <AiFillWarning className={"box-icon-warning-icon" + (!matchesSearchCriteria ? " box-icon-faded" : "")}
-                                                    fill={this.shouldShowIconImpossibleMoveWarning(key) ? "black" : "red"} size={14}
-                                                    hidden={hiddenImages}
-                                                    aria-label="Will Lose Data"/>
+                            <div className="box-icon-warning-icon">
+                                <AiFillWarning className={"" + (!matchesSearchCriteria ? " box-icon-faded" : "")}
+                                               fill={this.shouldShowIconImpossibleMoveWarning(key) ? "black" : "red"} size={14}
+                                               hidden={hiddenImages}
+                                               aria-label="Will Lose Data"/>
+                            </div>
                         </OverlayTrigger>;
                 }
             }
@@ -1512,10 +1514,10 @@ export class BoxView extends Component
 
             return(
                 <OverlayTrigger placement="bottom" overlay={tradeTooltip}>
-                    {
+                    <div className="box-lower-icon-div">
                         <CgExport size={iconSize} className="box-lower-icon" style={{color: "red"}}
                                 onClick = {this.trySelectMonForTrade.bind(this)}/>
-                    }
+                    </div>
                 </OverlayTrigger>
             )
         }
@@ -1539,10 +1541,13 @@ export class BoxView extends Component
         if (this.isHomeBox() && !this.state.editingTitle && !this.isTrading())
             livingDexIcon =
                 <OverlayTrigger placement="top" overlay={livingDexTooltip}>
-                    <CgPokemon size={editIconSize + 10} onClick={this.changeLivingDexView.bind(this)}
-                               className="box-name-living-dex-icon" style={{color: this.getLivingDexState() === LIVING_DEX_NO_FORMS ? "violet"
-                                                                                 : this.getLivingDexState() === LIVING_DEX_ALL ? "lightseagreen"
-                                                                                 : "black"}} />
+                    <div>
+                        <CgPokemon size={editIconSize + 10} onClick={this.changeLivingDexView.bind(this)}
+                                   className="box-name-living-dex-icon"
+                                   style={{color: this.getLivingDexState() === LIVING_DEX_NO_FORMS ? "violet"
+                                                : this.getLivingDexState() === LIVING_DEX_ALL ? "lightseagreen"
+                                                : "black"}} />
+                    </div>
                 </OverlayTrigger>;
 
         //Set Up Box Names
@@ -1553,11 +1558,13 @@ export class BoxView extends Component
             if (this.state.editingTitle)
             {
                 title =
-                    <div>
+                    <>
                         {/*Cancel Button*/}
                         <OverlayTrigger placement="top" overlay={cancelTooltip}>
-                            <AiOutlineCloseCircle size={editIconSize  + 14}
-                                  onClick={this.cancelEditingTitle.bind(this)} className="box-name-cancel-icon" />
+                            <div>
+                                <AiOutlineCloseCircle size={editIconSize  + 14}
+                                        onClick={this.cancelEditingTitle.bind(this)} className="box-name-cancel-icon" />
+                            </div>
                         </OverlayTrigger>
 
                         {/*Text Input Field*/}
@@ -1568,10 +1575,12 @@ export class BoxView extends Component
 
                         {/*Save Button*/}
                         <OverlayTrigger placement="top" overlay={saveTooltip}>
-                            <AiOutlineCheckCircle size={editIconSize + 14}
+                            <div>
+                                <AiOutlineCheckCircle size={editIconSize + 14}
                                         onClick={this.renameTitle.bind(this)} className="box-name-save-icon" />
+                            </div>
                         </OverlayTrigger>
-                    </div>
+                    </>
 
                 titleEditIcon = ""; //Hidden while editing
                 titleContainerClass = "box-title-edit";
@@ -1587,8 +1596,10 @@ export class BoxView extends Component
                 titleEditIcon = this.state.editingTitle || this.isTrading() ? ""
                               : this.isHomeBox() ?
                                   <OverlayTrigger placement="top" overlay={renameTooltip}>
-                                      <GrEdit size={editIconSize}
+                                      <div>
+                                          <GrEdit size={editIconSize}
                                               onClick={this.startEditingTitle.bind(this)} className="box-name-edit-icon" />
+                                      </div>
                                   </OverlayTrigger>
                               : "";
             }
@@ -1610,14 +1621,18 @@ export class BoxView extends Component
             <div className="box-lower-icons">
                 {/*Search Icon*/}
                 <OverlayTrigger placement="bottom" overlay={searchTooltip}>
-                    <BiSearchAlt2 size={34} className={"box-lower-icon" + (this.shouldFilterSearchResults() ? " green-icon" : "")}
-                            onClick={this.startSearching.bind(this)}/>
+                    <div className="box-lower-icon-div">
+                        <BiSearchAlt2 size={34} className={"box-lower-icon" + (this.shouldFilterSearchResults() ? " green-icon" : "")}
+                                      onClick={this.startSearching.bind(this)}/>
+                    </div>
                 </OverlayTrigger>
 
                 { /*Select/Deselect All Icon*/
                     !this.isTrading() ?
                         <OverlayTrigger placement="bottom" overlay={this.areAnyPokemonSelectedInCurrentBox(true) ? deselectAllTooltip : selectAllTooltip}>
-                            <GrMultiple size={28} className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
+                            <div className="box-lower-icon-div">
+                                <GrMultiple size={28} className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
+                            </div>
                         </OverlayTrigger>
                     :
                         ""
@@ -1626,7 +1641,10 @@ export class BoxView extends Component
                 { /*Save Icon*/
                     this.getParentState().changeWasMade[this.state.boxType] && !this.isTrading() ?
                         <OverlayTrigger placement="bottom" overlay={saveTooltip}>
-                            <AiOutlineSave size={36} className="box-lower-icon" onClick={() => this.state.parent.trySaveAndExit(true)}/>
+                            <div className="box-lower-icon-div">
+                                <AiOutlineSave size={36} className="box-lower-icon"
+                                               onClick={() => this.state.parent.trySaveAndExit(true)}/>
+                            </div>
                         </OverlayTrigger>
                     :
                         ""
@@ -1635,7 +1653,9 @@ export class BoxView extends Component
                 { /*Fix Living Dex Icon*/
                     this.getLivingDexState() !== LIVING_DEX_NONE && !this.state.fixingLivingDex && this.isHomeBox() && !this.isTrading() ?
                         <OverlayTrigger placement="bottom" overlay={fixLivingDexTooltip}>
-                            <AiOutlineTool size={36} className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
+                            <div className="box-lower-icon-div">
+                                <AiOutlineTool size={36} className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
+                            </div>
                         </OverlayTrigger>
                     :
                         ""
@@ -1646,7 +1666,10 @@ export class BoxView extends Component
                         {
                             this.canViewReleaseButton() ?
                                 <OverlayTrigger placement="bottom" overlay={releaseTooltip}>
-                                    <GrTrash size={28} className="box-lower-icon" onClick={this.releaseSelectedPokemon.bind(this)}/>
+                                    <div className="box-lower-icon-div">
+                                        <GrTrash size={28} className="box-lower-icon"
+                                                 onClick={this.releaseSelectedPokemon.bind(this)}/>
+                                    </div>
                                 </OverlayTrigger>
                             :
                                 ""
@@ -1654,8 +1677,10 @@ export class BoxView extends Component
                         {
                             this.canViewShowdownButton() ?
                                 <OverlayTrigger placement="bottom" overlay={showdownTooltip}>
-                                    <RiBoxingLine size={32} className="box-lower-icon"
-                                            onClick = {this.viewShowdownExport.bind(this)}/>
+                                    <div className="box-lower-icon-div">
+                                        <RiBoxingLine size={32} className="box-lower-icon"
+                                                      onClick = {this.viewShowdownExport.bind(this)}/>
+                                    </div>
                                 </OverlayTrigger>
                             :
                                 ""
