@@ -15,6 +15,7 @@ import {BoxList} from "./BoxList";
 import {BoxView, HIGHEST_HOME_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
 import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {FriendTrade} from "./FriendTrade";
+import {GoogleAd} from "./GoogleAd";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetSpecies, HasEggLockeOT, IsBlankMon,
         IsEgg, IsHoldingBannedItem, PokemonAreDuplicates, WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
@@ -2869,6 +2870,20 @@ export default class MainPage extends Component
     }
 
     /**
+     * Prints the ads on the sides of the desktop view.
+     * @returns {JSX} The ads to display on the sides.
+     */
+    printSideAds()
+    {
+        return (
+            <>
+                <GoogleAd slot="4079835251"/>
+                <GoogleAd slot="2759014723" classNames="google-ad-right"/>
+            </>
+        );
+    }
+
+    /**
      * Gets the screen shown when quick jumping between boxes.
      * @returns {JSX} The box list page.
      */
@@ -3200,6 +3215,12 @@ export default class MainPage extends Component
                                 {homeBoxView1}
                                 {homeBoxView2}
                         </div>
+                        {
+                            !isMobile ?
+                                this.printSideAds()
+                            :
+                                ""
+                        }
                         {this.footerButtons()}
                     </div>
             }
@@ -3234,6 +3255,12 @@ export default class MainPage extends Component
                                 {saveBoxView1}
                                 {saveBoxView2}
                         </div>
+                        {
+                            !isMobile ?
+                                this.printSideAds()
+                            :
+                                ""
+                        }
                         {this.footerButtons()}
                     </div>
             }
@@ -3268,6 +3295,12 @@ export default class MainPage extends Component
                                 {homeBoxView}
                                 {saveBoxView}
                             </div>
+                            {
+                                !isMobile ?
+                                   this.printSideAds()
+                                :
+                                    ""
+                            }
                             {this.footerButtons()}
                         </div>
                 }
@@ -3372,6 +3405,7 @@ export default class MainPage extends Component
  * Gets the starting site the user is directed to when the access the site.
  * @returns {Number} The starting edit state.
  */
+//eslint-disable-next-line
 function GetInitialPageState()
 {
     if (localStorage.visitedBefore)
