@@ -336,6 +336,9 @@ app.post('/uploadSaveFile', async (req, res) =>
             return res.status(StatusCode.ServerErrorInternal).json(err)
     })
 
+    if (req.files == null)
+        return res.status(StatusCode.ClientErrorBadRequest).json("ERROR: Uploaded file did not reach the server.");
+
     //Write the save file to a temp file
     var saveFileData = req.files.file.data;
     var saveFileName, fileIdNumber;
@@ -403,6 +406,9 @@ app.post('/uploadHomeData', async (req, res) =>
         else if (err)
             return res.status(StatusCode.ServerErrorInternal).json(err);
     })
+
+    if (req.files == null)
+        return res.status(StatusCode.ClientErrorBadRequest).json("ERROR: Uploaded file did not reach the server.");
 
     //Decrypt the data
     try
