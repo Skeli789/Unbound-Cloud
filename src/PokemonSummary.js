@@ -293,9 +293,11 @@ export class PokemonSummary extends Component
 
             loseBallWarning=
                 <OverlayTrigger placement="top" overlay={loseItemTooltip}>
-                    <AiFillWarning className="summary-item-ball-warning summary-ball-warning"
-                                   fill="red" size={14}
-                                   aria-label="Will Lose Ball"/>
+                    <div>
+                        <AiFillWarning className="summary-item-ball-warning summary-ball-warning"
+                                       fill="red" size={14}
+                                       aria-label="Will Lose Ball"/>
+                    </div>
                 </OverlayTrigger>;
         }
         else
@@ -315,9 +317,11 @@ export class PokemonSummary extends Component
 
             loseItemWarning=
                 <OverlayTrigger placement="top" overlay={loseItemTooltip}>
-                    <AiFillWarning className="summary-item-ball-warning summary-item-warning"
-                                   fill="red" size={14}
-                                   aria-label="Will Lose Item"/>
+                    <div>
+                        <AiFillWarning className="summary-item-ball-warning summary-item-warning"
+                                       fill="red" size={14}
+                                       aria-label="Will Lose Item"/>
+                    </div>
                 </OverlayTrigger>;
         }
         else
@@ -487,10 +491,12 @@ export class PokemonSummary extends Component
 
                 moves.push(
                     <OverlayTrigger placement="top" overlay={loseMoveTooltip} key={key++}>
-                        <AiFillWarning className="summary-move-warning"
-                                       fill="red"
-                                       size={18}
-                                       aria-label="Will Lose Move"/>
+                        <div>
+                            <AiFillWarning className="summary-move-warning"
+                                           fill="red"
+                                           size={18}
+                                           aria-label="Will Lose Move"/>
+                        </div>
                     </OverlayTrigger>
                 );
             }
