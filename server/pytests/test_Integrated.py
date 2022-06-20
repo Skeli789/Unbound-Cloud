@@ -64,6 +64,9 @@ class TestIntegrated:
     def testReplaceAllPokemonSingleSaveRandomizer(self):
         LoadAndReplaceTest("single_save_randomizer")
 
+    def testReplaceAllMismatchedFileSignature(self):
+        LoadAndReplaceTest("mismatched_file_signature")
+
     def testReplaceCorruptBlocks30And31(self):
         LoadAndReplaceTest("corrupt_blocks_30_31")
 
