@@ -3,6 +3,3 @@ New Features:
 
 Feature Modifications:
 -Timeout if friend trade connection has gone on too long
-
-Server Changes:
--Fix a save file with different file signatures per save (A and B)?

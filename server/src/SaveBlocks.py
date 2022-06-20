@@ -97,7 +97,8 @@ class SaveBlocks:
 
         with open(saveFile, "rb") as binaryFile:
             binaryFile.seek(FileSignatureOffset)
-            if BytesToInt(binaryFile.read(4)) == 0xFFFFFFFF:  # Save 1 is empty
+            fileSignatureA = binaryFile.read(4)
+            if BytesToInt(fileSignatureA) == 0xFFFFFFFF:  # Save 1 is empty
                 # Check save 2 is good and is the first save
                 if not SaveBlocks.ValidateSave(binaryFile, SaveSize, SaveSize * 2):
                     return False
@@ -106,13 +107,20 @@ class SaveBlocks:
                 return BytesToInt(binaryFile.read(2)) == 1  # Save 2 should be the first time the game was saved
 
             binaryFile.seek(SaveSize + FileSignatureOffset)
-            if BytesToInt(binaryFile.read(4)) == 0xFFFFFFFF:  # Save 2 is empty
+            fileSignatureB = binaryFile.read(4)
+            if BytesToInt(fileSignatureB) == 0xFFFFFFFF:  # Save 2 is empty
                 # Check save 1 is good and is the first save
                 if not SaveBlocks.ValidateSave(binaryFile, 0, SaveSize):
                     return False
 
                 binaryFile.seek(SaveIndexOffset)  # Save count of actual save
                 return BytesToInt(binaryFile.read(2)) == 1  # Save 1 should be the first time the game was saved
+
+            if fileSignatureA != fileSignatureB:  # In the process of updating (eg. after the file signature was changed due to new species added)
+                if SaveBlocks.UsesSaveIndexA(binaryFile):
+                    return SaveBlocks.ValidateSave(binaryFile, 0, SaveSize)  # Only validate first save
+                else:
+                    return SaveBlocks.ValidateSave(binaryFile, SaveSize, SaveSize * 2)  # Only validate second save
 
             return SaveBlocks.ValidateSave(binaryFile, 0, SaveSize) \
                 and SaveBlocks.ValidateSave(binaryFile, SaveSize, SaveSize * 2)  # Both saves must be valid for use
