@@ -1,5 +1,4 @@
 New Features:
--Ads
 -GTS (and make sure bad words are replaced if necessary)
 
 Feature Modifications:

@@ -15,6 +15,7 @@ import {BoxList} from "./BoxList";
 import {BoxView, HIGHEST_HOME_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
 import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {FriendTrade} from "./FriendTrade";
+// eslint-disable-next-line
 import {GoogleAd} from "./GoogleAd";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetSpecies, HasEggLockeOT, IsBlankMon,
         IsEgg, IsHoldingBannedItem, PokemonAreDuplicates, WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
@@ -2877,8 +2878,8 @@ export default class MainPage extends Component
     {
         return (
             <>
-                <GoogleAd slot="4079835251"/>
-                <GoogleAd slot="2759014723" classNames="google-ad-right"/>
+                {/* <GoogleAd slot="4079835251"/>
+                <GoogleAd slot="2759014723" classNames="google-ad-right"/> */}
             </>
         );
     }
