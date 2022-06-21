@@ -1,5 +1,2 @@
 New Features:
 -GTS (and make sure bad words are replaced if necessary)
-
-Feature Modifications
--Code copied pop-up is an issue
