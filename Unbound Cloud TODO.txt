@@ -3,4 +3,3 @@ New Features:
 
 Feature Modifications
 -Code copied pop-up is an issue
--GTS Button should say not available

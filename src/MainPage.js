@@ -2122,6 +2122,22 @@ export default class MainPage extends Component
         }
     }
 
+    /**
+     * Opens the Global Trade Station screen.
+     */
+    openGTS()
+    {
+        PopUp.fire
+        ({
+            icon: "error",
+            title: "The GTS is currently unavailable.\nWe apologize for the inconvenience.",
+            cancelButtonText: "Awww",
+            showConfirmButton: false,
+            showCancelButton: true,
+            scrollbarPadding: false,
+        });
+    }
+
 
     /**********************************
           Living Pokedex Functions     
@@ -2828,7 +2844,8 @@ export default class MainPage extends Component
             <Button size="lg" className="footer-button" style={{display: "contents"}} //Style needed to properly position svg
                     aria-label="Go To Global Trade Station">
                     <OverlayTrigger placement="top" overlay={tooltip}>
-                        <div style={{width: "fit-content", paddingLeft: "14px", paddingRight: "14px"}}>
+                        <div style={{width: "fit-content", paddingLeft: "14px", paddingRight: "14px"}}
+                             onClick={this.openGTS.bind(this)}>
                             {GTS_ICON}
                         </div>
                     </OverlayTrigger>
