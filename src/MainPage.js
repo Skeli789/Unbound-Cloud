@@ -2109,7 +2109,6 @@ export default class MainPage extends Component
                     ({
                         inFriendTrade: false,
                         tradeData: null,
-                        pokemonToTrade: null,
                     });
                 }
             });
@@ -2119,7 +2118,6 @@ export default class MainPage extends Component
             this.setState
             ({
                 inFriendTrade: false,
-                pokemonToTrade: null,
             });
         }
     }

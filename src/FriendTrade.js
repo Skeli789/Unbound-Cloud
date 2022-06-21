@@ -14,6 +14,7 @@ import {config} from "./config";
 import {CanUseFileHandleAPI, BOX_HOME, BOX_SLOT_LEFT} from './MainPage';
 import {PokemonSummary} from './PokemonSummary';
 import {GetIconSpeciesLink, GetNickname, GetSpecies} from './PokemonUtil';
+import {Timer} from './Timer';
 import {GetSpeciesName} from './Util';
 
 import {AiOutlineCloseCircle, AiOutlineCheckCircle} from "react-icons/ai";
@@ -30,6 +31,7 @@ const FRIEND_TRADE_INPUT_CODE = 2;
 const FRIEND_TRADE_CHOOSE_POKEMON = 3;
 
 const CODE_LENGTH = 8; //The friend code's length
+const TIMER_AMOUNT = 60 * 10 //10 minutes once a socket is opened
 
 const PopUp = withReactContent(Swal);
 const tradeCompleteSound = new Audio(SfxTradeComplete);
@@ -57,6 +59,8 @@ export class FriendTrade extends Component
             globalState: props.globalState,
             homeBoxes: props.homeBoxes,
             homeTitles: props.homeTitles,
+            timerKey: 0,
+            timerHidden: false,
         };
 
         this.setGlobalState = props.setGlobalState;
@@ -115,6 +119,7 @@ export class FriendTrade extends Component
             friendPokemon: null,
             codeInput: "",
             codeCopied: false,
+            timerHidden: false,
         });
 
         this.getMainPage().resetStateForStartingFriendTrade(false);
@@ -229,6 +234,7 @@ export class FriendTrade extends Component
      */
     handleLostConnection(socket)
     {
+        this.hideTimer();
         socket.close();
 
         PopUp.fire(
@@ -251,6 +257,7 @@ export class FriendTrade extends Component
      */
     partnerDisconnected(socket)
     {
+        this.hideTimer();
         socket.close();
 
         PopUp.fire(
@@ -264,6 +271,26 @@ export class FriendTrade extends Component
         }).then(() =>
         {
             this.resetTradeState();
+        });
+    }
+
+    /**
+     * Handles ending the Friend Trade due to the connection having gone on too long.
+     */
+    timedOut()
+    {
+        this.getGlobalState().tradeData.socket.off("disconnect"); //Prevents disconnected pop-up from showing
+        this.getGlobalState().tradeData.socket.close();
+        this.resetTradeState();
+
+        PopUp.fire(
+        {
+            icon: 'error',
+            title: "Time's up!\nYou spent too long on the trade!",
+            cancelButtonText: `Awww`,
+            showConfirmButton: false,
+            showCancelButton: true,
+            scrollbarPadding: false,
         });
     }
 
@@ -378,7 +405,7 @@ export class FriendTrade extends Component
         socket.close();
         this.setGlobalState({tradeData: null});
         this.couldntFindFriendPopUp(this.state.codeInput);
-        this.setState({codeInput: ""}); //Must go after pop-up
+        this.setState({codeInput: "", timerHidden: false}); //Must go after pop-up
     }
 
     /**
@@ -430,7 +457,7 @@ export class FriendTrade extends Component
             scrollbarPadding: false,
         });
     
-        this.setState({codeInput: ""}); //Must go after pop-up
+        this.setState({codeInput: "", timerHidden: false}); //Must go after pop-up
     }
  
     /**
@@ -526,6 +553,7 @@ export class FriendTrade extends Component
     {
         var socket = this.getGlobalState().tradeData.socket;
         const finalizeTrade = this.finalizeTrade.bind(this);
+        const hideTimer = this.hideTimer.bind(this);
         
         //First make sure the friend's offer isn't a duplicate
         let alreadyExistsRet = this.getMainPage().monAlreadyExistsInBoxes(this.state.friendPokemon,
@@ -552,6 +580,7 @@ export class FriendTrade extends Component
 
             socket.on('acceptedTrade', function(pokemon)
             {
+                hideTimer(); //Prevent disconnecting now that the trade is done
                 finalizeTrade(socket, pokemon);
             });
 
@@ -571,6 +600,14 @@ export class FriendTrade extends Component
                 }
             });
         }
+    }
+
+    /**
+     * Hides the active timer.
+     */
+    hideTimer()
+    {
+        this.setState({timerHidden: true});
     }
 
     /**
@@ -596,6 +633,8 @@ export class FriendTrade extends Component
             imageUrl: GetIconSpeciesLink(newPokemon),
             imageAlt: "",
             scrollbarPadding: false,
+            timer: 60 * 1000, //Automatic pop-up because timer is currently hidden
+            timerProgressBar: true,
         }).then(async () =>
         {
             if (CanUseFileHandleAPI())
@@ -612,6 +651,8 @@ export class FriendTrade extends Component
                         confirmButtonText: "Awww",
                         allowOutsideClick: false,
                         scrollbarPadding: false,
+                        timer: 60 * 1000, //Automatic pop-up because timer is currently hidden
+                        timerProgressBar: true,
                         didOpen: () =>
                         {
                             PopUp.hideLoading(); //From previous pop-ups
@@ -648,6 +689,8 @@ export class FriendTrade extends Component
             showCancelButton: true,
             allowOutsideClick: false,
             scrollbarPadding: false,
+            timer: 60 * 1000, //Automatic pop-up because timer is currently hidden
+            timerProgressBar: true,
         }).then((result) =>
         {
             if (result.isConfirmed) //Trade again
@@ -655,7 +698,7 @@ export class FriendTrade extends Component
                 //Prepare for next trade
                 let tradeData = this.getGlobalState().tradeData;
                 tradeData.pokemon = null;
-                this.setState({friendPokemon: null})
+                this.setState({friendPokemon: null, timerKey: this.state.timerKey + 1, timerHidden: false}); //Reset the timer
                 this.setGlobalState({tradeData: tradeData});
                 this.getMainPage().resetStateForStartingFriendTrade(true);
                 socket.emit("tradeAgain");
@@ -879,6 +922,7 @@ export class FriendTrade extends Component
     render()
     {
         var pageContents;
+        var showTimer = this.getGlobalState().tradeData != null && !this.state.timerHidden;
 
         switch (this.state.friendTradeState)
         {
@@ -903,6 +947,13 @@ export class FriendTrade extends Component
             <div className="friend-trade-page"
                  style={!isMobile ? {paddingLeft: "var(--scrollbar-width)"} : {}}>
                 {pageContents}
+                {
+                    showTimer ?
+                        <Timer key={"timer" + this.state.timerKey.toString()} seconds={TIMER_AMOUNT}
+                               onCompletionFunc={this.timedOut.bind(this)} mainPage={this.state.globalState}/>
+                    :
+                        ""
+                }
             </div>
         )
     }
