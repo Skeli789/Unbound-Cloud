@@ -244,7 +244,7 @@ export class BoxView extends Component
     /**
      * Gets whether or not the mon at a specific box position should be highlighted when the
      * user tried to move it to an impossible spot.
-     * @param {Number} boxPos - The box position the mon is at.
+     * @param {Number} boxPos - The box position the mon is at (0 to MONS_PER_BOX).
      * @returns {Boolean} True if the mon couldn't have been moved where it was placed, False otherwise.
      */
     shouldShowIconImpossibleMoveWarning(boxPos)
@@ -294,15 +294,14 @@ export class BoxView extends Component
             let dropTopRow = GetBoxPosBoxRow(dropTopLeftPos); //Where the mouse is currently over
             let dropLeftCol = GetBoxPosBoxColumn(dropTopLeftPos); //Where the mouse is currently over
 
-            if (currRow < dropTopRow || currCol < dropLeftCol) //Spot isn't even in range
-                return false;
+            if (currRow < dropTopRow)
+                return false; //Row isn't even in range
 
-            let dropRowOffset = currRow - dropTopRow; //Rows away from where the mouse is
-            let dropColOffset = currCol - dropLeftCol; //Columns away from where the mouse is
-
-             //Determine the pickup area
+            //Determine the pickup area
             let pickUpTopRow = Number.MAX_SAFE_INTEGER; //Top row of pickup area
             let pickUpLeftCol = Number.MAX_SAFE_INTEGER; //Left column of pickup area
+            let pickUpAnchorCol = Number.MAX_SAFE_INTEGER; //Top left selected Pokemon in the pickup area
+            let pickUpRightCol = 0; //Right column of pickup area
             let otherBoxSelectedPos = this.getParentState().selectedMonPos[this.getOtherBoxSlot()]; //Where the mons are coming from
             for (let i = 0; i < MONS_PER_BOX; ++i)
             {
@@ -315,15 +314,32 @@ export class BoxView extends Component
                         pickUpTopRow = row;
 
                     if (col < pickUpLeftCol)
+                    {
                         pickUpLeftCol = col;
+                        if (pickUpAnchorCol === Number.MAX_SAFE_INTEGER)
+                            pickUpAnchorCol = col; //Only set for the first col encountered (eg. on the top row)
+                    }
+
+                    if (col > pickUpRightCol)
+                        pickUpRightCol = col;
                 }
             }
+
+            dropLeftCol -= (pickUpAnchorCol - pickUpLeftCol); //Shift over the drop point so the anchor is where the mouse is
+
+            let width = (pickUpRightCol - pickUpLeftCol);
+            if (currCol < dropLeftCol
+            || currCol > dropLeftCol + width) //Prevents cells on the right side in the row above from becoming lit up
+                return false; //Column isn't even in range
+
+            let dropRowOffset = currRow - dropTopRow; //Rows away from where the mouse is
+            let dropColOffset = currCol - dropLeftCol; //Columns away from where the mouse is
 
             //Determine where in the pickup area boxPos (parameter) would correspond to
             let checkPickUpRow = pickUpTopRow + dropRowOffset;
             let checkPickUpCol = pickUpLeftCol + dropColOffset;
             let checkPickUpPos = checkPickUpRow * MONS_PER_ROW + checkPickUpCol;
-            return otherBoxSelectedPos[checkPickUpPos];
+            return dropColOffset >= 0 && otherBoxSelectedPos[checkPickUpPos];
         }
 
         return false;
