@@ -1,5 +1,6 @@
 New Features:
 -GTS (and make sure bad words are replaced if necessary)
 
-Feature Modifications:
--Timeout if friend trade connection has gone on too long
+Feature Modifications
+-Code copied pop-up is an issue
+-GTS Button should say not available
