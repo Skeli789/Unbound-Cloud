@@ -1574,10 +1574,6 @@ export default class MainPage extends Component
             else //Moving multiple Pokemon
             {
                 var i, j, multiFrom, multiTo, multiTopLeftPos, toTopRow, toLeftCol;
-                var topRow = Number.MAX_SAFE_INTEGER;
-                var bottomRow = 0;
-                var leftCol = Number.MAX_SAFE_INTEGER;
-                var rightCol = 0;
 
                 if (this.state.selectedMonPos[BOX_SLOT_RIGHT].filter(x => x).length >= 2) //Count number of "true"s in array
                 {
@@ -1632,6 +1628,11 @@ export default class MainPage extends Component
                 }
 
                 //Get area of moving mons
+                var topRow = Number.MAX_SAFE_INTEGER;
+                var bottomRow = 0;
+                var leftCol = Number.MAX_SAFE_INTEGER;
+                var topRowLeftCol = Number.MAX_SAFE_INTEGER; //The "anchor" for the move
+                var rightCol = 0;
                 for (i = 0; i < MONS_PER_BOX; ++i)
                 {
                     if (this.state.selectedMonPos[multiFrom][i])
@@ -1646,7 +1647,11 @@ export default class MainPage extends Component
                             bottomRow = row;
                         
                         if (col < leftCol)
+                        {
                             leftCol = col;
+                            if (topRowLeftCol === Number.MAX_SAFE_INTEGER)
+                                topRowLeftCol = col; //Only set for the first col encountered (eg. on the top row)
+                        }
 
                         if (col > rightCol)
                             rightCol = col;
@@ -1660,7 +1665,7 @@ export default class MainPage extends Component
                 var impossibleFrom = this.generateBlankImpossibleMovementArray();
                 var impossibleTo = this.generateBlankImpossibleMovementArray();
                 toTopRow = GetBoxPosBoxRow(multiTopLeftPos);
-                toLeftCol = GetBoxPosBoxColumn(multiTopLeftPos);
+                toLeftCol = GetBoxPosBoxColumn(multiTopLeftPos) - (topRowLeftCol - leftCol); //Move based on anchor
 
                 for (i = 0; i < height; ++i)
                 {
@@ -1669,11 +1674,12 @@ export default class MainPage extends Component
                     for (j = 0; j < width; ++j)
                     {
                         let col = toLeftCol + j;
-                        let offset = GetOffsetFromBoxNumAndPos(this.state.selectedMonBox[multiFrom], (topRow + i) * MONS_PER_ROW + (leftCol + j));
+                        let inBoxPos = (topRow + i) * MONS_PER_ROW + (leftCol + j);
+                        let offset = GetOffsetFromBoxNumAndPos(this.state.selectedMonBox[multiFrom], inBoxPos);
                         let movingPokemon = this.getMonAtBoxPos(multiFrom, offset);
-                        let isMonAndIsSelected = !IsBlankMon(movingPokemon) && this.state.selectedMonPos[multiFrom][offset];
+                        let isMonAndIsSelected = !IsBlankMon(movingPokemon) && this.state.selectedMonPos[multiFrom][inBoxPos];
 
-                        if (row >= MONS_PER_BOX / MONS_PER_ROW) //5 Rows
+                        if (row < 0 || row >= MONS_PER_BOX / MONS_PER_ROW) //5 Rows
                         {
                             possible = false; //Outside of bounds
                             if (isMonAndIsSelected) //Only highlight actual selected Pokemon
@@ -1681,7 +1687,7 @@ export default class MainPage extends Component
                             continue;
                         }
 
-                        if (col >= MONS_PER_ROW) //6 Colums
+                        if (col < 0 || col >= MONS_PER_ROW) //6 Colums
                         {
                             possible = false; //Outside of bounds
                             if (isMonAndIsSelected) //Only highlight actual selected Pokemon
