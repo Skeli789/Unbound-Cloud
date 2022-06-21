@@ -9,7 +9,8 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
-import {GetIconSpeciesLink, GetNickname, GetSpecies, IsEgg, IsHoldingBannedItem, IsValidPokemon} from "./PokemonUtil";
+import {GetIconSpeciesLink, GetNickname, GetSpecies, HasDuplicateMovesInMoveset,
+        IsEgg, IsHoldingBannedItem, IsValidPokemon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos, GetSpeciesName} from './Util';
 
 import {CgExport, CgImport} from "react-icons/cg";
@@ -81,6 +82,9 @@ export class WonderTrade extends Component
             return false;
 
         if (IsHoldingBannedItem(this.state.pokemon))
+            return false;
+
+        if (HasDuplicateMovesInMoveset(this.state.pokemon))
             return false;
 
         return true;

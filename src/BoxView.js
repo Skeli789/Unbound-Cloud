@@ -9,8 +9,8 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {PokemonSummary} from "./PokemonSummary";
-import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, GetNickname, GetSpecies, IsBlankMon,
-        IsEgg, IsHoldingBannedItem, IsHoldingItem, IsShiny, IsValidPokemon, MonWillLoseDataInSave} from "./PokemonUtil";
+import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, GetNickname, GetSpecies, HasDuplicateMovesInMoveset,
+        IsBlankMon, IsEgg, IsHoldingBannedItem, IsHoldingItem, IsShiny, IsValidPokemon, MonWillLoseDataInSave} from "./PokemonUtil";
 import {MatchesSearchCriteria, Search} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxPosBoxColumn, GetBoxPosBoxRow, GetBoxStartIndex,
@@ -1225,10 +1225,22 @@ export class BoxView extends Component
     {
         if (IsHoldingBannedItem(pokemon))
         {
-            PopUp.fire(
-            {
+            PopUp.fire
+            ({
                 icon: 'error',
                 title: "That Pokemon is holding an item that can't be traded!",
+                cancelButtonText: `Awww`,
+                showConfirmButton: false,
+                showCancelButton: true,
+                scrollbarPadding: false,
+            });
+        }
+        else if (HasDuplicateMovesInMoveset(pokemon))
+        {
+            PopUp.fire
+            ({
+                icon: 'error',
+                title: "That Pokemon has duplicate moves and can't be traded!",
                 cancelButtonText: `Awww`,
                 showConfirmButton: false,
                 showCancelButton: true,

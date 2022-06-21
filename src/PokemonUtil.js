@@ -810,6 +810,27 @@ export function GetMoveType(move, pokemon, gameId)
 }
 
 /**
+ * Checks if a Pokemon knows has same move more than once in its moveset.
+ * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {Boolean} True if the Pokemon knows any of its moves more than once. False if not.
+ */
+export function HasDuplicateMovesInMoveset(pokemon)
+{
+    var counts = {};
+
+    for (let move of GetMoves(pokemon))
+    {
+        if (move !== "MOVE_NONE")
+            counts[move] = (move in counts) ? counts[move] + 1 : 1;
+    }
+
+    counts = Object.values(counts);
+    counts.sort();
+    counts.reverse(); //Put largest numbers at the front
+    return counts.length > 0 && counts[0] > 1;
+}
+
+/**
  * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {Number} The Pokemon's amount of experience.
  */
