@@ -793,21 +793,23 @@ export class FriendTrade extends Component
      */
     viewCreatedCodePage()
     {
-        const codeCopiedTooltip = props => (<Tooltip {...props}>Code Copied!</Tooltip>);
         var isCodeCopied = this.state.codeCopied;
 
         return (
             <div className="friend-trade-code-display-page">
                 <h2>Have your friend enter this code!</h2>
                 <div className="friend-trade-code-display-container">
-                    <OverlayTrigger placement="bottom" show={isCodeCopied} overlay={codeCopiedTooltip}>
-                        <div className="friend-trade-code-display-code" translate="no"
-                                style={isCodeCopied ? {backgroundColor: "rgba(100,100,100,.4)"} : {}}
-                                onClick={this.copyCreatedCode.bind(this)}>
-                            {this.state.codeInput}
-                        </div>
-                    </OverlayTrigger>
+                    <div className="friend-trade-code-display-code" translate="no"
+                            style={isCodeCopied ? {backgroundColor: "rgba(100,100,100,.4)"} : {}}
+                            onClick={this.copyCreatedCode.bind(this)}>
+                        {this.state.codeInput}
+                    </div>
                 </div>
+                {
+                    <div className="friend-trade-code-copied fade-in-fast" style={{visibility: isCodeCopied ? "visible" : "hidden"}}>
+                        Code Copied!
+                    </div>
+                }
             </div>
         );
     }

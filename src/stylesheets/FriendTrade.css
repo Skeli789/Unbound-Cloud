@@ -88,6 +88,13 @@ body.swal2-height-auto /*Undoes pop up ruining mobile view*/
     user-select: none;
 }
 
+.friend-trade-code-copied
+{
+    margin-top: 2%;
+    font-weight: bold;
+    color: green;
+}
+
 /*Code Input Page*/
 
 .friend-trade-code-input-page
