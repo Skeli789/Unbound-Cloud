@@ -40,6 +40,9 @@ class TestIntegrated:
     def testLoadAllPokemonInflamedRed(self):
         LoadAllTest("inflamed_red")
 
+    def testInflamedRedMissingno(self):
+        LoadAllTest("inflamed_red_missingno")
+
     def testCorruptsSaveBlocks30And31(self):
         LoadAllTest("corrupt_blocks_30_31")
 
@@ -55,7 +58,7 @@ class TestIntegrated:
     def testReplaceAllPokemonMAGM(self):
         LoadAndReplaceTest("magm")
 
-    def testReplaceAllPokemonMAGM(self):
+    def testReplaceAllPokemonInflamedRed(self):
         LoadAndReplaceTest("inflamed_red")
 
     def testReplaceAllPokemonEmptySave(self):
@@ -78,6 +81,9 @@ class TestIntegrated:
         def func():
             Defines.unofficialSpecies[253] = True
         LoadAndReplaceTest("missingno", func)
+    
+    def testReplaceAllInflamedRedMissingno(self):
+        LoadAndReplaceTest("inflamed_red_missingno")
 
     def testReplaceAllHoopaShayminPresetBox(self):
         LoadAndReplaceTest("test_hoopa_shaymin_preset_box")
