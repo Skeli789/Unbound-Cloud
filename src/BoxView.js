@@ -1097,7 +1097,7 @@ export class BoxView extends Component
 
         PopUp.fire
         ({
-            title: `This will rearrange the Pokemon in your first ${boxCount} boxes and may move Pokemon out of others! Are you sure you want to do this?`,
+            title: `This will rearrange the Pokémon in your first ${boxCount} boxes and may take Pokémon from boxes afterwards! Are you sure you want to do this?`,
             confirmButtonText: `Do It`,
             cancelButtonText: `Cancel`,
             showCancelButton: true,
@@ -1244,7 +1244,7 @@ export class BoxView extends Component
             PopUp.fire
             ({
                 icon: 'error',
-                title: "That Pokemon is holding an item that can't be traded!",
+                title: "That Pokémon is holding an item that can't be traded!",
                 cancelButtonText: `Awww`,
                 showConfirmButton: false,
                 showCancelButton: true,
@@ -1256,7 +1256,7 @@ export class BoxView extends Component
             PopUp.fire
             ({
                 icon: 'error',
-                title: "That Pokemon has duplicate moves and can't be traded!",
+                title: "That Pokémon has duplicate moves and can't be traded!",
                 cancelButtonText: `Awww`,
                 showConfirmButton: false,
                 showCancelButton: true,
