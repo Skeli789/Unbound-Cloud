@@ -279,7 +279,7 @@ export class WonderTrade extends Component
 
                     PopUp.fire
                     ({
-                        title: `${GetNickname(pokemon)} has been sent!\nPlease wait for your new Pokemon to arrive.`,
+                        title: `${GetNickname(pokemon)} has been sent!\nPlease wait for your new Pokémon to arrive.`,
                         confirmButtonText: `Okay`,
                         imageUrl: GetIconSpeciesLink(pokemon),
                         imageAlt: "",
@@ -399,7 +399,7 @@ export class WonderTrade extends Component
 
         PopUp.fire(
         {
-            title: "That Pokemon appears invalid and can't be traded!",
+            title: "That Pokémon appears invalid and can't be traded!",
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
