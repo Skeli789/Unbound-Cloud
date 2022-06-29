@@ -13,6 +13,7 @@ SpeciesToDexNumDefines = f"{SRC_DIR}/data/SpeciesToDexNum.json"
 ExperienceCurveDefines = f"{SRC_DIR}/data/ExperienceCurves.json"
 CharMapDefines = f"{SRC_DIR}/data/charmap.tbl"
 SpeciesDefines = "Species.json"
+UnofficialSpeciesDefines = "UnofficialSpecies.json"
 MovesDefines = "Moves.json"
 ItemsDefines = "Items.json"
 BaseStatsDefines = "BaseStats.json"
@@ -270,6 +271,7 @@ class Defines:
     def LoadAll(fileSignature: int) -> bool:
         if Defines.IsValidFileSignature(fileSignature):
             speciesDefines = f"{GAME_DATA_DIR}/{GameDetails[fileSignature]['definesDir']}/{SpeciesDefines}"
+            unofficialSpeciesDefines = f"{GAME_DATA_DIR}/{GameDetails[fileSignature]['definesDir']}/{UnofficialSpeciesDefines}"
             movesDefines = f"{GAME_DATA_DIR}/{GameDetails[fileSignature]['definesDir']}/{MovesDefines}"
             itemDefines = f"{GAME_DATA_DIR}/{GameDetails[fileSignature]['definesDir']}/{ItemsDefines}"
             baseStatsDefines = f"{GAME_DATA_DIR}/{GameDetails[fileSignature]['definesDir']}/{BaseStatsDefines}"
@@ -285,6 +287,7 @@ class Defines:
             Defines.shinyOdds = shinyOdds
             Defines.species = Defines.DictMakerFromJSON(speciesDefines, True)
             Defines.reverseSpecies = Defines.Reverse(Defines.species)
+            Defines.unofficialSpecies = Defines.DictMakerFromJSON(unofficialSpeciesDefines, True)
             Defines.speciesToDexNum = Defines.DictMakerFromJSON(speciesToDexNumDefines)
             Defines.dexNum = Defines.DictMakerFromJSON(dexNumDefines, True)
             Defines.reverseDexNum = Defines.Reverse(Defines.dexNum)
