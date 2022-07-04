@@ -958,6 +958,9 @@ export class BoxView extends Component
                 && this.matchesSearchCriteria(this.state.allPokemon[allPokemonIndex]))
                     selectedMonPos[this.state.boxSlot][i] = true;
             }
+
+            //Unselect all mons in other box
+            selectedMonPos[this.getOtherBoxSlot()] = CreateSingleBlankSelectedPos();
         }
 
         selectedMonBox[this.state.boxSlot] = this.getCurrentBoxId();
@@ -1408,10 +1411,11 @@ export class BoxView extends Component
                     icon = livingDexIcon;
             }
 
+            let selectedBoxClassName = this.isHomeBox() ? "selected-home-box-icon" : "selected-save-box-icon";
             let spanClassName = "box-icon"
                               + (!isMobile && !this.state.parent.shouldViewDraggingImg() ? " box-icon-hoverable" : "") //Just changes cursor
-                              + (!isMobile && this.shouldDisplayHoverOverPos(key) ? " selected-box-icon" : "")
-                              + (this.isMonAtPosSelected(key) ? " selected-box-icon" : "")
+                              + (!isMobile && this.shouldDisplayHoverOverPos(key) ? "  hover-box-icon" : "")
+                              + (this.isMonAtPosSelected(key) ? ` ${selectedBoxClassName}` : "")
                               + (isInWonderTrade ? " wonder-trade-box-icon" : "")
                               + (this.shouldShowIconImpossibleMoveWarning(key) ? " error-box-icon" : "");
 
