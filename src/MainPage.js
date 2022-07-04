@@ -2937,7 +2937,7 @@ export default class MainPage extends Component
                             homeBoxes={this.state.homeBoxes}
                             homeTitles={this.state.homeTitles}
                             finishFriendTrade={this.finishWonderTrade.bind(this)}/>
-                {this.footerButtons()}
+                {this.state.viewingBoxList < 0 ? this.footerButtons() : ""}
             </div>
         );
     }
@@ -3226,11 +3226,11 @@ export default class MainPage extends Component
         return (
             <>
             {
-                this.state.viewingBoxList >= 0 ?
-                    this.boxListScreen()
-                :
                 this.state.inFriendTrade ?
                     this.friendTradeScreen()
+                :
+                this.state.viewingBoxList >= 0 ?
+                    this.boxListScreen()
                 :
                     <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
                         <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
@@ -3266,11 +3266,11 @@ export default class MainPage extends Component
         return (
             <>
             {
-                this.state.viewingBoxList >= 0 ?
-                    this.boxListScreen()
-                :
                 this.state.inFriendTrade ?
                     this.friendTradeScreen()
+                :
+                this.state.viewingBoxList >= 0 ?
+                    this.boxListScreen()
                 :
                     <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
                         <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
@@ -3306,11 +3306,11 @@ export default class MainPage extends Component
         return (
             <>
                 {
-                    this.state.viewingBoxList >= 0 ?
-                        this.boxListScreen()
-                    :
                     this.state.inFriendTrade ?
                         this.friendTradeScreen()
+                    :
+                    this.state.viewingBoxList >= 0 ?
+                        this.boxListScreen()
                     :
                         <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
                             <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
