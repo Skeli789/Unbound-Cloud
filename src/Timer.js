@@ -28,7 +28,7 @@ export class Timer extends Component
             hourDisplay: "00",
             minuteDisplay: "00",
             secondDisplay: "00",
-            seconds: props.seconds,
+            seconds: props.parent.state.timerSeconds,
             timerStarted: false,
             mainPage: props.mainPage,
         };
@@ -36,6 +36,7 @@ export class Timer extends Component
         this.timer = null;
         this.countDown = this.countDown.bind(this);
         this.onCompletionFunc = props.onCompletionFunc;
+        this.parent = props.parent;
     }
 
     /**
@@ -110,6 +111,7 @@ export class Timer extends Component
             minuteDisplay: timeLeft.minutes,
             secondDisplay: timeLeft.seconds,
         });
+        this.parent.setState({timerSeconds: seconds});
 
         if (seconds <= 10 && seconds > 0)
         {

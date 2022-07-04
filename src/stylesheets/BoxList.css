@@ -139,7 +139,7 @@
 
 .scroll-container-box-list
 {
-    position: absolute;
+    position: fixed;
     top: 56px;
     bottom: 0;
     width: 100%;

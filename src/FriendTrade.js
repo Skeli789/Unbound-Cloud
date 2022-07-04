@@ -61,6 +61,7 @@ export class FriendTrade extends Component
             homeTitles: props.homeTitles,
             timerKey: 0,
             timerHidden: false,
+            timerSeconds: TIMER_AMOUNT,
         };
 
         this.setGlobalState = props.setGlobalState;
@@ -95,6 +96,15 @@ export class FriendTrade extends Component
     }
 
     /**
+     * Gets the current state in the Friend Trade process.
+     * @returns {Number} - One of the states listed at the top of FriendTrade.js.
+     */
+    getFriendTradeState()
+    {
+        return this.state.friendTradeState;
+    }
+
+    /**
      * Gets the Pokemon being offered in a trade.
      * @returns {Pokemon} The Pokemon that's be offered to be traded. Null if there isn't one yet.
      */
@@ -109,20 +119,41 @@ export class FriendTrade extends Component
     }
 
     /**
+     * Sets the current state in the Friend Trade process.
+     * @param {Number} newState - One of the states listed at the top of FriendTrade.js.
+     */
+    setFriendTradeState(newState)
+    {
+        this.setState({friendTradeState: newState});
+    }
+
+    /**
      * Resets the Friend Trade page back to square zero.
      */
     resetTradeState()
     {
         this.setState
         ({
-            friendTradeState: FRIEND_TRADE_CHOOSE_CODE_TYPE,
             friendPokemon: null,
             codeInput: "",
             codeCopied: false,
-            timerHidden: false,
         });
 
+        this.resetTimer();
+        this.setFriendTradeState(FRIEND_TRADE_CHOOSE_CODE_TYPE);
         this.getMainPage().resetStateForStartingFriendTrade(false);
+    }
+
+    /**
+     * Resets the timer displayed during the Friend Trade process.
+     */
+    resetTimer()
+    {
+        this.setState
+        ({
+            timerHidden: false,
+            timerSeconds: TIMER_AMOUNT,
+        });
     }
 
 
@@ -138,6 +169,7 @@ export class FriendTrade extends Component
     initializeConnection(code, codeSendFunc)
     {
         const thisSetState = this.setState.bind(this);
+        const thisSetFriendTradeState = this.setFriendTradeState.bind(this);
         const handleLostConnection = this.handleLostConnection.bind(this);
         const connectedToFriend = this.connectedToFriend.bind(this);
         const couldntFindFriend = this.couldntFindFriend.bind(this);
@@ -173,7 +205,8 @@ export class FriendTrade extends Component
                 {
                     navigator.clipboard.writeText(code).then((text) => //Copy to clipboard
                     {
-                        thisSetState({codeInput: code, codeCopied: true, friendTradeState: FRIEND_TRADE_CREATED_CODE});
+                        thisSetState({codeInput: code, codeCopied: true});
+                        thisSetFriendTradeState(FRIEND_TRADE_CREATED_CODE);
                         PopUp.close(); //Closes "Connecting..." pop up
                     });
                 });
@@ -405,7 +438,8 @@ export class FriendTrade extends Component
         socket.close();
         this.setGlobalState({tradeData: null});
         this.couldntFindFriendPopUp(this.state.codeInput);
-        this.setState({codeInput: "", timerHidden: false}); //Must go after pop-up
+        this.setState({codeInput: ""}); //Must go after pop-up
+        this.resetTimer();
     }
 
     /**
@@ -457,7 +491,8 @@ export class FriendTrade extends Component
             scrollbarPadding: false,
         });
     
-        this.setState({codeInput: "", timerHidden: false}); //Must go after pop-up
+        this.setState({codeInput: ""}); //Must go after pop-up
+        this.resetTimer();
     }
  
     /**
@@ -476,7 +511,7 @@ export class FriendTrade extends Component
             scrollbarPadding: false,
         }).then(() =>
         {
-            this.setState({friendTradeState: FRIEND_TRADE_CHOOSE_POKEMON});
+            this.setFriendTradeState(FRIEND_TRADE_CHOOSE_POKEMON);
         });
 
         //Prepare new communication function
@@ -698,7 +733,8 @@ export class FriendTrade extends Component
                 //Prepare for next trade
                 let tradeData = this.getGlobalState().tradeData;
                 tradeData.pokemon = null;
-                this.setState({friendPokemon: null, timerKey: this.state.timerKey + 1, timerHidden: false}); //Reset the timer
+                this.setState({friendPokemon: null, timerKey: this.state.timerKey + 1}); //Changing the timer key causes a rerender of the timer
+                this.resetTimer();
                 this.setGlobalState({tradeData: tradeData});
                 this.getMainPage().resetStateForStartingFriendTrade(true);
                 socket.emit("tradeAgain");
@@ -779,7 +815,7 @@ export class FriendTrade extends Component
                     </Button>
 
                     <Button className="friend-trade-offer-button friend-trade-code-button"
-                            onClick={() => this.setState({friendTradeState: FRIEND_TRADE_INPUT_CODE})}>
+                            onClick={() => this.setFriendTradeState(FRIEND_TRADE_INPUT_CODE)}>
                         Enter Code
                     </Button>
                 </div>
@@ -924,9 +960,15 @@ export class FriendTrade extends Component
     render()
     {
         var pageContents;
-        var showTimer = this.getGlobalState().tradeData != null && !this.state.timerHidden;
+        var timer = this.getGlobalState().tradeData != null && !this.state.timerHidden
+            ?
+                <Timer key={"timer" + this.state.timerKey.toString()} seconds={TIMER_AMOUNT}
+                       onCompletionFunc={this.timedOut.bind(this)}
+                       mainPage={this.state.globalState} parent={this}/>
+            :
+                ""
 
-        switch (this.state.friendTradeState)
+        switch (this.getFriendTradeState())
         {
             case FRIEND_TRADE_CHOOSE_CODE_TYPE:
                 pageContents = this.chooseCodeTypePage();
@@ -945,18 +987,25 @@ export class FriendTrade extends Component
                 break;
         }
 
-        return (
-            <div className="friend-trade-page"
-                 style={!isMobile ? {paddingLeft: "var(--scrollbar-width)"} : {}}>
-                {pageContents}
-                {
-                    showTimer ?
-                        <Timer key={"timer" + this.state.timerKey.toString()} seconds={TIMER_AMOUNT}
-                               onCompletionFunc={this.timedOut.bind(this)} mainPage={this.state.globalState}/>
-                    :
-                        ""
-                }
-            </div>
-        )
+        if (this.getGlobalState().viewingBoxList >= 0)
+        {
+            //BoxList must be called from FriendTrade otherwise FriendTrade loses its state
+            return (
+                <>
+                    {this.getMainPage().boxListScreen()}
+                    {timer}
+                </>
+            )
+        }
+        else
+        {
+            return (
+                <div className="friend-trade-page"
+                     style={!isMobile ? {paddingLeft: "var(--scrollbar-width)"} : {}}>
+                    {pageContents}
+                    {timer}
+                </div>
+            );
+        }
     }
 }
