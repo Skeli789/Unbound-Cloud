@@ -16857,7 +16857,7 @@
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_BATTLEARMOR",
         "ability2": "ABILITY_TOUGHCLAWS",
-        "hiddenAbility": "ABILITY_STEELY_SPIRIT"
+        "hiddenAbility": "ABILITY_STEELYSPIRIT"
     },
     "SPECIES_CURSOLA": {
         "baseHP": 60,
@@ -16872,7 +16872,7 @@
         "growthRate": "GROWTH_FAST",
         "ability1": "ABILITY_WEAKARMOR",
         "ability2": "ABILITY_NONE",
-        "hiddenAbility": "ABILITY_PERISH_BODY"
+        "hiddenAbility": "ABILITY_PERISHBODY"
     },
     "SPECIES_SIRFETCHD": {
         "baseHP": 62,
