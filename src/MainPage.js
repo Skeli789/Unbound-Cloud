@@ -668,7 +668,7 @@ export default class MainPage extends Component
 
     /**
      * Checks if last saved Home data exists based on the user's save file.
-     * @returns {Boolean} True if the user can load last saved home data. False if not.
+     * @returns {Boolean} True if the user can load last saved Home data. False if not.
      */
     existsLastSavedHomeData()
     {
@@ -701,7 +701,7 @@ export default class MainPage extends Component
         ({
             editState: STATE_UPLOADING_HOME_FILE,
             uploadProgress: BLANK_PROGRESS_BAR, //Update here in case the connection has been lost
-            selectedHomeFile: {"name": "last saved home data"},
+            selectedHomeFile: {"name": "last saved Cloud data"},
         });
 
         let res;
