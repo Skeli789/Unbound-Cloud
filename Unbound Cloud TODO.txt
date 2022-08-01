@@ -8,4 +8,3 @@ Bug Fixes:
 -Opening a mon summary causes everything to shake (probably because of ads)
 --Specifically Spectre's Shiny Cofagrigus in box Starter
 -Pokemon with illegal EVs shouldn't be allowed in Cloud boxes
--Remove duplicate workaround
