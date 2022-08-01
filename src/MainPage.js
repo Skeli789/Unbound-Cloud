@@ -17,8 +17,8 @@ import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {FriendTrade} from "./FriendTrade";
 // eslint-disable-next-line
 import {GoogleAd} from "./GoogleAd";
-import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetSpecies, HasEggLockeOT, IsBlankMon,
-        IsEgg, IsHoldingBannedItem, /*PokemonAreDuplicates,*/ WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
+import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname, GetSpecies, HasIllegalEVs, HasEggLockeOT,
+        IsBlankMon, IsEgg, IsHoldingBannedItem, /*PokemonAreDuplicates,*/ WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
@@ -456,10 +456,10 @@ export default class MainPage extends Component
      */
     monAlreadyExistsInBoxes(pokemon, boxes, boxCount, ignorePos)
     {
-        return -1; //Honestly, dupe checking is pointless since it's easy to clone a Pokemon by just changing its nature
+        return {boxNum: -1, offset: -1}; //Honestly, dupe checking is pointless since it's easy to clone a Pokemon by just changing its nature
 
         /*if (IsBlankMon(pokemon))
-            return -1; //Don't waste time
+            return {boxNum: -1, offset: -1}; //Don't waste time
 
         for (let boxNum = 0; boxNum < boxCount; ++boxNum)
         {
@@ -482,7 +482,7 @@ export default class MainPage extends Component
     }
 
     /**
-     * Checks if a Pokemon can't be placed in a box because it's holding an item that can't be placed in the cloud boxes.
+     * Checks if a Pokemon can't be placed in a box because it's holding an item that can't be placed in the Home boxes.
      * @param {Pokemon} pokemon - The Pokemon to check.
      * @param {number} placedInBoxType - The box type the Pokemon is being placed in.
      * @returns {Boolean} True if the Pokemon can't be placed in the box. False if it can be.
@@ -490,6 +490,17 @@ export default class MainPage extends Component
     cantBePlacedInBoxBecauseOfBannedItem(pokemon, placedInBoxType)
     {
         return IsHoldingBannedItem(pokemon) && placedInBoxType === BOX_HOME;
+    }
+
+    /**
+     * Checks if a Pokemon can't be placed in a Home box because it has too many EVs.
+     * @param {Pokemon} pokemon - The Pokemon to check.
+     * @param {number} placedInBoxType - The box type the Pokemon is being placed in.
+     * @returns {Boolean} True if the Pokemon can't be placed in the box. False if it can be.
+     */
+    cantBePlacedInBoxBecauseOfIllegalEVs(pokemon, placedInBoxType)
+    {
+        return HasIllegalEVs(pokemon) && placedInBoxType === BOX_HOME;
     }
 
     /**
@@ -1443,6 +1454,39 @@ export default class MainPage extends Component
     }
 
     /**
+     * Sets the error message for a Pokemon with illegal EVs being moved to a Home box.
+     * @param {Pokemon} pokemon - The Pokemon with illegal EVs.
+     * @param {Number} fromOffset - The offset in the "from" set of boxes the Pokemon was being moved from.
+     * @param {Number} fromBoxSlot - The box slot of the box the Pokemon is being moved from.
+     * @param {Number} toBoxSlot - The box slot of the box the Pokemon is being moved to.
+     */
+    setIllegalEVsError(pokemon, fromOffset, fromBoxSlot, toBoxSlot)
+    {
+        var errorMessage = ["", ""];
+        var impossibleFrom = this.generateBlankImpossibleMovementArray();
+        var impossibleMovement = [null, null];
+        var selectedMonPos = this.state.selectedMonPos;
+        var fromPos = GetLocalBoxPosFromBoxOffset(fromOffset);
+
+        impossibleFrom[GetBoxPosBoxRow(fromPos)][GetBoxPosBoxColumn(fromPos)] = true;
+        impossibleMovement[fromBoxSlot] = impossibleFrom;
+        errorMessage[fromBoxSlot] = `${GetNickname(pokemon)} has too many EVs.`;
+
+        if (impossibleMovement[0] == null)
+            impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
+        else if (impossibleMovement[1] == null)
+            impossibleMovement[1] = this.generateBlankImpossibleMovementArray();
+
+        selectedMonPos[toBoxSlot] = CreateSingleBlankSelectedPos(); //Undo selections just clicked on
+
+        this.setState({
+            selectedMonPos: selectedMonPos,
+            errorMessage: errorMessage,
+            impossibleMovement: impossibleMovement,
+        });
+    }
+
+    /**
      * Sets the error message for a Pokemon not existing in the save game being moved to the save box.
      * @param {Pokemon} pokemon - The Pokemon that doesn't exist in the save hack.
      * @param {Number} fromOffset - The offset in the "from" set of boxes the Pokemon was being moved from.
@@ -1488,6 +1532,44 @@ export default class MainPage extends Component
     }
 
     /**
+     * Tries to set an error message if a Pokemon can't be moved to a certain box for certain reasons.
+     * @param {Pokemon} pokemon - The Pokemon being moved.
+     * @param {Array<Pokemon>} toBoxes - The list of boxes the Pokemon is being added to.
+     * @param {Number} fromOffset - The offset in the list of boxes the Pokemon is being moved from.
+     * @param {Number} fromBoxType - The box type the Pokemon is being moved from.
+     * @param {Number} toBoxType - The box type the Pokemon is being moved to.
+     * @param {Number} fromBoxSlot - The box slot the Pokemon is being moved from.
+     * @param {Number} toBoxSlot - The box slot the Pokemon is being moved from.
+     * @returns {Boolean} True if the movement failed and an error message was printed. False if the move can be done.
+     */
+    trySetErrorForFailedMovement(pokemon, toBoxes, fromOffset, fromBoxType, toBoxType, fromBoxSlot, toBoxSlot)
+    {
+        let alreadyExistsRet =
+            this.monAlreadyExistsInBoxes(pokemon, toBoxes, this.getBoxAmountByBoxSlot(toBoxSlot),
+                                        (fromBoxType === toBoxType) ? fromOffset : -1);
+
+        let holdingBannedItem =
+            this.cantBePlacedInBoxBecauseOfBannedItem(pokemon, toBoxType);
+
+        let hasIllegalEVs =
+            this.cantBePlacedInBoxBecauseOfIllegalEVs(pokemon, toBoxType);
+
+        let doesntExistInGame =
+            this.cantBePlacedInBoxBecauseOfNonExistentSpecies(pokemon, toBoxType);
+
+        if (alreadyExistsRet.boxNum >= 0)
+            this.setDuplicatePokemonSwappingError(fromBoxSlot, fromOffset, toBoxSlot, alreadyExistsRet);
+        else if (holdingBannedItem)
+            this.setBannedItemError(pokemon, fromOffset, fromBoxSlot, toBoxSlot);
+        else if (hasIllegalEVs)
+            this.setIllegalEVsError(pokemon, fromOffset, fromBoxSlot, toBoxSlot);
+        else if (doesntExistInGame)
+            this.setNonExistentSpeciesError(pokemon, fromOffset, fromBoxSlot, toBoxSlot);
+
+        return alreadyExistsRet.boxNum >= 0 || holdingBannedItem || hasIllegalEVs || doesntExistInGame;
+    }
+
+    /**
      * Handles moving Pokemon from one box slot to another (can be same box type, though).
      * @param {Boolean} multiSwap - True if more than one Pokemon is being at once, False if only one is being moved.
      */
@@ -1513,64 +1595,17 @@ export default class MainPage extends Component
                 &&  !this.isMonInWonderTrade(this.getBoxTypeByBoxSlot(BOX_SLOT_RIGHT), rightOffset))
                 {
                     //Check if mon already exists in the right boxes
-                    let alreadyExistsRet =
-                        this.monAlreadyExistsInBoxes(leftBoxes[leftOffset], rightBoxes, this.getBoxAmountByBoxSlot(BOX_SLOT_RIGHT),
-                                                    (leftBoxType === rightBoxType) ? leftOffset : -1); //Ignore the mon being moved
-                    let holdingBannedItem =
-                        this.cantBePlacedInBoxBecauseOfBannedItem(leftBoxes[leftOffset], rightBoxType);
+                    if (this.trySetErrorForFailedMovement(leftBoxes[leftOffset], rightBoxes, leftOffset, leftBoxType, rightBoxType, BOX_SLOT_LEFT, BOX_SLOT_RIGHT))
+                        return;
 
-                    let doesntExistInGame =
-                        this.cantBePlacedInBoxBecauseOfNonExistentSpecies(leftBoxes[leftOffset], rightBoxType);
-        
-                    if (alreadyExistsRet.boxNum >= 0)
-                    {
-                        this.setDuplicatePokemonSwappingError(BOX_SLOT_LEFT, leftOffset, BOX_SLOT_RIGHT, alreadyExistsRet);
+                    //Check if mon already exists in the left boxes
+                    if (this.trySetErrorForFailedMovement(rightBoxes[rightOffset], leftBoxes, rightOffset, rightBoxType, leftBoxType, BOX_SLOT_RIGHT, BOX_SLOT_LEFT))
                         return;
-                    }
-                    else if (holdingBannedItem)
-                    {
-                        this.setBannedItemError(leftBoxes[leftOffset], leftOffset, BOX_SLOT_LEFT, BOX_SLOT_RIGHT);
-                        return;
-                    }
-                    else if (doesntExistInGame)
-                    {
-                        this.setNonExistentSpeciesError(leftBoxes[leftOffset], leftOffset, BOX_SLOT_LEFT, BOX_SLOT_RIGHT);
-                        return;
-                    }
-                    else
-                    {
-                        //Check if mon already exists in the left boxes
-                        alreadyExistsRet =
-                            this.monAlreadyExistsInBoxes(rightBoxes[rightOffset], leftBoxes, this.getBoxAmountByBoxSlot(BOX_SLOT_LEFT),
-                                                        (leftBoxType === rightBoxType) ? rightOffset : -1); //Ignore the mon being moved
-                        holdingBannedItem =
-                            this.cantBePlacedInBoxBecauseOfBannedItem(rightBoxes[rightOffset], leftBoxType);
 
-                        doesntExistInGame =
-                            this.cantBePlacedInBoxBecauseOfNonExistentSpecies(rightBoxes[rightOffset], leftBoxType);
-            
-                        if (alreadyExistsRet.boxNum >= 0)
-                        {
-                            this.setDuplicatePokemonSwappingError(BOX_SLOT_RIGHT, rightOffset, BOX_SLOT_LEFT, alreadyExistsRet);
-                            return;
-                        }
-                        else if (holdingBannedItem)
-                        {
-                            this.setBannedItemError(rightBoxes[rightOffset], rightOffset, BOX_SLOT_RIGHT, BOX_SLOT_LEFT);
-                            return;
-                        }
-                        else if (doesntExistInGame)
-                        {
-                            this.setNonExistentSpeciesError(rightBoxes[rightOffset], rightOffset, BOX_SLOT_RIGHT, BOX_SLOT_LEFT);
-                            return;
-                        }
-                        else
-                        {
-                            this.swapBoxedPokemon(leftBoxes, rightBoxes, leftOffset, rightOffset);
-                            changeWasMade[leftBoxType] = true;
-                            changeWasMade[rightBoxType] = true;
-                        }
-                    }
+                    //Actually swap the Pokemon
+                    this.swapBoxedPokemon(leftBoxes, rightBoxes, leftOffset, rightOffset);
+                    changeWasMade[leftBoxType] = true;
+                    changeWasMade[rightBoxType] = true;
                 }
             }
             else //Moving multiple Pokemon
@@ -1602,30 +1637,9 @@ export default class MainPage extends Component
                     {
                         let offset = GetOffsetFromBoxNumAndPos(this.state.selectedMonBox[multiFrom], i);
                         let pokemon = this.getMonAtBoxPos(multiFrom, offset);
-                        let alreadyExistsRet =
-                            this.monAlreadyExistsInBoxes(pokemon, toBoxes, this.getBoxAmountByBoxSlot(multiTo),
-                                                        (leftBoxType === rightBoxType) ? offset : -1); //Ignore the mon being moved
-                        let holdingBannedItem =
-                            this.cantBePlacedInBoxBecauseOfBannedItem(pokemon, toBoxType);
 
-                        let doesntExistInGame =
-                            this.cantBePlacedInBoxBecauseOfNonExistentSpecies(pokemon, toBoxType);
-            
-                        if (alreadyExistsRet.boxNum >= 0)
-                        {
-                            this.setDuplicatePokemonSwappingError(multiFrom, offset, multiTo, alreadyExistsRet);
+                        if (this.trySetErrorForFailedMovement(pokemon, toBoxes, offset, fromBoxType, toBoxType, multiFrom, multiTo))
                             return;
-                        }
-                        else if (holdingBannedItem)
-                        {
-                            this.setBannedItemError(pokemon, offset, multiFrom, multiTo);
-                            return;
-                        }
-                        else if (doesntExistInGame)
-                        {
-                            this.setNonExistentSpeciesError(pokemon, offset, multiFrom, multiTo);
-                            return;
-                        }
                     }
                 }
 
@@ -1848,59 +1862,15 @@ export default class MainPage extends Component
         && !this.isMonInWonderTrade(this.getBoxTypeByBoxSlot(this.state.draggingToBox), toOffset)
         && GetIconSpeciesName(this.getMonAtBoxPos(this.state.draggingToBox, toOffset)) !== "unknown") //Potentially unofficial species from a certain hack
         {
-            let alreadyExistsRet =
-                this.monAlreadyExistsInBoxes(fromBoxes[fromOffset], toBoxes, this.getBoxAmountByBoxSlot(this.state.draggingToBox),
-                                            (fromBoxType === toBoxType) ? fromOffset : -1); //Ignore the mon being moved
-            let holdingBannedItem =
-                this.cantBePlacedInBoxBecauseOfBannedItem(fromBoxes[fromOffset], toBoxType);
-
-            let doesntExistInGame =
-                this.cantBePlacedInBoxBecauseOfNonExistentSpecies(fromBoxes[fromOffset], toBoxType);
-
-            if (alreadyExistsRet.boxNum >= 0)
+            if (!this.trySetErrorForFailedMovement(fromBoxes[fromOffset], toBoxes, fromOffset, fromBoxType, toBoxType, this.state.draggingFromBox, this.state.draggingToBox)
+             && !this.trySetErrorForFailedMovement(toBoxes[toOffset], fromBoxes, toOffset, toBoxType, fromBoxType, this.state.draggingToBox, this.state.draggingFromBox))
             {
-                this.setDuplicatePokemonSwappingError(this.state.draggingFromBox, fromOffset, this.state.draggingToBox, alreadyExistsRet);
-            }
-            else if (holdingBannedItem)
-            {
-                this.setBannedItemError(fromBoxes[fromOffset], fromOffset, this.state.draggingFromBox, this.state.draggingToBox);
-            }
-            else if (doesntExistInGame)
-            {
-                this.setNonExistentSpeciesError(fromBoxes[fromOffset], fromOffset, this.state.draggingFromBox, this.state.draggingToBox);
-            }
-            else
-            {
-                alreadyExistsRet =
-                    this.monAlreadyExistsInBoxes(toBoxes[toOffset], fromBoxes, this.getBoxAmountByBoxSlot(this.state.draggingToBox),
-                                                (fromBoxType === toBoxType) ? toOffset : -1); //Ignore the mon being moved
-                holdingBannedItem =
-                    this.cantBePlacedInBoxBecauseOfBannedItem(toBoxes[toOffset], fromBoxType);
-
-                doesntExistInGame =
-                    this.cantBePlacedInBoxBecauseOfNonExistentSpecies(toBoxes[toOffset], fromBoxType);
-    
-                if (alreadyExistsRet.boxNum >= 0)
-                {
-                    this.setDuplicatePokemonSwappingError(this.state.draggingToBox, toOffset, this.state.draggingFromBox, alreadyExistsRet);
-                }
-                else if (holdingBannedItem)
-                {
-                    this.setBannedItemError(toBoxes[toOffset], toOffset, this.state.draggingToBox, this.state.draggingFromBox);
-                }
-                else if (doesntExistInGame)
-                {
-                    this.setNonExistentSpeciesError(toBoxes[toOffset], toOffset, this.state.draggingToBox, this.state.draggingFromBox);
-                }
-                else
-                {
-                    this.swapBoxedPokemon(fromBoxes, toBoxes, fromOffset, toOffset);
-                    selectedMonPos = this.generateBlankSelectedPos(); //Only remove if swap was made
-                    summaryMon = [null, null];
-                    changeWasMade[fromBoxType] = true;
-                    changeWasMade[toBoxType] = true;
-                    this.wipeErrorMessage();
-                }
+                this.swapBoxedPokemon(fromBoxes, toBoxes, fromOffset, toOffset);
+                selectedMonPos = this.generateBlankSelectedPos(); //Only remove if swap was made
+                summaryMon = [null, null];
+                changeWasMade[fromBoxType] = true;
+                changeWasMade[toBoxType] = true;
+                this.wipeErrorMessage();
             }
         }
         else

@@ -1452,6 +1452,16 @@ export function GetEVs(pokemon)
 }
 
 /**
+ * Checks if a Pokemon has an EV total greater than 510.
+ * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {Boolean} True if the EVs are illegal. False if they're legal.
+ */
+export function HasIllegalEVs(pokemon)
+{
+    return GetEVs(pokemon).reduce((a, b) => a + b, 0) > 510; //Get sum and then check
+}
+
+/**
  * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {Array <Number>} The list of the Pokemon's IVs in the order [HP, Atk, Def, Sp. Atk, Sp. Def, Spd].
  */
