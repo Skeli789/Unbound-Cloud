@@ -1,7 +1,11 @@
 New Features:
 -GTS (and make sure bad words are replaced if necessary)
 -Symbol tutorial when a new cloud file is created
+-Add gender differences for Pikachu forms and Wobuffet
 
 Bug Fixes:
 -Can wonder trade with self? (Did it on the website - saved for a friend trade and then traded while a mon was up for Wonder Trade and it happened when putting another mon up after the original was no longer in a wonder trade for some reason)
--Make sure placing Pokemon in clears the "capped" flag
+-Opening a mon summary causes everything to shake (probably because of ads)
+--Specifically Spectre's Shiny Cofagrigus in box Starter
+-Pokemon with illegal EVs shouldn't be allowed in Cloud boxes
+-Remove duplicate workaround
