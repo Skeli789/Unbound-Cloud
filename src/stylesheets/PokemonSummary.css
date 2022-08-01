@@ -35,6 +35,11 @@
 .summary-heart
 {
     margin-left: 10px;
+    color: transparent;
+    /*background: linear-gradient(to top, rgb(255 0 0) 50%, transparent 0);*/ /*Handled with JS*/
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-stroke: 0.75px black;
 }
 
 .summary-gigantamax

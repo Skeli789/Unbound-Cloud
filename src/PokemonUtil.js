@@ -246,7 +246,6 @@ const GAME_IDS_TO_DATA =
 }
 
 export const MAX_LEVEL = 100;
-export const HEART_FRIENDSHIP = 220;
 export const MAX_FRIENDSHIP = 255;
 const NUM_UNOWN_FORMS = 28;
 const PP_BONUS_MASK = [0x03, 0x0C, 0x30, 0xC0];
