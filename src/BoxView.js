@@ -1412,9 +1412,10 @@ export class BoxView extends Component
             }
 
             let selectedBoxClassName = this.isHomeBox() ? "selected-home-box-icon" : "selected-save-box-icon";
+            let hoverClassName = this.isHomeBox() ? "hover-home-box-icon" : "hover-save-box-icon";
             let spanClassName = "box-icon"
                               + (!isMobile && !this.state.parent.shouldViewDraggingImg() ? " box-icon-hoverable" : "") //Just changes cursor
-                              + (!isMobile && this.shouldDisplayHoverOverPos(key) ? "  hover-box-icon" : "")
+                              + (!isMobile && this.shouldDisplayHoverOverPos(key) ? ` ${hoverClassName}` : "")
                               + (this.isMonAtPosSelected(key) ? ` ${selectedBoxClassName}` : "")
                               + (isInWonderTrade ? " wonder-trade-box-icon" : "")
                               + (this.shouldShowIconImpossibleMoveWarning(key) ? " error-box-icon" : "");
