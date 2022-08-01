@@ -8,7 +8,7 @@ import {OverlayTrigger, Tooltip} from "react-bootstrap";
 import {CanMonGigantamax, ChangeMarking, GetAbility, /*GetBaseStats,*/ GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel,
         GetMarkings, GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleNature, GetVisibleOTId, GetVisibleStats,
         GetEVs, GetIVs, GetMoveType, HasPokerus, IsEgg, MonWillLoseMoveInSave, MonWillLoseItemInSave, GetSpecies, WasCuredOfPokerus,
-        HEART_FRIENDSHIP, MAX_FRIENDSHIP, NATURE_STAT_TABLE, MonWillLoseBallInSave} from "./PokemonUtil";
+        MAX_FRIENDSHIP, NATURE_STAT_TABLE, MonWillLoseBallInSave} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetAbilityName, GetBallName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName, GetSpeciesName, GetTypeName} from "./Util";
 import MoveData from "./data/MoveData.json";
 
@@ -159,13 +159,14 @@ export class PokemonSummary extends Component
         var isMaxFriendship = friendship >= MAX_FRIENDSHIP;
         var heartTooltipText = `Friendship: ${isMaxFriendship ? "Max" : friendship}`;
         var heartTooltip = props => (<Tooltip {...props}>{heartTooltipText}</Tooltip>);
-        var heartSymbol = (friendship >= HEART_FRIENDSHIP) ? "♥" : "♡"; //Outline for less than gray heart
-        var heartColour = isMaxFriendship ? "red" : (friendship >= HEART_FRIENDSHIP) ? "grey" : "black";
+        var percent = friendship / MAX_FRIENDSHIP;
+        percent = 25 + Math.floor(40 * percent); //Bind the percent since only values at 25% to 65% are actually visible on screen
 
         return (
             <OverlayTrigger placement="top" overlay={heartTooltip}>
-                <span className="summary-heart" style={{color: heartColour}}>
-                    {heartSymbol}
+                <span className="summary-heart"
+                 style={{backgroundImage: `linear-gradient(to top, rgb(255 0 0) ${percent}%, transparent 0)`}}>
+                    ♥
                 </span>
             </OverlayTrigger>
         );
