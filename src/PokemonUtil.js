@@ -28,6 +28,7 @@ import {BASE_GFX_LINK, GetSpeciesName} from "./Util";
 
 const SPECIES_FORMS_ICON_NAMES =
 {
+    "SPECIES_PIKACHU_A": "pikachu",
     "SPECIES_PIKACHU_CAP_ORIGINAL": "pikachu-original-cap",
     "SPECIES_PIKACHU_CAP_HOENN": "pikachu-hoenn-cap",
     "SPECIES_PIKACHU_CAP_SINNOH": "pikachu-sinnoh-cap",
@@ -37,11 +38,22 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_PIKACHU_CAP_PARTNER": "pikachu-partner-cap",
     "SPECIES_PIKACHU_CAP_WORLD": "pikachu-world-cap",
     "SPECIES_PIKACHU_STARTER": "pikachu-starter",
-    "SPECIES_PIKACHU_A": "pikachu",
+    "SPECIES_PIKACHU_F": "female/pikachu",
+    "SPECIES_PIKACHU_A_F": "female/pikachu",
+    "SPECIES_PIKACHU_CAP_ORIGINAL_F": "female/pikachu-original-cap",
+    "SPECIES_PIKACHU_CAP_HOENN_F": "female/pikachu-hoenn-cap",
+    "SPECIES_PIKACHU_CAP_SINNOH_F": "female/pikachu-sinnoh-cap",
+    "SPECIES_PIKACHU_CAP_UNOVA_F": "female/pikachu-unova-cap",
+    "SPECIES_PIKACHU_CAP_KALOS_F": "female/pikachu-kalos-cap",
+    "SPECIES_PIKACHU_CAP_ALOLA_F": "female/pikachu-alola-cap",
+    "SPECIES_PIKACHU_CAP_PARTNER_F": "female/pikachu-partner-cap",
+    "SPECIES_PIKACHU_CAP_WORLD_F": "female/pikachu-world-cap",
+    "SPECIES_PIKACHU_STARTER_F": "female/pikachu-starter",
     "SPECIES_EEVEE_STARTER": "eevee-starter",
     "SPECIES_EXEGGCUTE_A": "exeggcute",
     "SPECIES_CUBONE_A": "cubone",
     "SPECIES_PICHU_SPIKY": "pichu-spiky-eared",
+    "SPECIES_WOBBUFFET_F": "female/wobbuffet",
     "SPECIES_HIPPOPOTAS_F": "female/hippopotas",
     "SPECIES_HIPPOWDON_F": "female/hippowdon",
     "SPECIES_ARCEUS_FIGHT": "arceus-fighting",
@@ -1612,7 +1624,7 @@ export function WillAtLeastOneMonLoseDataInSave(boxes, gameId)
  * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {String} The species id used for the Pokemon's icon.
  */
-export function GetMonVisibleSpecies(pokemon)
+function GetMonVisibleSpecies(pokemon)
 {
     var species = GetSpecies(pokemon);
 
@@ -1652,6 +1664,10 @@ export function GetMonVisibleSpecies(pokemon)
                         break;
                 }
                 break;
+            case "SPECIES_WOBBUFFET":
+                if (IsFemale(pokemon))
+                    species = "SPECIES_WOBBUFFET_F"; //Not an actual species, but needed to load the red lips
+                break;
             case "SPECIES_HIPPOPOTAS":
                 if (IsFemale(pokemon))
                     species = "SPECIES_HIPPOPOTAS_F";
@@ -1686,6 +1702,11 @@ export function GetMonVisibleSpecies(pokemon)
                 species = species.replaceAll("ALCREMIE", `ALCREMIE_${GetAlcremieColour(pokemon)}`);
                 break;
             default: //Needed for the compiler
+                if (IsFemale(pokemon) && species.includes("PIKACHU"))
+                {
+                    if (species + "_F" in SPECIES_FORMS_ICON_NAMES)
+                        species += "_F"; //Not an actual species, but needed to load the heart tail
+                }
                 break;
         }
     }
