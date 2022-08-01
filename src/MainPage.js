@@ -18,7 +18,7 @@ import {FriendTrade} from "./FriendTrade";
 // eslint-disable-next-line
 import {GoogleAd} from "./GoogleAd";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetSpecies, HasEggLockeOT, IsBlankMon,
-        IsEgg, IsHoldingBannedItem, PokemonAreDuplicates, WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
+        IsEgg, IsHoldingBannedItem, /*PokemonAreDuplicates,*/ WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
@@ -456,7 +456,9 @@ export default class MainPage extends Component
      */
     monAlreadyExistsInBoxes(pokemon, boxes, boxCount, ignorePos)
     {
-        if (IsBlankMon(pokemon))
+        return -1; //Honestly, dupe checking is pointless since it's easy to clone a Pokemon by just changing its nature
+
+        /*if (IsBlankMon(pokemon))
             return -1; //Don't waste time
 
         for (let boxNum = 0; boxNum < boxCount; ++boxNum)
@@ -476,7 +478,7 @@ export default class MainPage extends Component
             }
         }
 
-        return {boxNum: -1, offset: -1};
+        return {boxNum: -1, offset: -1};*/
     }
 
     /**
