@@ -366,9 +366,15 @@ app.post('/uploadSaveFile', async (req, res) =>
         let titles = data["titles"];
         let randomizer = data["randomizer"];
         let accessible = data["accessible"];
+        let oldVersion = data["oldVersion"];
 
         if (gameId == "" || boxCount == 0 || boxes.length == 0 || titles.length == 0) //Bad save file
-            result = res.status(StatusCode.ClientErrorBadRequest).json("ERROR: The uploaded save file is corrupt or not supported.");
+        {
+            if (oldVersion !== "")
+                result = res.status(StatusCode.ClientErrorUpgradeRequired).json(`ERROR: The uploaded save file is from an old version (${oldVersion}).`);
+            else
+                result = res.status(StatusCode.ClientErrorBadRequest).json("ERROR: The uploaded save file is corrupt or not supported.");
+        }
         else if (!accessible)
             result = res.status(StatusCode.ClientErrorForbidden).json("The uploaded save file is supported, but not accessible based on the current progression.");
         else

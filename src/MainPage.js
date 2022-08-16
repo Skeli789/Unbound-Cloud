@@ -57,7 +57,7 @@ const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="ht
 const PopUp = withReactContent(Swal);
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
 
-const SUPPORTED_HACKS = ["Unbound >= v2.0.4",
+const SUPPORTED_HACKS = ["Unbound >= v2.1.0",
                          "Magical Altering Gym Menagerie >= v1.2",
                          "Inflamed Red >= v1.1"];
 
@@ -90,6 +90,7 @@ export default class MainPage extends Component
             serverConnectionError: false,
             mismatchedRandomizerError: false,
             inaccessibleSaveError: false,
+            oldVersionSaveError: false,
             saveFileData: {"data": []}, //Also used in downloading
             saveFileNumber: 0, //Also used in downloading
             homeDirHandle: null,  //Modern file system API
@@ -203,6 +204,7 @@ export default class MainPage extends Component
             serverConnectionError: false,
             mismatchedRandomizerError: false,
             inaccessibleSaveError: false,
+            oldVersionSaveError: false,
         });
     }
 
@@ -988,6 +990,7 @@ export default class MainPage extends Component
                 editState: newState,
                 fileUploadError: false,
                 inaccessibleSaveError: false,
+                oldVersionSaveError: false,
                 serverConnectionError: true,
             });
 
@@ -1002,6 +1005,7 @@ export default class MainPage extends Component
                 editState: newState,
                 fileUploadError: true,
                 inaccessibleSaveError: error["response"]["status"] === StatusCode.ClientErrorForbidden,
+                oldVersionSaveError: error["response"]["status"] === StatusCode.ClientErrorUpgradeRequired,
                 serverConnectionError: false,
             });
 
@@ -1033,17 +1037,34 @@ export default class MainPage extends Component
         }
         else
         {
+            var title, text;
+
+            if (this.state.oldVersionSaveError)
+            {
+                title = "Save File From Old Version"
+                text = "Make sure to update your ROM to the latest version, and then save ingame before trying again."
+            }
+            else
+            {
+                title = "Unacceptable Save File";
+                text = "Make sure it's a save file for a supported ROM Hack and is not corrupted.";
+            }
+
             PopUp.fire
             ({
                 icon: "error",
-                title: "Unacceptable Save File",
-                text: "Make sure it's a save file for a supported ROM Hack and is not corrupted.",
+                title: title,
+                text: text,
                 confirmButtonText: "Which ROM Hacks are supported?",
                 scrollbarPadding: false,
             }).then((result) =>
             {
                 if (result.isConfirmed)
                 {
+                    var buttonText = "OK";
+                    if (this.state.oldVersionSaveError)
+                        buttonText = "How do I update?";
+
                     let supportedHacks = [];
         
                     for (let hack of SUPPORTED_HACKS)
@@ -1054,6 +1075,22 @@ export default class MainPage extends Component
                     ({
                         title: "Supported Hacks",
                         html: `<ul style="text-align: left">${supportedHacks}</ul>`,
+                        confirmButtonText: buttonText,
+                    }).then((result) =>
+                    {
+                        if (result.isConfirmed && this.state.oldVersionSaveError)
+                        {
+                            PopUp.fire
+                            ({
+                                title: "How To Update",
+                                html: `<ol style="text-align: left">`
+                                    + "<li>Patch a fresh ROM.</li>"
+                                    + "<li>Give the newly patched ROM the same name as the old ROM.</li>"
+                                    + "<li>Delete the old ROM and move the newly patched ROM to the folder where the old ROM was.</li>"
+                                    + "</ol>"
+                                    + `<p style="text-align: justify">If you do not understand these steps, ask in the relevant hack's Discord server and someone will help you out.</.b>`,
+                            });
+                        }
                     });
                 }
             });

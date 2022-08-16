@@ -44,6 +44,9 @@ class SaveBlocks:
             for i in range(30, 31 + 1):
                 saveBlocks[i] = SaveBlocks.LoadOne(binaryFile, 0, i * BlockSize)[1]
 
+        if Defines.IsOldVersionFileSignature(fileSignature):
+            return [{}, fileSignature]  # Return the file signature so the player can be notified to update their version
+
         return saveBlocks, fileSignature
 
     @staticmethod

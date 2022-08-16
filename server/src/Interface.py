@@ -30,8 +30,11 @@ def main():
                 boxTitles = []
                 randomizer = False
                 accessible = True
+                oldVersion = ""
 
-                if saveBlocks != {} and fileSignature != 0 and Defines.LoadAll(fileSignature):
+                if Defines.IsOldVersionFileSignature(fileSignature):
+                    oldVersion = Defines.GetOldVersionGameName(fileSignature)
+                elif saveBlocks != {} and fileSignature != 0 and Defines.LoadAll(fileSignature):
                     allPokemon = SaveBlockProcessing.LoadPCPokemon(saveBlocks)
                     boxTitles = SaveBlockProcessing.LoadCFRUBoxTitles(saveBlocks)
 
@@ -42,7 +45,7 @@ def main():
                         accessible = False
 
                 returnData({"gameId": Defines.GetCurrentDefinesDir(), "boxCount": Defines.BoxCount(),  # gameId is used on the front-end to load game-specific data
-                            "boxes": allPokemon, "titles": boxTitles, "randomizer": randomizer, "accessible": accessible})
+                            "boxes": allPokemon, "titles": boxTitles, "randomizer": randomizer, "accessible": accessible, "oldVersion": oldVersion})
                 return
         elif command == "UPDATE_SAVE":
             if len(sys.argv) > 3:  # Has data and save file

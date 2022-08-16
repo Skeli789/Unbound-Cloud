@@ -281,6 +281,25 @@ class TestIsValidFileSignature:
     def testInvalidFileSignature(self):
         assert not Defines.IsValidFileSignature(INVALID_FILE_SIGNATURE)
 
+    def testOldFileSignature(self):
+        assert Defines.IsValidFileSignature(UNBOUND_2_0_FILE_SIGNATURE)
+
+
+class TestIsOldVersionFileSignature:
+    def testValidOldFileSignature(self):
+        assert Defines.IsOldVersionFileSignature(UNBOUND_2_0_FILE_SIGNATURE)
+
+    def testLatestFileSignature(self):
+        assert not Defines.IsOldVersionFileSignature(UNBOUND_FILE_SIGNATURE)
+
+
+class TestGetOldVersionGameName:
+    def testValidOldFileSignature(self):
+        assert Defines.GetOldVersionGameName(UNBOUND_2_0_FILE_SIGNATURE) == "Unbound 2.0"
+
+    def testLatestFileSignature(self):
+        assert Defines.GetOldVersionGameName(UNBOUND_FILE_SIGNATURE) == ""
+
 
 class TestIsCFRUHack:
     def testUnbound(self):
