@@ -138,6 +138,11 @@ class TestLoadAll:
             contents = json.loads(contentsJSON)
             assert contents == json.load(file)
 
+    def testOldVersionSave(self):
+        contents, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/old_unbound_version.sav")
+        assert fileSignature == UNBOUND_2_0_FILE_SIGNATURE
+        assert len(contents) == 0
+
 
 class TestLoadOne:
     def testLoadOneFlexSave1(self):

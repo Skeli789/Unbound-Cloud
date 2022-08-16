@@ -1,3 +1,4 @@
+from importlib.metadata import files
 import json
 import os
 import sys
@@ -26,6 +27,9 @@ UNBOUND_FILE_SIGNATURE = 0x01121999
 WISH_FILE_SIGNATURE = 0x18190804
 MAGM_FILE_SIGNATURE = 0xC7BBC1C7
 IR_FILE_SIGNATURE = 0x14B66BBC
+
+## Old File Signatures ##
+UNBOUND_2_0_FILE_SIGNATURE = 0x01121998  # Unbound 2.0.0 - 2.0.3.2 
 
 ## Flags and Vars ##
 FLAG_FR_GAME_CLEAR = 0x82C
@@ -158,6 +162,10 @@ CustomHackVersions = {  # GAME_NAME
     VERSION_UNBOUND: "unbound",
 }
 
+OldVersionFileSignatures = {
+    UNBOUND_2_0_FILE_SIGNATURE: "Unbound 2.0",
+}
+
 
 class Defines:
     fileSignature = VANILLA_FILE_SIGNATURE
@@ -246,10 +254,21 @@ class Defines:
         else:
             return VERSION_FIRERED  # Error handling
 
-
     @staticmethod
     def IsValidFileSignature(fileSignature: int) -> bool:
-        return fileSignature in GameDetails
+        return fileSignature in GameDetails \
+            or Defines.IsOldVersionFileSignature(fileSignature)  # Valid so it can return the proper error
+
+    @staticmethod
+    def IsOldVersionFileSignature(fileSignature: int) -> bool:
+        return fileSignature in OldVersionFileSignatures
+
+    @staticmethod
+    def GetOldVersionGameName(fileSignature: int) -> bool:
+        if Defines.IsOldVersionFileSignature(fileSignature):
+            return OldVersionFileSignatures[fileSignature]
+        else:
+            return ""
 
     @staticmethod
     def IsCFRUHack() -> bool:
