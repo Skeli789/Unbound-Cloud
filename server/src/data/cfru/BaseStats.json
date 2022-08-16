@@ -17883,7 +17883,7 @@
         "baseHP": 90,
         "baseAttack": 85,
         "baseDefense": 90,
-        "baseSpAttack": 105,
+        "baseSpAttack": 100,
         "baseSpDefense": 125,
         "baseSpeed": 90,
         "type1": "TYPE_DARK",
