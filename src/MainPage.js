@@ -27,7 +27,9 @@ import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 import {BiArrowBack} from "react-icons/bi";
 import {FaArrowAltCircleRight, FaCloud, FaGamepad} from "react-icons/fa";
 import {RiVolumeUpFill, RiVolumeMuteFill} from "react-icons/ri"
-import {MdSwapVert} from "react-icons/md"
+import {MdSwapVert, MdMusicNote, MdMusicOff} from "react-icons/md"
+
+import UnboundCloudTheme from './audio/UnboundCloudTheme.mp3';
 
 import "./stylesheets/MainPage.css";
 
@@ -56,6 +58,8 @@ const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="ht
 
 const PopUp = withReactContent(Swal);
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
+
+const mainTheme = new Audio(UnboundCloudTheme);
 
 const SUPPORTED_HACKS = ["Unbound >= v2.1.0",
                          "Unbound Battle Frontier Demo >= v2.0.0",
@@ -131,6 +135,7 @@ export default class MainPage extends Component
 
             //Other
             muted: ("muted" in localStorage && localStorage.muted === "true") ? true : false,
+            songMuted: ("songOff" in localStorage && localStorage.songOff === "true") ? true : false,
             inFriendTrade: false,
             tradeData: null,
             viewingSummaryEVsIVs: false,
@@ -291,6 +296,32 @@ export default class MainPage extends Component
         });
     }
 
+    /**
+     * Alternates between music muted and unmuted.
+     */
+    changeMusicMuteState()
+    {
+        this.setState({songMuted: !this.state.songMuted}, () =>
+        {
+            this.playOrPauseMainMusicTheme();
+            localStorage.songOff = this.state.songMuted; //Save cookie for future visits to the site (not songMuted because of way cookie works)
+        });
+    }
+
+    /**
+     * Plays or pauses the main music theme that plays in the background.
+     */
+    playOrPauseMainMusicTheme()
+    {
+        if (this.state.songMuted)
+            mainTheme.pause();
+        else
+        {
+            mainTheme.loop = true;
+            mainTheme.play();
+        }
+    }
+ 
     /**
      * Handles the functionality of pressing the navbar's back button.
      */
@@ -760,6 +791,7 @@ export default class MainPage extends Component
                 homeTitles: res.data.titles,
             });
 
+            this.playOrPauseMainMusicTheme();
             this.wipeErrorMessage();
         }
         else
@@ -870,6 +902,7 @@ export default class MainPage extends Component
                 }
 
                 this.setState({editState: STATE_MOVING_POKEMON});
+                this.playOrPauseMainMusicTheme();
                 localStorage.visitedBefore = true; //Set cookie now
             }
             else
@@ -2886,6 +2919,28 @@ export default class MainPage extends Component
     }
 
     /**
+     * Gets the button for turning on and off music.
+     * @returns {JSX} A button element.
+     */
+    muteMusicButton()
+    {
+        var size = 42;
+        var icon = (this.state.songMuted) ? <MdMusicOff size={size} /> : <MdMusicNote size={size} />;
+        var tooltipText = (this.state.songMuted) ? "Music Is Off" : "Music Is On";
+        const tooltip = props => (<Tooltip {...props}>{tooltipText}</Tooltip>);
+
+        return (
+            <OverlayTrigger placement="top" overlay={tooltip}>
+                <Button size="lg" className="footer-button music-button"
+                        aria-label={tooltipText}
+                        onClick={this.changeMusicMuteState.bind(this)}>
+                    {icon}
+                </Button>
+            </OverlayTrigger>
+        );
+    }
+
+    /**
      * Gets the footer displayed at the bottom of the page.
      * @returns {JSX} The footer and its buttons.
      */
@@ -2897,6 +2952,7 @@ export default class MainPage extends Component
                 {this.startTradeButton()}
                 {this.openGTSButton()}
                 {this.muteSoundsButton()}
+                {this.muteMusicButton()}
             </div>
         );
     }
@@ -3061,7 +3117,15 @@ export default class MainPage extends Component
                     </div>
 
                     <div>
-                        <Button size="lg" onClick={() => this.setState({editState: STATE_MOVING_POKEMON, fileUploadError: false, serverConnectionError: false})}
+                        <Button size="lg" onClick={() => this.setState
+                            ({
+                                editState: STATE_MOVING_POKEMON,
+                                fileUploadError: false,
+                                serverConnectionError: false
+                            }, () =>
+                            {
+                                this.playOrPauseMainMusicTheme();
+                            })}
                                 className="choose-home-file-button">
                             Create New
                         </Button>
