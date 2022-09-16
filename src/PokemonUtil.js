@@ -52,6 +52,8 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_EEVEE_STARTER": "eevee-starter",
     "SPECIES_EXEGGCUTE_A": "exeggcute",
     "SPECIES_CUBONE_A": "cubone",
+    "SPECIES_KOFFING_G": "koffing",
+    "SPECIES_MIME_JR_G": "mime-jr",
     "SPECIES_PICHU_SPIKY": "pichu-spiky-eared",
     "SPECIES_WOBBUFFET_F": "female/wobbuffet",
     "SPECIES_HIPPOPOTAS_F": "female/hippopotas",
