@@ -58,6 +58,7 @@ const PopUp = withReactContent(Swal);
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
 
 const SUPPORTED_HACKS = ["Unbound >= v2.1.0",
+                         "Unbound Battle Frontier Demo >= v2.0.0",
                          "Magical Altering Gym Menagerie >= v1.2",
                          "Inflamed Red >= v1.1"];
 
