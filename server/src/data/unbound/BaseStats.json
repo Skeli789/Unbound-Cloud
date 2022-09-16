@@ -18428,7 +18428,7 @@
         "baseSpeed": 78,
         "type1": "TYPE_WATER",
         "type2": "TYPE_GHOST",
-        "genderRatio": "PERCENT_FEMALE(50)",
+        "genderRatio": "PERCENT_FEMALE(0)",
         "growthRate": "GROWTH_MEDIUM_FAST",
         "ability1": "ABILITY_RATTLED",
         "ability2": "ABILITY_ADAPTABILITY",

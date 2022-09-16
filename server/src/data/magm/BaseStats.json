@@ -16585,7 +16585,7 @@
         "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_GULPMISSLE",
+        "ability1": "ABILITY_GULPMISSILE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -16915,7 +16915,7 @@
         "type2": "TYPE_GHOST",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_WANDERING_SPIRIT",
+        "ability1": "ABILITY_WANDERINGSPIRIT",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -17395,7 +17395,7 @@
         "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_GULPMISSLE",
+        "ability1": "ABILITY_GULPMISSILE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -17410,7 +17410,7 @@
         "type2": "TYPE_WATER",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_GULPMISSLE",
+        "ability1": "ABILITY_GULPMISSILE",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
@@ -18010,7 +18010,7 @@
         "type2": "TYPE_GHOST",
         "genderRatio": "PERCENT_FEMALE(50)",
         "growthRate": "GROWTH_MEDIUM_FAST",
-        "ability1": "ABILITY_WANDERING_SPIRIT",
+        "ability1": "ABILITY_WANDERINGSPIRIT",
         "ability2": "ABILITY_NONE",
         "hiddenAbility": "ABILITY_NONE"
     },
