@@ -246,6 +246,11 @@
     padding: 0px 14px 0px 14px !important; /*Top Right Bottom Left*/
 }
 
+.music-button
+{
+    padding: 0px !important;
+}
+
 .dragging-image
 {
     position: absolute;
