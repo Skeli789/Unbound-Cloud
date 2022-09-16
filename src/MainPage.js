@@ -2902,6 +2902,24 @@ export default class MainPage extends Component
     }
 
     /**
+     * Displays the logo for the server the site is hosted on.
+     * @returns {JSX} An image of the logo fixed on the bottom right hand corner of the page.
+     */
+    multiArkGamingLogo()
+    {
+        if (!isMobile) //Not enough space on the mobile screen
+        {
+            return (
+                <img src={BASE_GFX_LINK + "MultiArkBanner.png"}
+                     alt="Hosted By MultiArkGaming"
+                     className="multi-ark-gaming-logo"/>
+            );
+        }
+        else
+            return "";
+    }
+
+    /**
      * Prints the ads on the sides of the desktop view.
      * @returns {JSX} The ads to display on the sides.
      */
@@ -3253,6 +3271,7 @@ export default class MainPage extends Component
                             :
                                 ""
                         }
+                        {this.multiArkGamingLogo()}
                         {this.footerButtons()}
                     </div>
             }
@@ -3293,6 +3312,7 @@ export default class MainPage extends Component
                             :
                                 ""
                         }
+                        {this.multiArkGamingLogo()}
                         {this.footerButtons()}
                     </div>
             }
@@ -3333,6 +3353,7 @@ export default class MainPage extends Component
                                 :
                                     ""
                             }
+                            {this.multiArkGamingLogo()}
                             {this.footerButtons()}
                         </div>
                 }

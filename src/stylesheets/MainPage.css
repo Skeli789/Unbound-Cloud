@@ -146,6 +146,7 @@
     flex-wrap: wrap;
     flex: 1 0 auto; /*Allows footer to stick at bottom*/
     padding-left: var(--scrollbar-width); /*Offset the scrollbar*/
+    z-index: 1; /*So the MultiArkGaming logo appears underneath*/
 }
 
 .main-page-boxes-mobile
@@ -273,4 +274,12 @@
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+}
+
+.multi-ark-gaming-logo
+{
+    position: fixed;
+    bottom: 0px;
+    right: 10px;
+    width: 120px;
 }
