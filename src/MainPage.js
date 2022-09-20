@@ -59,6 +59,7 @@ const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="ht
 
 const PopUp = withReactContent(Swal);
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
+const DISABLE_ON_MOBILE = false; //Prevent mobile devices from using the site without a password
 
 const mainTheme = new Audio(UnboundCloudTheme);
 
@@ -141,6 +142,7 @@ export default class MainPage extends Component
             tradeData: null,
             viewingSummaryEVsIVs: false,
             isSaving: false,
+            unlockedMobile: false,
         };
 
         this.updateState = this.updateState.bind(this);
@@ -3501,6 +3503,10 @@ export default class MainPage extends Component
         );
     }
 
+    /**
+     * Gets the page that says the current browser is incompatible with the site.
+     * @returns {JSX} The not supported in browser page.
+     */
     printNotSupportedInBrowser()
     {
         return (
@@ -3508,6 +3514,21 @@ export default class MainPage extends Component
                 <h2>😞 <b>Unbound Cloud is not supported in this browser. 😞</b></h2>
                 <h3>Please use an updated Google Chrome, Microsoft Edge, or Opera.</h3>
                 <h3>Why? See <a href="https://caniuse.com/?search=showOpenFilePicker">here</a>.</h3>
+            </div>
+        )
+    }
+    /**
+     * Gets the page that says the site currently can't be used on mobile devices.
+     * @returns {JSX} The not supported on mobile page.
+     */
+    printNotSupportedOnMobile()
+    {
+        return (
+            <div className="main-page-upload-instructions fade-in">
+                <h2><b>Unbound Cloud is currently not supported on mobile. 😞</b></h2>
+                <h3>Hopefully, this won't last too long.</h3>
+                <input style={{marginTop: "5%"}}
+                       onChange={(e) => this.setState({unlockedMobile: e.target.value === "unlock123"})}/>
             </div>
         )
     }
@@ -3571,6 +3592,12 @@ export default class MainPage extends Component
         if (!DEBUG_ORIGINAL_FILE_METHOD && !IsMobileBrowser() && !CanUseFileHandleAPI())
         {
             page = this.printNotSupportedInBrowser();
+            navBar = false;
+            noScroll = true;
+        }
+        else if (DISABLE_ON_MOBILE && IsMobileBrowser() && !this.state.unlockedMobile)
+        {
+            page = this.printNotSupportedOnMobile();
             navBar = false;
             noScroll = true;
         }
