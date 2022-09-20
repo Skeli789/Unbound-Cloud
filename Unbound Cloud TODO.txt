@@ -1,9 +1,9 @@
 New Features:
 -GTS (and make sure bad words are replaced if necessary)
 --The times a species has been traded should be recorded
--Symbol tutorial when a new cloud file is created
 -Add text to opening screen so ads work
 -Disable on mobile for heroku-release
 
 Bug Fixes:
 -Can wonder trade with self? (Did it on the website - saved for a friend trade and then traded while a mon was up for Wonder Trade and it happened when putting another mon up after the original was no longer in a wonder trade for some reason)
+-Searching in a mobile trade can't actually start the search because the bottom bar blocks it (because it's fixed in place on the trade screen)
