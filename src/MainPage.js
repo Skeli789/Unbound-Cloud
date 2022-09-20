@@ -19,6 +19,7 @@ import {FriendTrade} from "./FriendTrade";
 import {GoogleAd} from "./GoogleAd";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname, GetSpecies, HasIllegalEVs, HasEggLockeOT,
         IsBlankMon, IsEgg, IsHoldingBannedItem, /*PokemonAreDuplicates,*/ WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
+import {SymbolTutorial} from "./SymbolTutorial";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
@@ -27,7 +28,7 @@ import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 import {BiArrowBack} from "react-icons/bi";
 import {FaArrowAltCircleRight, FaCloud, FaGamepad} from "react-icons/fa";
 import {RiVolumeUpFill, RiVolumeMuteFill} from "react-icons/ri"
-import {MdSwapVert, MdMusicNote, MdMusicOff} from "react-icons/md"
+import {MdSwapVert, MdMusicNote, MdMusicOff, MdHelp} from "react-icons/md"
 
 import UnboundCloudTheme from './audio/UnboundCloudTheme.mp3';
 
@@ -305,6 +306,20 @@ export default class MainPage extends Component
         {
             this.playOrPauseMainMusicTheme();
             localStorage.songOff = this.state.songMuted; //Save cookie for future visits to the site (not songMuted because of way cookie works)
+        });
+    }
+
+    /**
+     * Shows a pop-up explaining the different symbols on the page.
+     */
+    showSymbolTutorial()
+    {
+        PopUp.fire
+        ({
+            icon: "question",
+            title: "Symbols",
+            html: <SymbolTutorial/>,
+            scrollbarPadding: false,
         });
     }
 
@@ -882,6 +897,7 @@ export default class MainPage extends Component
                     else
                     {
                         this.setState({homeTitles: this.generateBlankHomeTitles()}); //In case they need updating for a randomizer
+                        this.showSymbolTutorial(); //Since it's probably the first time using the site
                     }
                 }
                 catch (e)
@@ -907,7 +923,16 @@ export default class MainPage extends Component
             }
             else
             {
-                this.setState({editState: this.state.isFirstTime ? STATE_MOVING_POKEMON : STATE_UPLOAD_HOME_FILE});
+                if (this.state.isFirstTime)
+                {
+                    this.setState({editState: STATE_MOVING_POKEMON}, () =>
+                    {
+                        this.playOrPauseMainMusicTheme();
+                        this.showSymbolTutorial();
+                    });
+                }
+                else
+                    this.setState({editState: STATE_UPLOAD_HOME_FILE});
             }
 
             this.wipeErrorMessage();
@@ -921,10 +946,14 @@ export default class MainPage extends Component
             {
                 this.setState
                 ({
-                    editState: (!isUsingFileHandles) ? STATE_MOVING_POKEMON : this.state.editState, //Uploading a home file handle doesn't change the edit state (updated above in the call stack)
                     homeBoxes: res.data.boxes,
                     homeTitles: res.data.titles,
                 });
+
+                if (!isUsingFileHandles)
+                    this.setState({editState: STATE_MOVING_POKEMON}, () => {this.playOrPauseMainMusicTheme()});
+                else
+                    this.setState({editState: this.state.editState}); //Uploading a home file handle doesn't change the edit state (updated above in the call stack)
 
                 this.wipeErrorMessage();
 
@@ -2850,6 +2879,26 @@ export default class MainPage extends Component
     }
 
     /**
+     * Gets the button for viewing the explanation of the different symbols.
+     * @returns {JSX} A button element.
+     */
+    symbolTutorialButton()
+    {
+        var size = 42;
+        const tooltip = props => (<Tooltip {...props}>Help</Tooltip>);
+
+        return (
+            <OverlayTrigger placement="top" overlay={tooltip}>
+                <Button size="lg" className={"footer-button" + (isMobile ? " help-button-mobile" : " help-button")}
+                        aria-label="Get Help"
+                        onClick={this.showSymbolTutorial.bind(this)}>
+                    <MdHelp size={size} />
+                </Button>
+            </OverlayTrigger>
+        );
+    }
+
+    /**
      * Gets the button for starting a peer-to-peer trade.
      * @returns {JSX} A button element.
      */
@@ -2863,7 +2912,7 @@ export default class MainPage extends Component
 
         return (
             <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" className="footer-button"
+                <Button size="lg" className={"footer-button friend-trade-button"}
                         aria-label="Start Trade With a Friend"
                         onClick={this.startFriendTrade.bind(this)}>
                     <MdSwapVert size={size} />
@@ -2946,15 +2995,41 @@ export default class MainPage extends Component
      */
     footerButtons()
     {
-        return (
-            <div className={"footer-buttons" + (this.state.inFriendTrade && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}
-                 style={isMobile ? {justifyContent: "space-evenly"} : {}}>
-                {this.startTradeButton()}
-                {this.openGTSButton()}
-                {this.muteSoundsButton()}
-                {this.muteMusicButton()}
-            </div>
-        );
+        if (document.documentElement.clientWidth >= 600) //Mainly desktop devices, but also includes some mobile ones like iPads
+        {
+            return (
+                <div className={"footer-buttons" + (this.state.inFriendTrade && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}>
+                    {this.symbolTutorialButton()}
+
+                    <div style={{display: "flex", justifyContent: "center"}}>
+                        {this.startTradeButton()}
+                        {this.openGTSButton()}
+                        {this.muteSoundsButton()}
+                        {this.muteMusicButton()}
+                    </div>
+                    
+                    {this.multiArkGamingLogo()}
+                </div>
+            );
+        }
+        else //Pretty much only phones
+        {
+            //The footer bar here is twice the height to allow the help button to be on it's own row
+            return (
+                <div className={"footer-buttons footer-buttons-mobile"
+                              + (this.state.inFriendTrade && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}>
+                    <div style={{display: "flex", justifyContent: "space-evenly"}}>
+                        {this.startTradeButton()}
+                        {this.openGTSButton()}
+                        {this.muteSoundsButton()}
+                        {this.muteMusicButton()}
+                    </div>
+                    <div style={{textAlign: "center"}}>
+                        {this.symbolTutorialButton()}
+                    </div>
+                </div>
+            );
+        }
     }
 
     /**
@@ -2963,16 +3038,11 @@ export default class MainPage extends Component
      */
     multiArkGamingLogo()
     {
-        if (!isMobile) //Not enough space on the mobile screen
-        {
-            return (
-                <img src={BASE_GFX_LINK + "MultiArkBanner.png"}
-                     alt="Hosted By MultiArkGaming"
-                     className="multi-ark-gaming-logo"/>
-            );
-        }
-        else
-            return "";
+        return (
+            <img src={BASE_GFX_LINK + "MultiArkBanner.png"}
+                    alt="Hosted By MultiArkGaming"
+                    className="multi-ark-gaming-logo"/>
+        );
     }
 
     /**
@@ -3125,6 +3195,7 @@ export default class MainPage extends Component
                             }, () =>
                             {
                                 this.playOrPauseMainMusicTheme();
+                                this.showSymbolTutorial();
                             })}
                                 className="choose-home-file-button">
                             Create New
@@ -3335,7 +3406,6 @@ export default class MainPage extends Component
                             :
                                 ""
                         }
-                        {this.multiArkGamingLogo()}
                         {this.footerButtons()}
                     </div>
             }
@@ -3376,7 +3446,6 @@ export default class MainPage extends Component
                             :
                                 ""
                         }
-                        {this.multiArkGamingLogo()}
                         {this.footerButtons()}
                     </div>
             }
@@ -3417,7 +3486,6 @@ export default class MainPage extends Component
                                 :
                                     ""
                             }
-                            {this.multiArkGamingLogo()}
                             {this.footerButtons()}
                         </div>
                 }
