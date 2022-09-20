@@ -2181,6 +2181,7 @@ export default class MainPage extends Component
                     ({
                         inFriendTrade: false,
                         tradeData: null,
+                        searchCriteria: [null, null],
                     });
                 }
             });
@@ -2998,7 +2999,8 @@ export default class MainPage extends Component
         if (document.documentElement.clientWidth >= 600) //Mainly desktop devices, but also includes some mobile ones like iPads
         {
             return (
-                <div className={"footer-buttons" + (this.state.inFriendTrade && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}>
+                <div className={"footer-buttons"
+                              + (this.state.inFriendTrade && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}>
                     {this.symbolTutorialButton()}
 
                     <div style={{display: "flex", justifyContent: "center"}}>
@@ -3017,16 +3019,22 @@ export default class MainPage extends Component
             //The footer bar here is twice the height to allow the help button to be on it's own row
             return (
                 <div className={"footer-buttons footer-buttons-mobile"
-                              + (this.state.inFriendTrade && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}>
-                    <div style={{display: "flex", justifyContent: "space-evenly"}}>
+                              + (this.state.inFriendTrade && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}
+                     style={this.state.inFriendTrade ? {height: "56px"} : {}}>
+                    <div className="footer-buttons-mobile-top-row">
                         {this.startTradeButton()}
                         {this.openGTSButton()}
                         {this.muteSoundsButton()}
                         {this.muteMusicButton()}
                     </div>
-                    <div style={{textAlign: "center"}}>
-                        {this.symbolTutorialButton()}
-                    </div>
+                    {
+                        !this.state.inFriendTrade ? //Help is hidden during a trade so there's more space
+                            <div style={{textAlign: "center"}}>
+                                {this.symbolTutorialButton()}
+                            </div>
+                        :
+                            ""
+                    }
                 </div>
             );
         }

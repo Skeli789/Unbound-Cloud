@@ -232,12 +232,19 @@
     flex-direction: column;
 }
 
+.footer-buttons-mobile-top-row
+{
+    display: flex;
+    justify-content: space-evenly;
+}
+
 .footer-buttons-fixed
 {
     /*Stick to bottom of page on mobile devices*/
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: -1; /*So it appears below the search display*/
 }
 
 .footer-button
