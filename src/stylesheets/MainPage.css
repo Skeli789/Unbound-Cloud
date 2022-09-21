@@ -5,8 +5,14 @@
     margin-bottom: 2%;
 }
 
+.main-page-welcome-back-title
+{
+    margin-bottom: 3% !important;
+}
+
 .main-page-purple-icon-button
 {
+    margin-top: 20px;
     color: rebeccapurple;
     cursor: pointer;
 }

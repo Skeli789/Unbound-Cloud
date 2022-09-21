@@ -3123,13 +3123,17 @@ export default class MainPage extends Component
      * Gets the screen shown the first time the user accesses the site (based on the local storage).
      * @returns {JSX} The welcome page.
      */
-    printWelcome(title)
+    printWelcome()
     {
+        var title = <h1 className="main-page-title">Welcome to Unbound Cloud</h1>;
+        var explanation = <h3>This is a tool for ROM Hacks to connect with each other and store Boxes outside of save files.</h3>
+
         return (
             <div className="main-page-upload-instructions fade-in">
                 {title}
+                {explanation}
                 <FaArrowAltCircleRight aria-label="Next" className="main-page-purple-icon-button"
-                        size={48}
+                        size={64}
                         onClick={() => this.setState({editState: (CanUseFileHandleAPI()) ? STATE_CHOOSE_HOME_FOLDER : STATE_ASK_FIRST_TIME})} />
             </div>
         );
@@ -3288,6 +3292,12 @@ export default class MainPage extends Component
 
         return (
             <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                {
+                    showLastUsedButton ?
+                        <h1 className="main-page-welcome-back-title">Welcome Back to Unbound Cloud</h1>
+                    :
+                        ""
+                }
                 <h2>Choose your Cloud Data folder.</h2>
                 <h3>This is the folder on your {isMobile ? "device" : "computer"} where your Boxes {showLastUsedButton ? "are" : "will be"} stored.</h3>
                 {
@@ -3322,6 +3332,8 @@ export default class MainPage extends Component
                                      alt="Name that folder Unbound Cloud and select it."
                                      className="main-page-home-storage-example"/>
                             </div>
+                        : showLastUsedButton ? //To offset the push down by the welcome back title
+                            <div style={{marginBottom: "30%"}}/>
                         :
                             ""
                     }
@@ -3538,7 +3550,6 @@ export default class MainPage extends Component
      */
     render()
     {
-        var title = <h1 className="main-page-title">Welcome to Unbound Cloud</h1>;
         var page, draggingImg;
         var navBar = false;
         var noScroll = true;
@@ -3546,7 +3557,7 @@ export default class MainPage extends Component
         switch (this.state.editState)
         {
             case STATE_WELCOME:
-                page = this.printWelcome(title);
+                page = this.printWelcome();
                 break;
             case STATE_ASK_FIRST_TIME:
                 page = this.printAskFirstTime();
