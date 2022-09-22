@@ -1048,6 +1048,12 @@ export class BoxView extends Component
         var titles = this.state.titles;
         var changeWasMade = this.getParentState().changeWasMade;
 
+        if (this.state.titleInput === "") //Tried saving blank input
+        {
+            this.cancelEditingTitle();
+            return;
+        }
+
         if (this.state.titleInput !== titles[this.getCurrentBoxId()]) //Title changed
         {
             titles[this.getCurrentBoxId()] = this.state.titleInput;
@@ -1622,7 +1628,7 @@ export class BoxView extends Component
             {
                 title =
                     <OverlayTrigger placement="top" overlay={boxListTooltip}>
-                        <h2 className={"box-name-text"} onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
+                        <h2 className="box-name-text box-name-button" onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
                     </OverlayTrigger>
                 titleContainerClass = "box-title-no-edit";
 
@@ -1643,7 +1649,7 @@ export class BoxView extends Component
             boxName = "Box " + (this.getCurrentBoxId() + 1);
             title =
                 <OverlayTrigger placement="top" overlay={boxListTooltip}>
-                    <h2 className="box-name-text" onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
+                    <h2 className="box-name-text box-name-button" onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
                 </OverlayTrigger>
             titleEditIcon = "";
             titleContainerClass = "box-title-no-edit";

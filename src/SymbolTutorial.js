@@ -28,6 +28,7 @@ const TABLE_DETAILS =
     [<MdMusicOff size={SVG_SIZE}/>, "Background music is off."],
     [<AiOutlineArrowLeft size={SVG_SIZE}/>, "Go to the previous Box."],
     [<AiOutlineArrowRight size={SVG_SIZE}/>, "Go to the next Box."],
+    [<p className="box-name-button">Box</p>, "View all Boxes."],
     [<GrEdit size={SVG_SIZE}/>, "Start editing a Box name."],
     [<AiOutlineCheckCircle size={SVG_SIZE}/>, "Save changes to a Box name."],
     [<AiOutlineCloseCircle size={SVG_SIZE}/>, "Cancel editing a Box name."],

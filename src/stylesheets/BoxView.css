@@ -35,6 +35,16 @@
     cursor: pointer;
 }
 
+.box-name-button
+{
+    background-color: rebeccapurple;
+    color: white;
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+    border-radius: 5px;
+    box-shadow: 3px 3px 1px #ccc;
+}
+
 .box-name-input
 {
     position: relative;
@@ -90,6 +100,8 @@
     grid-template-columns: auto auto auto auto auto auto;
     padding: 10px;
     width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
     margin-bottom: 2%;
 }
 
