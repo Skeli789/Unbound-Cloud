@@ -60,6 +60,7 @@ const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="ht
 const PopUp = withReactContent(Swal);
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
 const DISABLE_ON_MOBILE = false; //Prevent mobile devices from using the site without a password
+const UNOFFICIAL_RELEASE = false; //Only allow testers with a password to access the site
 
 const mainTheme = new Audio(UnboundCloudTheme);
 
@@ -3529,6 +3530,7 @@ export default class MainPage extends Component
             </div>
         )
     }
+
     /**
      * Gets the page that says the site currently can't be used on mobile devices.
      * @returns {JSX} The not supported on mobile page.
@@ -3541,6 +3543,21 @@ export default class MainPage extends Component
                 <h3>Hopefully, this won't last too long.</h3>
                 <input style={{marginTop: "5%"}}
                        onChange={(e) => this.setState({unlockedMobile: e.target.value === "unlock123"})}/>
+            </div>
+        )
+    }
+
+    /**
+     * Gets the page that says the site currently can't be used by non-testers.
+     * @returns {JSX} The not officially released page.
+     */
+    printNotOfficiallyReleased()
+    {
+        return (
+            <div className="main-page-upload-instructions fade-in">
+                <h2><b>Unbound Cloud is currently not officially released.</b></h2>
+                <input style={{marginTop: "5%"}}
+                       onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
             </div>
         )
     }
@@ -3609,6 +3626,12 @@ export default class MainPage extends Component
         else if (DISABLE_ON_MOBILE && IsMobileBrowser() && !this.state.unlockedMobile)
         {
             page = this.printNotSupportedOnMobile();
+            navBar = false;
+            noScroll = true;
+        }
+        else if (UNOFFICIAL_RELEASE && !IsMobileBrowser() && !this.state.unlockedMobile && !localStorage.visitedBefore)
+        {
+            page = this.printNotOfficiallyReleased();
             navBar = false;
             noScroll = true;
         }
