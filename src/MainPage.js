@@ -61,6 +61,7 @@ const PopUp = withReactContent(Swal);
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
 const DISABLE_ON_MOBILE = false; //Prevent mobile devices from using the site without a password
 const UNOFFICIAL_RELEASE = false; //Only allow testers with a password to access the site
+const DEMO_SITE = false; //Initial loading page is the box moving so people can see how the site would work
 
 const mainTheme = new Audio(UnboundCloudTheme);
 
@@ -166,6 +167,23 @@ export default class MainPage extends Component
             ({
                 homeDirHandle: await GetDBVal("cloudDirectory"),
                 saveFileHandle: await GetDBVal("saveFile"),
+            });
+        }
+
+        if (DEMO_SITE && !localStorage.visitedBefore)
+        {
+            PopUp.fire
+            ({
+                icon: "warning",
+                text: "This is a preview of the website. If you are a tester and actually want to use the tool, please state so now.",
+                confirmButtonText: "I am a Tester",
+                cancelButtonText: "I am not a Tester",
+                showCancelButton: true,
+                scrollbarPadding: false,
+            }).then((result) =>
+            {
+                if (result.isConfirmed)
+                    this.setState({editState: STATE_WELCOME});
             });
         }
     }
@@ -3555,7 +3573,7 @@ export default class MainPage extends Component
     {
         return (
             <div className="main-page-upload-instructions fade-in">
-                <h2><b>Unbound Cloud is currently not officially released.</b></h2>
+                <h2><b>Unbound Cloud is not officially released.</b></h2>
                 <input style={{marginTop: "5%"}}
                        onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
             </div>
@@ -3629,7 +3647,8 @@ export default class MainPage extends Component
             navBar = false;
             noScroll = true;
         }
-        else if (UNOFFICIAL_RELEASE && !IsMobileBrowser() && !this.state.unlockedMobile && !localStorage.visitedBefore)
+        else if (UNOFFICIAL_RELEASE && !IsMobileBrowser()
+        && this.state.editState == STATE_WELCOME && !this.state.unlockedMobile && !localStorage.visitedBefore)
         {
             page = this.printNotOfficiallyReleased();
             navBar = false;
@@ -3669,6 +3688,9 @@ function GetInitialPageState()
 
         return STATE_UPLOAD_SAVE_FILE;
     }
+
+    if (DEMO_SITE)
+        return STATE_MOVING_POKEMON;
 
     return STATE_WELCOME;
 }
