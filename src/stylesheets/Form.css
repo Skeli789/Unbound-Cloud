@@ -1,0 +1,90 @@
+.form-page
+{
+    max-width: 500px;
+    margin: auto;
+    margin-top: 1%;
+    /*display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 75%;*/
+}
+
+@media (max-width: 500px)
+{
+    /*Screen <= 500px*/
+    .form-page
+    {
+        max-width: default;
+        margin: 5%;
+    }
+}
+
+.form-title
+{
+    text-align: center;
+}
+
+.already-have-account-button
+{
+    color: blue;
+    cursor: pointer;
+    width: fit-content;
+    margin: auto;
+    margin-bottom: 5% !important;
+}
+
+.submit-form-button-container
+{
+    display: flex;
+    justify-content: center;
+}
+
+.submit-form-button
+{
+    margin-bottom: 2%;
+    background-color: rebeccapurple !important;
+    border-color: rebeccapurple !important;
+    box-shadow: unset !important;
+}
+
+.activate-account-buttons
+{
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 10px;
+}
+
+.form-error-msg
+{
+    color: red;
+    min-height: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.form-control
+{
+    min-height: 2.71428571em;
+}
+
+.form-label
+{
+    font-weight: bold;
+}
+
+.form-text
+{
+    color: black !important;    
+}
+
+::placeholder
+{
+    color: rgba(191,191,191,.87) !important;
+}
+
+.tester-upload-button
+{
+    width: 100%;
+    margin-bottom: 2%;
+}

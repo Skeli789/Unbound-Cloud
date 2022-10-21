@@ -1682,7 +1682,7 @@ export class BoxView extends Component
                         <OverlayTrigger placement="bottom" overlay={saveTooltip}>
                             <div className="box-lower-icon-div">
                                 <AiOutlineSave size={36} className="box-lower-icon"
-                                               onClick={() => this.state.parent.trySaveAndExit(true)}/>
+                                               onClick={() => this.state.parent.trySaveAndExit(this.state.parent.areOnlyHomeBoxesAccessible() ? false : true)}/>
                             </div>
                         </OverlayTrigger>
                     :

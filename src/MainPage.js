@@ -11,15 +11,18 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
+import {ActivateAccount} from "./ActivateAccount";
 import {BoxList} from "./BoxList";
 import {BoxView, HIGHEST_HOME_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
 import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {FriendTrade} from "./FriendTrade";
 // eslint-disable-next-line
 import {GoogleAd} from "./GoogleAd";
+import {Login} from "./Login";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname, GetSpecies, HasIllegalEVs, HasEggLockeOT,
         IsBlankMon, IsEgg, IsHoldingBannedItem, /*PokemonAreDuplicates,*/ WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
 import {SymbolTutorial} from "./SymbolTutorial";
+import {SignUp} from "./SignUp";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
 import SaveData from "./data/Test Output.json";
@@ -40,28 +43,35 @@ export const BOX_SAVE = 1;
 export const BOX_SLOT_LEFT = 0;
 export const BOX_SLOT_RIGHT = 1;
 
-const STATE_WELCOME = 0
-const STATE_ASK_FIRST_TIME = 1;
-const STATE_UPLOAD_SAVE_FILE = 2;
-const STATE_UPLOADING_SAVE_FILE = 3;
-const STATE_UPLOAD_HOME_FILE = 4;
-const STATE_UPLOADING_HOME_FILE = 5;
-const STATE_CHOOSE_HOME_FOLDER = 6;
-const STATE_CHOOSE_SAVE_HANDLE = 7;
-const STATE_EDITING_HOME_BOXES = 8;
-const STATE_EDITING_SAVE_FILE = 9;
-const STATE_MOVING_POKEMON = 10;
+export const STATE_WELCOME = 0
+export const STATE_ASK_FIRST_TIME = 1;
+export const STATE_UPLOAD_SAVE_FILE = 2;
+export const STATE_UPLOADING_SAVE_FILE = 3;
+export const STATE_UPLOAD_HOME_FILE = 4;
+export const STATE_UPLOADING_HOME_FILE = 5;
+export const STATE_CHOOSE_HOME_FOLDER = 6;
+export const STATE_CHOOSE_SAVE_HANDLE = 7;
+export const STATE_EDITING_HOME_BOXES = 8;
+export const STATE_EDITING_SAVE_FILE = 9;
+export const STATE_MOVING_POKEMON = 10;
+
+export const STATE_SIGN_UP = 11;
+export const STATE_LOGIN = 12;
+export const STATE_ENTER_ACTIVATION_CODE = 13;
 
 const HOME_FILE_NAME = "cloud.dat";
 const HOME_FILE_RANDOMIZER_NAME = "cloud_randomizer.dat"
-const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} label={"0%"} />;
+export const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} label={"0%"} />;
 const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path fill="white" d="M254.777 93.275c-58.482 0-105.695 47.21-105.695 105.696 0 58.487 47.213 105.698 105.695 105.698 58.482 0 105.696-47.21 105.696-105.697 0-58.48-47.214-105.695-105.696-105.695zm-140.714 63.59C-40.9 155.67-21.26 276.118 227.043 357.748c225.954 74.28 319.04 10.624 239.48-69.973-.413-.55-.84-1.097-1.277-1.64-4.755 3.954-9.71 7.915-14.95 11.88 4.487 5.513 7.138 11.084 7.704 16.01.713 6.2-.9 11.8-6.986 17.977-5.84 5.927-16.25 11.98-32.307 16.49-24.074 5.698-58.427 5.6-102.287-2.656l.105-.04c-2.153-.38-4.3-.787-6.445-1.198-21.875-4.418-46.004-10.805-72.318-19.455-69.962-23-118.054-49.706-146.063-74.936.246-.19.48-.38.728-.568-.27.166-.532.333-.8.5-53.315-48.08-33.682-90.78 46.558-92.2-8.46-.665-16.502-1.016-24.124-1.075zm281.425 0c-7.62.06-15.663.41-24.123 1.076 80.24 1.42 99.86 44.115 46.537 92.193-.264-.165-.513-.33-.78-.494.244.184.472.368.712.553-26.017 23.434-69.357 48.144-131.455 69.973 21.19 5.413 42.82 9.363 64.815 11.64 34.83-15.125 63.025-30.916 84.91-46.554.01.007.02.014.032.02.522-.386 1.03-.773 1.547-1.16 90.502-65.565 69.686-128.11-42.196-127.247zM44.54 286.27c-74.364 73.55-5.467 133.668 176.683 89.125-22.844-7.563-44.89-15.83-65.84-24.194-25.396 2.316-46.41 1.29-62.842-2.346-16.802-4.544-27.613-10.765-33.61-16.852-6.086-6.176-7.697-11.776-6.985-17.977.56-4.88 3.17-10.395 7.582-15.86-5.253-3.968-10.22-7.935-14.986-11.894z"/></svg>;
+export const NO_SERVER_CONNECTION_ERROR = "Couldn't connect to the server! Please try again later."
 
 const PopUp = withReactContent(Swal);
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
 const DISABLE_ON_MOBILE = false; //Prevent mobile devices from using the site without a password
 const UNOFFICIAL_RELEASE = false; //Only allow testers with a password to access the site
+const MAINTENANCE = false; //Locks the site from non beta-testers while new features are integrated
 const DEMO_SITE = false; //Initial loading page is the box moving so people can see how the site would work
+const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
 
 const mainTheme = new Audio(UnboundCloudTheme);
 
@@ -136,6 +146,12 @@ export default class MainPage extends Component
             homeBoxes: this.generateBlankHomeBoxes(),
             homeTitles: this.generateBlankHomeTitles(),
             isRandomizedSave: false,
+
+            //Account System
+            username: ("username" in localStorage) ? localStorage.username : "",
+            accountCode: ("accountCode" in localStorage) ? localStorage.accountCode : "",
+            uploadedTesterHomeFile: false,
+            uploadedTesterRandomizedHomeFile: false,
 
             //Other
             muted: ("muted" in localStorage && localStorage.muted === "true") ? true : false,
@@ -342,6 +358,8 @@ export default class MainPage extends Component
             html: <SymbolTutorial/>,
             scrollbarPadding: false,
         });
+
+        localStorage.visitedBefore = true; //Set cookie only once user has seen this pop-up
     }
 
     /**
@@ -371,7 +389,23 @@ export default class MainPage extends Component
                 this.setState({editState: STATE_UPLOAD_SAVE_FILE, saveFileData: {"data": []}, saveFileNumber: 0});
                 return;
             case STATE_CHOOSE_SAVE_HANDLE:
-                this.setState({editState: STATE_CHOOSE_HOME_FOLDER, homeFileHandle: null}); //Don't clear homeDirHandle because it's populated on page load
+                if (!ACCOUNT_SYSTEM)
+                    this.setState({editState: STATE_CHOOSE_HOME_FOLDER, homeFileHandle: null}); //Don't clear homeDirHandle because it's populated on page load
+                //Fallthrough
+            case STATE_UPLOAD_SAVE_FILE:
+            case STATE_ENTER_ACTIVATION_CODE:
+                if (ACCOUNT_SYSTEM)
+                {
+                    this.setState
+                    ({
+                        editState: STATE_LOGIN,
+                        username: "",
+                        accountCode: "",
+                    });
+
+                    delete localStorage.username;
+                    delete localStorage.accountCode;
+                }
                 return;
             default:
                 break;
@@ -389,6 +423,15 @@ export default class MainPage extends Component
     **********************************/
 
     /**
+     * Gets whether or not the user can only access the Home Boxes and not the save boxes.
+     * @returns {Boolean} True if only the Home Boxes are accessible, false if the Save Boxes are too.
+     */
+    areOnlyHomeBoxesAccessible()
+    {
+        return this.state.saveBoxCount === 0;
+    }
+
+    /**
      * Gets whether or not the boxes should be displayed on top of each other or side by side.
      * @returns {Boolean} True if the boxes should be stacked, False if they should be side by side.
      */
@@ -399,7 +442,7 @@ export default class MainPage extends Component
 
     /**
      * Gets whether or not the screen needs to be zoomed out to see an entire box at once (mainly phones).
-     * @returns True if the screen needs to be shrunk to fit a box. False if the default size is fine.
+     * @returns {Boolean} True if the screen needs to be shrunk to fit a box. False if the default size is fine.
      */
     isScreenLessThanBoxWidth()
     {
@@ -777,7 +820,7 @@ export default class MainPage extends Component
     {
         const formData = new FormData(); //formData contains the Home boxes
         var homeData = (this.state.isRandomizedSave) ? localStorage.lastSavedRandomizerHomeData : localStorage.lastSavedHomeData;
-        var route = `${config.dev_server}/uploadLastHomeData`;
+        var route = `${config.dev_server}/uploadLastCloudData`;
 
         this.addHomeDataToFormData(homeData, formData);
         this.setState
@@ -844,17 +887,23 @@ export default class MainPage extends Component
     async handleUpload(isSaveFile)
     {
         var file = isSaveFile ? this.state.selectedSaveFile : this.state.selectedHomeFile;
-        var route = `${config.dev_server}/${isSaveFile ? "uploadSaveFile" : "uploadHomeData"}`;
+        var route = `${config.dev_server}/${isSaveFile ? "uploadSaveFile" : "uploadCloudData"}`;
         var isUsingFileHandles = (isSaveFile && this.state.saveFileHandle != null)
                              || (!isSaveFile && this.state.homeFileHandle != null); //Using modern FileSystem API
 
         const formData = new FormData(); //formData contains the file to be sent to the server
         formData.append("file", file);
         formData.append("isSaveFile", isSaveFile);
+        if (ACCOUNT_SYSTEM)
+        {
+            formData.append("username", this.state.username);
+            formData.append("accountCode", this.state.accountCode); //Used for an extra layer of security
+        }
 
         this.setState
         ({
-            editState: isSaveFile ? STATE_UPLOADING_SAVE_FILE : STATE_UPLOADING_HOME_FILE,
+            editState: ACCOUNT_SYSTEM && !isSaveFile ? this.state.editState : //A tester uploading their Cloud file should stay on the same page
+                    isSaveFile ? STATE_UPLOADING_SAVE_FILE : STATE_UPLOADING_HOME_FILE,
             uploadProgress: BLANK_PROGRESS_BAR, //Update here in case the connection has been lost
         });
 
@@ -873,7 +922,10 @@ export default class MainPage extends Component
 
             if (errorShouldBlockUser)
             {
-                var newState = (isUsingFileHandles) ? STATE_CHOOSE_SAVE_HANDLE : (isSaveFile) ? STATE_UPLOAD_SAVE_FILE : STATE_UPLOAD_HOME_FILE;
+                var newState = ACCOUNT_SYSTEM && !isSaveFile ? this.state.editState
+                             : isUsingFileHandles ? STATE_CHOOSE_SAVE_HANDLE
+                             : isSaveFile ? STATE_UPLOAD_SAVE_FILE
+                             : STATE_UPLOAD_HOME_FILE;
                 await this.handleUploadError(error, newState);
             }
 
@@ -894,62 +946,65 @@ export default class MainPage extends Component
 
             if (isUsingFileHandles)
             {
-                //Upload the standard name for a cloud file if it exists
-                //If it doesn't or there's an error, just use a blank new home file
-                try
-                {
-                    let homeFileHandle = await this.findFileHandleWithNameInDirHandle(this.getHomeFileName(), this.state.homeDirHandle);
-                    if (homeFileHandle != null) //Home file has already been created
+                if (!ACCOUNT_SYSTEM) //Cloud data would have been received already
+                { 
+                    //Upload the standard name for a cloud file if it exists
+                    //If it doesn't or there's an error, just use a blank new home file
+                    try
                     {
-                        await this.setState({homeFileHandle: homeFileHandle});
-                        if (!(await this.handleChooseHomeFile(await homeFileHandle.getFile()))
-                        && !this.state.mismatchedRandomizerError)
+                        let homeFileHandle = await this.findFileHandleWithNameInDirHandle(this.getHomeFileName(), this.state.homeDirHandle);
+                        if (homeFileHandle != null) //Home file has already been created
                         {
-                            //Site can still be used, but warn user
-                            PopUp.fire
-                            ({
-                                icon: "warning",
-                                title: "Cloud Data Corrupt",
-                                html: "The Cloud data found was corrupt. If you did not tamper with the file, please report this to Skeli at once.",
-                                scrollbarPadding: false,
-                            });
+                            await this.setState({homeFileHandle: homeFileHandle});
+                            if (!(await this.handleChooseHomeFile(await homeFileHandle.getFile()))
+                            && !this.state.mismatchedRandomizerError)
+                            {
+                                //Site can still be used, but warn user
+                                PopUp.fire
+                                ({
+                                    icon: "warning",
+                                    title: "Cloud Data Corrupt",
+                                    html: "The Cloud data found was corrupt. If you did not tamper with the file, please report this to Skeli at once.",
+                                    scrollbarPadding: false,
+                                });
+                            }
+                        }
+                        else
+                        {
+                            this.setState({homeTitles: this.generateBlankHomeTitles()}); //In case they need updating for a randomizer
+                            this.showSymbolTutorial(); //Since it's probably the first time using the site
                         }
                     }
-                    else
+                    catch (e)
                     {
-                        this.setState({homeTitles: this.generateBlankHomeTitles()}); //In case they need updating for a randomizer
-                        this.showSymbolTutorial(); //Since it's probably the first time using the site
+                        //Site can't be used at all
+                        console.log(`Error uploading last Cloud directory: ${this.state.homeDirHandle.name} was not found.`);
+                        PopUp.fire
+                        ({
+                            icon: "error",
+                            title: "Last Cloud Folder Not Found",
+                            html: `The folder "${this.state.homeDirHandle.name}" has likely been moved or renamed since it was last used.`,
+                            scrollbarPadding: false,
+                        }).then(async () =>
+                        {
+                            await SetDBVal("cloudDirectory", null); //Prevent user from picking it again
+                            window.location.reload(); //Force a reload because normally wouldn't stop for a missing cloud file
+                        });
                     }
-                }
-                catch (e)
-                {
-                    //Site can't be used at all
-                    console.log(`Error uploading last Cloud directory: ${this.state.homeDirHandle.name} was not found.`);
-                    PopUp.fire
-                    ({
-                        icon: "error",
-                        title: "Last Cloud Folder Not Found",
-                        html: `The folder "${this.state.homeDirHandle.name}" has likely been moved or renamed since it was last used.`,
-                        scrollbarPadding: false,
-                    }).then(async () =>
-                    {
-                        await SetDBVal("cloudDirectory", null); //Prevent user from picking it again
-                        window.location.reload(); //Force a reload because normally wouldn't stop for a missing cloud file
-                    });
                 }
 
                 this.setState({editState: STATE_MOVING_POKEMON});
                 this.playOrPauseMainMusicTheme();
-                localStorage.visitedBefore = true; //Set cookie now
             }
             else
             {
-                if (this.state.isFirstTime)
+                if (ACCOUNT_SYSTEM || this.state.isFirstTime)
                 {
                     this.setState({editState: STATE_MOVING_POKEMON}, () =>
                     {
                         this.playOrPauseMainMusicTheme();
-                        this.showSymbolTutorial();
+                        if (!localStorage.visitedBefore)
+                            this.showSymbolTutorial();
                     });
                 }
                 else
@@ -962,7 +1017,31 @@ export default class MainPage extends Component
         {
             console.log("Home file upload successful.");
 
-            if ((this.state.isRandomizedSave && res.data.randomizer)
+            if (ACCOUNT_SYSTEM)
+            {
+                if (res.data.randomizer)
+                {
+                    this.setState
+                    ({
+                        randomizedHomeBoxes: res.data.boxes,
+                        randomizedHomeTitles: res.data.titles,
+                        uploadedTesterRandomizedHomeFile: true,
+                    });
+                }
+                else
+                {
+                    this.setState
+                    ({
+                        homeBoxes: res.data.boxes,
+                        homeTitles: res.data.titles,
+                        uploadedTesterHomeFile: true,
+                    });
+                }
+
+                this.wipeErrorMessage();
+                this.setState({uploadProgress: BLANK_PROGRESS_BAR});
+            }
+            else if ((this.state.isRandomizedSave && res.data.randomizer)
             || (!this.state.isRandomizedSave && !res.data.randomizer))
             {
                 this.setState
@@ -977,9 +1056,6 @@ export default class MainPage extends Component
                     this.setState({editState: this.state.editState}); //Uploading a home file handle doesn't change the edit state (updated above in the call stack)
 
                 this.wipeErrorMessage();
-
-                if (!isUsingFileHandles)
-                    localStorage.visitedBefore = true; //Set cookie now
             }
             else
             {
@@ -1043,8 +1119,8 @@ export default class MainPage extends Component
      */
     async setSaveBoxesFromResponse(res)
     {
-        await this.setState
-        ({
+        let newState =
+        {
             saveBoxes: res.data.boxes,
             saveTitles: res.data.titles,
             saveGameId: res.data.gameId,
@@ -1052,7 +1128,20 @@ export default class MainPage extends Component
             isRandomizedSave: res.data.randomizer,
             saveFileNumber: res.data.fileIdNumber,
             saveFileData: res.data.saveFileData,
-        });
+        }
+
+        await this.setState(newState);
+
+        if (ACCOUNT_SYSTEM
+        && "cloudBoxes" in res.data
+        && "cloudTitles" in res.data)
+        {
+            await this.setState
+            ({
+                homeBoxes: res.data.cloudBoxes,
+                homeTitles: res.data.cloudTitles,
+            });    
+        }
     }
 
     /**
@@ -1078,7 +1167,7 @@ export default class MainPage extends Component
                 serverConnectionError: true,
             });
 
-            errorText = "Couldn't connect!\nPlease try again later.";
+            errorText = NO_SERVER_CONNECTION_ERROR;
         }
         else
         {
@@ -1233,6 +1322,78 @@ export default class MainPage extends Component
         }
     }
 
+    /**
+     * Skips the uploading of a Save file and jumps right to Cloud Box only mode (for account system only).
+     */
+    async skipSaveFileUpload()
+    {
+        if (ACCOUNT_SYSTEM)
+        {
+            var route = `${config.dev_server}/getAccountCloudData`;
+
+            PopUp.fire
+            ({
+                title: 'Loading, please wait...',
+                timer: 10000, //10 seconds
+                timerProgressBar: true,
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                showCancelButton: false,
+                scrollbarPadding: false,
+                didOpen: async () =>
+                {
+                    try
+                    {
+                        const formData = new FormData(); //formData contains the file to be sent to the server
+                        formData.append("username", this.state.username);
+                        formData.append("accountCode", this.state.accountCode); //Used for an extra layer of security
+                        formData.append("randomizer", false);
+            
+                        let res = await axios.post(route, formData, {});
+
+                        await this.setState
+                        ({
+                            saveGameId: "cfru",
+                            saveBoxCount: 0,
+                            saveBoxes: [],
+                            saveTitles: [],
+                            homeBoxes: res.data.cloudBoxes,
+                            homeTitles: res.data.cloudTitles,
+                        });
+                        this.changeBoxView(STATE_EDITING_HOME_BOXES);
+
+                        PopUp.fire({showConfirmButton: false});
+                        PopUp.close(); //Close loading pop-up
+
+                        this.playOrPauseMainMusicTheme();
+                        if (!localStorage.visitedBefore)
+                            this.showSymbolTutorial();
+                    }
+                    catch (error)
+                    {
+                        let errorMsg = (error.message === "Network Error") ? NO_SERVER_CONNECTION_ERROR : error.response.data;
+                        console.log(`Error loading Cloud data: ${errorMsg}`);
+
+                        PopUp.fire
+                        ({
+                            icon: 'error',
+                            title: errorMsg,
+                            scrollbarPadding: false,
+                        });
+                    }
+                },
+            }).then(() =>
+            {
+                PopUp.fire
+                ({
+                    icon: 'error',
+                    title: NO_SERVER_CONNECTION_ERROR,
+                    scrollbarPadding: false,
+                });
+            });
+        }
+    }
+ 
 
     /**********************************
         Modern File Handle Functions   
@@ -2389,7 +2550,7 @@ export default class MainPage extends Component
         this.wipeErrorMessage();
 
         //Get Encrypted Home File
-        if (this.state.changeWasMade[BOX_HOME]) //Don't waste time if there's no updated version
+        if (!ACCOUNT_SYSTEM && this.state.changeWasMade[BOX_HOME]) //Don't waste time if there's no updated version
         {
             this.printSavingPopUp("Preparing Cloud data...");
             encryptedHomeData = await this.getEncryptedHomeFile(serverConnectionErrorMsg);
@@ -2406,7 +2567,16 @@ export default class MainPage extends Component
                 return false;
         }
 
-        //Download the Save Data (done first because more likely to be problematic)
+        //Save Cloud Boxes for the account system
+        if (ACCOUNT_SYSTEM && this.state.changeWasMade[BOX_HOME])
+        {
+            this.printSavingPopUp("Saving Cloud data...");
+            let success = await this.saveAccountCloudData(serverConnectionErrorMsg);
+            if (!success)
+                return false;
+        }
+
+        //Download the Save Data (downloaded first because more likely to be problematic)
         if (this.state.changeWasMade[BOX_SAVE])
         {
             this.printSavingPopUp("Downloading Save data...");
@@ -2415,7 +2585,7 @@ export default class MainPage extends Component
         }
 
         //Download the Home Data
-        if (this.state.changeWasMade[BOX_HOME])
+        if (!ACCOUNT_SYSTEM && this.state.changeWasMade[BOX_HOME])
         {
             this.printSavingPopUp("Downloading Cloud data...");
             if (!(await this.downloadHomeData(encryptedHomeData))) //Couldn't save because file missing
@@ -2478,7 +2648,7 @@ export default class MainPage extends Component
     async getEncryptedHomeFile(serverConnectionErrorMsg)
     {
         var res;
-        var homeRoute = `${config.dev_server}/encryptHomeData`;
+        var homeRoute = `${config.dev_server}/encryptCloudData`;
         var formData = new FormData(); //formData contains the home data split into four parts to guarantee it'll all be sent
         var homeData = JSON.stringify
         ({
@@ -2493,6 +2663,7 @@ export default class MainPage extends Component
         try
         {
             res = await axios.post(homeRoute, formData, {});
+            return res.data.newHomeData;
         }
         catch (error)
         {
@@ -2501,8 +2672,41 @@ export default class MainPage extends Component
             this.setState({savingMessage: errorMsg});
             return null;
         }
+    }
 
-        return res.data.newHomeData;   
+    /**
+     * Sends the Cloud boxes to the server and saves it there.
+     * @param {String} serverConnectionErrorMsg - The message to display if the server couldn't be connected to.
+     * @returns {Boolean} true if the data was saved successfully, false if not.
+     */
+    async saveAccountCloudData(serverConnectionErrorMsg)
+    {
+        var homeRoute = `${config.dev_server}/saveAccountCloudData`;
+        var formData = new FormData(); //formData contains the home data split into four parts to guarantee it'll all be sent
+        var homeData = JSON.stringify
+        ({
+            titles: this.state.homeTitles,
+            boxes: this.state.homeBoxes,
+            randomizer: this.state.isRandomizedSave,
+            version: 2, //No version was in the original tester release
+        });
+
+        formData.append("username", this.state.username);
+        formData.append("accountCode", this.state.accountCode); //Used for an extra layer of security
+        this.addHomeDataToFormData(homeData, formData);
+
+        try
+        {
+            await axios.post(homeRoute, formData, {});
+            return true;
+        }
+        catch (error)
+        {
+            let errorMsg = (error.message === "Network Error") ? serverConnectionErrorMsg : error.response.data;
+            console.log(`Error saving Home data: ${errorMsg}`);
+            this.setState({savingMessage: errorMsg});
+            return false;
+        }
     }
 
     /**
@@ -2591,7 +2795,7 @@ export default class MainPage extends Component
 
         if (this.state.saveFileHandle != null)
         {
-            if (this.state.changeWasMade[BOX_HOME])
+            if (!ACCOUNT_SYSTEM && this.state.changeWasMade[BOX_HOME])
             {
                 //Test to make sure the Cloud folder is still present and can be saved to
                 try
@@ -2790,9 +2994,12 @@ export default class MainPage extends Component
     homeToHomeButton()
     {
         var size = window.innerWidth < 500 ? 28 : 42;
+        var buttonSelected = !this.areOnlyHomeBoxesAccessible() && this.state.editState === STATE_EDITING_HOME_BOXES; //No point in highlighting when only button
+        var buttonClickable = !this.areOnlyHomeBoxesAccessible();
 
         return (
-            <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_EDITING_HOME_BOXES ? " top-bar-button-selected" : "")}
+            <Button size="lg" className={"top-bar-button" + (buttonSelected ? " top-bar-button-selected" : "")}
+                    style={!buttonClickable ? {cursor: "default"} : {}}
                     aria-label="Home to Home"
                     onClick={() => this.changeBoxView(STATE_EDITING_HOME_BOXES)}>
                 <FaCloud size={size} /> ↔ <FaCloud size={size} />
@@ -2881,8 +3088,8 @@ export default class MainPage extends Component
             <div className="top-bar-buttons" style={{zIndex: 100,
                                                      position: !sticky ? "unset" : "sticky"}}>
                 {this.homeToHomeButton()}
-                {this.homeToSaveButton()}
-                {this.saveToSaveButton()}
+                {!this.areOnlyHomeBoxesAccessible() ? this.homeToSaveButton() : ""}
+                {!this.areOnlyHomeBoxesAccessible() ? this.saveToSaveButton() : ""}
             </div>
         );
     }
@@ -2893,8 +3100,24 @@ export default class MainPage extends Component
      */
     navBarNoButtons()
     {
-        if (this.state.editState === STATE_UPLOAD_HOME_FILE
-        || this.state.editState === STATE_CHOOSE_SAVE_HANDLE)
+        var printBackButton = false;
+
+        switch (this.state.editState)
+        {
+            case STATE_UPLOAD_HOME_FILE:
+            case STATE_CHOOSE_SAVE_HANDLE:
+                printBackButton = true;
+                break;
+            case STATE_UPLOAD_SAVE_FILE:
+            case STATE_ENTER_ACTIVATION_CODE:
+                if (ACCOUNT_SYSTEM)
+                    printBackButton = true;
+                break;
+            default:
+                break;
+        }
+
+        if (printBackButton)
             return this.printBackButton();
 
         return <div className="top-bar-buttons navbar-blank" />;
@@ -3133,7 +3356,7 @@ export default class MainPage extends Component
     {
         return (
             <div className="error-text" style={{visibility: this.state.serverConnectionError ? "visible" : "hidden"}}>
-                <p>Could not connect to the server. Please try again later.</p>
+                <p>{NO_SERVER_CONNECTION_ERROR}</p>
             </div>
         );
     }
@@ -3144,16 +3367,22 @@ export default class MainPage extends Component
      */
     printWelcome()
     {
+        var nextState;
         var title = <h1 className="main-page-title">Welcome to Unbound Cloud</h1>;
         var explanation = <h3>This is a tool for ROM Hacks to connect with each other and store Boxes outside of save files.</h3>
 
+        if (ACCOUNT_SYSTEM)
+            nextState = localStorage.visitedBefore ? STATE_LOGIN : STATE_SIGN_UP;
+        else
+            nextState = CanUseFileHandleAPI() ? STATE_CHOOSE_HOME_FOLDER : STATE_ASK_FIRST_TIME;
+
         return (
-            <div className="main-page-upload-instructions fade-in">
+            <div className="main-page-intro-container fade-in">
                 {title}
                 {explanation}
                 <FaArrowAltCircleRight aria-label="Next" className="main-page-purple-icon-button"
                         size={64}
-                        onClick={() => this.setState({editState: (CanUseFileHandleAPI()) ? STATE_CHOOSE_HOME_FOLDER : STATE_ASK_FIRST_TIME})} />
+                        onClick={() => this.setState({editState: nextState})} />
             </div>
         );
     }
@@ -3165,7 +3394,7 @@ export default class MainPage extends Component
     printAskFirstTime()
     {
         return (
-            <div className="main-page-upload-instructions fade-in">
+            <div className="main-page-intro-container fade-in">
                 <h2>Is this your first time here?</h2>
                 <div>
                     <div>
@@ -3195,7 +3424,7 @@ export default class MainPage extends Component
         const error = "Make sure it was a proper Cloud data file and is not corrupted.";
 
         return (
-            <div className="main-page-upload-instructions fade-in">
+            <div className="main-page-intro-container fade-in">
                 <h2>Upload your Cloud data.</h2>
                 <h3>It should be a file called <b>{this.getHomeFileName()}</b>.</h3>
                 <div>
@@ -3257,7 +3486,7 @@ export default class MainPage extends Component
                 </>;
 
         return (
-            <div className="main-page-upload-instructions fade-in">
+            <div className="main-page-intro-container fade-in">
                 {uploadProgress}
                 <h3>Please wait...</h3>
                 <span style={{visibility: "visible"}}>{this.navBarNoButtons()}</span> {/*Used to centre uploading bar*/}
@@ -3272,15 +3501,42 @@ export default class MainPage extends Component
     printUploadSaveFile()
     {
         return (
-            <div className="main-page-upload-instructions fade-in">
-                <h2>Upload your save file.</h2>
-                <h3>If you don't know where it is, start by looking in the same place as your ROM.</h3>
-                <h3>The save file is a 128 kB .sav, .srm, or .sa1 file that has your ROM's name.</h3>
-                <label className="btn btn-success btn-lg choose-save-file-button">
-                    Upload File
-                    <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)}
-                           accept=".sav,.srm,.sa1" />
-                </label>
+            <div className={"main-page-intro-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                {
+                    this.state.username !== "" ?
+                        <div>
+                            <h1>Welcome back, {this.state.username}!</h1>
+                            <div className="already-have-account-button"
+                                onClick={() => this.navBackButtonPressed()}>
+                                This isn't me.
+                            </div>
+                        </div>
+                    :
+                        ""
+                }
+                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                    <h2>Upload your save file.</h2>
+                    <h3>If you don't know where it is, start by looking in the same place as your ROM.</h3>
+                    <h3>The save file is a 128 kB .sav, .srm, or .sa1 file that has your ROM's name.</h3>
+                    <div>
+                        <label className="btn btn-success btn-lg choose-save-file-button">
+                            Upload File
+                            <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)}
+                                accept=".sav,.srm,.sa1" />
+                        </label>
+                        {
+                            ACCOUNT_SYSTEM ?
+                                <div>
+                                    <Button size="lg" onClick={() => this.skipSaveFileUpload()}
+                                            className="btn-danger choose-home-file-button">
+                                        Just Cloud
+                                    </Button>
+                                </div>
+                            :
+                                ""
+                        }
+                    </div>
+                </div>
             </div>
         );
     }
@@ -3310,7 +3566,7 @@ export default class MainPage extends Component
         }
 
         return (
-            <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+            <div className={"main-page-intro-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
                 {
                     showLastUsedButton ?
                         <h1 className="main-page-welcome-back-title">Welcome Back to Unbound Cloud</h1>
@@ -3387,25 +3643,52 @@ export default class MainPage extends Component
         }
 
         return (
-            <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
-                <h2>Choose your save file.</h2>
-                <h3>If you don't know where it is, start by looking in the same folder as your ROM.</h3>
-                <h3>The save file is a 128 kB .sav, .srm, or .sa1 file that has your ROM's name.</h3>
-                <div>
-                    {
-                        showLastUsedButton ? //Loaded one in the past
-                            <div>
-                                {lastUsedButton}
+            <div className={"main-page-intro-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}
+                 style={{justifyContent: "space-evenly"}}>
+                {
+                    this.state.username !== "" ?
+                        <div>
+                            <h1>Welcome back, {this.state.username}!</h1>
+                            <div className="already-have-account-button"
+                                onClick={() => this.navBackButtonPressed()}>
+                                This isn't me.
                             </div>
-                        :
-                            ""
-                    }
-
+                        </div>
+                    :
+                        ""
+                }
+                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                    <h2>Choose your save file.</h2>
+                    <h3>If you don't know where it is, start by looking in the same folder as your ROM.</h3>
+                    <h3>The save file is a 128 kB .sav, .srm, or .sa1 file that has your ROM's name.</h3>
                     <div>
-                        <Button size="lg" onClick={() => this.chooseSaveFileHandle()}
-                                className="btn-success choose-home-file-button">
-                            Choose File
-                        </Button>
+                        {
+                            showLastUsedButton ? //Loaded one in the past
+                                <div>
+                                    {lastUsedButton}
+                                </div>
+                            :
+                                ""
+                        }
+
+                        <div>
+                            <Button size="lg" onClick={() => this.chooseSaveFileHandle()}
+                                    className="btn-success choose-home-file-button">
+                                Choose File
+                            </Button>
+                        </div>
+
+                        {
+                            ACCOUNT_SYSTEM ?
+                                <div>
+                                    <Button size="lg" onClick={() => this.skipSaveFileUpload()}
+                                            className="btn-danger choose-home-file-button">
+                                        Just Cloud
+                                    </Button>
+                                </div>
+                            :
+                                ""
+                        }
                     </div>
                 </div>
 
@@ -3535,16 +3818,72 @@ export default class MainPage extends Component
     }
 
     /**
+     * Gets the page where a user can create an account.
+     * @returns {JSX} The sign-up page.
+     */
+    printSignUpPage()
+    {
+        
+        return (
+            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
+                <SignUp mainPage={this}/>
+            </div>
+        );
+    }
+
+    /**
+     * Gets the page where a user can log in to their account.
+     * @returns {JSX} The login page.
+     */
+    printLoginPage()
+    {
+        return (
+            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
+                <Login mainPage={this}/>
+            </div>
+        );
+    }
+
+    /**
+     * Gets the page where a user can submit a code to activate their account.
+     * @returns {JSX} The account activation page.
+     */
+    printAccountActivationPage()
+    {
+        return (
+            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
+                <ActivateAccount mainPage={this}/>
+            </div>
+        );
+    }
+
+    /**
      * Gets the page that says the current browser is incompatible with the site.
      * @returns {JSX} The not supported in browser page.
      */
     printNotSupportedInBrowser()
     {
         return (
-            <div className="main-page-upload-instructions fade-in">
+            <div className="main-page-intro-container fade-in">
                 <h2>😞 <b>Unbound Cloud is not supported in this browser. 😞</b></h2>
                 <h3>Please use an updated Google Chrome, Microsoft Edge, or Opera.</h3>
                 <h3>Why? See <a href="https://caniuse.com/?search=showOpenFilePicker">here</a>.</h3>
+            </div>
+        )
+    }
+
+    /**
+     * Gets the page that says the site currently can't be used due to maintenance.
+     * @returns {JSX} The not maintenance.
+     */
+    printUndergoingMaintence()
+    {
+        return (
+            <div className="main-page-intro-container fade-in">
+                <h2><b>Unbound Cloud is currently undergoing maintenece. 🛠️</b></h2>
+                <h3>Hopefully, this won't last too long.</h3>
+                <input style={{marginTop: "5%"}}
+                       onChange={(e) => this.setState({unlockedMobile: e.target.value === "unlock123"})}/>
             </div>
         )
     }
@@ -3556,7 +3895,7 @@ export default class MainPage extends Component
     printNotSupportedOnMobile()
     {
         return (
-            <div className="main-page-upload-instructions fade-in">
+            <div className="main-page-intro-container fade-in">
                 <h2><b>Unbound Cloud is currently not supported on mobile. 😞</b></h2>
                 <h3>Hopefully, this won't last too long.</h3>
                 <input style={{marginTop: "5%"}}
@@ -3572,7 +3911,7 @@ export default class MainPage extends Component
     printNotOfficiallyReleased()
     {
         return (
-            <div className="main-page-upload-instructions fade-in">
+            <div className="main-page-intro-container fade-in">
                 <h2><b>Unbound Cloud is not officially released.</b></h2>
                 <input style={{marginTop: "5%"}}
                        onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
@@ -3593,6 +3932,18 @@ export default class MainPage extends Component
         {
             case STATE_WELCOME:
                 page = this.printWelcome();
+                break;
+            case STATE_SIGN_UP:
+                page = this.printSignUpPage();
+                noScroll = false;
+                break;
+            case STATE_LOGIN:
+                page = this.printLoginPage();
+                noScroll = false;
+                break;
+            case STATE_ENTER_ACTIVATION_CODE:
+                page = this.printAccountActivationPage();
+                noScroll = false;
                 break;
             case STATE_ASK_FIRST_TIME:
                 page = this.printAskFirstTime();
@@ -3641,6 +3992,12 @@ export default class MainPage extends Component
             navBar = false;
             noScroll = true;
         }
+        else if (MAINTENANCE && !this.state.unlockedMobile)
+        {
+            page = this.printUndergoingMaintence();
+            navBar = false;
+            noScroll = true;
+        }
         else if (DISABLE_ON_MOBILE && IsMobileBrowser() && !this.state.unlockedMobile)
         {
             page = this.printNotSupportedOnMobile();
@@ -3648,7 +4005,7 @@ export default class MainPage extends Component
             noScroll = true;
         }
         else if (UNOFFICIAL_RELEASE && !IsMobileBrowser()
-        && this.state.editState == STATE_WELCOME && !this.state.unlockedMobile && !localStorage.visitedBefore)
+        && this.state.editState === STATE_WELCOME && !this.state.unlockedMobile && !localStorage.visitedBefore)
         {
             page = this.printNotOfficiallyReleased();
             navBar = false;
@@ -3681,16 +4038,24 @@ export default class MainPage extends Component
 //eslint-disable-next-line
 function GetInitialPageState()
 {
-    if (localStorage.visitedBefore)
+    if (ACCOUNT_SYSTEM)
     {
-        if (CanUseFileHandleAPI())
-            return STATE_CHOOSE_HOME_FOLDER;
-
-        return STATE_UPLOAD_SAVE_FILE;
+        if (localStorage.username && localStorage.accountCode)
+        {
+            if (!localStorage.activated || localStorage.activated === "false")
+                return STATE_ENTER_ACTIVATION_CODE;
+            else
+                return CanUseFileHandleAPI() ? STATE_CHOOSE_SAVE_HANDLE : STATE_UPLOAD_SAVE_FILE;
+        }
     }
+    else
+    {
+        if (localStorage.visitedBefore)
+            return CanUseFileHandleAPI() ? STATE_CHOOSE_HOME_FOLDER : STATE_UPLOAD_SAVE_FILE;
 
-    if (DEMO_SITE)
-        return STATE_MOVING_POKEMON;
+        if (DEMO_SITE)
+            return STATE_MOVING_POKEMON;
+    }
 
     return STATE_WELCOME;
 }

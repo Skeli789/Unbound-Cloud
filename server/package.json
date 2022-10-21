@@ -8,23 +8,25 @@
     "testEnvironment": "node"
   },
   "scripts": {
-    "test": "jest ./tests/deleteImage.test.js --silent --forceExit && jest ./tests/getImage.test.js --silent --forceExit && jest ./tests/getToe.test.js --silent --forceExit && jest ./tests/login.test.js --silent --forceExit && jest ./tests/signup.test.js --silent --forceExit && jest ./tests/uploadImage.test.js --silent --forceExit && jest ./tests/user.test.js --silent --forceExit && jest ./tests/utils.test.js --silent --forceExit",
-    "unitTest": "jest --silent --forceExit --coverage",
+    "test": "npx nyc mocha jstests",
     "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@shelf/jest-mongodb": "1.2.3",
+    "bcryptjs": "^2.4.3",
     "chai": "^4.3.6",
+    "chai-string": "^1.5.0",
     "cors": "2.8.5",
     "crypto-js": "4.0.0",
     "express": "4.17.1",
-    "express-fileupload": "1.2.0",
+    "express-fileupload": "^1.4.0",
     "md5": "^2.3.0",
     "mongodb": "3.6.2",
     "mongoose": "^5.13.14",
     "multer": "1.4.2",
+    "nodemailer": "^6.8.0",
     "randomstring": "^1.2.2",
     "socket.io": "^2.3.0",
     "status-code-enum": "1.0.0"
@@ -33,6 +35,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "jest": "^26.6.3",
+    "nyc": "^15.1.0",
     "rewire": "^6.0.0",
     "superagent": "^6.1.0",
     "supertest": "^6.1.1"
