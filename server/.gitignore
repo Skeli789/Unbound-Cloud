@@ -4,4 +4,5 @@
 .ipynb_checkpoints/
 .idea/
 __pycache__/
+.nyc_output/
 .env

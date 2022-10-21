@@ -1,6 +1,8 @@
 const expect = require('chai').expect;
+const fs = require('fs');
+const path = require('path');
 const util = require('../util');
-const {gTestPokemon, gTestPokemonStringified} = require('./data');
+const {gTestPokemon, gTestBlankPokemon, gTestPokemonStringified} = require('./data');
 const gSpeciesNames = require('../src/data/SpeciesNames.json');
 
 
@@ -76,6 +78,12 @@ describe("Test BadWordInText", () =>
         expect(util.BadWordInText(word)).to.be.false;
     });
 
+    it (`should be true for whole word "fag"`, () =>
+    {
+        let word = "fag";
+        expect(util.BadWordInText(word)).to.be.true;
+    });
+
     it (`should be false for every species name`, () =>
     {
         for (let species of Object.keys(gSpeciesNames))
@@ -112,5 +120,232 @@ describe("Test GetSpeciesName", () =>
         let species = 5;
         let expectedName = "Unknown Species";
         expect(util.GetSpeciesName(species)).to.equal(expectedName);
+    });
+});
+
+
+describe("Test IsValidEmail", () =>
+{
+    it (`should be true for test@gmail.com`, () =>
+    {
+        expect(util.IsValidEmail("test@gmail.com")).to.be.true;
+    });
+
+    it (`should be true for scsdx@dsxs.co.ze`, () =>
+    {
+        expect(util.IsValidEmail("scsdx@dsxs.co.ze")).to.be.true;
+    });
+
+    it (`should be false for blah`, () =>
+    {
+        expect(util.IsValidEmail("blah")).to.be.false;
+    });
+
+    it (`should be false for null`, () =>
+    {
+        expect(util.IsValidEmail(null)).to.be.false;
+    });
+
+    it (`should be false for 5`, () =>
+    {
+        expect(util.IsValidEmail(5)).to.be.false;
+    });
+});
+
+
+describe("Test IsValidUsername", () =>
+{
+    it (`should be true for Skeli789`, () =>
+    {
+        expect(util.IsValidUsername("Skeli789")).to.be.true;
+    });
+
+    it (`should be true for 3 chracters exactly`, () =>
+    {
+        expect(util.IsValidUsername("bla")).to.be.true;
+    });
+
+    it (`should be true for 20 characters exactly`, () =>
+    {
+        expect(util.IsValidUsername("12345678901234567890")).to.be.true;
+    });
+
+    it (`should be false for 2 chracters exactly`, () =>
+    {
+        expect(util.IsValidUsername("bl")).to.be.false;
+    });
+
+    it (`should be true for over 20 characters`, () =>
+    {
+        expect(util.IsValidUsername("123456789012345678901")).to.be.false;
+    });
+
+    it (`should be false with quotation mark in the name`, () =>
+    {
+        expect(util.IsValidUsername(`hell"o`)).to.be.false;
+    });
+
+    it (`should be false with apostrophe in the name`, () =>
+    {
+        expect(util.IsValidUsername(`hell'o`)).to.be.false;
+    });
+
+    it (`should be false with back tick in the name`, () =>
+    {
+        expect(util.IsValidUsername("hell`o")).to.be.false;
+    });
+
+    it (`should be false with emoji in the name`, () =>
+    {
+        expect(util.IsValidUsername("hell😊o")).to.be.false;
+    });
+
+    it (`should be false with left angle bracket in the name`, () =>
+    {
+        expect(util.IsValidUsername("<hello")).to.be.false;
+    });
+
+    it (`should be false with right angle bracket in the name`, () =>
+    {
+        expect(util.IsValidUsername("hello>")).to.be.false;
+    });
+
+    it (`should be false for null`, () =>
+    {
+        expect(util.IsValidUsername(null)).to.be.false;
+    });
+
+    it (`should be false for empty string`, () =>
+    {
+        expect(util.IsValidUsername("")).to.be.false;
+    });
+
+    it (`should be false for number`, () =>
+    {
+        expect(util.IsValidUsername(5)).to.be.false;
+    });
+});
+
+
+describe("Test IsValidPassword", () =>
+{
+    it (`should be true for blahblah`, () =>
+    {
+        expect(util.IsValidPassword("blahblah")).to.be.true;
+    });
+
+    it (`should be false for blah`, () =>
+    {
+        expect(util.IsValidPassword("blah")).to.be.false;
+    });
+
+    it (`should be false for 123456789123456789123`, () =>
+    {
+        expect(util.IsValidPassword("123456789123456789123")).to.be.false;
+    });
+
+    it (`should be false for null`, () =>
+    {
+        expect(util.IsValidPassword(null)).to.be.false;
+    });
+
+    it (`should be false for 5`, () =>
+    {
+        expect(util.IsValidPassword(5)).to.be.false;
+    });
+});
+
+
+describe("Test ValidateCloudBoxes", () =>
+{
+    it (`should be true for all_pokemon.json`, () =>
+    {
+        var data = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/all_pokemon.json")));
+        expect(util.ValidateCloudBoxes(data)).to.be.true;
+    });
+
+    it (`should be false for all_pokemon.json with mismatched checksum`, () =>
+    {
+        var data = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/all_pokemon.json")));
+        data[50].species += "a";
+        expect(util.ValidateCloudBoxes(data)).to.be.false;
+    });
+
+    it (`should be true for all blank Pokemon`, () =>
+    {
+        var data = [];
+        for (let i = 0; i < 3000; ++i)
+            data.push(gTestBlankPokemon);
+        expect(util.ValidateCloudBoxes(data)).to.be.true;
+    });
+
+    it (`should be true for the Pokemon limit`, () =>
+    {
+        var data = [];
+        for (let i = 0; i < 3000; ++i)
+            data.push(gTestPokemon);
+        expect(util.ValidateCloudBoxes(data)).to.be.true;
+    });
+
+    it (`should be false for too many Pokemon`, () =>
+    {
+        var data = [];
+        for (let i = 0; i < 3001; ++i)
+            data.push(gTestPokemon);
+        expect(util.ValidateCloudBoxes(data)).to.be.false;
+    });
+
+    it (`should be false for null`, () =>
+    {
+        expect(util.ValidateCloudBoxes(null)).to.be.false;
+    });
+
+    it (`should be false for string`, () =>
+    {
+        expect(util.ValidateCloudBoxes("hello")).to.be.false;
+    });
+
+    it (`should be false for number`, () =>
+    {
+        expect(util.ValidateCloudBoxes(5)).to.be.false;
+    });
+});
+
+describe("Test ValidateCloudTitles", () =>
+{
+    it (`should be true for all_pokemon_titles.json`, () =>
+    {
+        var data = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/all_pokemon_titles.json")));
+        expect(util.ValidateCloudTitles(data)).to.be.true;
+    });
+
+    it (`should be false for null`, () =>
+    {
+        expect(util.ValidateCloudTitles(null)).to.be.false;
+    });
+
+    it (`should be false for string`, () =>
+    {
+        expect(util.ValidateCloudTitles("hello")).to.be.false;
+    });
+
+    it (`should be false for number`, () =>
+    {
+        expect(util.ValidateCloudTitles(5)).to.be.false;
+    });
+
+    it (`should be false for list of number`, () =>
+    {
+        expect(util.ValidateCloudTitles([5])).to.be.false;
+    });
+
+    it (`should be false for list of empty string`, () =>
+    {
+        expect(util.ValidateCloudTitles([""])).to.be.false;
+    });
+
+    it (`should be false for list of super long titles`, () =>
+    {
+        expect(util.ValidateCloudTitles(["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"])).to.be.false;
     });
 });

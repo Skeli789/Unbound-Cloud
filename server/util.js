@@ -2,8 +2,13 @@
     Various utility functions for the server.
 */
 
+const pokemonUtil = require('./pokemon-util');
 const gBannedWords = require('./src/data/BannedWords.json');
 const gSpeciesNames = require('./src/data/SpeciesNames.json');
+
+const MAX_TITLE_LENGTH = 16;
+const HIGHEST_HOME_BOX_NUM = 100;
+const MONS_PER_BOX = 30;
 
 
 /**
@@ -81,3 +86,110 @@ function GetSpeciesName(species)
     return "Unknown Species";
 }
 module.exports.GetSpeciesName = GetSpeciesName;
+
+/**
+ * Checks if an entered email is considered a valid email.
+ * @param {String} email - The email to check.
+ * @returns {Boolean} true if the entered value is a valid email address, false if not.
+ */
+function IsValidEmail(email)
+{
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    return typeof(email) === "string"
+        && re.test(String(email).toLowerCase());
+}
+module.exports.IsValidEmail = IsValidEmail;
+
+/**
+ * Checks if an entered username is considered a valid username.
+ * @param {String} username - The username to check.
+ * @returns {Boolean} true if the entered value is a valid username, false if not.
+ */
+function IsValidUsername(username)
+{
+    const pattern = new RegExp(/^[\x00-\x7F]*$/); //Only first 128 ascii characters
+
+    return typeof(username) === "string"
+        && username.length >= 3
+        && username.length <= 20
+        && !username.includes(`"`)
+        && !username.includes(`'`)
+        && !username.includes("`")
+        && !username.includes("<")
+        && !username.includes(">")
+        && pattern.test(username);
+}
+module.exports.IsValidUsername = IsValidUsername;
+ 
+/**
+ * Checks if an entered password is considered a valid password.
+ * @param {String} password - The password to check.
+ * @returns {Boolean} true if the entered value is a valid password, false if not.
+ */
+function IsValidPassword(password)
+{
+    return typeof(password) === "string"
+        && password.length >= 6
+        && password.length <= 20;
+}
+module.exports.IsValidPassword = IsValidPassword;
+
+/**
+ * Checks a list of Pokemon to confirm they're all valid.
+ * @param {Array<Object>} cloudBoxes - A list of Pokemon objects.
+ * @returns {Boolean} - True if the Pokemon were all validated successfully, false if not.
+ */
+function ValidateCloudBoxes(cloudBoxes)
+{
+    try
+    {
+        if (cloudBoxes.length > MONS_PER_BOX * HIGHEST_HOME_BOX_NUM)
+            throw(`Too many Pokemon in the Cloud boxes (${cloudBoxes.length})`);
+
+        for (var pokemon of cloudBoxes)
+        {
+            if (!pokemonUtil.ValidatePokemon(pokemon, canBeNull=false, canBeBlank=true))
+                return false;
+        }
+
+        return true;
+    }
+    catch (err)
+    {
+        console.log(`An error occurred trying to validate the Cloud Boxes:\n${err}`);
+        return false;
+    }
+}
+module.exports.ValidateCloudBoxes = ValidateCloudBoxes;
+
+/**
+ * Checks a list of Box names to confirm they're all valid.
+ * @param {Array<Strings>} cloudTitles - A list of Box names.
+ * @returns {Boolean} - True if the titles were all validated successfully, false if not.
+ */
+ function ValidateCloudTitles(cloudTitles)
+ {
+    try
+    {
+        if (typeof(cloudTitles) !== "object") //In this case Array<String>
+            return false;
+
+        for (var title of cloudTitles)
+        {
+            if (typeof(title) !== "string"
+            || title === ""
+            || title.length > MAX_TITLE_LENGTH)
+                return false;
+        }
+
+        return true;
+    }
+    catch (err)
+    {
+        console.log(`An error occurred trying to validate the Cloud Titles:\n${err}`);
+        return false;
+    }
+ }
+ module.exports.ValidateCloudTitles = ValidateCloudTitles;
+ 

@@ -65,7 +65,7 @@
     100% {opacity:1;}
 }
 
-.main-page-upload-instructions
+.main-page-intro-container
 {
     display: flex;
     flex-direction: column; /*Top to bottom rows*/
@@ -76,6 +76,14 @@
     width: 100%;
     min-width: var(--min-mobile-width);
     overflow-y: auto;
+}
+
+.main-page-upload-instructions
+{
+    display: flex;
+    flex-direction: column; /*Top to bottom rows*/
+    justify-content: center;
+    align-items: center;
 }
 
 .file-handle-page-mobile
@@ -93,7 +101,7 @@
 
 .choose-save-file-button
 {
-    margin-top: 1%;
+    margin-top: 10%;
 }
 
 .error-text
@@ -200,7 +208,7 @@
     background-color: rebeccapurple !important;
     border-color: rebeccapurple !important;
     box-shadow: unset !important;
-    width: 50%;
+    width: 100%;
     font-size: 24px;
     border-radius: 0px;
 }

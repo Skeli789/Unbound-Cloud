@@ -28,12 +28,32 @@ module.exports.CalculateMonChecksum = CalculateMonChecksum;
   * Checks if a Pokemon object is a valid Pokemon.
   * @param {Pokemon} pokemon - The Pokemon to check.
   * @param {Boolean} canBeNull - Allows a null object to be considered valid if true.
+  * @param {Boolean} canBeBlank - Allows a Pokemon where all fields are blank to be considered valid.
   * @returns {Boolean} true if the Pokemon is valid, false otherwise.
   */
-function ValidatePokemon(pokemon, canBeNull)
+function ValidatePokemon(pokemon, canBeNull=false, canBeBlank=false)
 {
     if (pokemon == null)
         return canBeNull;
+
+    if (canBeBlank)
+    {
+        var allBlank = true;
+
+        for (let key of Object.keys(pokemon))
+        {
+            if (pokemon[key] !== ""
+            &&  pokemon[key] !== 0
+            &&  pokemon[key] != null)
+            {
+                allBlank = false;
+                break;
+            }
+        }
+
+        if (allBlank)
+            return true;
+    }
 
     return "checksum" in pokemon
         && pokemon.checksum == CalculateMonChecksum(pokemon);

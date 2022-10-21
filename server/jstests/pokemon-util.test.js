@@ -1,6 +1,8 @@
 const expect = require('chai').expect;
 const {gTestPokemon, gTestPokemon2,
-       gTestTradeNormalPokemon, gTestTradeItemPokemon, gTestTradeShelmet, gTestTradeKarrablast} = require('./data');
+       gTestTradeNormalPokemon, gTestTradeItemPokemon,
+       gTestTradeShelmet, gTestTradeKarrablast,
+       gTestBlankPokemon} = require('./data');
 const pokemonUtil = require('../pokemon-util');
 const util = require('../util');
 
@@ -81,6 +83,26 @@ describe("Test ValidatePokemon", () =>
     it(`should be invalid for null Pokemon`, () =>
     {
         expect(pokemonUtil.ValidatePokemon(null, false)).to.be.false;
+    });
+
+    it(`should be invalid for null Pokemon`, () =>
+    {
+        expect(pokemonUtil.ValidatePokemon(null, false, true)).to.be.false;
+    });
+
+    it(`should be valid for empty Pokemon`, () =>
+    {
+        expect(pokemonUtil.ValidatePokemon({}, false, true)).to.be.true;
+    });
+
+    it(`should be valid for blank Pokemon`, () =>
+    {
+        expect(pokemonUtil.ValidatePokemon({"field1": 0, "field2": null, "field3": ""}, false, true)).to.be.true;
+    });
+
+    it(`should be valid for blank test Pokemon`, () =>
+    {
+        expect(pokemonUtil.ValidatePokemon(gTestBlankPokemon, false, true)).to.be.true;
     });
 });
 

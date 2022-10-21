@@ -201,6 +201,39 @@ exports =
         "otGender": "M",
         "checksum": "b9383393e2e3e868cad54b22abc28ce3"
     },
+
+    gTestBlankPokemon:
+    {
+        "personality":0,
+        "otId":0,
+        "nickname":"",
+        "language":"",
+        "otName":"",
+        "markings":null,
+        "species":"",
+        "item":"",
+        "experience":0,
+        "ppBonuses":null,
+        "friendship":0,
+        "pokeBall":"",
+        "moves":null,
+        "pokerus":0,
+        "metLocaton":0,
+        "ivs":null,
+        "evs":null,
+        "isEgg":null,
+        "hiddenAbility":null,
+        "shiny":null,
+        "abilitySlot":0,
+        "gender":"",
+        "level":0,
+        "nature":"",
+        "metLevel":0,
+        "metGame":"",
+        "gigantamax":null,
+        "otGender":"",
+        "checksum":""
+    }
 }
 
 module.exports = exports;
