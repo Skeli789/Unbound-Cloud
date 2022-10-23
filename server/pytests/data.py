@@ -168,6 +168,48 @@ TEST_POKEMON_MINIOR = \
     "rawStats": [261, 236, 171, 276, 212, 156]
 }
 
+TEST_POKEMON_NIDORAN = \
+{
+    "personality": 2537741420,
+    "otId": 4010727629,
+    "nickname": 'Nidoran▶',
+    "language": 'LANGUAGE_ENGLISH',
+    "otName": 'U.Flame',
+    "markings": [
+        False, False,
+        False, False,
+        False, False,
+        False, False
+    ],
+    "species": 'SPECIES_NIDORAN_F',
+    "item": 'ITEM_NONE',
+    "experience": 2034,
+    "ppBonuses": [ 0, 0, 0, 0 ],
+    "friendship": 50,
+    "pokeBall": 'BALL_TYPE_QUICK_BALL',
+    "moves": [
+        'MOVE_POISONSTING',
+        'MOVE_SCRATCH',
+        'MOVE_TAILWHIP',
+        'MOVE_FURYSWIPES'
+    ],
+    "pokerus": 0,
+    "metLocaton": 105,
+    "ivs": [ 7, 4, 30, 3, 8, 22 ],
+    "evs": [ 0, 0, 0, 0, 0, 0 ],
+    "isEgg": False,
+    "hiddenAbility": False,
+    "shiny": False,
+    "abilitySlot": 0,
+    "gender": 'F',
+    "nature": 'NATURE_CALM',
+    "metLevel": 15,
+    "metGame": 'unbound',
+    "gigantamax": False,
+    "otGender": 'F',
+    "checksum": '4f45e8c6283a23dd31040e6bc8ae4cbd'
+}
+
 OLD_TEST_POKEMON = \
 {
     "personality": 3764653391,

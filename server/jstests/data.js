@@ -202,6 +202,80 @@ exports =
         "checksum": "b9383393e2e3e868cad54b22abc28ce3"
     },
 
+    gTestNidoran:
+    {
+        "personality": 2537741420,
+        "otId": 4010727629,
+        "nickname": 'Nidoran▶',
+        "language": 'LANGUAGE_ENGLISH',
+        "otName": 'U.Flame',
+        "markings": [
+          false, false,
+          false, false,
+          false, false,
+          false, false
+        ],
+        "species": 'SPECIES_NIDORAN_F',
+        "item": 'ITEM_NONE',
+        "experience": 2034,
+        "ppBonuses": [ 0, 0, 0, 0 ],
+        "friendship": 50,
+        "pokeBall": 'BALL_TYPE_QUICK_BALL',
+        "moves": [
+          'MOVE_POISONSTING',
+          'MOVE_SCRATCH',
+          'MOVE_TAILWHIP',
+          'MOVE_FURYSWIPES'
+        ],
+        "pokerus": 0,
+        "metLocaton": 105,
+        "ivs": [ 7, 4, 30, 3, 8, 22 ],
+        "evs": [ 0, 0, 0, 0, 0, 0 ],
+        "isEgg": false,
+        "hiddenAbility": false,
+        "shiny": false,
+        "abilitySlot": 0,
+        "gender": 'F',
+        "nature": 'NATURE_CALM',
+        "metLevel": 15,
+        "metGame": 'unbound',
+        "gigantamax": false,
+        "otGender": 'F',
+        "checksum": '4f45e8c6283a23dd31040e6bc8ae4cbd'
+    },
+
+    gTestFlabebe:
+    {
+        "personality":1000623502,
+        "otId":175170193,
+        "nickname":"Flabébé",
+        "language":"LANGUAGE_ENGLISH",
+        "otName":"Skeli",
+        "markings":[false, false, false, false, false, false, false, false],
+        "species":"SPECIES_FLABEBE",
+        "item":"ITEM_NONE",
+        "experience":1000,
+        "ppBonuses":[0, 0, 0, 0],
+        "friendship":50,
+        "pokeBall":"BALL_TYPE_POKE_BALL",
+        "moves":["MOVE_TACKLE", "MOVE_VINEWHIP", "MOVE_FAIRYWIND", "MOVE_LUCKYCHANT"],
+        "pokerus":0,
+        "metLocaton":136,
+        "ivs":[28, 1, 30, 28, 20, 23],
+        "evs":[0, 0, 0, 0, 0, 0],
+        "isEgg":false,
+        "hiddenAbility":false,
+        "shiny":false,
+        "abilitySlot":0,
+        "gender":"F",
+        "nature":"NATURE_BRAVE",
+        "metLevel":10,
+        "metGame":"unbound",
+        "gigantamax":false,
+        "otGender":"M",
+        "checksum":"0631e6a11caf2c422979083d30ced477"
+    },
+
     gTestBlankPokemon:
     {
         "personality":0,

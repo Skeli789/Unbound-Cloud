@@ -12,6 +12,20 @@ const MONS_PER_BOX = 30;
 
 
 /**
+ * Converts a given string to a string where all unicode characters are escaped.
+ * @param {String} str - The string to convert.
+ * @returns {String} The converted string.
+ */
+function toUnicode(str)
+{
+    return str.replace(/[^\0-~]/g, function(ch)
+    {
+        return "\\u" + ("000" + ch.charCodeAt().toString(16)).slice(-4);
+    });
+}
+module.exports.toUnicode = toUnicode;
+
+/**
  * Mimics the functionality of Python's json.dumps.
  * JSON.stringify does not add minimal pretty printing like Python's json.dumps, so this adds that functionality.
  * @param {Pokemon} pokemon - The Pokemon to convert to a string.
@@ -31,8 +45,8 @@ function PythonJSONStringify(pokemon)
 
     for (let line of text.split("\n"))
         finalText += line.trim() + " ";
-    
-    return finalText.replaceAll("{ ", "{").replaceAll(" }", "}").replaceAll("[ ", "[").replaceAll(" ]", "]").trim();
+
+    return toUnicode(finalText.replaceAll("{ ", "{").replaceAll(" }", "}").replaceAll("[ ", "[").replaceAll(" ]", "]").trim());
 }
 module.exports.PythonJSONStringify = PythonJSONStringify;
 

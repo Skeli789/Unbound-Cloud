@@ -6,6 +6,25 @@ const {gTestPokemon, gTestBlankPokemon, gTestPokemonStringified} = require('./da
 const gSpeciesNames = require('../src/data/SpeciesNames.json');
 
 
+describe("Test toUnicode", () =>
+{
+    it(`should be hello for hello`, () =>
+    {
+        expect(util.toUnicode("hello")).to.equal("hello");
+    });
+
+    it(`should be Nidoran\\u25b6 for Nidoran▶`, () =>
+    {
+        expect(util.toUnicode("Nidoran▶")).to.equal("Nidoran\\u25b6");
+    });
+
+    it(`should be Flab\\u00e9b\\u00e9 for Flabébé`, () =>
+    {
+        expect(util.toUnicode("Flabébé")).to.equal("Flab\\u00e9b\\u00e9");
+    });
+});
+
+
 describe("Test PythonJSONStringify", () =>
 {
     it (`should add whitespace after :`, () =>
@@ -319,6 +338,12 @@ describe("Test ValidateCloudBoxes", () =>
     {
         expect(util.ValidateCloudBoxes(5)).to.be.false;
     });
+
+    it (`should be true for U.Flame's Boxes`, () => //Used to fail because of bad character encodings
+    {
+        var data = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/brony_cloud.dat")));
+        expect(util.ValidateCloudBoxes(data["boxes"])).to.be.true;
+    })
 });
 
 describe("Test ValidateCloudTitles", () =>
