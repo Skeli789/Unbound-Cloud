@@ -918,7 +918,8 @@ export class BoxView extends Component
      */
     handleSelectMonForViewing(e, boxPos, pokemon)
     {
-        e.preventDefault(); //Prevent context menu from popping up
+        if (e != null)
+            e.preventDefault(); //Prevent context menu from popping up
 
         if (this.isSaving())
             return; //Don't allow selections while saving
@@ -1426,6 +1427,13 @@ export class BoxView extends Component
                               + (isInWonderTrade ? " wonder-trade-box-icon" : "")
                               + (this.shouldShowIconImpossibleMoveWarning(key) ? " error-box-icon" : "");
 
+            var onHoverFunc = () =>
+            {
+                this.handleSetDraggingOver(i);
+                if (!isMobile && !this.areAnyPokemonSelectedInCurrentBox())
+                    this.handleSelectMonForViewing(null, key, pokemon); //Show the summary as the mouse moves over the mon, show it's summary
+            };
+
             if ((addLivingDexIcon && livingDexIcon !== "") //Can't click on this
             || species === "unknown") //Unknown species - can still click on "none" species, just not unknown one
             {
@@ -1438,7 +1446,7 @@ export class BoxView extends Component
             {
                 icons.push(<span className={spanClassName}
                                 onClick={this.handleSelection.bind(this, key, pokemon)}
-                                onMouseEnter = {this.handleSetDraggingOver.bind(this, i)}
+                                onMouseEnter = {onHoverFunc}
                                 onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
                                 onContextMenu={(e) => this.handleSelectMonForViewing(e, key, pokemon)}
                                 key={key}>{shinyIcon} {icon} {heldItemIcon} {warningIcon}
@@ -1449,7 +1457,7 @@ export class BoxView extends Component
                 icons.push(<span className={spanClassName}
                                 onClick={this.handleSelection.bind(this, key, pokemon)}
                                 onMouseDown={this.handleStartDragging.bind(this, i, key, icon, link, pokemon)}
-                                onMouseEnter = {this.handleSetDraggingOver.bind(this, i)}
+                                onMouseEnter = {onHoverFunc}
                                 onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
                                 onContextMenu={(e) => this.handleSelectMonForViewing(e, key, pokemon)}
                                 key={key}>{shinyIcon} {icon} {heldItemIcon} {warningIcon}
