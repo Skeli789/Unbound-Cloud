@@ -2830,6 +2830,19 @@ export default class MainPage extends Component
         }
         else
         {
+            await PopUp.fire
+            ({
+                icon: 'warning',
+                title: `Your new save file is about to be downloaded.\nMake sure you replace your old one with the new file!`,
+                confirmButtonText: `I Understand`,
+                allowOutsideClick: false,
+                scrollbarPadding: false,
+                didOpen: () =>
+                {
+                    PopUp.hideLoading(); //From previous pop-ups
+                }
+            });
+
             let element = document.createElement("a");
             element.href = URL.createObjectURL(fileContents);
             element.download = saveFileName;
@@ -4004,7 +4017,7 @@ export default class MainPage extends Component
             navBar = false;
             noScroll = true;
         }
-        else if (UNOFFICIAL_RELEASE && !IsMobileBrowser()
+        else if (UNOFFICIAL_RELEASE && (!DISABLE_ON_MOBILE || !IsMobileBrowser())
         && this.state.editState === STATE_WELCOME && !this.state.unlockedMobile && !localStorage.visitedBefore)
         {
             page = this.printNotOfficiallyReleased();
