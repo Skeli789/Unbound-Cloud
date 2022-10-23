@@ -33,6 +33,12 @@
     margin-bottom: 5% !important;
 }
 
+.show-password-symbol
+{
+    display: inline-block;
+    cursor: pointer;
+}
+
 .submit-form-button-container
 {
     display: flex;
