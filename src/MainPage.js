@@ -66,12 +66,12 @@ const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="ht
 export const NO_SERVER_CONNECTION_ERROR = "Couldn't connect to the server! Please try again later."
 
 const PopUp = withReactContent(Swal);
+const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
 const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
 const DISABLE_ON_MOBILE = false; //Prevent mobile devices from using the site without a password
-const UNOFFICIAL_RELEASE = false; //Only allow testers with a password to access the site
-const MAINTENANCE = false; //Locks the site from non beta-testers while new features are integrated
 const DEMO_SITE = false; //Initial loading page is the box moving so people can see how the site would work
-const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
+const MAINTENANCE = false; //Locks the site from non beta-testers while new features are integrated
+export const UNOFFICIAL_RELEASE = false; //Only allow testers with a password to access the site
 
 const mainTheme = new Audio(UnboundCloudTheme);
 

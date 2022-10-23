@@ -3,7 +3,8 @@ import {Button, Form} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-import {BLANK_PROGRESS_BAR, NO_SERVER_CONNECTION_ERROR, STATE_ENTER_ACTIVATION_CODE, STATE_LOGIN} from "./MainPage";
+import {BLANK_PROGRESS_BAR, NO_SERVER_CONNECTION_ERROR, STATE_ENTER_ACTIVATION_CODE,
+        STATE_LOGIN, UNOFFICIAL_RELEASE} from "./MainPage";
 import {ErrorPopUp, ProcessTextInput, RequiredTooltip, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
 
@@ -51,7 +52,7 @@ export class SignUp extends Component
             errorMsg: "",
             invalidUsername: "",
             invalidEmail: "",
-            isTester: false,
+            isTester: UNOFFICIAL_RELEASE ? true : false,
         }
 
         this.mainPage = props.mainPage;
