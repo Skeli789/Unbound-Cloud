@@ -12,6 +12,35 @@ const gTestEmail2 = "other@gmail.com";
 const gTestPassword = "blahblah";
 
 
+describe("Test LockDB and UnlockDB", async () =>
+{
+    it (`LockDB should lock the database`, async () =>
+    {
+        expect(accounts.IsDBLocked()).to.be.false;
+        await accounts.LockDB();
+        expect(accounts.IsDBLocked()).to.be.true;
+    });
+
+    it (`UnlockDB should unlock the database`, async () =>
+    {
+        expect(accounts.IsDBLocked()).to.be.true;
+        await accounts.UnlockDB();
+        expect(accounts.IsDBLocked()).to.be.false;
+    });
+
+    it (`Two LockDB's should cause the second one to pause until the database is unlocked`, async () =>
+    {
+        await accounts.LockDB();
+        accounts.LockDB(); //Run asyncronously
+        accounts.UnlockDB();
+        expect(accounts.IsDBLocked()).to.be.false;
+        await new Promise(r => setTimeout(r, 1000)); //Sleep 1 second
+        expect(accounts.IsDBLocked()).to.be.true; //Locked by the asynchronous LockDB
+        accounts.UnlockDB();
+    });
+});
+
+
 describe("Test UserToAccountFile", () =>
 {
     it (`should end in unboundcloud/accounts/user_${gTestUser.toLocaleLowerCase()}.json`, () =>
@@ -338,21 +367,21 @@ describe("Test VerifyCorrectPassword", () =>
 });
 
 
-describe("Test GetUserLastAccessed & UpdateUserLastAccessed", () =>
+describe("Test GetUserLastAccessed & UpdateUserLastAccessed", async () =>
 {
     it('GetUserLastAccessed should fail for non-existent user', () =>
     {
         expect(accounts.GetUserLastAccessed(gTestUser2)).to.equal(0);
     });
 
-    it('UpdateUserLastAccessed should fail for non-existent user', () =>
+    it('UpdateUserLastAccessed should fail for non-existent user', async () =>
     {
-        expect(accounts.UpdateUserLastAccessed(gTestUser2)).to.be.false;
+        expect(await accounts.UpdateUserLastAccessed(gTestUser2)).to.be.false;
     });
 
-    it('should update successfully', () =>
+    it('should update successfully', async () =>
     {
-        expect(accounts.UpdateUserLastAccessed(gTestUser)).to.be.true;
+        expect(await accounts.UpdateUserLastAccessed(gTestUser)).to.be.true;
     });
 
     it('should be last accessed in the past second', () =>
@@ -376,7 +405,7 @@ describe("Test GetUserAccountCode", () =>
 });
 
 
-describe("Test GetUserCloudBoxes & GetUserCloudTitles & SaveAccountCloudData", () =>
+describe("Test GetUserCloudBoxes & GetUserCloudTitles & SaveAccountCloudData", async () =>
 {
     it (`should no Boxes for regular Boxes`, () =>
     {
@@ -408,25 +437,25 @@ describe("Test GetUserCloudBoxes & GetUserCloudTitles & SaveAccountCloudData", (
         expect(accounts.GetUserCloudTitles(gTestUser2, false)).to.eql([]);
     });
 
-    it (`should fail to save with a fake username`, () =>
+    it (`should fail to save with a fake username`, async () =>
     {
         var boxes = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/all_pokemon.json")));
         var titles = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/all_pokemon_titles.json")));
-        expect(accounts.SaveAccountCloudData(gTestUser2, boxes, titles, false)).to.be.false;
+        expect(await accounts.SaveAccountCloudData(gTestUser2, boxes, titles, false)).to.be.false;
     });
 
-    it (`should save new titles and boxes successfully`, () =>
+    it (`should save new titles and boxes successfully`, async () =>
     {
         var boxes = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/all_pokemon.json")));
         var titles = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/all_pokemon_titles.json")));
-        expect(accounts.SaveAccountCloudData(gTestUser, boxes, titles, false)).to.be.true;
+        expect(await accounts.SaveAccountCloudData(gTestUser, boxes, titles, false)).to.be.true;
     });
 
-    it (`should save new randomized titles and boxes successfully`, () =>
+    it (`should save new randomized titles and boxes successfully`, async () =>
     {
         var boxes = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/flex.json")));
         var titles = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/flex_titles.json")));
-        expect(accounts.SaveAccountCloudData(gTestUser, boxes, titles, true)).to.be.true;
+        expect(await accounts.SaveAccountCloudData(gTestUser, boxes, titles, true)).to.be.true;
     });
 
     it (`should be newly saved Boxes`, () =>

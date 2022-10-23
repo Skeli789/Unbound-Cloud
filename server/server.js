@@ -423,7 +423,7 @@ app.post('/uploadSaveFile', async (req, res) =>
             {
                 if (accounts.GetUserAccountCode(username) === accountCode)
                 {
-                    accounts.UpdateUserLastAccessed(username);
+                    await accounts.UpdateUserLastAccessed(username);
                     retData["cloudBoxes"] = accounts.GetUserCloudBoxes(username, randomizer);
                     retData["cloudTitles"] = accounts.GetUserCloudTitles(username, randomizer);
                 }
@@ -802,7 +802,7 @@ app.post('/checkUser', async (req, res) =>
     if (!(await accounts.VerifyCorrectPassword(username, password)))
         return res.status(StatusCode.ClientErrorForbidden).send({errorMsg: "INVALID_PASSWORD"});
 
-    accounts.UpdateUserLastAccessed(username);
+    await accounts.UpdateUserLastAccessed(username);
     return res.status(StatusCode.SuccessOK).json
     ({
         username: username,
@@ -869,7 +869,7 @@ app.post('/resendActivationCode', async (req, res) =>
  *                       }
  *                       If the Boxes were extracted successfully, error codes if not.
  */
-app.post('/getAccountCloudData', (req, res) =>
+app.post('/getAccountCloudData', async (req, res) =>
 {
     var username = req.body.username;
     var accountCode = req.body.accountCode;
@@ -885,7 +885,7 @@ app.post('/getAccountCloudData', (req, res) =>
             return res.status(StatusCode.ClientErrorUnauthorized).json("Account code is incorrect!");
         else
         {
-            accounts.UpdateUserLastAccessed(username);
+            await accounts.UpdateUserLastAccessed(username);
             return res.status(StatusCode.SuccessOK).json
             ({
                 cloudBoxes: accounts.GetUserCloudBoxes(username, randomizer),
@@ -905,7 +905,7 @@ app.post('/getAccountCloudData', (req, res) =>
  * @param {String} homeDataPX - 4 chunks of strings when combined together form the Cloud Boxes and titles that were uploaded.
  * @returns {StatusCode} SuccessOK if the data was saved successfully, error codes if not.
  */
-app.post('/saveAccountCloudData', (req, res) =>
+app.post('/saveAccountCloudData', async (req, res) =>
 {
     var username = req.body.username;
     var accountCode = req.body.accountCode;
@@ -924,7 +924,7 @@ app.post('/saveAccountCloudData', (req, res) =>
 
         if (accounts.GetUserAccountCode(username) === accountCode) //Extra layer of security
         {
-            if (accounts.SaveAccountCloudData(username, cloudBoxes, cloudTitles, cloudData.randomizer))
+            if (await accounts.SaveAccountCloudData(username, cloudBoxes, cloudTitles, cloudData.randomizer))
                 return res.status(StatusCode.SuccessOK).json({});
             else
                 return res.status(StatusCode.ClientErrorNotFound).json("Username was not found");   
