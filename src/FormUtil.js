@@ -21,7 +21,7 @@ const PopUp = withReactContent(Swal);
  */
 export function ValidateUsername(username)
 {
-    const pattern = new RegExp(/^[x00-x7F]*$/); //Only first 128 ascii characters
+    const pattern = new RegExp(/^[!-~]*$/); //Only first 128 ascii characters
 
     return typeof(username) === "string"
         && username.length >= 3
