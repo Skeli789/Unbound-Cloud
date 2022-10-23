@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Form} from "react-bootstrap";
+import {Button, Form, OverlayTrigger, Tooltip} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -8,7 +8,7 @@ import {BLANK_PROGRESS_BAR, NO_SERVER_CONNECTION_ERROR, STATE_ENTER_ACTIVATION_C
 import {ErrorPopUp, ProcessTextInput, RequiredTooltip, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
 
-import {AiOutlineCheckCircle} from "react-icons/ai";
+import {AiOutlineCheckCircle, AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
 
 import "./stylesheets/Form.css";
 
@@ -52,6 +52,7 @@ export class SignUp extends Component
             errorMsg: "",
             invalidUsername: "",
             invalidEmail: "",
+            showPassword: false,
             isTester: UNOFFICIAL_RELEASE ? true : false,
         }
 
@@ -247,6 +248,21 @@ export class SignUp extends Component
     {
         var required = RequiredTooltip();
         const cloudFileUploadError = "Make sure it was a proper Cloud data file and is not corrupted.";
+        const showPasswordTooltip = props => (<Tooltip {...props}>Show Password</Tooltip>);
+        const hidePasswordTooltip = props => (<Tooltip {...props}>Hide Password</Tooltip>);
+        const showPasswordFunc = () => this.setState({showPassword: !this.state.showPassword});
+
+        var showPasswordSymbol =
+            <OverlayTrigger placement="top" overlay={this.state.showPassword ? hidePasswordTooltip : showPasswordTooltip}>    
+                <div className="show-password-symbol">
+                    {
+                        this.state.showPassword ?
+                            <AiOutlineEyeInvisible size={20} onClick={showPasswordFunc}/>
+                        :
+                            <AiOutlineEye size={20} onClick={showPasswordFunc}/>
+                    }
+                </div>
+            </OverlayTrigger>
 
         return (
             <div className="form-page">
@@ -291,16 +307,16 @@ export class SignUp extends Component
 
                     {/*Password Input*/}
                     <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>Password{required}</Form.Label>
+                        <Form.Label>Password{required} {showPasswordSymbol}</Form.Label>
                         <Form.Control
                             required
-                            type="password"
+                            type={this.state.showPassword ? "text" : "password"}
                             name="password"
                             autoComplete='new-password'
                             //placeholder="Password"
                             value={this.state.passwordInput}
                             className={`form-control ${this.state.passwordInput !== "" && !this.validPassword() ? 'is-invalid' : ''}`}
-                            onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", true)})}
+                            onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", false)})}
                         />
                     </Form.Group>
 
@@ -309,7 +325,7 @@ export class SignUp extends Component
                         <Form.Label>Confirm Password{required}</Form.Label>
                         <Form.Control
                             required
-                            type="password"
+                            type={this.state.showPassword ? "text" : "password"}
                             name="confirmPassword"
                             autoComplete='new-password'
                             //placeholder="Password"
