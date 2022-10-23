@@ -160,6 +160,16 @@ describe("Test IsValidUsername", () =>
         expect(util.IsValidUsername("Skeli789")).to.be.true;
     });
 
+    it (`should be true for abcdefghijklmnopqrst`, () =>
+    {
+        expect(util.IsValidUsername("abcdefghijklmnopqrst")).to.be.true;
+    });
+
+    it (`should be true for uvwxyz!@#$%^&*()_-+=`, () =>
+    {
+        expect(util.IsValidUsername("uvwxyz!@#$%^&*()_-+=")).to.be.true;
+    });
+
     it (`should be true for 3 chracters exactly`, () =>
     {
         expect(util.IsValidUsername("bla")).to.be.true;
