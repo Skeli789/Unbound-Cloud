@@ -12,6 +12,38 @@ require('dotenv').config({path: __dirname + '/.env'});
 const BASE_STORAGE_DIR = `${process.env.APPDATA}/unboundcloud`;
 const EMAIL_TO_USER_FILE = `${BASE_STORAGE_DIR}/EmailToUsername.json`;
 
+var gDBLocked = false;
+
+
+/**
+ * Locks the database files and prevents them from being modified until the current process unlocks them.
+ */
+async function LockDB()
+{
+    while (gDBLocked)
+        await new Promise(r => setTimeout(r, 1000)); //Sleep 1 second
+
+    gDBLocked = true;
+}
+module.exports.LockDB = LockDB;
+
+/**
+ * Unlocks the database files for editing again.
+ */
+async function UnlockDB()
+{
+    gDBLocked = false;
+}
+module.exports.UnlockDB = UnlockDB;
+
+/**
+ * Checks if the Database is currently locked for editing.
+ */
+function IsDBLocked()
+{
+    return gDBLocked;
+}
+module.exports.IsDBLocked = IsDBLocked;
 
 /**
  * Creates the Unbound Cloud directory in AppData if it doesn't alrady exist.
@@ -252,6 +284,8 @@ module.exports.VerifyCorrectPassword = VerifyCorrectPassword;
  */
 async function CreateUser(email, username, password, cloudBoxes=[], cloudTitles=[], cloudRandomizerBoxes=[], cloudRandomizerTitles=[])
 {
+    await LockDB();
+
     try
     {
         if (EmailExists(email))
@@ -295,10 +329,12 @@ async function CreateUser(email, username, password, cloudBoxes=[], cloudTitles=
             throw(`Could not send email to ${email}`);
         }
 
+        UnlockDB();
         return true;
     }
     catch (e)
     {
+        UnlockDB();
         console.log(`An error occurred trying to create the user account for ${email}:\n${e}`);
         return false;
     }
@@ -357,6 +393,8 @@ module.exports.GetUserActivationCode = GetUserActivationCode;
  */
 async function ActivateUser(username, activationCode)
 {
+    await LockDB();
+
     try
     {   
         if (!UserExists(username))
@@ -372,10 +410,12 @@ async function ActivateUser(username, activationCode)
         delete data.activationCode; //No longer needed in the object
         fs.writeFileSync(fileName, JSON.stringify(data));
 
+        UnlockDB();
         return true;
     }
     catch (e)
     {
+        UnlockDB();
         console.log(`An error occurred trying to activate the user account for ${username}:\n${e}`);
         return false;
     }
@@ -406,6 +446,8 @@ module.exports.ResendActivationEmail = ResendActivationEmail;
   */
 async function DeleteUser(username, password)
 {
+    await LockDB();
+
     try
     {
         if (!UserExists(username))
@@ -416,10 +458,12 @@ async function DeleteUser(username, password)
         var email = GetUserData(username).email;
         StoreUserData(username, {}); //Deletes the file
         RemoveEmailUsernamePairFromTable(email);
+        UnlockDB();
         return true;
     }
     catch (e)
     {
+        UnlockDB();
         console.log(`An error occurred trying to delete the user account for ${username}:\n${e}`);
         return false;
     }
@@ -446,8 +490,10 @@ module.exports.DeleteUser = DeleteUser;
  * @param {String} username - The username the account is for.
  * @returns {Boolean} - true if the timestamp was updated successfully, false if not.
  */
-function UpdateUserLastAccessed(username)
+async function UpdateUserLastAccessed(username)
 {
+    await LockDB();
+
     try
     {
         if (!UserExists(username))
@@ -456,10 +502,12 @@ function UpdateUserLastAccessed(username)
         var data = GetUserData(username);
         data.lastAccessed = Date.now();
         StoreUserData(username, data);
+        UnlockDB();
         return true;
     }
     catch (e)
     {
+        UnlockDB();
         console.log(`An error occurred trying to update the last accessed time for ${username}:\n${e}`);
         return false;
     }
@@ -521,10 +569,12 @@ module.exports.GetUserCloudTitles = GetUserCloudTitles;
  * @param {Boolean} isRandomizer - Whether or not the Pokemon saved are from a randomizer.
  * @returns {Boolean} True if the data was saved successfully, false otherwise.
  */
-function SaveAccountCloudData(username, cloudBoxes, cloudTitles, isRandomizer)
+async function SaveAccountCloudData(username, cloudBoxes, cloudTitles, isRandomizer)
 {
     if (!UserExists(username))
         return false;
+
+    await LockDB();
 
     var data = GetUserData(username);
     if (isRandomizer)
