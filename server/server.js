@@ -13,8 +13,9 @@ const accounts = require('./accounts');
 const pokemonUtil = require('./pokemon-util');
 const util = require('./util');
 const {StatusCode} = require('status-code-enum');
+require('dotenv').config({path: __dirname + '/.env'});
 
-const gSecretKey = "blah blah blacksheep";
+const gSecretKey = process.env["ENCRYPTION_KEY"];
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
@@ -479,7 +480,7 @@ app.post('/uploadCloudData', async (req, res) =>
         var bytes = CryptoJS.AES.decrypt(homeData, gSecretKey);
         var data = JSON.parse(JSON.parse(bytes.toString(CryptoJS.enc.Utf8))); //Decrypted
         console.log("The home file has been successfully decrypted.");
-        data = await TryUpdateOldCloudData(data, res)
+        data = await TryUpdateOldCloudData(data, res);
         if (data != null)
             return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"],
                                                           randomizer: data["randomizer"] ? true : false});

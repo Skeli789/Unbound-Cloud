@@ -2,6 +2,7 @@ const expect = require('chai').expect;
 const {gTestPokemon, gTestPokemon2,
        gTestTradeNormalPokemon, gTestTradeItemPokemon,
        gTestTradeShelmet, gTestTradeKarrablast,
+       gTestNidoran, gTestFlabebe,
        gTestBlankPokemon} = require('./data');
 const pokemonUtil = require('../pokemon-util');
 const util = require('../util');
@@ -19,6 +20,18 @@ describe("Test CalculateMonChecksum", () =>
     {
         let checksum = pokemonUtil.CalculateMonChecksum(gTestPokemon2);
         expect(checksum).to.equal(gTestPokemon2.checksum);
+    });
+
+    it(`should be ${gTestNidoran.checksum} for gTestNidoran`, () =>
+    {
+        let checksum = pokemonUtil.CalculateMonChecksum(gTestNidoran);
+        expect(checksum).to.equal(gTestNidoran.checksum);
+    });
+
+    it(`should be ${gTestFlabebe.checksum} for gTestFlabebe`, () =>
+    {
+        let checksum = pokemonUtil.CalculateMonChecksum(gTestFlabebe);
+        expect(checksum).to.equal(gTestFlabebe.checksum);
     });
 
     it(`should be unchanged with modified markings`, () =>

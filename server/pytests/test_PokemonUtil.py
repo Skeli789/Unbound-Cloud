@@ -349,6 +349,10 @@ class TestCalculateChecksum:
         pokemon2 = {"personality": 12345678, "species": "SPECIES_BULBASAUR"}
         assert PokemonUtil.CalculateChecksum(pokemon1) == PokemonUtil.CalculateChecksum(pokemon2)
 
+    def testNidoranWithBadGenderSymbol(self):
+        pokemon = TEST_POKEMON_NIDORAN.copy()
+        assert PokemonUtil.CalculateChecksum(pokemon) == pokemon["checksum"]
+
 
 class TestIsUpdatedDataVersion:
     def testUpdatedVersion(self):

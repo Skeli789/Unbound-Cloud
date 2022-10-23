@@ -7,6 +7,7 @@ const util = require('./util');
 const gBaseFriendship = require('./src/data/BaseFriendship.json');
 const gTradeEvolutions = require('./src/data/TradeEvolutions.json');
 
+
 /**
  * Calculates the checksum hash for a Pokemon.
  * @param {Pokemon} pokemon - The Pokemon to calculate the checksum for.
