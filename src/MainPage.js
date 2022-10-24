@@ -150,6 +150,7 @@ export default class MainPage extends Component
             //Account System
             username: ("username" in localStorage) ? localStorage.username : "",
             accountCode: ("accountCode" in localStorage) ? localStorage.accountCode : "",
+            cloudDataSyncKey: "",
             uploadedTesterHomeFile: false,
             uploadedTesterRandomizedHomeFile: false,
 
@@ -1134,12 +1135,14 @@ export default class MainPage extends Component
 
         if (ACCOUNT_SYSTEM
         && "cloudBoxes" in res.data
-        && "cloudTitles" in res.data)
+        && "cloudTitles" in res.data
+        && "cloudDataSyncKey" in res.data)
         {
             await this.setState
             ({
                 homeBoxes: res.data.cloudBoxes,
                 homeTitles: res.data.cloudTitles,
+                cloudDataSyncKey: res.data.cloudDataSyncKey,
             });    
         }
     }
@@ -1359,6 +1362,7 @@ export default class MainPage extends Component
                             saveTitles: [],
                             homeBoxes: res.data.cloudBoxes,
                             homeTitles: res.data.cloudTitles,
+                            cloudDataSyncKey: res.data.cloudDataSyncKey,
                         });
                         this.changeBoxView(STATE_EDITING_HOME_BOXES);
 
@@ -2693,6 +2697,7 @@ export default class MainPage extends Component
 
         formData.append("username", this.state.username);
         formData.append("accountCode", this.state.accountCode); //Used for an extra layer of security
+        formData.append("cloudDataSyncKey", this.state.cloudDataSyncKey); //Prevents issues with opening multiple tabs
         this.addHomeDataToFormData(homeData, formData);
 
         try

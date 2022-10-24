@@ -40,7 +40,13 @@ const FRIEND_TRADE_NOTIFIED_CONNECTION = 2;
 const FRIEND_TRADE_ACCEPTED_TRADE = 3;
 const FRIEND_TRADE_ENDING_TRADE = 4;
 
+const INVALID_CLOUD_DATA_SYNC_KEY_ERROR = "The Cloud data has already been opened in another tab!\nPlease reload the page to avoid data corruption.";
 
+
+/**
+ * Creates a friend code to initiate trading.
+ * @returns {String} - The code the user's friend has to submit in order to connect to them for a Friend Trade.
+ */
 function CreateFriendCode()
 {
     var code;
@@ -53,20 +59,56 @@ function CreateFriendCode()
     return code;
 }
 
+/**
+ * Validates that the client trying to trade didn't already open the Cloud data in a new tab.
+ * @param {String} username - The user who's trying to trade.
+ * @param {String} cloudDataSyncKey - The cloud data sync key sent from the client to verify.
+ * @param {Boolean} randomizer - Whether or not the Cloud Boxes are for a randomized save.
+ * @param {WebSocket} socket - The web socket used to connect to the client.
+ * @param {String} clientType - Either "FT" for "Friend Trade", or "WT" for "Wonder Trade".
+ * @param {String} clientId - "The client's unique connection id."
+ * @returns {Boolean} true if the trade is allowed to happen, false if the user already opened their Cloud Boxes in a new tab.
+ */
+async function CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, randomizer, socket, clientType, clientId)
+{
+    if (username !== "")
+    {
+        let userKey = await accounts.GetCloudDataSyncKey(username, randomizer);
+        
+        if (userKey === "")
+        {
+            console.log(`${clientType}-Client ${clientId} sent no cloud data sync key for account of ${username}`);
+            socket.emit("invalidCloudDataSyncKey", "The cloud data sync key was missing!");
+            return false;
+        }
+        else if (cloudDataSyncKey !== userKey)
+        {
+            console.log(`${clientType}-Client ${clientId} sent an old cloud data sync key for account of ${username}`);
+            socket.emit("invalidCloudDataSyncKey", INVALID_CLOUD_DATA_SYNC_KEY_ERROR);
+            return false;
+        }
+    }
+
+    return true;
+}
+
 // When a connection is made, loop forever until a Wonder Trade is made
 io.on("connection", async function(socket)
 {
     var clientId = socket.id;
     console.log(`Client ${clientId} connected`);
 
-    socket.on("tradeType", (data) =>
+    socket.on("tradeType", async (data) =>
     {
-        if (data == "WONDER_TRADE")
+        if (data === "WONDER_TRADE")
         {
             console.log(`WT-Client ${clientId} wants a Wonder Trade`);
 
-            socket.on("message", (pokemonToSend, randomizer) =>
+            socket.on("message", async (pokemonToSend, randomizer, username, cloudDataSyncKey) =>
             {
+                if (!(await CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, randomizer, socket, "WT", clientId)))
+                    return;
+
                 var keys = Object.keys(gWonderTradeClients).filter((x) =>
                                        x != clientId
                                     && gWonderTradeClients[x].tradedWith === 0
@@ -100,12 +142,15 @@ io.on("connection", async function(socket)
                 console.log(`WT-Client ${clientId} disconnected`);
             });
         }
-        else if (data == "FRIEND_TRADE")
+        else if (data === "FRIEND_TRADE")
         {
             console.log(`FT-Client ${clientId} wants a Friend Trade`);
 
-            socket.on("createCode", (randomizer) =>
-            {
+            socket.on("createCode", async (randomizer, username, cloudDataSyncKey) =>
+            {                
+                if (!(await CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, randomizer, socket, "FT", clientId)))
+                    return;
+
                 let code = CreateFriendCode();
                 socket.emit("createCode", code);
                 console.log(`FT-Client ${clientId} has created code "${code}"`);
@@ -113,11 +158,14 @@ io.on("connection", async function(socket)
                 gCodesInUse[code] = true;
             });
 
-            socket.on("checkCode", (code, randomizer) =>
+            socket.on("checkCode", async (code, randomizer, username, cloudDataSyncKey) =>
             {
                 let partnerFound = false;
                 console.log(`FT-Client ${clientId} is looking for code "${code}"`);
-        
+
+                if (!(await CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, randomizer, socket, "FT", clientId)))
+                    return;
+
                 for (let otherClientId of Object.keys(gFriendTradeClients))
                 {
                     if (gFriendTradeClients[otherClientId].friend === "" //Hasn't found a partner yet
@@ -344,6 +392,7 @@ function TryMakeTempFolder()
                              fileIdNumber: The file id number the temp file was saved at.
                              cloudBoxes: The user's Cloud Boxes (if using an account system).
                              cloudTitles: The names of the user's Cloud Boxes (if using an account system).
+                             cloudDataSyncKey: The key needed to be sent later on when saving the Cloud data.
  *                       }
  *                       If the Boxes were extracted successfully, error codes if not.
  */
@@ -426,6 +475,7 @@ app.post('/uploadSaveFile', async (req, res) =>
                     await accounts.UpdateUserLastAccessed(username);
                     retData["cloudBoxes"] = accounts.GetUserCloudBoxes(username, randomizer);
                     retData["cloudTitles"] = accounts.GetUserCloudTitles(username, randomizer);
+                    retData["cloudDataSyncKey"] = await accounts.CreateCloudDataSyncKey(username, randomizer);
                 }
             }
 
@@ -890,6 +940,7 @@ app.post('/getAccountCloudData', async (req, res) =>
             ({
                 cloudBoxes: accounts.GetUserCloudBoxes(username, randomizer),
                 cloudTitles: accounts.GetUserCloudTitles(username, randomizer),
+                cloudDataSyncKey: await accounts.CreateCloudDataSyncKey(username, randomizer),
             });
         }   
     }
@@ -909,6 +960,7 @@ app.post('/saveAccountCloudData', async (req, res) =>
 {
     var username = req.body.username;
     var accountCode = req.body.accountCode;
+    var cloudDataSyncKey = req.body.cloudDataSyncKey;
 
     try
     {
@@ -918,19 +970,32 @@ app.post('/saveAccountCloudData', async (req, res) =>
         var cloudTitles = cloudData.titles;
 
         if (!util.ValidateCloudBoxes(cloudBoxes))
-            return res.status(StatusCode.ClientErrorBadRequest).json("Cloud Boxes are corrupt");
+            return res.status(StatusCode.ClientErrorBadRequest).json("A problematic Pokemon was found in the Cloud Boxes!");
         else if (!util.ValidateCloudTitles(cloudTitles))
-            return res.status(StatusCode.ClientErrorBadRequest).json("Cloud titles are corrupt");
+            return res.status(StatusCode.ClientErrorBadRequest).json("A problematic name was found in the Cloud titles!");
 
         if (accounts.GetUserAccountCode(username) === accountCode) //Extra layer of security
         {
-            if (await accounts.SaveAccountCloudData(username, cloudBoxes, cloudTitles, cloudData.randomizer))
-                return res.status(StatusCode.SuccessOK).json({});
+            let userKey = await accounts.GetCloudDataSyncKey(username, cloudData.randomizer);
+
+            if (userKey === "")
+            {
+                return res.status(StatusCode.ServerErrorInternal).json("The data sync key could not be retrieved!");
+            }
+            else if (cloudDataSyncKey !== userKey)
+            {
+                return res.status(StatusCode.ClientErrorUnauthorized).json(INVALID_CLOUD_DATA_SYNC_KEY_ERROR);
+            }
             else
-                return res.status(StatusCode.ClientErrorNotFound).json("Username was not found");   
+            {
+                if (await accounts.SaveAccountCloudData(username, cloudBoxes, cloudTitles, cloudData.randomizer))
+                    return res.status(StatusCode.SuccessOK).json({});
+                else
+                    return res.status(StatusCode.ClientErrorNotFound).json("Username was not found!");  
+            } 
         }
         else
-            return res.status(StatusCode.ClientErrorUnauthorized).json("Account code was incorrect");
+            return res.status(StatusCode.ClientErrorUnauthorized).json("Account code was incorrect!");
     }
     catch (err)
     {
