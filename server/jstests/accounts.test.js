@@ -404,6 +404,56 @@ describe("Test GetUserAccountCode", () =>
     });
 });
 
+describe("Test CreateCloudDataSyncKey & GetCloudDataSyncKey", async () =>
+{
+    let regularKey = "";
+    let randomizerKey = "";
+
+    it('should fail to create for non-existent user', async () =>
+    {
+        expect(await accounts.CreateCloudDataSyncKey(gTestUser2)).to.throw("");
+    });
+
+    it('should fail to get for non-existent user', async () =>
+    {
+        expect(await accounts.GetCloudDataSyncKey(gTestUser2)).to.equal("");
+    });
+
+    it (`should create a key 12 characters long`, async () =>
+    {
+        regularKey = await accounts.CreateCloudDataSyncKey(gTestUser, false);
+        expect(regularKey.length).to.equal(12);
+    });
+
+    it (`should get the same key just returned by the create function`, async () =>
+    {
+        expect(await accounts.GetCloudDataSyncKey(gTestUser, false)).to.equal(regularKey);
+    });
+
+    it (`should not get the same randomizer key`, async () =>
+    {
+        expect(await accounts.GetCloudDataSyncKey(gTestUser, true)).to.not.equal(regularKey);
+    });
+
+    it (`should create a randomizer key 12 characters long`, async () =>
+    {
+        randomizerKey = await accounts.CreateCloudDataSyncKey(gTestUser, true);
+        expect(randomizerKey.length).to.equal(12);
+    });
+
+    it (`should get the same randomizer key just returned by the create function`, async () =>
+    {
+        expect(await accounts.GetCloudDataSyncKey(gTestUser, true)).to.equal(randomizerKey);
+    });
+
+    it (`should not get the same regular key`, async () =>
+    {
+        let key = await accounts.GetCloudDataSyncKey(gTestUser, false);
+        expect(key).to.equal(regularKey);
+        expect(key).to.not.equal(randomizerKey);
+    });
+});
+
 
 describe("Test GetUserCloudBoxes & GetUserCloudTitles & SaveAccountCloudData", async () =>
 {

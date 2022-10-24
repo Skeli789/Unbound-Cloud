@@ -176,6 +176,7 @@ export class FriendTrade extends Component
         const mismatchedRandomizer = this.mismatchedRandomizer.bind(this);
         const partnerDisconnected = this.partnerDisconnected.bind(this);
         const handleInvalidPokemon = this.handleInvalidPokemon.bind(this);
+        const handleInvalidCloudDataSyncKey = this.handleInvalidCloudDataSyncKey.bind(this);
 
         console.log("Connecting...");
         var socket = io(`${config.dev_server}`, {autoConnect: false});
@@ -201,6 +202,10 @@ export class FriendTrade extends Component
                 socket.on('mismatchedRandomizer', function() {mismatchedRandomizer(socket)});
                 socket.on('partnerDisconnected', function() {partnerDisconnected(socket)});
                 socket.on('invalidPokemon', function() {handleInvalidPokemon()});
+                socket.on('invalidCloudDataSyncKey', function(data)
+                {
+                    handleInvalidCloudDataSyncKey(socket, data)
+                });
                 socket.on('createCode', function(code) //Code is received from server
                 {
                     navigator.clipboard.writeText(code).then((text) => //Copy to clipboard
@@ -328,6 +333,31 @@ export class FriendTrade extends Component
     }
 
     /**
+     * Handles ending the Friend Trade because the Cloud Boxes were already loaded in a new tab.
+     * @param {WebSocket} socket - The socket used to connect to the server.
+     * @param {Object} data - The object with the error message sent from the server.
+     */
+    handleInvalidCloudDataSyncKey(socket, data)
+    {
+        this.hideTimer();
+        socket.close();
+        console.log("Cloud data sync key invalid!");
+
+        PopUp.fire(
+        {
+            title: data,
+            cancelButtonText: `Awww`,
+            showConfirmButton: false,
+            showCancelButton: true,
+            icon: 'error',
+            scrollbarPadding: false,
+        }).then(() =>
+        {
+            this.resetTradeState();
+        }); 
+    }
+
+    /**
      * Creates a code the user can give to their friend to connect.
      */
     createCode()
@@ -345,7 +375,8 @@ export class FriendTrade extends Component
         socket.emit("tradeType", "FRIEND_TRADE"); //As opposed to WONDER_TRADE
         console.log("Connection established.");
         console.log("Requesting code...");
-        socket.emit("createCode", this.getGlobalState().isRandomizedSave);
+        socket.emit("createCode", this.getGlobalState().isRandomizedSave,
+                    this.getGlobalState().username, this.getGlobalState().cloudDataSyncKey);
         console.log("Code request sent!");
     }
 
@@ -414,7 +445,8 @@ export class FriendTrade extends Component
         socket.emit("tradeType", "FRIEND_TRADE"); //As opposed to WONDER_TRADE
         console.log("Connection established.");
         console.log("Sending code...");
-        socket.emit("checkCode", code, this.getGlobalState().isRandomizedSave);
+        socket.emit("checkCode", code, this.getGlobalState().isRandomizedSave,
+                    this.getGlobalState().username, this.getGlobalState().cloudDataSyncKey);
         console.log("Code sent!");
 
         PopUp.fire

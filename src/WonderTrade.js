@@ -235,6 +235,7 @@ export class WonderTrade extends Component
     {
         var pokemon = this.state.pokemon;
         var endWonderTrade = this.endWonderTrade.bind(this);
+        var handleInvalidCloudDataSyncKey = this.handleInvalidCloudDataSyncKey.bind(this);
         var thisObject = this;
         var selectedMonPos = this.getGlobalState().selectedMonPos;
         selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos();
@@ -264,6 +265,10 @@ export class WonderTrade extends Component
                     socket.on('disconnect', thisObject.handleLostConnection.bind(thisObject, socket));
                     socket.on('connect_error', thisObject.handleLostConnection.bind(thisObject, socket));
                     socket.on('invalidPokemon', thisObject.handleInvalidPokemon.bind(thisObject, socket));
+                    socket.on('invalidCloudDataSyncKey', function(data)
+                    {
+                        handleInvalidCloudDataSyncKey(thisObject, socket, data)
+                    });
                     socket.on('message', function(data)
                     {
                         endWonderTrade(thisObject, data, socket);
@@ -273,7 +278,8 @@ export class WonderTrade extends Component
                     socket.emit("tradeType", "WONDER_TRADE");
                     console.log("Connection established.");
                     console.log("Sending pokemon...");
-                    socket.send(pokemon, thisObject.getGlobalState().isRandomizedSave);
+                    socket.send(pokemon, thisObject.getGlobalState().isRandomizedSave,
+                                thisObject.getGlobalState().username, thisObject.getGlobalState().cloudDataSyncKey);
                     console.log("Pokemon sent!");
                     //thisObject.setState({isMonInWonderTrade: true}); //Not needed because state changes in BoxView
 
@@ -406,6 +412,29 @@ export class WonderTrade extends Component
             icon: 'error',
             scrollbarPadding: false,
         });
+    }
+
+    /**
+     * Handles ending the Wonder Trade because the Cloud Boxes were already loaded in a new tab.
+     * @param {Object} thisObject - The "this" object for the Wonder Trade class.
+     * @param {WebSocket} socket - The socket used to connect to the server.
+     * @param {Object} data - The object with the error message sent from the server.
+     */
+    handleInvalidCloudDataSyncKey(thisObject, socket, data)
+    {
+        socket.close();
+        thisObject.setGlobalState({wonderTradeData: null});
+        console.log("Cloud data sync key invalid!");
+
+        PopUp.fire(
+        {
+            title: data,
+            cancelButtonText: `Awww`,
+            showConfirmButton: false,
+            showCancelButton: true,
+            icon: 'error',
+            scrollbarPadding: false,
+        });     
     }
 
     /**
