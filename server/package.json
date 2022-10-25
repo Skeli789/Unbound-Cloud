@@ -8,7 +8,7 @@
     "testEnvironment": "node"
   },
   "scripts": {
-    "test": "npx nyc mocha jstests",
+    "test": "npx nyc mocha jstests --timeout 5000",
     "start": "node server.js"
   },
   "author": "",
@@ -17,6 +17,7 @@
     "@shelf/jest-mongodb": "1.2.3",
     "bcryptjs": "^2.4.3",
     "chai": "^4.3.6",
+    "chai-as-promised": "^7.1.1",
     "chai-string": "^1.5.0",
     "cors": "2.8.5",
     "crypto-js": "4.0.0",

@@ -19,6 +19,7 @@ const ERROR_MESSAGES =
                           <ul style={{textAlign: "left"}}>
                               <li>Be between 3 and 20 characters</li>
                               <li>Only contain basic letters, numbers, and symbols</li>
+                              <li>Be free of profanity</li>
                           </ul>
                       </div>,
     INVALID_EMAIL: "Invalid email!",
@@ -238,6 +239,10 @@ export class SignUp extends Component
     errorPopUp(errorSymbol)
     {
         var text = (errorSymbol in ERROR_MESSAGES) ?  ERROR_MESSAGES[errorSymbol] : errorSymbol;
+
+        if (errorSymbol === "UNKNOWN_ERROR" && this.state.errorText !== "")
+            text = this.state.errorText;
+
         ErrorPopUp(text);
     }
 

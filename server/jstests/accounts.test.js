@@ -4,9 +4,11 @@ const fs = require('fs');
 const path = require('path');
 const accounts = require('../accounts');
 chai.use(require('chai-string'));
+chai.use(require('chai-as-promised'));
 
 const gTestUser = "TestUser";
 const gTestUser2 = "TestUser2";
+const gTestUserProfanity = "coon";
 const gTestEmail = "test@gmail.com";
 const gTestEmail2 = "other@gmail.com";
 const gTestPassword = "blahblah";
@@ -216,7 +218,7 @@ describe("Test CreateUser & UserExists", async () =>
 
     it (`${gTestUser} should be sucessfully created`, async () =>
     {
-        expect(await accounts.CreateUser(gTestEmail, gTestUser, gTestPassword)).to.be.true;
+        expect((await accounts.CreateUser(gTestEmail, gTestUser, gTestPassword))[0]).to.be.true;
     });
 
     it (`${gTestUser} should exist`, () =>
@@ -226,27 +228,34 @@ describe("Test CreateUser & UserExists", async () =>
 
     it (`${gTestEmail} should fail to be created again`, async () =>
     {
-        expect(await accounts.CreateUser(gTestEmail, gTestUser2, gTestPassword)).to.be.false;
+        expect((await accounts.CreateUser(gTestEmail, gTestUser2, gTestPassword))[0]).to.be.false;
     });
 
     it (`${gTestUser} should fail to be created again`, async () =>
     {
-        expect(await accounts.CreateUser(gTestEmail2, gTestUser, gTestPassword)).to.be.false;
+        expect((await accounts.CreateUser(gTestEmail2, gTestUser, gTestPassword))[0]).to.be.false;
     });
 
     it (`account should fail to be created with null email`, async () =>
     {
-        expect(await accounts.CreateUser(null, gTestUser2, gTestPassword)).to.be.false;
+        expect((await accounts.CreateUser(null, gTestUser2, gTestPassword))[0]).to.be.false;
     });
 
     it (`account should fail to be created with null user`, async () =>
     {
-        expect(await accounts.CreateUser(gTestEmail2, null, gTestPassword)).to.be.false;
+        expect((await accounts.CreateUser(gTestEmail2, null, gTestPassword))[0]).to.be.false;
     });
 
     it (`account should fail to be created with null password`, async () =>
     {
-        expect(await accounts.CreateUser(gTestEmail2, gTestUser2, null)).to.be.false;
+        expect((await accounts.CreateUser(gTestEmail2, gTestUser2, null))[0]).to.be.false;
+    });
+
+    it (`account should fail to be created with profanity in the nickname`, async () =>
+    {
+        let [success, err] = await accounts.CreateUser(gTestEmail2, gTestUserProfanity, gTestPassword);
+        expect(success).to.be.false;
+        expect(err).to.equal(`"${gTestUserProfanity}" has profanity in it!`);
     });
 });
 
@@ -404,6 +413,7 @@ describe("Test GetUserAccountCode", () =>
     });
 });
 
+
 describe("Test CreateCloudDataSyncKey & GetCloudDataSyncKey", async () =>
 {
     let regularKey = "";
@@ -411,7 +421,7 @@ describe("Test CreateCloudDataSyncKey & GetCloudDataSyncKey", async () =>
 
     it('should fail to create for non-existent user', async () =>
     {
-        expect(await accounts.CreateCloudDataSyncKey(gTestUser2)).to.throw("");
+        expect(accounts.CreateCloudDataSyncKey(gTestUser2)).to.be.eventually.rejected;
     });
 
     it('should fail to get for non-existent user', async () =>

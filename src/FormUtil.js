@@ -132,6 +132,11 @@ export async function SendFormToServer(data, classObj, mainPageObj, axiosRoute, 
                     {
                         classObj.setState({errorMsg: error.response.data.errorMsg});
 
+                        if ("errorText" in error.response.data)
+                            classObj.setState({errorText: error.response.data.errorText});
+                        else
+                            classObj.setState({errorText: ""});
+
                         if (error.response.data.errorMsg === "ACCOUNT_EXISTS")
                             classObj.setState({invalidEmail: classObj.state.emailInput});
 
