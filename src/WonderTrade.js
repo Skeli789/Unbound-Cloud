@@ -233,9 +233,10 @@ export class WonderTrade extends Component
      */
     startWonderTrade()
     {
+        const endWonderTrade = this.endWonderTrade.bind(this);
+        const handleInvalidCloudDataSyncKey = this.handleInvalidCloudDataSyncKey.bind(this);
+
         var pokemon = this.state.pokemon;
-        var endWonderTrade = this.endWonderTrade.bind(this);
-        var handleInvalidCloudDataSyncKey = this.handleInvalidCloudDataSyncKey.bind(this);
         var thisObject = this;
         var selectedMonPos = this.getGlobalState().selectedMonPos;
         selectedMonPos[this.state.boxSlot] = CreateSingleBlankSelectedPos();
@@ -267,11 +268,11 @@ export class WonderTrade extends Component
                     socket.on('invalidPokemon', thisObject.handleInvalidPokemon.bind(thisObject, socket));
                     socket.on('invalidCloudDataSyncKey', function(data)
                     {
-                        handleInvalidCloudDataSyncKey(thisObject, socket, data)
+                        handleInvalidCloudDataSyncKey(socket, data)
                     });
                     socket.on('message', function(data)
                     {
-                        endWonderTrade(thisObject, data, socket);
+                        endWonderTrade(data, socket);
                     });
 
                     //Send Pokemon for trade
@@ -339,21 +340,22 @@ export class WonderTrade extends Component
 
     /**
      * Receives the new Pokemon and ends the Wonder Trade.
-     * @param {Object} thisObject - The "this" object for the Wonder Trade class.
      * @param {Pokemon} newPokemon - The Pokemon received in the Wonder Trade.
      * @param {WebSocket} socket - The socket used to connect to the server.
      */
-    async endWonderTrade(thisObject, newPokemon, socket)
+    async endWonderTrade(newPokemon, socket)
     {
         const backupTitle = document.title;
 
         while (this.getGlobalState().isSaving || this.getGlobalState().inFriendTrade) //Saving or trade in progress
             await new Promise(r => setTimeout(r, 50)); //Sleep temporarily before checking again if can continue
 
+        socket.off("disconnect"); //Prevents disconnected pop-up from showing
         socket.close();
         console.log(`Received ${GetNickname(newPokemon)}`);
         newPokemon.wonderTradeTimestamp = Date.now(); //Prevent this Pokemon from instantly being sent back
-        thisObject.finishWonderTrade(newPokemon, this.state.boxType, this.state.boxNum, this.state.boxPos);
+        var wonderTradeData = this.getGlobalState().wonderTradeData;
+        this.finishWonderTrade(newPokemon, wonderTradeData.boxType, wonderTradeData.boxNum, wonderTradeData.boxPos);
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
 
         if (!this.getGlobalState().muted)
@@ -416,14 +418,13 @@ export class WonderTrade extends Component
 
     /**
      * Handles ending the Wonder Trade because the Cloud Boxes were already loaded in a new tab.
-     * @param {Object} thisObject - The "this" object for the Wonder Trade class.
      * @param {WebSocket} socket - The socket used to connect to the server.
      * @param {Object} data - The object with the error message sent from the server.
      */
-    handleInvalidCloudDataSyncKey(thisObject, socket, data)
+    handleInvalidCloudDataSyncKey(socket, data)
     {
         socket.close();
-        thisObject.setGlobalState({wonderTradeData: null});
+        this.setGlobalState({wonderTradeData: null});
         console.log("Cloud data sync key invalid!");
 
         PopUp.fire(
