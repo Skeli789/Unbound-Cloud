@@ -4,6 +4,7 @@
 
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
+const _ = require('lodash'); 
 const randomstring = require("randomstring");
 const messages = require('./messages');
 const util = require('./util');
@@ -656,6 +657,20 @@ async function SaveAccountCloudData(username, cloudBoxes, cloudTitles, isRandomi
     }
 
     StoreUserData(username, data);
-    return true;
+
+    //Confirm data was saved successfully
+    var retVal;
+    data = GetUserData(username);
+    var savedBoxes = isRandomizer ? data.cloudRandomizerBoxes : data.cloudBoxes;
+    var savedTitles = isRandomizer ? data.cloudRandomizerTitles : data.cloudTitles;
+    
+    if (!_.isEqual(savedBoxes, cloudBoxes)
+    || !_.isEqual(savedTitles, cloudTitles))
+        retVal = false; //Data was not saved successfully
+    else
+        retVal = true;
+
+    UnlockDB();
+    return retVal;
 }
 module.exports.SaveAccountCloudData = SaveAccountCloudData;
