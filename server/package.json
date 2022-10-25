@@ -23,6 +23,7 @@
     "crypto-js": "4.0.0",
     "express": "4.17.1",
     "express-fileupload": "^1.4.0",
+    "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "mongodb": "3.6.2",
     "mongoose": "^5.13.14",
