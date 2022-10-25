@@ -289,15 +289,17 @@ async function CreateUser(email, username, password, cloudBoxes=[], cloudTitles=
     try
     {
         if (EmailExists(email))
-            throw(`Account with email "${email}" already exists`);
+            throw(`Account with email "${email}" already exists!`);
         else if (UserExists(username))
-            throw(`Account with username "${username}" already exists`);
+            throw(`Account with username "${username}" already exists!`);
         else if (!util.IsValidEmail(email))
-            throw(`"${email}" is not a valid email`);
+            throw(`"${email}" is not a valid email!`);
         else if (!util.IsValidUsername(username))
-            throw(`"${username}" is not a valid username`);
+            throw(`"${username}" is not a valid username!`);
         else if (!util.IsValidPassword(password))
-            throw(`"${password}" is not a valid password`);
+            throw(`"${password}" is not a valid password!`);
+        else if (util.BadWordInText(username))
+            throw(`"${username}" has profanity in it!`);
 
         var activationCode = randomstring.generate({length: 6, charset: "alphanumeric", capitalization: "lowercase"});
         var data =
@@ -330,13 +332,13 @@ async function CreateUser(email, username, password, cloudBoxes=[], cloudTitles=
         }
 
         UnlockDB();
-        return true;
+        return [true, ""];
     }
     catch (e)
     {
         UnlockDB();
         console.log(`An error occurred trying to create the user account for ${email}:\n${e}`);
-        return false;
+        return [false, e];
     }
 }
 module.exports.CreateUser = CreateUser;
@@ -528,6 +530,71 @@ function GetUserAccountCode(username)
     return data.accountCode;
 }
 module.exports.GetUserAccountCode = GetUserAccountCode;
+
+
+/**
+ * Creates a key a user must send when trying to save the Cloud data later on. This prevents issues from opening multiple tabs.
+ * @param {String} username - The user to create the key for.
+ * @param {Boolean} isRandomizer - Whether or not the Cloud data is for a randomized save file.
+ * @returns {String} The key just created.
+ */
+async function CreateCloudDataSyncKey(username, isRandomizer)
+{
+    await LockDB();
+
+    try
+    {
+        if (!UserExists(username))
+            throw(`Account for "${username}" doesn't exist`);
+
+        var data = GetUserData(username);
+        var key = randomstring.generate({length: 12, charset: "alphanumeric"});
+
+        if (!isRandomizer)
+            data.cloudDataSyncKey = key;
+        else
+            data.cloudDataRandomizerSyncKey = key;
+
+        StoreUserData(username, data);
+        UnlockDB();
+        return key;
+    }
+    catch (e)
+    {
+        UnlockDB();
+        throw(`An error occurred trying to create a cloud sync key for ${username}:\n${e}`);
+    }
+}
+module.exports.CreateCloudDataSyncKey = CreateCloudDataSyncKey;
+
+/**
+ * Gets the key a user must send when trying to save their Cloud data. This prevents issues from opening multiple tabs.
+ * @param {String} username - The user to get the key for.
+ * @param {Boolean} isRandomizer - Whether or not the Cloud data is for a randomized save file.
+ * @returns {String} The user's key.
+ */
+async function GetCloudDataSyncKey(username, isRandomizer)
+{
+    await LockDB();
+
+    try
+    {
+        if (!UserExists(username))
+            throw(`Account for "${username}" doesn't exist`);
+
+        var data = GetUserData(username);
+        data = (!isRandomizer) ? data.cloudDataSyncKey : data.cloudDataRandomizerSyncKey;
+        UnlockDB();
+        return data;
+    }
+    catch (e)
+    {
+        UnlockDB();
+        console.log(`An error occurred trying to retrieve the cloud sync key for ${username}:\n${e}`);
+        return "";
+    }
+}
+module.exports.GetCloudDataSyncKey = GetCloudDataSyncKey;
 
 /**
  * Gets a user's stored Pokemon.

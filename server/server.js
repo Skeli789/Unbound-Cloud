@@ -805,8 +805,11 @@ async function TryUpdateOldCloudData(cloudData, res)
         return res.status(StatusCode.ClientErrorConflict).send({errorMsg: "USER_EXISTS"});
     }
 
-    if (await accounts.CreateUser(email, username, password,
-                                  cloudBoxes, cloudTitles, cloudRandomizerData, cloudRandomizerTitles))
+    let [success, error] = await accounts.CreateUser(email, username, password,
+                                                     cloudBoxes, cloudTitles,
+                                                     cloudRandomizerData, cloudRandomizerTitles);
+
+    if (success)
     {
         console.log(`Account "${username}" for ${email} was created successfully!`);
         return res.status(StatusCode.SuccessOK).json
@@ -816,7 +819,7 @@ async function TryUpdateOldCloudData(cloudData, res)
         });
     }
     else
-        return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "UNKNOWN_ERROR"});
+        return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "UNKNOWN_ERROR", errorText: error});
  });
  
  /**
