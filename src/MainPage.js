@@ -1140,8 +1140,8 @@ export default class MainPage extends Component
         {
             await this.setState
             ({
-                homeBoxes: res.data.cloudBoxes,
-                homeTitles: res.data.cloudTitles,
+                homeBoxes: res.data.cloudBoxes.length === 0 ? this.state.homeBoxes : res.data.cloudBoxes,
+                homeTitles: res.data.cloudTitles.length === 0 ? this.state.homeTitles : res.data.cloudTitles,
                 cloudDataSyncKey: res.data.cloudDataSyncKey,
             });    
         }
@@ -1337,7 +1337,7 @@ export default class MainPage extends Component
             PopUp.fire
             ({
                 title: 'Loading, please wait...',
-                timer: 10000, //10 seconds
+                timer: 30000, //30 seconds
                 timerProgressBar: true,
                 allowOutsideClick: false,
                 showConfirmButton: false,
@@ -1360,8 +1360,8 @@ export default class MainPage extends Component
                             saveBoxCount: 0,
                             saveBoxes: [],
                             saveTitles: [],
-                            homeBoxes: res.data.cloudBoxes,
-                            homeTitles: res.data.cloudTitles,
+                            homeBoxes: res.data.cloudBoxes.length === 0 ? this.state.homeBoxes : res.data.cloudBoxes,
+                            homeTitles: res.data.cloudTitles.length === 0 ? this.state.homeTitles : res.data.cloudTitles,
                             cloudDataSyncKey: res.data.cloudDataSyncKey,
                         });
                         this.changeBoxView(STATE_EDITING_HOME_BOXES);
