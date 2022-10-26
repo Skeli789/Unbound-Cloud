@@ -398,11 +398,22 @@ function TryMakeTempFolder()
  */
 app.post('/uploadSaveFile', async (req, res) =>
 {
+    var username, accountCode, isAccountSystem;
+    
     //If using an account system, these variables must be retrieved now because after the file upload they disappear
-    var username = req.body.username;
-    var accountCode = req.body.accountCode;
-    var isAccountSystem = username != null && username !== ""
-                       && accountCode != null && accountCode !== "";
+    try
+    {
+        username = req.body.username;
+        accountCode = req.body.accountCode;
+    }
+    catch (e)
+    {
+        console.log(`An error occurred trying to load the username and accountCode from the save file upload:\n{e}`);
+        return res.status(StatusCode.ClientErrorBadRequest).json(`Request body was not found!`);
+    }
+
+    isAccountSystem = username != null && username !== ""
+                   && accountCode != null && accountCode !== "";
 
     //Finish the upload of the save file
     upload(req, res, function (err)
