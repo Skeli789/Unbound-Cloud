@@ -19,8 +19,9 @@ import {FriendTrade} from "./FriendTrade";
 // eslint-disable-next-line
 import {GoogleAd} from "./GoogleAd";
 import {Login} from "./Login";
-import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname, GetSpecies, HasIllegalEVs, HasEggLockeOT,
-        IsBlankMon, IsEgg, IsHoldingBannedItem, /*PokemonAreDuplicates,*/ WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
+import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname, GetSpecies,
+        HasIllegalEVs, HasEggLockeOT, IsBlankMon, IsEgg, IsHoldingBannedItem, IsShiny,
+        /*PokemonAreDuplicates,*/ WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
 import {SymbolTutorial} from "./SymbolTutorial";
 import {SignUp} from "./SignUp";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
@@ -2412,7 +2413,7 @@ export default class MainPage extends Component
         var i;
         var newBoxes = this.generateBlankHomeBoxes();
         var speciesIndexDict = {};
-        var freeSlot = speciesList.length;
+        var freeSlot = speciesList.length; //Free slot after the living dex mons
 
         //First build a hash table for quick access
         if (compareDexNums)
@@ -2444,10 +2445,19 @@ export default class MainPage extends Component
                 if (IsBlankMon(newBoxes[index])) //Free spot
                     newBoxes[index] = pokemon;
                 else
-                    newBoxes[freeSlot] = pokemon;
+                {
+                    if (IsShiny(pokemon) && !IsShiny(newBoxes[index]))
+                    {
+                        //Prioritize shiny mons in the living dex slot
+                        newBoxes[freeSlot] = newBoxes[index]; //Move to end
+                        newBoxes[index] = pokemon; //Shiny mon
+                    }
+                    else
+                        newBoxes[freeSlot] = pokemon; //Move to end
+                }
             }
             else
-                newBoxes[freeSlot] = pokemon;
+                newBoxes[freeSlot] = pokemon; //Move to end
 
             if (freeSlot >= newBoxes.length)
                 freeSlot = 0;
