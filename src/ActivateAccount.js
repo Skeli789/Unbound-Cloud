@@ -5,9 +5,8 @@ import {isMobile} from 'react-device-detect';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-import {NO_SERVER_CONNECTION_ERROR, STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE,
-        CanUseFileHandleAPI} from "./MainPage";
-import {ErrorPopUp, SendFormToServer} from "./FormUtil";
+import {STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE, CanUseFileHandleAPI} from "./MainPage";
+import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, SendFormToServer} from "./FormUtil";
 
 import {AiOutlineCheckCircle, AiOutlineMail} from "react-icons/ai";
 import {ImPaste} from "react-icons/im";

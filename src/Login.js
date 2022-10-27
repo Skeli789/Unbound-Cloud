@@ -4,9 +4,9 @@ import {Button, Form} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-import {NO_SERVER_CONNECTION_ERROR, STATE_SIGN_UP, STATE_CHOOSE_SAVE_HANDLE,
-        STATE_UPLOAD_SAVE_FILE, STATE_ENTER_ACTIVATION_CODE, CanUseFileHandleAPI} from "./MainPage";
-import {ErrorPopUp, ProcessTextInput, RequiredTooltip, SendFormToServer,
+import {STATE_SIGN_UP, STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE,
+        STATE_ENTER_ACTIVATION_CODE, CanUseFileHandleAPI} from "./MainPage";
+import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, RequiredTooltip, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
 
 import {AiOutlineCheckCircle} from "react-icons/ai";
