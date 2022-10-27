@@ -27,6 +27,7 @@ const ERROR_MESSAGES =
     NO_SERVER_CONNECTION: NO_SERVER_CONNECTION_ERROR,
 };
 const CODE_LENGTH = 6;
+const RESEND_CODE_COOLDOWN = 120 * 1000; //2 Minutes
 const PopUp = withReactContent(Swal);
 
 
@@ -44,6 +45,7 @@ export class ActivateAccount extends Component
             codeInput: "",
             showedErrorPopUp: false,
             errorMsg: "",
+            lastTimeClickedResendCode: "lastTimeClickedResendCode" in localStorage ? localStorage.lastTimeClickedResendCode : 0,
         }
 
         this.mainPage = props.mainPage;
@@ -148,11 +150,22 @@ export class ActivateAccount extends Component
      */
     async resendActivationCode()
     {
-        const formData = new FormData(); //formData contains the Home boxes
-        formData.append("username", this.getGlobalState().username);
-        formData.append("accountCode", this.getGlobalState().accountCode);
+        var timeSince = Date.now() - this.state.lastTimeClickedResendCode;
 
-        await SendFormToServer(formData, this, this.mainPage, "/resendActivationCode", this.checkEmailForNewCodePopUp.bind(this));
+        if (timeSince >= RESEND_CODE_COOLDOWN)
+        {
+            //Can resend code again
+            const formData = new FormData(); //formData contains the Home boxes
+            formData.append("username", this.getGlobalState().username);
+            formData.append("accountCode", this.getGlobalState().accountCode);
+    
+            await SendFormToServer(formData, this, this.mainPage, "/resendActivationCode", this.checkEmailForNewCodePopUp.bind(this));
+        }
+        else
+        {
+            var timeRemaining = Math.ceil((RESEND_CODE_COOLDOWN - timeSince) / 1000);
+            ErrorPopUp(`Please wait ${timeRemaining} seconds before sending another code.`)
+        }
     }
 
     /**
@@ -160,6 +173,8 @@ export class ActivateAccount extends Component
      */
     checkEmailForNewCodePopUp()
     {
+        localStorage.lastTimeClickedResendCode = Date.now(); //So if the page is reloaded the timer remains intact
+        this.setState({lastTimeClickedResendCode: localStorage.lastTimeClickedResendCode});
         PopUp.fire(
         {
             icon: "success",
