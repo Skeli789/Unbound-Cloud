@@ -3,9 +3,8 @@ import {Button, Form, OverlayTrigger, Tooltip} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-import {BLANK_PROGRESS_BAR, NO_SERVER_CONNECTION_ERROR, STATE_ENTER_ACTIVATION_CODE,
-        STATE_LOGIN, UNOFFICIAL_RELEASE} from "./MainPage";
-import {ErrorPopUp, ProcessTextInput, RequiredTooltip, SendFormToServer,
+import {BLANK_PROGRESS_BAR, STATE_ENTER_ACTIVATION_CODE, STATE_LOGIN, UNOFFICIAL_RELEASE} from "./MainPage";
+import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, RequiredTooltip, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
 
 import {AiOutlineCheckCircle, AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
