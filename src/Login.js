@@ -4,7 +4,7 @@ import {Button, Form} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-import {STATE_SIGN_UP, STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE,
+import {STATE_SIGN_UP, STATE_FORGOT_PASSWORD, STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE,
         STATE_ENTER_ACTIVATION_CODE, CanUseFileHandleAPI} from "./MainPage";
 import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, RequiredTooltip, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
@@ -115,7 +115,7 @@ export class Login extends Component
 
         if (errorMsg === "") //No error
         {
-            const formData = new FormData(); //formData contains the Home boxes
+            const formData = new FormData();
             formData.append("username", this.state.usernameInput);
             formData.append("password", this.state.passwordInput);
 
@@ -181,7 +181,7 @@ export class Login extends Component
                 {/*Redirect to Sign-Up Page Button*/}
                 <div className="already-have-account-button"
                      onClick={() => this.getMainPage().setState({editState: STATE_SIGN_UP})}>
-                    I don't have an account.
+                    I don't have an account
                 </div>
     
                 <Form onSubmit={(e) => this.submitLogin(e)}>
@@ -208,6 +208,10 @@ export class Login extends Component
                             value={this.state.passwordInput}
                             onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", true)})}
                         />
+                        <div className="already-have-account-button forgot-password-button"
+                            onClick={() => this.getMainPage().setState({editState: STATE_FORGOT_PASSWORD})}>
+                            I forgot my password
+                        </div>
                     </Form.Group>
 
                     {/* Remember User Input Input */}
@@ -234,5 +238,3 @@ export class Login extends Component
         )
     }
 }
-
-export default Login;

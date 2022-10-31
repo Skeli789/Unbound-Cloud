@@ -763,8 +763,8 @@ async function TryUpdateOldCloudData(cloudData, res)
  * @param {String} cloudDataPX - 8 chunks of strings when combined together form the Cloud Boxes to save with the account.
  * @returns {StatusCode} SuccessOK if the account was created successfullty, error responses if it was not.
  */
- app.post('/createUser', async (req, res) =>
- {
+app.post('/createUser', async (req, res) =>
+{
     var email, username, password, totalCloudData, cloudBoxes, cloudTitles, cloudRandomizerData, cloudRandomizerTitles;
     console.log("Trying to create user account...");
 
@@ -831,14 +831,14 @@ async function TryUpdateOldCloudData(cloudData, res)
     }
     else
         return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "UNKNOWN_ERROR", errorText: error});
- });
+});
  
- /**
-  * Endpoint: /checkUser - Checks an username and password combination for logging into an account.
-  * @param {String} username - The username of the account being logged into.
-  * @param {String} password - The password of the account being logged into.
-  * @returns {StatusCode} SuccessOK if the username and password matched, error codes if not.
-  */
+/**
+ * Endpoint: /checkUser - Checks an username and password combination for logging into an account.
+ * @param {String} username - The username of the account being logged into.
+ * @param {String} password - The password of the account being logged into.
+ * @returns {StatusCode} SuccessOK if the username and password matched, error codes if not.
+ */
 app.post('/checkUser', async (req, res) =>
 {
     try
@@ -875,12 +875,12 @@ app.post('/checkUser', async (req, res) =>
     });
 });
 
- /**
-  * Endpoint: /activateUser - Activates a user account.
-  * @param {String} username - The username of the account being activated.
-  * @param {String} activationCode - The confirmation code sent to the username being activated.
-  * @returns {StatusCode} SuccessOK if the account was activated successfully, error codes if not.
-  */
+/**
+ * Endpoint: /activateUser - Activates a user account.
+ * @param {String} username - The username of the account being activated.
+ * @param {String} activationCode - The confirmation code sent to the username being activated.
+ * @returns {StatusCode} SuccessOK if the account was activated successfully, error codes if not.
+ */
 app.post('/activateUser', async (req, res) =>
 {
     username = req.body.username;
@@ -898,6 +898,12 @@ app.post('/activateUser', async (req, res) =>
         return res.status(StatusCode.ClientErrorForbidden).send({errorMsg: "INVALID_ACTIVATION_CODE"});
 });
 
+/**
+ * Endpoint: /resendActivationCode - Sends another activation code to a user.
+ * @param {String} username - The username of the account to send the email for.
+ * @param {String} accountCode - The account code of the account to send the email for.
+ * @returns {StatusCode} SuccessOK if the email was sent successfully, error codes if not.
+ */
 app.post('/resendActivationCode', async (req, res) =>
 {
     username = req.body.username;
@@ -919,6 +925,64 @@ app.post('/resendActivationCode', async (req, res) =>
         else
             return res.status(StatusCode.ServerErrorInternal).send({errorMsg: "UNKNOWN_ERROR"});  
     }
+});
+
+/**
+ * Endpoint: /sendPasswordResetCode - Sends a password reset code to a user.
+ * @param {String} email - The email to send the password reset code to.
+ * @returns {StatusCode} SuccessOK if the email was sent successfully, error codes if not.
+ */
+app.post('/sendPasswordResetCode', async (req, res) =>
+{
+    email = req.body.email;
+    console.log(`Trying to send a password reset code to "${email}"...`);
+
+    if (!accounts.EmailExists(email))
+        return res.status(StatusCode.ClientErrorNotFound).send({errorMsg: "INVALID_EMAIL"});
+    else if (accounts.ResetPasswordTooRecently(accounts.EmailToUsername(email)))
+        return res.status(StatusCode.ClientErrorTooManyRequests).send({errorMsg: "PASSWORD_RESET_COOLDOWN"});
+    else if (await accounts.SendPasswordResetCode(email))
+        return res.status(StatusCode.SuccessOK).json("");
+    else
+        return res.status(StatusCode.ServerErrorInternal).send({errorMsg: "UNKNOWN_ERROR"});
+});
+
+
+/**
+ * Endpoint: /resetPassword - Resets a user's password.
+ * @param {String} email - The email on the account.
+ * @param {String} newPassword - The new password to set for the account.
+ * @param {String} resetCode - The reset password code sent to the user's email earlier.
+ * @returns {StatusCode} SuccessOK if the password was reset, error codes if not.
+ */
+app.post('/resetPassword', async (req, res) =>
+{
+    email = req.body.email;
+    newPassword = req.body.newPassword;
+    resetCode = req.body.resetCode;
+    console.log(`Trying to reset the password for "${email}"...`);
+
+    if (email == null || newPassword == null || resetCode == null)
+        return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "NULL_ACCOUNT"});
+    else if (email === "" || newPassword === "" || resetCode === "")
+        return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "BLANK_INPUT"});
+    else if (!accounts.EmailExists(email))
+        return res.status(StatusCode.ClientErrorNotFound).send({errorMsg: "INVALID_EMAIL"});
+
+    var username = accounts.EmailToUsername(email);
+    if (accounts.ResetPasswordTooRecently(username))
+        return res.status(StatusCode.ClientErrorTooManyRequests).send({errorMsg: "PASSWORD_RESET_COOLDOWN"});
+    else if (!util.IsValidPassword(newPassword))
+        return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "INVALID_PASSWORD"});
+    else if (accounts.HasPasswordResetCodeExpired(username))
+        return res.status(StatusCode.ClientErrorLoginTimeOut).send({errorMsg: "RESET_CODE_TOO_OLD"});
+    else if (resetCode !== accounts.GetPassswordResetCode(username))
+        return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "INVALID_RESET_CODE"});
+
+    if (await accounts.ChangePassword(username, newPassword))
+        return res.status(StatusCode.SuccessOK).json("");
+    else
+        return res.status(StatusCode.ServerErrorInternal).send({errorMsg: "UNKNOWN_ERROR"});
 });
 
 /**

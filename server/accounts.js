@@ -12,6 +12,8 @@ require('dotenv').config({path: __dirname + '/.env'});
 
 const BASE_STORAGE_DIR = `${process.env.APPDATA}/unboundcloud`;
 const EMAIL_TO_USER_FILE = `${BASE_STORAGE_DIR}/EmailToUsername.json`;
+const PASSWORD_RESET_CODE_EXPIRATION_TIME = 60 * 60 * 1000; //60 Minutes
+const PASSWORD_RESET_COOLDOWN = 60 * 60 * 1000; //60 Minutes
 
 var gDBLocked = false;
 
@@ -442,6 +444,145 @@ async function ResendActivationEmail(username)
 module.exports.ResendActivationEmail = ResendActivationEmail;
 
 /**
+ * Sends a code a user can use to reset their password.
+ * @param {String} email - The email to send the code to.
+ * @returns {Boolean} true if the email was sent successfully, false if it was not.
+ */
+async function SendPasswordResetCode(email)
+{
+    if (!EmailExists(email))
+        return false;
+
+    var username = EmailToUsername(email);
+    var resetCode = await CreatePasswordResetCode(username);
+    return await messages.SendPasswordResetEmail(email, username, resetCode);
+}
+module.exports.SendPasswordResetCode = SendPasswordResetCode;
+
+/**
+ * Creates a code a user can use to reset their password.
+ * @param {String} username - The username of the account to create the code for.
+ * @returns {String} The recently created password reset code. null if error.
+ */
+async function CreatePasswordResetCode(username)
+{
+    await LockDB();
+
+    try
+    {
+        if (!UserExists(username))
+            throw(`Account for "${username}" doesn't exist`);
+
+        var data = GetUserData(username);
+        data.passwordResetCode = randomstring.generate({length: 6, charset: "alphanumeric"});
+        data.passwordResetCodeCreatedAt = Date.now();
+        StoreUserData(username, data);
+        UnlockDB();
+        return data.passwordResetCode;
+    }
+    catch (e)
+    {
+        UnlockDB();
+        console.log(`An error occurred trying to create a password reset code for ${username}:\n${e}`);
+        return null;
+    }
+}
+module.exports.CreatePasswordResetCode = CreatePasswordResetCode;
+
+/**
+ * Gets a user's password reset code.
+ * @param {String} username - The username of the account to get the code for.
+ * @returns {String} The password reset code saved in the user's account. null if one hasn't been created.
+ */
+function GetPassswordResetCode(username)
+{
+    if (!UserExists(username))
+        return null;
+
+    var data = GetUserData(username);
+    return ("passwordResetCode" in data) ? data.passwordResetCode : null;
+}
+module.exports.GetPassswordResetCode = GetPassswordResetCode;
+
+/**
+ * Checks if a user's password reset code has expired.
+ * @param {String} username - The username of the account to check the code for.
+ * @returns {Boolean} true if the user's password reset code has expired and can no longer be used,
+ *                    false if it still can be or one was never created.
+ */
+function HasPasswordResetCodeExpired(username)
+{
+    if (!UserExists(username))
+        return false;
+
+    var data = GetUserData(username);
+    if ("passwordResetCodeCreatedAt" in data)
+    {
+        var timeSince = Date.now() - data.passwordResetCodeCreatedAt;
+        return timeSince >= PASSWORD_RESET_CODE_EXPIRATION_TIME;
+    }
+
+    return false;
+}
+module.exports.HasPasswordResetCodeExpired = HasPasswordResetCodeExpired;
+
+/**
+ * Checks if a user reset their password too recently to change it again.
+ * @param {String} username - The username of the account to check.
+ * @returns {Boolean} true if the user needs to wait before resetting their password again, false if they don't.
+ */
+function ResetPasswordTooRecently(username)
+{
+    if (!UserExists(username))
+        return false;
+
+    var data = GetUserData(username);
+    if ("lastResetPassword" in data)
+    {
+        var timeSince = Date.now() - data.lastResetPassword;
+        return timeSince < PASSWORD_RESET_COOLDOWN;
+    }
+
+    return false; 
+}
+module.exports.ResetPasswordTooRecently = ResetPasswordTooRecently;
+
+/**
+ * Changes a user's account password.
+ * @param {String} username - The user of the account to change the password for.
+ * @param {String} newPassword - The new password for the user's account.
+ * @returns {Boolean} true if the password was changed successfully, false if not.
+ */
+async function ChangePassword(username, newPassword)
+{
+    await LockDB();
+
+    try
+    {
+        if (!UserExists(username))
+            throw(`Account for "${username}" doesn't exist`);
+        else if (!util.IsValidPassword(newPassword))
+            throw(`"${newPassword}" is not a valid password`);
+
+        var data = GetUserData(username);
+        data.password = await EncryptPassword(newPassword);
+        data.lastResetPassword = Date.now();
+        delete data.passwordResetCode;
+        delete data.passwordResetCodeCreatedAt;
+        StoreUserData(username, data);
+        UnlockDB();
+        return true;
+    }
+    catch (e)
+    {
+        UnlockDB();
+        console.log(`An error occurred trying to change the password for ${username}:\n${e}`);
+        return false;
+    }
+}
+module.exports.ChangePassword = ChangePassword;
+
+/**
   * Delete's a user's account.
   * @param {String} username - The username of the account to delete.
   * @param {String} password - The user's password to confirm the deletion.
@@ -531,7 +672,6 @@ function GetUserAccountCode(username)
     return data.accountCode;
 }
 module.exports.GetUserAccountCode = GetUserAccountCode;
-
 
 /**
  * Creates a key a user must send when trying to save the Cloud data later on. This prevents issues from opening multiple tabs.
