@@ -6,4 +6,3 @@ New Features:
 
 Bug Fixes:
 -Can wonder trade with self? (Did it on the website - saved for a friend trade and then traded while a mon was up for Wonder Trade and it happened when putting another mon up after the original was no longer in a wonder trade for some reason)
--Progression locked save files should say advance further (eg. Sandbox Nuzlocke wiped Gym 6) and give specific reason of advancement

@@ -453,8 +453,9 @@ app.post('/uploadSaveFile', async (req, res) =>
         let boxes = data["boxes"];
         let titles = data["titles"];
         let randomizer = data["randomizer"];
-        let accessible = data["accessible"];
+        let inaccessibleReason = data["inaccessibleReason"];
         let oldVersion = data["oldVersion"];
+        let accessible = inaccessibleReason === "";
 
         if (gameId === "" || boxCount === 0 || boxes.length === 0 || titles.length === 0) //Bad save file
         {
@@ -464,7 +465,7 @@ app.post('/uploadSaveFile', async (req, res) =>
                 result = res.status(StatusCode.ClientErrorBadRequest).json("ERROR: The uploaded save file is corrupt or not supported.");
         }
         else if (!accessible)
-            result = res.status(StatusCode.ClientErrorForbidden).json("The uploaded save file is supported, but not accessible based on the current progression.");
+            result = res.status(StatusCode.ClientErrorForbidden).json(inaccessibleReason);
         else
         {
             let retData = 

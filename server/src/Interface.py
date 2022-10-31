@@ -29,7 +29,7 @@ def main():
                 allPokemon = []   # In case error reading save blocks
                 boxTitles = []
                 randomizer = False
-                accessible = True
+                inaccessibleReason = ""
                 oldVersion = ""
 
                 if Defines.IsOldVersionFileSignature(fileSignature):
@@ -42,10 +42,10 @@ def main():
                         randomizer = True
 
                     if not SaveBlockProcessing.IsAccessibleCurrently(saveBlocks):
-                        accessible = False
+                        inaccessibleReason = SaveBlockProcessing.GetInaccessibleReason(saveBlocks)
 
                 returnData({"gameId": Defines.GetCurrentDefinesDir(), "boxCount": Defines.BoxCount(),  # gameId is used on the front-end to load game-specific data
-                            "boxes": allPokemon, "titles": boxTitles, "randomizer": randomizer, "accessible": accessible, "oldVersion": oldVersion})
+                            "boxes": allPokemon, "titles": boxTitles, "randomizer": randomizer, "inaccessibleReason": inaccessibleReason, "oldVersion": oldVersion})
                 return
         elif command == "UPDATE_SAVE":
             if len(sys.argv) > 3:  # Has data and save file

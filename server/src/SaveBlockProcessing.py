@@ -217,9 +217,9 @@ class SaveBlockProcessing:
             return -1
 
     @staticmethod
-    def IsAccessibleCurrently(saveBlocks: Dict[int, List[int]]) -> bool:
+    def GetInaccessibleReason(saveBlocks: Dict[int, List[int]]) -> str:
         if saveBlocks == {}:
-            return False
+            return "Saveblocks are empty."
 
         conditions = Defines.GetInaccessibleConditions()
         for condition in conditions:
@@ -241,21 +241,25 @@ class SaveBlockProcessing:
             if "flagSet" in condition:
                 flag = condition["flagSet"]
                 if SaveBlockProcessing.FlagGet(flag, saveBlocks):
-                    return False
+                    return condition["reason"]
             elif "flagNotSet" in condition:
                 flag = condition["flagNotSet"]
                 if not SaveBlockProcessing.FlagGet(flag, saveBlocks):
-                    return False
+                    return condition["reason"]
             elif "varSetTo" in condition:
                 var, value = condition["varSetTo"]
                 if SaveBlockProcessing.VarGet(var, saveBlocks) == value:
-                    return False
+                    return condition["reason"]
             elif "varNotSetTo" in condition:
                 var, value = condition["varNotSetTo"]
                 if SaveBlockProcessing.VarGet(var, saveBlocks) != value:
-                    return False
+                    return condition["reason"]
 
-        return True
+        return ""
+
+    @staticmethod
+    def IsAccessibleCurrently(saveBlocks: Dict[int, List[int]]) -> bool:
+        return SaveBlockProcessing.GetInaccessibleReason(saveBlocks) == ""
 
 
     ### Code for updating save files ###
