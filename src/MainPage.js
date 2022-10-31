@@ -2439,7 +2439,7 @@ export default class MainPage extends Component
         for (i = 0; i < speciesList.length; ++i)
         {
             let pokemon = this.state.homeBoxes[i]
-            let species = GetSpecies(pokemon);
+            let species = GetSpecies(pokemon, true);
             let inDict = (compareDexNums) ? species in gSpeciesToDexNum && gSpeciesToDexNum[species] in speciesIndexDict : species in speciesIndexDict;
 
             if (inDict)
