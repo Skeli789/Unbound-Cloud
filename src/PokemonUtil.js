@@ -498,16 +498,36 @@ function ModifyStatByNature(nature, rawStat, statId)
 
 /**
  * @param {Pokemon} pokemon - The Pokemon to process.
+ * @param {Boolean} adjustUnown - Whether or not to convert an Unown to it's proper letter species.
  * @returns {String} The Pokemon's species id.
  */
-export function GetSpecies(pokemon)
+export function GetSpecies(pokemon, adjustUnown=false)
 {
     let dataMember = "species";
+    let species = "SPECIES_NONE";
 
     if (IsValidPokemon(pokemon) && dataMember in pokemon)
-        return pokemon[dataMember];
+    {
+        species = pokemon[dataMember]
+        if (adjustUnown && species === "SPECIES_UNOWN")
+        {
+            var unownLetter = GetUnownLetter(pokemon);
+            switch (unownLetter)
+            {
+                case 0:
+                    break;
+                default:
+                    if (unownLetter < 0 || unownLetter >= NUM_UNOWN_FORMS)
+                        break;
 
-    return "SPECIES_NONE";
+                    let speciesIds = Object.keys(SpeciesNames);
+                    species = speciesIds[speciesIds.indexOf("SPECIES_UNOWN_B") + (unownLetter - 1)];
+                    break;
+            }
+        }
+    }
+
+    return species;
 }
 
 /**
@@ -1637,7 +1657,7 @@ export function WillAtLeastOneMonLoseDataInSave(boxes, gameId)
  */
 function GetMonVisibleSpecies(pokemon)
 {
-    var species = GetSpecies(pokemon);
+    var species = GetSpecies(pokemon, true);
 
     if (IsEgg(pokemon))
     {
@@ -1660,21 +1680,6 @@ function GetMonVisibleSpecies(pokemon)
 
         switch (species)
         {
-            case "SPECIES_UNOWN":
-                var unownLetter = GetUnownLetter(pokemon);
-                switch (unownLetter)
-                {
-                    case 0:
-                        break;
-                    default:
-                        if (unownLetter < 0 || unownLetter >= NUM_UNOWN_FORMS)
-                            break;
-
-                        let speciesIds = Object.keys(SpeciesNames);
-                        species = speciesIds[speciesIds.indexOf("SPECIES_UNOWN_B") + (unownLetter - 1)];
-                        break;
-                }
-                break;
             case "SPECIES_WOBBUFFET":
                 if (IsFemale(pokemon))
                     species = "SPECIES_WOBBUFFET_F"; //Not an actual species, but needed to load the red lips

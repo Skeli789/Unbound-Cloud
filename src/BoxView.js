@@ -1413,7 +1413,7 @@ export class BoxView extends Component
 
             if (addLivingDexIcon)
             {
-                livingDexIcon = this.getLivingDexSpeciesIcon(i, GetSpecies(pokemon));
+                livingDexIcon = this.getLivingDexSpeciesIcon(i, GetSpecies(pokemon, true));
                 if (livingDexIcon !== "")
                     icon = livingDexIcon;
             }
