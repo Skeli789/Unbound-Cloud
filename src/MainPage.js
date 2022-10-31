@@ -1240,41 +1240,47 @@ export default class MainPage extends Component
             }).then((result) =>
             {
                 if (result.isConfirmed)
-                {
-                    var buttonText = "OK";
-                    if (this.state.oldVersionSaveError)
-                        buttonText = "How do I update?";
-
-                    let supportedHacks = [];
-        
-                    for (let hack of SUPPORTED_HACKS)
-                        supportedHacks.push(`<li>${hack}</li>`);
-        
-                    supportedHacks = supportedHacks.toString().replaceAll(",", "");
-                    PopUp.fire
-                    ({
-                        title: "Supported Hacks",
-                        html: `<ul style="text-align: left">${supportedHacks}</ul>`,
-                        confirmButtonText: buttonText,
-                    }).then((result) =>
-                    {
-                        if (result.isConfirmed && this.state.oldVersionSaveError)
-                        {
-                            PopUp.fire
-                            ({
-                                title: "How To Update",
-                                html: `<ol style="text-align: left">`
-                                    + "<li>Patch a fresh ROM.</li>"
-                                    + "<li>Give the newly patched ROM the same name as the old ROM.</li>"
-                                    + "<li>Delete the old ROM and move the newly patched ROM to the folder where the old ROM was.</li>"
-                                    + "</ol>"
-                                    + `<p style="text-align: justify">If you do not understand these steps, ask in the relevant hack's Discord server and someone will help you out.</.b>`,
-                            });
-                        }
-                    });
-                }
+                    this.printSupportedHacks();
             });
         }
+    }
+
+    /**
+     * Displays a pop-up of the supported ROM Hacks.
+     */
+    printSupportedHacks()
+    {
+        var buttonText = "OK";
+        if (this.state.oldVersionSaveError)
+            buttonText = "How do I update?";
+
+        let supportedHacks = [];
+
+        for (let hack of SUPPORTED_HACKS)
+            supportedHacks.push(`<li>${hack}</li>`);
+
+        supportedHacks = supportedHacks.toString().replaceAll(",", "");
+        PopUp.fire
+        ({
+            title: "Supported Hacks",
+            html: `<ul style="text-align: left">${supportedHacks}</ul>`,
+            confirmButtonText: buttonText,
+        }).then((result) =>
+        {
+            if (result.isConfirmed && this.state.oldVersionSaveError)
+            {
+                PopUp.fire
+                ({
+                    title: "How To Update",
+                    html: `<ol style="text-align: left">`
+                        + "<li>Patch a fresh ROM.</li>"
+                        + "<li>Give the newly patched ROM the same name as the old ROM.</li>"
+                        + "<li>Delete the old ROM and move the newly patched ROM to the folder where the old ROM was.</li>"
+                        + "</ol>"
+                        + `<p style="text-align: justify">If you do not understand these steps, ask in the relevant hack's Discord server and someone will help you out.</.b>`,
+                });
+            }
+        });
     }
 
     /**
@@ -3550,6 +3556,10 @@ export default class MainPage extends Component
                     <h2>Upload your save file.</h2>
                     <h3>If you don't know where it is, start by looking in the same place as your ROM.</h3>
                     <h3>The save file is a 128 kB .sav, .srm, or .sa1 file that has your ROM's name.</h3>
+                    <div className="already-have-account-button"
+                        onClick={() => this.printSupportedHacks()}>
+                        Which hacks are supported?
+                    </div>
                     <div>
                         <label className="btn btn-success btn-lg choose-save-file-button">
                             Upload File
@@ -3693,6 +3703,10 @@ export default class MainPage extends Component
                     <h2>Choose your save file.</h2>
                     <h3>If you don't know where it is, start by looking in the same folder as your ROM.</h3>
                     <h3>The save file is a 128 kB .sav, .srm, or .sa1 file that has your ROM's name.</h3>
+                    <div className="already-have-account-button mb-1"
+                        onClick={() => this.printSupportedHacks()}>
+                        Which hacks are supported?
+                    </div>
                     <div>
                         {
                             showLastUsedButton ? //Loaded one in the past
