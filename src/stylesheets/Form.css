@@ -33,6 +33,11 @@
     margin-bottom: 5% !important;
 }
 
+.forgot-password-button
+{
+    margin: 0;
+}
+
 .show-password-symbol
 {
     display: inline-block;

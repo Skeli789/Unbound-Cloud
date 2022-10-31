@@ -12,6 +12,7 @@ const gTestUserProfanity = "coon";
 const gTestEmail = "test@gmail.com";
 const gTestEmail2 = "other@gmail.com";
 const gTestPassword = "blahblah";
+const gTestPassword2 = "glahflah";
 
 
 describe("Test LockDB and UnlockDB", async () =>
@@ -414,6 +415,114 @@ describe("Test GetUserAccountCode", () =>
 });
 
 
+describe("Test Password Reset Functions", async () =>
+{
+    var resetCode = "";
+
+    it('should fail to create for non-existent user', async () =>
+    {
+        expect(await accounts.CreatePasswordResetCode(gTestUser2)).to.be.null;
+    });
+
+    it('should fail to get when none has been created yet', () =>
+    {
+        expect(accounts.GetPassswordResetCode(gTestUser)).to.be.null;
+    });
+
+    it('should not have expired when none has been created yet', () =>
+    {
+        expect(accounts.HasPasswordResetCodeExpired(gTestUser)).to.be.false;
+    });
+
+    it('should not have reset too recently', () =>
+    {
+        expect(accounts.ResetPasswordTooRecently(gTestUser)).to.be.false;
+    });
+
+    it('should create successfully', async () =>
+    {
+        resetCode = await accounts.CreatePasswordResetCode(gTestUser);
+        expect(resetCode).to.not.be.null;
+        expect(resetCode.length).to.equal(6);
+    });
+
+    it('should fail to get for non-existent user', () =>
+    {
+        expect(accounts.GetPassswordResetCode(gTestUser2)).to.be.null;
+    });
+
+    it('should get successfully', () =>
+    {
+        expect(accounts.GetPassswordResetCode(gTestUser)).to.equal(resetCode);
+    });
+
+    it('should not have expired right after being created', () =>
+    {
+        expect(accounts.HasPasswordResetCodeExpired(gTestUser)).to.be.false;
+    });
+
+    it('should not have expired for non-existent user', () =>
+    {
+        expect(accounts.HasPasswordResetCodeExpired(gTestUser2)).to.be.false;
+    });
+
+    it('should fail to change for non-existent user', async () =>
+    {
+        expect(await accounts.ChangePassword(gTestUser2, gTestPassword)).to.be.false;
+    });
+
+    it('should fail to change for bad password', async () =>
+    {
+        expect(await accounts.ChangePassword(gTestUser, null)).to.be.false;
+    });
+
+    it('should change successfully', async () =>
+    {
+        expect(await accounts.ChangePassword(gTestUser, gTestPassword2)).to.be.true;
+    });
+
+    it('should verify new password', async () =>
+    {
+        expect(await accounts.VerifyCorrectPassword(gTestUser, gTestPassword2)).to.be.true;
+    });
+
+    it('should fail to get when after password was changed', () =>
+    {
+        expect(accounts.GetPassswordResetCode(gTestUser)).to.be.null;
+    });
+
+    it('should not have expired when password was changed', () =>
+    {
+        expect(accounts.HasPasswordResetCodeExpired(gTestUser)).to.be.false;
+    });
+
+    it('should have reset too recently', () =>
+    {
+        expect(accounts.ResetPasswordTooRecently(gTestUser)).to.be.true;
+    });
+
+    it('should not have reset too recently for non-existent user', () =>
+    {
+        expect(accounts.ResetPasswordTooRecently(gTestUser2)).to.be.false;
+    });
+
+    it('should fail to send code to non-existent email', async () =>
+    {
+        expect(await accounts.SendPasswordResetCode(gTestEmail2)).to.be.false;
+    });
+
+    it('should send code successfully', async () =>
+    {
+        expect(await accounts.SendPasswordResetCode(gTestEmail)).to.be.true;
+    });
+
+    it('should get code successfully after a new one was sent', async () =>
+    {
+        expect(await accounts.GetPassswordResetCode(gTestUser)).to.not.be.null;
+    });
+});
+
+
 describe("Test CreateCloudDataSyncKey & GetCloudDataSyncKey", async () =>
 {
     let regularKey = "";
@@ -553,7 +662,7 @@ describe("Test DeleteUser", async () =>
 
     it (`should delete ${gTestUser}`, async () =>
     {
-        expect(await accounts.DeleteUser(gTestUser, gTestPassword)).to.be.true;
+        expect(await accounts.DeleteUser(gTestUser, gTestPassword2)).to.be.true;
     });
 
     it (`${gTestUser} should not exist`, () =>

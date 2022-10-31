@@ -15,6 +15,7 @@ import {ActivateAccount} from "./ActivateAccount";
 import {BoxList} from "./BoxList";
 import {BoxView, HIGHEST_HOME_BOX_NUM, MONS_PER_BOX, MONS_PER_COL, MONS_PER_ROW} from "./BoxView";
 import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
+import {ForgotPassword} from "./ForgotPassword";
 import {NO_SERVER_CONNECTION_ERROR} from "./FormUtil";
 import {FriendTrade} from "./FriendTrade";
 // eslint-disable-next-line
@@ -60,6 +61,7 @@ export const STATE_MOVING_POKEMON = 10;
 export const STATE_SIGN_UP = 11;
 export const STATE_LOGIN = 12;
 export const STATE_ENTER_ACTIVATION_CODE = 13;
+export const STATE_FORGOT_PASSWORD = 14;
 
 const HOME_FILE_NAME = "cloud.dat";
 const HOME_FILE_RANDOMIZER_NAME = "cloud_randomizer.dat"
@@ -396,6 +398,7 @@ export default class MainPage extends Component
                 //Fallthrough
             case STATE_UPLOAD_SAVE_FILE:
             case STATE_ENTER_ACTIVATION_CODE:
+            case STATE_FORGOT_PASSWORD:
                 if (ACCOUNT_SYSTEM)
                 {
                     this.setState
@@ -3138,6 +3141,7 @@ export default class MainPage extends Component
                 break;
             case STATE_UPLOAD_SAVE_FILE:
             case STATE_ENTER_ACTIVATION_CODE:
+            case STATE_FORGOT_PASSWORD:
                 if (ACCOUNT_SYSTEM)
                     printBackButton = true;
                 break;
@@ -3886,6 +3890,19 @@ export default class MainPage extends Component
     }
 
     /**
+     * Gets the page where a user can reset their forgotten password.
+     * @returns {JSX} The forgot password page.
+     */
+    printForgotPasswordPage()
+    {
+        return (
+            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
+                <ForgotPassword mainPage={this}/>
+            </div>
+        );
+    }
+
+    /**
      * Gets the page that says the current browser is incompatible with the site.
      * @returns {JSX} The not supported in browser page.
      */
@@ -3971,7 +3988,13 @@ export default class MainPage extends Component
                 break;
             case STATE_ENTER_ACTIVATION_CODE:
                 page = this.printAccountActivationPage();
-                noScroll = false;
+                if (!isMobile) //So the page is centered on mobile
+                    noScroll = false;
+                break;
+            case STATE_FORGOT_PASSWORD:
+                page = this.printForgotPasswordPage();
+                if (!isMobile) //So the page is centered on mobile
+                    noScroll = false;
                 break;
             case STATE_ASK_FIRST_TIME:
                 page = this.printAskFirstTime();

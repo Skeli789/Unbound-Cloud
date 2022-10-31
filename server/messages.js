@@ -74,3 +74,21 @@ async function SendActivationEmail(email, username, activationCode)
     return await SendEmail(email, "Welcome to Unbound Cloud!", text);
 }
 module.exports.SendActivationEmail = SendActivationEmail;
+
+/**
+ * 
+ * @param {String} email - The email to send the password reset code to.
+ * @param {String} username - The username on the account.
+ * @param {String} resetCode - The password reset code.
+ * @returns {Boolean} true if the email is sent successfully, false if any errors occurred.
+ */
+async function SendPasswordResetEmail(email, username, resetCode)
+{
+    var text = `${username},\n\n`
+             + "Please enter this code into Unbound Cloud to continue resetting your password:\n\n"
+             + `${resetCode}\n\n`
+             + `This code will expire in one hour.`;
+
+    return await SendEmail(email, "Password Reset Code", text);
+}
+module.exports.SendPasswordResetEmail = SendPasswordResetEmail;

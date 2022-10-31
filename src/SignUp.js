@@ -207,7 +207,7 @@ export class SignUp extends Component
 
         if (errorMsg === "") //No error
         {
-            const formData = new FormData(); //formData contains the Home boxes
+            const formData = new FormData();
             formData.append("email", this.state.emailInput);
             formData.append("username", this.state.usernameInput);
             formData.append("password", this.state.passwordInput);
@@ -252,21 +252,7 @@ export class SignUp extends Component
     {
         var required = RequiredTooltip();
         const cloudFileUploadError = "Make sure it was a proper Cloud data file and is not corrupted.";
-        const showPasswordTooltip = props => (<Tooltip {...props}>Show Password</Tooltip>);
-        const hidePasswordTooltip = props => (<Tooltip {...props}>Hide Password</Tooltip>);
         const showPasswordFunc = () => this.setState({showPassword: !this.state.showPassword});
-
-        var showPasswordSymbol =
-            <OverlayTrigger placement="top" overlay={this.state.showPassword ? hidePasswordTooltip : showPasswordTooltip}>    
-                <div className="show-password-symbol">
-                    {
-                        this.state.showPassword ?
-                            <AiOutlineEyeInvisible size={20} onClick={showPasswordFunc}/>
-                        :
-                            <AiOutlineEye size={20} onClick={showPasswordFunc}/>
-                    }
-                </div>
-            </OverlayTrigger>
 
         return (
             <div className="form-page">
@@ -274,7 +260,7 @@ export class SignUp extends Component
                 {/*Redirect to Login Page Button*/}
                 <div className="already-have-account-button"
                      onClick={() => this.getMainPage().setState({editState: STATE_LOGIN})}>
-                    I already have an account.
+                    I already have an account
                 </div>
 
                 <Form onSubmit={(e) => this.submitRegistration(e)}>
@@ -311,7 +297,7 @@ export class SignUp extends Component
 
                     {/*Password Input*/}
                     <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>Password{required} {showPasswordSymbol}</Form.Label>
+                        <Form.Label>Password{required} {ShowPasswordSymbol(this.state.showPassword, showPasswordFunc)}</Form.Label>
                         <Form.Control
                             required
                             type={this.state.showPassword ? "text" : "password"}
@@ -401,4 +387,27 @@ function CompletedRegistrationPopUp(mainPageObj, response)
     });
 }
 
-export default SignUp;
+/**
+ * Gets a button that can be clicked to either show or hide a password.
+ * @param {Boolean} shouldShowPassword - Whether the password is currently shown or hidden.
+ * @param {Function} showPasswordFunc - A function that changes the current state to either show or hide the password.
+ * @returns {JSX} The symbol that can be clicked to show or hide the password.
+ */
+export function ShowPasswordSymbol(shouldShowPassword, showPasswordFunc)
+{
+    const showPasswordTooltip = props => (<Tooltip {...props}>Show Password</Tooltip>);
+    const hidePasswordTooltip = props => (<Tooltip {...props}>Hide Password</Tooltip>);
+
+    return (
+        <OverlayTrigger placement="right" overlay={shouldShowPassword ? hidePasswordTooltip : showPasswordTooltip}>    
+            <div className="show-password-symbol">
+                {
+                    shouldShowPassword ?
+                        <AiOutlineEyeInvisible size={20} onClick={showPasswordFunc}/>
+                    :
+                        <AiOutlineEye size={20} onClick={showPasswordFunc}/>
+                }
+            </div>
+        </OverlayTrigger>
+    );
+}

@@ -132,7 +132,7 @@ export class ActivateAccount extends Component
         var errorMsg = this.getErrorMessage();
         if (errorMsg === "") //No error
         {
-            const formData = new FormData(); //formData contains the Home boxes
+            const formData = new FormData();
             formData.append("username", this.getGlobalState().username);
             formData.append("activationCode", this.state.codeInput);
 
@@ -155,7 +155,7 @@ export class ActivateAccount extends Component
         if (timeSince >= RESEND_CODE_COOLDOWN)
         {
             //Can resend code again
-            const formData = new FormData(); //formData contains the Home boxes
+            const formData = new FormData();
             formData.append("username", this.getGlobalState().username);
             formData.append("accountCode", this.getGlobalState().accountCode);
     
@@ -164,7 +164,7 @@ export class ActivateAccount extends Component
         else
         {
             var timeRemaining = Math.ceil((RESEND_CODE_COOLDOWN - timeSince) / 1000);
-            ErrorPopUp(`Please wait ${timeRemaining} seconds before sending another code.`)
+            ErrorPopUp(`Please wait ${timeRemaining} seconds before sending another code.`);
         }
     }
 
@@ -198,7 +198,6 @@ export class ActivateAccount extends Component
     render()
     {
         const submitTooltip = props => (<Tooltip {...props}>Submit</Tooltip>);
-        const pasteTooltip = props => (<Tooltip {...props}>Paste</Tooltip>);
         const resendCodeTooltip = props => (<Tooltip {...props}>Resend Code</Tooltip>);
         var pasteButtonSize = 30;
         var confirmButtonSize = 42;
@@ -216,13 +215,7 @@ export class ActivateAccount extends Component
                                 value={this.state.codeInput}
                                 onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}/>
 
-                            <OverlayTrigger placement="bottom" overlay={pasteTooltip}>
-                                <Button size="sm" className="friend-trade-offer-button friend-trade-code-button"
-                                        aria-label="Paste Code"
-                                        onClick={this.pasteCode.bind(this)}>
-                                    <ImPaste size={pasteButtonSize}/>
-                                </Button>
-                            </OverlayTrigger>
+                            {PasteCodeButton(pasteButtonSize, this.pasteCode.bind(this))}
                         </Form.Group>
 
                         <div className="activate-account-buttons">
@@ -276,4 +269,23 @@ function CompletedActivationPopUp(mainPageObj, response)
     });
 }
 
-export default ActivateAccount;
+/**
+ * Gets a button that can be clicked to paste a code.
+ * @param {Number} pasteButtonSize - The size of the paste icon.
+ * @param {Function} pasteFunc - The function to call when the button is clicked.
+ * @returns {JSX} The paste button component.
+ */
+export function PasteCodeButton(pasteButtonSize, pasteFunc)
+{
+    const pasteTooltip = props => (<Tooltip {...props}>Paste Code</Tooltip>);
+
+    return (
+        <OverlayTrigger placement="bottom" overlay={pasteTooltip}>
+            <Button size="sm" className="friend-trade-offer-button friend-trade-code-button"
+                    aria-label="Paste Code"
+                    onClick={pasteFunc}>
+                <ImPaste size={pasteButtonSize}/>
+            </Button>
+        </OverlayTrigger>
+    );
+}
