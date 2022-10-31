@@ -86,7 +86,7 @@ export class PokemonSummary extends Component
      * @returns {JSX} An element containing the container of the nickname.
      */
     printNickname()
-    {        
+    {
         var speciesName = GetSpeciesName(GetSpecies(this.state.pokemon));
         var nicknameText = GetNickname(this.state.pokemon);
         var nickname = <span className="summary-name">{nicknameText}</span>
