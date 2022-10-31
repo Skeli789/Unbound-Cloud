@@ -39,6 +39,7 @@ FLAG_UNBOUND_SPECIES_RANDOMIZER = 0x9FD
 FLAG_UNBOUND_LEARNSET_RANDOMIZER = 0x9FE
 FLAG_UNBOUND_NEW_GAME_PLUS = 0x16DB
 FLAG_UNBOUND_SANDBOX_MODE = 0x16E4
+FLAG_IR_SANDBOX_MODE = 0x1205
 VAR_UNBOUND_GAME_DIFFICULTY = 0x50DF
 FLAG_MAGM_PC_ACCESSED = 0x215
 
@@ -102,10 +103,12 @@ GameDetails = {
             {   # Insane difficulty
                 "varSetTo": (VAR_UNBOUND_GAME_DIFFICULTY, INSANE_DIFFICULTY_UNBOUND),
                 "butNotIfFlagSet": [FLAG_FR_GAME_CLEAR, FLAG_UNBOUND_NEW_GAME_PLUS],
+                "reason": "The difficulty is set to Insane and the Pokémon League has not been defeated."
             },
             {   # Sandbox Mode before post-game
                 "flagSet": FLAG_UNBOUND_SANDBOX_MODE,
                 "butNotIfFlagSet": FLAG_FR_GAME_CLEAR,
+                "reason": "Sandbox mode is active and the Pokémon League has not been defeated."
             }
         ],
     },
@@ -132,6 +135,7 @@ GameDetails = {
         "inaccessible": [
             {   # PC has not been accessed
                 "flagNotSet": FLAG_MAGM_PC_ACCESSED,
+                "reason": "The PC has never been accessed."
             }
         ]
     },
@@ -145,6 +149,13 @@ GameDetails = {
         "shinyOdds": INFLAMED_RED_SHINY_ODDS,
         "boxCount": 25,
         "randomizerFlags": [FLAG_CFRU_SPECIES_RANDOMIZER, FLAG_CFRU_LEARNSET_RANDOMIZER],
+        "inaccessible": [
+            {   # Sandbox Mode before post-game
+                "flagSet": FLAG_IR_SANDBOX_MODE,
+                "butNotIfFlagSet": FLAG_FR_GAME_CLEAR,
+                "reason": "Sandbox mode is active and the Pokémon League has not been defeated."
+            }
+        ],
     },
 }
 

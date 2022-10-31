@@ -1187,6 +1187,7 @@ export default class MainPage extends Component
                 inaccessibleSaveError: error["response"]["status"] === StatusCode.ClientErrorForbidden,
                 oldVersionSaveError: error["response"]["status"] === StatusCode.ClientErrorUpgradeRequired,
                 serverConnectionError: false,
+                errorResponseText: error["response"]["data"],
             });
 
             errorText = "Server error!\nPlease try again later."; //Will usually be overwritten with a more specific error
@@ -1211,7 +1212,7 @@ export default class MainPage extends Component
             ({
                 icon: "error",
                 title: "Save File Can't Be Used Right Now",
-                text: "Please progress further in the game and try again.",
+                text: this.state.errorResponseText,
                 scrollbarPadding: false,
             });
         }
