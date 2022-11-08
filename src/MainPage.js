@@ -2720,6 +2720,8 @@ export default class MainPage extends Component
         formData.append("cloudDataSyncKey", this.state.cloudDataSyncKey); //Prevents issues with opening multiple tabs
         this.addHomeDataToFormData(homeData, formData);
 
+        localStorage.lastSavedCloudData = homeData; //In case the servers get wiped at least there will be a local backup
+
         try
         {
             await axios.post(homeRoute, formData, {});
