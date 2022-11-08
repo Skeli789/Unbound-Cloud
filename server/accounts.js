@@ -14,6 +14,8 @@ const BASE_STORAGE_DIR = `${process.env.APPDATA}/unboundcloud`;
 const EMAIL_TO_USER_FILE = `${BASE_STORAGE_DIR}/EmailToUsername.json`;
 const PASSWORD_RESET_CODE_EXPIRATION_TIME = 60 * 60 * 1000; //60 Minutes
 const PASSWORD_RESET_COOLDOWN = 60 * 60 * 1000; //60 Minutes
+const ACTIATION_EMAIL_COOLDOWN = 2 * 60 * 1000; //2 Minutes
+const PASSWORD_RESET_EMAIL_COOLDOWN = 2 * 60 * 1000; //2 Minutes
 
 var gDBLocked = false;
 
@@ -405,15 +407,15 @@ async function ActivateUser(username, activationCode)
         if (!UserExists(username))
             throw(`Account for "${username}" doesn't exist`);
 
-        var fileName = UserToAccountFile(username);
-        var data = JSON.parse(fs.readFileSync(fileName));
+        var data = GetUserData(username);
 
         if (data.activationCode !== activationCode)
             throw(`"Confirmation code for ${username} is incorrect"`);
 
         data.activated = true;
         delete data.activationCode; //No longer needed in the object
-        fs.writeFileSync(fileName, JSON.stringify(data));
+        delete data.lastActivationEmailSentAt;
+        StoreUserData(username, data);
 
         UnlockDB();
         return true;
@@ -437,9 +439,33 @@ async function ResendActivationEmail(username)
     if (!UserExists(username))
         return false;
 
+    await LockDB();
+
     var email = UsernameToEmail(username);
     var activationCode = GetUserActivationCode(username);
-    return await messages.SendActivationEmail(email, username, activationCode);
+    var data = GetUserData(username);
+
+    if ("lastActivationEmailSentAt" in data)
+    {
+        var timeSince = Date.now() - data.lastActivationEmailSentAt;
+        if (timeSince < ACTIATION_EMAIL_COOLDOWN)
+        {
+            UnlockDB();
+            return false;
+        }
+    }
+
+    if (await messages.SendActivationEmail(email, username, activationCode))
+    {
+        data.lastActivationEmailSentAt = Date.now();
+        StoreUserData(username, data);
+
+        UnlockDB();
+        return true;
+    }
+
+    UnlockDB();
+    return false;
 }
 module.exports.ResendActivationEmail = ResendActivationEmail;
 
@@ -454,6 +480,15 @@ async function SendPasswordResetCode(email)
         return false;
 
     var username = EmailToUsername(email);
+    var data = GetUserData(username);
+
+    if ("passwordResetCodeCreatedAt" in data)
+    {
+        var timeSince = Date.now() - data.passwordResetCodeCreatedAt;
+        if (timeSince < PASSWORD_RESET_EMAIL_COOLDOWN)
+            return false;
+    }
+
     var resetCode = await CreatePasswordResetCode(username);
     return await messages.SendPasswordResetEmail(email, username, resetCode);
 }

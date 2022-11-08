@@ -286,6 +286,11 @@ describe("Test ResendActivationEmail", async () =>
     {
         expect(await accounts.ResendActivationEmail(gTestUser)).to.be.true;
     });
+
+    it (`${gTestUser} should return false because one was just sent`, async () =>
+    {
+        expect(await accounts.ResendActivationEmail(gTestUser)).to.be.false;
+    });
 });
 
 
@@ -514,6 +519,11 @@ describe("Test Password Reset Functions", async () =>
     it('should send code successfully', async () =>
     {
         expect(await accounts.SendPasswordResetCode(gTestEmail)).to.be.true;
+    });
+
+    it('should fail to send code right after one was sent', async () =>
+    {
+        expect(await accounts.SendPasswordResetCode(gTestEmail)).to.be.false;
     });
 
     it('should get code successfully after a new one was sent', async () =>
