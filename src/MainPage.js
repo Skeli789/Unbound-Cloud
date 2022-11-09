@@ -3945,7 +3945,7 @@ export default class MainPage extends Component
                 <h2><b>Unbound Cloud is currently undergoing maintenece. 🛠️</b></h2>
                 <h3>Hopefully, this won't last too long.</h3>
                 <input style={{marginTop: "5%"}}
-                       onChange={(e) => this.setState({unlockedMobile: e.target.value === "unlock123"})}/>
+                       onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
             </div>
         )
     }
@@ -3961,7 +3961,7 @@ export default class MainPage extends Component
                 <h2><b>Unbound Cloud is currently not supported on mobile. 😞</b></h2>
                 <h3>Hopefully, this won't last too long.</h3>
                 <input style={{marginTop: "5%"}}
-                       onChange={(e) => this.setState({unlockedMobile: e.target.value === "unlock123"})}/>
+                       onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
             </div>
         )
     }
