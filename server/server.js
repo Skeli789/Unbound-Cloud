@@ -33,6 +33,7 @@ var io = require('socket.io')(http,
 const gWonderTradeClients = {};
 const gFriendTradeClients = {};
 const gCodesInUse = {};
+var gWonderTradeLocked = false;
 
 const FRIEND_TRADE_INITIAL = 0;
 const FRIEND_TRADE_CONNECTED = 1;
@@ -57,6 +58,25 @@ function CreateFriendCode()
     } while (code in gCodesInUse);
 
     return code;
+}
+
+/**
+ * Locks the Wonder Trade data and prevents it from being modified again until it's unlocked.
+ */
+async function LockWonderTrade()
+{
+    while (gWonderTradeLocked)
+        await new Promise(r => setTimeout(r, 1000)); //Sleep 1 second
+
+    gWonderTradeLocked = true;
+}
+
+/**
+ * Unlocks the Wonder Trade data for modifying again.
+ */
+function UnlockWonderTrade()
+{
+    gWonderTradeLocked = false;
 }
 
 /**
@@ -109,6 +129,8 @@ io.on("connection", async function(socket)
                 if (!(await CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, randomizer, socket, "WT", clientId)))
                     return;
 
+                await LockWonderTrade(); //So no other threads can access it right now
+
                 var keys = Object.keys(gWonderTradeClients).filter((x) =>
                                        x != clientId
                                     && gWonderTradeClients[x].tradedWith === 0
@@ -134,12 +156,16 @@ io.on("connection", async function(socket)
                             gWonderTradeClients[clientId] = {pokemon: pokemonToSend, tradedWith: 0, randomizer: randomizer};
                     }
                 }
+
+                UnlockWonderTrade();
             });
 
-            socket.on('disconnect', () =>
+            socket.on('disconnect', async () =>
             {
+                await LockWonderTrade();
                 delete gWonderTradeClients[clientId]; //Remove data so no one trades with it
                 console.log(`WT-Client ${clientId} disconnected`);
+                UnlockWonderTrade();
             });
         }
         else if (data === "FRIEND_TRADE")
@@ -254,7 +280,15 @@ io.on("connection", async function(socket)
             friendPokemon = Object.assign({}, gWonderTradeClients[clientId].pokemon);
             pokemonUtil.UpdatePokemonAfterNonFriendTrade(friendPokemon, originalPokemon);
             socket.send(friendPokemon);
-            console.log(`WT-Client ${clientId} received Pokemon from ${gWonderTradeClients[clientId].tradedWith}`);
+
+            try
+            {
+                console.log(`WT-Client ${clientId} received Pokemon from ${gWonderTradeClients[clientId].tradedWith}`);
+            }
+            catch (e)
+            {
+                console.log(`ERROR! Could not read WT-Client ${clientId} tradedWith`);
+            }
             //Data deleted when client disconnects in case they don't receive this transmission
         }
         else if (clientId in gFriendTradeClients
@@ -606,10 +640,14 @@ app.post('/encryptCloudData', (req, res) =>
     result = res.status(StatusCode.SuccessOK).json({newHomeData: homeData});
 });
 
-/*
-    Endpoint: /getUpdatedSaveFile
-    returns as the response: the path to the updated save file
-*/
+/**
+ * Endpoint: /getUpdatedSaveFile
+ * @returns {StatusCode} SuccessOK with an object of format
+ *                       {
+ *                            newSaveFileData: The new save file buffer.
+ *                       }
+ *                       If the Boxes were saved successfully, error codes if not.
+ */
 app.post('/getUpdatedSaveFile', async (req, res) =>
 {
     var result;
@@ -947,7 +985,6 @@ app.post('/sendPasswordResetCode', async (req, res) =>
     else
         return res.status(StatusCode.ServerErrorInternal).send({errorMsg: "UNKNOWN_ERROR"});
 });
-
 
 /**
  * Endpoint: /resetPassword - Resets a user's password.
