@@ -2,6 +2,7 @@
     Various utility functions for the server.
 */
 
+const latinize = require('latinize');
 const pokemonUtil = require('./pokemon-util');
 const gBannedWords = require('./src/data/BannedWords.json');
 const gSpeciesNames = require('./src/data/SpeciesNames.json');
@@ -57,7 +58,8 @@ module.exports.PythonJSONStringify = PythonJSONStringify;
  */
 function BadWordInText(textToCheck)
 {
-    textToCheck = textToCheck.toUpperCase();
+    textToCheck = latinize(textToCheck).toUpperCase();
+    textToCheck = textToCheck.replace("1", "I").replace("3", "E").replace("!", "I").replace("¡", "I"); //In case of "disguised" words
     var textToCheckWords = textToCheck.split(" ");
 
     for (let bannedWord of Object.keys(gBannedWords))

@@ -103,6 +103,24 @@ describe("Test BadWordInText", () =>
         expect(util.BadWordInText(word)).to.be.true;
     });
 
+    it (`should be true for whole word "ń!ggerfàg"`, () =>
+    {
+        let word = "ń!ggerfàg";
+        expect(util.BadWordInText(word)).to.be.true;
+    });
+
+    it (`should be true for whole word "ń¡ggerfàg"`, () =>
+    {
+        let word = "ń¡ggerfàg";
+        expect(util.BadWordInText(word)).to.be.true;
+    });
+
+    it (`should be true for whole word "ń1gg3rfàg"`, () =>
+    {
+        let word = "ń1gg3rfàg";
+        expect(util.BadWordInText(word)).to.be.true;
+    });
+
     it (`should be false for every species name`, () =>
     {
         for (let species of Object.keys(gSpeciesNames))
