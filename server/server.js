@@ -33,7 +33,9 @@ var io = require('socket.io')(http,
 const gWonderTradeClients = {};
 const gFriendTradeClients = {};
 const gCodesInUse = {};
+var gWonderTradeSpecies = {};
 var gWonderTradeLocked = false;
+var gLastWonderTradeAt = 0;
 
 const FRIEND_TRADE_INITIAL = 0;
 const FRIEND_TRADE_CONNECTED = 1;
@@ -42,7 +44,7 @@ const FRIEND_TRADE_ACCEPTED_TRADE = 3;
 const FRIEND_TRADE_ENDING_TRADE = 4;
 
 const INVALID_CLOUD_DATA_SYNC_KEY_ERROR = "The Cloud data has already been opened in another tab!\nPlease reload the page to avoid data corruption.";
-
+const WONDER_TRADE_SPECIES_COOLDOWN = 5 * 60 * 1000; //5 Minutes
 
 /**
  * Creates a friend code to initiate trading.
@@ -112,6 +114,85 @@ async function CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, rando
     return true;
 }
 
+/**
+ * Gets the list of clients connected to Wonder Trade that can trade their Pokemon to the current user.
+ * @param {String} clientId - The current client id to check the user's that can trade to it.
+ * @param {String} username - The username of the current client.
+ * @param {Boolean} randomizer - Whether or not the current client is using a randomized save.
+ * @returns {Array<String>} - A list of client ids that can trade with the current user.
+ */
+function GetValidWonderTradeClientsFor(clientId, username, randomizer)
+{
+    let clients = [];
+
+    for (let x of Object.keys(gWonderTradeClients))
+    {
+        let otherWonderTradeData = gWonderTradeClients[x];
+
+        if (x === clientId //Can't trade with yourself
+        || otherWonderTradeData.tradedWith !== 0 //Can't trade with someone who's already traded
+        || otherWonderTradeData.randomizer !== randomizer) //Can't trade with someone who's randomizer setting doesn't match
+            continue;
+
+        if (username in gWonderTradeSpecies)
+        {
+            let otherUser = otherWonderTradeData.username;
+            let otherSpecies = pokemonUtil.GetSpecies(otherWonderTradeData.pokemon);
+
+            if (otherUser in gWonderTradeSpecies[username] //Traded with this user before
+            && otherSpecies in gWonderTradeSpecies[username][otherUser]) //Traded this species with this user before
+            {
+                let lastReceivedAt = gWonderTradeSpecies[username][otherUser][otherSpecies];
+                let timeSince = Date.now() - lastReceivedAt;
+
+                if (timeSince < WONDER_TRADE_SPECIES_COOLDOWN)
+                    continue; //Prevent receiving dupes from the same person very quickly
+                else
+                    delete gWonderTradeSpecies[username][otherUser][otherSpecies]; //This species can be traded again
+            }
+        }
+
+        clients.push(x);
+    }
+
+    return clients;
+}
+
+/**
+ * Adds an entry in the table that says which Pokemon this user has received from a specific user recently.
+ * @param {String} username - The user to add the entry for.
+ * @param {String} receivedFromUser - The user the Pokemon was received from.
+ * @param {String} species - The species received from the user.
+ */
+function AddUserToWonderTradeSpeciesTable(username, receivedFromUser, species)
+{
+    TryWipeWonderTradeSpeciesData();
+
+    if (!(username in gWonderTradeSpecies))
+        gWonderTradeSpecies[username] = {};
+
+    if (!(receivedFromUser in gWonderTradeSpecies[username]))
+        gWonderTradeSpecies[username][receivedFromUser] = {};
+
+    gWonderTradeSpecies[username][receivedFromUser][species] = Date.now();
+}
+
+/**
+ * Tries to wipe the gWonderTradeSpecies table to preserve space in memory.
+ */
+function TryWipeWonderTradeSpeciesData()
+{
+    if (gLastWonderTradeAt !== 0) //There has been a Wonder Trade since the server started or the data was last wiped
+    {
+        let timeSince = Date.now() - gLastWonderTradeAt;
+        if (timeSince >= WONDER_TRADE_SPECIES_COOLDOWN)
+        {
+            gWonderTradeSpecies = {}; //No point in keeping data in memory when it's all expired anyway
+            gLastWonderTradeAt = 0;
+        }
+    }
+}
+
 // When a connection is made, loop forever until a Wonder Trade is made
 io.on("connection", async function(socket)
 {
@@ -131,10 +212,7 @@ io.on("connection", async function(socket)
 
                 await LockWonderTrade(); //So no other threads can access it right now
 
-                var keys = Object.keys(gWonderTradeClients).filter((x) =>
-                                       x != clientId
-                                    && gWonderTradeClients[x].tradedWith === 0
-                                    && gWonderTradeClients[x].randomizer == randomizer);
+                var keys = GetValidWonderTradeClientsFor(clientId, username, randomizer);
 
                 if (!pokemonUtil.ValidatePokemon(pokemonToSend, false))
                 {
@@ -145,15 +223,19 @@ io.on("connection", async function(socket)
                 {
                     if (keys.length !== 0)
                     {
+                        var otherUsername = gWonderTradeClients[keys[0]].username;
                         var pokemonToReceive = gWonderTradeClients[keys[0]].pokemon;
-                        gWonderTradeClients[keys[0]] =  {pokemon: pokemonToSend, originalPokemon: pokemonToReceive, tradedWith: clientId}; //Immediately lock the data
-                        gWonderTradeClients[clientId] = {pokemon: pokemonToReceive, originalPokemon: pokemonToSend, tradedWith: keys[0]}; //Set this client as traded
+                        gWonderTradeClients[keys[0]] =  {username: otherUsername, receivedFrom: username, pokemon: pokemonToSend, originalPokemon: pokemonToReceive, tradedWith: clientId}; //Immediately lock the data
+                        gWonderTradeClients[clientId] = {username: username, receivedFrom: otherUsername, pokemon: pokemonToReceive, originalPokemon: pokemonToSend, tradedWith: keys[0]}; //Set this client as traded
+                        AddUserToWonderTradeSpeciesTable(username, otherUsername, pokemonUtil.GetSpecies(pokemonToReceive));
+                        AddUserToWonderTradeSpeciesTable(otherUsername, username, pokemonUtil.GetSpecies(pokemonToSend));
+                        gLastWonderTradeAt = Date.now();
                         //Note that the randomizer key isn't needed anymore
                     }
                     else
                     {
                         if (!(clientId in gWonderTradeClients)) //Don't overwrite previously requested mon
-                            gWonderTradeClients[clientId] = {pokemon: pokemonToSend, tradedWith: 0, randomizer: randomizer};
+                            gWonderTradeClients[clientId] = {username: username, pokemon: pokemonToSend, tradedWith: 0, randomizer: randomizer};
                     }
                 }
 
@@ -279,16 +361,10 @@ io.on("connection", async function(socket)
             originalPokemon = gWonderTradeClients[clientId].originalPokemon;
             friendPokemon = Object.assign({}, gWonderTradeClients[clientId].pokemon);
             pokemonUtil.UpdatePokemonAfterNonFriendTrade(friendPokemon, originalPokemon);
-            socket.send(friendPokemon);
+            socket.send(friendPokemon, gWonderTradeClients[clientId].receivedFrom);
 
-            try
-            {
-                console.log(`WT-Client ${clientId} received Pokemon from ${gWonderTradeClients[clientId].tradedWith}`);
-            }
-            catch (e)
-            {
-                console.log(`ERROR! Could not read WT-Client ${clientId} tradedWith`);
-            }
+            if (clientId in gWonderTradeClients)
+                console.log(`WT-Client ${clientId} (${gWonderTradeClients[clientId].username}) received Pokemon from ${gWonderTradeClients[clientId].tradedWith} (${gWonderTradeClients[clientId].receivedFrom})`);
             //Data deleted when client disconnects in case they don't receive this transmission
         }
         else if (clientId in gFriendTradeClients
