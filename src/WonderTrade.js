@@ -270,9 +270,9 @@ export class WonderTrade extends Component
                     {
                         handleInvalidCloudDataSyncKey(socket, data)
                     });
-                    socket.on('message', function(data)
+                    socket.on('message', function(newPokemon, receivedFrom)
                     {
-                        endWonderTrade(data, socket);
+                        endWonderTrade(newPokemon, receivedFrom, socket);
                     });
 
                     //Send Pokemon for trade
@@ -341,9 +341,10 @@ export class WonderTrade extends Component
     /**
      * Receives the new Pokemon and ends the Wonder Trade.
      * @param {Pokemon} newPokemon - The Pokemon received in the Wonder Trade.
+     * @param {String} receivedFrom - The username the Pokemon was received from.
      * @param {WebSocket} socket - The socket used to connect to the server.
      */
-    async endWonderTrade(newPokemon, socket)
+    async endWonderTrade(newPokemon, receivedFrom, socket)
     {
         const backupTitle = document.title;
 
@@ -364,7 +365,7 @@ export class WonderTrade extends Component
         var newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon));
         PopUp.fire
         ({
-            title: `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} has just arrived!\nIt was placed in "${this.state.boxName}".`,
+            title: `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} has just arrived from ${receivedFrom}!\nIt was placed in "${this.state.boxName}".`,
             confirmButtonText: `Hooray!`,
             imageUrl: GetIconSpeciesLink(newPokemon),
             imageAlt: "",
