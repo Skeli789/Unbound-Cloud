@@ -266,13 +266,16 @@ export class SignUp extends Component
                 <Form onSubmit={(e) => this.submitRegistration(e)}>
                     {/*Username Input*/}
                     <Form.Group className="mb-3" controlId="formBasicUsername">
-                        <Form.Label>Username{required}</Form.Label>
+                        <Form.Label style={{marginBottom: "0px"}}>Username{required}</Form.Label>
+                        <br/>
+                        <Form.Text>This is public. Don't enter your email here!</Form.Text>
                         <Form.Control
                             required
                             name="username"
                             autoComplete='username'
                             //placeholder="billybob"
                             value={this.state.usernameInput}
+                            style={{marginTop: "0.5rem"}}
                             className={`form-control ${this.state.usernameInput !== ""
                                                    && (!this.validUsername() || this.usernameAlreadyInUse()) ? 'is-invalid' : ''}`}
                             onChange={(e) => this.setState({usernameInput: ProcessTextInput(e, "USERNAME", true),

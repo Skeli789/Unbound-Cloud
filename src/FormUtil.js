@@ -33,6 +33,7 @@ export function ValidateUsername(username)
         && !username.includes("`")
         && !username.includes("<")
         && !username.includes(">")
+        && !username.includes("@") //Prevent people from entering their username accidentally
         && pattern.test(username)
         && username !== "iamatester";
 }
