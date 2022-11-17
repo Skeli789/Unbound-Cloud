@@ -686,7 +686,8 @@ export default class MainPage extends Component
     {
         return fileName.endsWith(".sav")
             || fileName.endsWith(".srm")
-            || fileName.endsWith(".sa1");
+            || fileName.endsWith(".sa1")
+            || fileName.endsWith(".fla");
     }
 
     /**
@@ -1526,7 +1527,7 @@ export default class MainPage extends Component
                 {
                     description: 'Save Files',
                     accept: {
-                        "application/octet-stream": [".sav", ".srm", ".sa1"]
+                        "application/octet-stream": [".sav", ".srm", ".sa1", ".fla"]
                     },
                 },
             ],
@@ -3560,7 +3561,7 @@ export default class MainPage extends Component
                 <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
                     <h2>Upload your save file.</h2>
                     <h3>If you don't know where it is, start by looking in the same place as your ROM.</h3>
-                    <h3>The save file is a 128 kB .sav, .srm, or .sa1 file that has your ROM's name.</h3>
+                    <h3>The save file is a 128 kB .sav, .srm, .sa1, or .fla file that has your ROM's name.</h3>
                     <div className="already-have-account-button"
                         onClick={() => this.printSupportedHacks()}>
                         Which hacks are supported?
@@ -3569,7 +3570,7 @@ export default class MainPage extends Component
                         <label className="btn btn-success btn-lg choose-save-file-button">
                             Upload File
                             <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)}
-                                accept=".sav,.srm,.sa1" />
+                                accept=".sav,.srm,.sa1,.fla" />
                         </label>
                         {
                             ACCOUNT_SYSTEM ?
@@ -3707,7 +3708,7 @@ export default class MainPage extends Component
                 <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
                     <h2>Choose your save file.</h2>
                     <h3>If you don't know where it is, start by looking in the same folder as your ROM.</h3>
-                    <h3>The save file is a 128 kB .sav, .srm, or .sa1 file that has your ROM's name.</h3>
+                    <h3>The save file is a 128 kB .sav, .srm, .sa1, or .fla file that has your ROM's name.</h3>
                     <div className="already-have-account-button mb-1"
                         onClick={() => this.printSupportedHacks()}>
                         Which hacks are supported?
