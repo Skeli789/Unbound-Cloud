@@ -81,7 +81,7 @@ const mainTheme = new Audio(UnboundCloudTheme);
 const SUPPORTED_HACKS = ["Unbound >= v2.1.0",
                          "Unbound Battle Frontier Demo >= v2.0.0",
                          "Magical Altering Gym Menagerie >= v1.2",
-                         "Inflamed Red >= v1.1"];
+                         "Inflamed Red >= v1.1 (UNRELEASED)"];
 
 //TODO: Make sure Wonder Trading can't be hijacked
 
