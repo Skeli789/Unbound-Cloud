@@ -5,6 +5,7 @@
 const latinize = require('latinize');
 const pokemonUtil = require('./pokemon-util');
 const gBannedWords = require('./src/data/BannedWords.json');
+const gAllowedNicknameLetters = require('./src/data/AllowedNicknameLetters.json');
 const gSpeciesNames = require('./src/data/SpeciesNames.json');
 
 const MAX_TITLE_LENGTH = 16;
@@ -88,6 +89,23 @@ function BadWordInText(textToCheck)
     return false;
 }
 module.exports.BadWordInText = BadWordInText;
+
+/**
+ * Checks if a certain string has a character in it that can't normally be set ingame as a nickname.
+ * @param {String} nickname - The nickname to check.
+ * @returns {Boolean}
+ */
+function HasNonNicknameCharacter(nickname)
+{
+    for (let character of nickname)
+    {
+        if (!(character in gAllowedNicknameLetters))
+            return true; //This nickname has a character that can't normally be set in an ingame nickname
+    }
+
+    return false;
+}
+module.exports.HasNonNicknameCharacter = HasNonNicknameCharacter;
 
 /**
  * Gets the pretty name like "Venusaur" for a species id.

@@ -7,6 +7,7 @@ import MoveData from "./data/MoveData.json";
 import SpeciesNames from "./data/SpeciesNames.json";
 import SpeciesToDexNum from "./data/SpeciesToDexNum.json";
 import ExperienceCurves from "./data/ExperienceCurves.json";
+import ImpossibleNicknameCharacters from "./data/ImpossibleNicknameChars.json";
 import UnboundShinies from "./data/UnboundShinies.json";
 import CFRUBaseStats from "./data/cfru/BaseStats.json";
 import CFRUMoves from "./data/cfru/Moves.json";
@@ -1162,6 +1163,36 @@ export function GetOTName(pokemon)
     }
 
     return "Unknown";
+}
+
+/**
+ * Checks if a Pokemon has a blatantly hacked leter in either its nickname or OT name.
+ * @param {Pokemon} pokemon  - The Pokemon to process.
+ * @returns {Boolean} - true if the Pokemon has a hacked letter in it, false if not.
+ */
+export function HasHackedCharacterInNicknameOrOTName(pokemon)
+{
+    let nickname = GetNickname(pokemon);
+    let otName = GetOTName(pokemon);
+
+    return HasHackedCharacterInName(nickname)
+        || HasHackedCharacterInName(otName);
+}
+
+/**
+ * Checks if a name has a letter in it that can't be set normally ingame.
+ * @param {String} name - The name to check.
+ * @returns {Boolean} - true if the name has a hacked letter in it, false if not.
+ */
+function HasHackedCharacterInName(name)
+{
+    for (let letter of name)
+    {
+        if (letter in ImpossibleNicknameCharacters)
+            return true; //Unlike the server-side check, this one checks specifically for characters that could never appear in a nickname regardless of language
+    }
+
+    return false;
 }
 
 /**
