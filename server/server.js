@@ -125,13 +125,17 @@ function GetValidWonderTradeClientsFor(clientId, username, randomizer)
 {
     let clients = [];
 
+    if (accounts.IsUserBannedFromWonderTrade(username))
+        return clients; //Can't trade at all if you've been banned, but still allow the user to connect so they don't just create a second account to keep trading
+
     for (let x of Object.keys(gWonderTradeClients))
     {
         let otherWonderTradeData = gWonderTradeClients[x];
 
         if (x === clientId //Can't trade with yourself
         || otherWonderTradeData.tradedWith !== 0 //Can't trade with someone who's already traded
-        || otherWonderTradeData.randomizer !== randomizer) //Can't trade with someone who's randomizer setting doesn't match
+        || otherWonderTradeData.randomizer !== randomizer //Can't trade with someone who's randomizer setting doesn't match
+        || accounts.IsUserBannedFromWonderTrade(otherWonderTradeData.username)) //Can't trade with someone who's been banned
             continue;
 
         if (username in gWonderTradeSpecies)
