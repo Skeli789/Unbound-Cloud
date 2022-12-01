@@ -454,6 +454,14 @@ describe("Test ReplaceNicknameWithSpeciesNameIfNeeded", () =>
         expect(pokemonUtil.GetNickname(pokemon)).to.equal("Venusaur");
     });
 
+    it(`should be replaced for "sad&as"`, () =>
+    {
+        let pokemon = Object.assign({}, gTestPokemon);
+        pokemonUtil.SetPokemonNickname(pokemon, "sad&as");
+        pokemonUtil.ReplaceNicknameWithSpeciesNameIfNeeded(pokemon)
+        expect(pokemonUtil.GetNickname(pokemon)).to.equal("Venusaur");
+    });
+
     it(`should be left alone for "My Love"`, () =>
     {
         let pokemon = Object.assign({}, gTestPokemon);
@@ -471,6 +479,16 @@ describe("Test ReplaceOTNameWithGenericNameIfNeeded", () =>
     {
         let pokemon = Object.assign({}, gTestPokemon);
         let otName = "Sex";
+        pokemonUtil.SetOTName(pokemon, otName);
+        pokemonUtil.ReplaceOTNameWithGenericNameIfNeeded(pokemon)
+        expect(pokemonUtil.GetOTName(pokemon)).to.not.equal(otName);
+        expect(pokemonUtil.GetOTName(pokemon)).to.not.equal(gTestPokemon.otName);
+    });
+
+    it(`should be replaced for "¿Who?"`, () =>
+    {
+        let pokemon = Object.assign({}, gTestPokemon);
+        let otName = "¿Who?";
         pokemonUtil.SetOTName(pokemon, otName);
         pokemonUtil.ReplaceOTNameWithGenericNameIfNeeded(pokemon)
         expect(pokemonUtil.GetOTName(pokemon)).to.not.equal(otName);

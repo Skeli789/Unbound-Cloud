@@ -153,6 +153,46 @@ describe("Test BadWordInText", () =>
 });
 
 
+describe("Test HasNonNicknameCharacter", () =>
+{
+    it (`should be okay for "Bulbasaur"`, () =>
+    {
+        let name = "Bulbasaur";
+        expect(util.HasNonNicknameCharacter(name)).to.be.false;
+    });
+
+    it (`should be okay for "Flabébé"`, () =>
+    {
+        let name = "Flabébé";
+        expect(util.HasNonNicknameCharacter(name)).to.be.false;
+    });
+
+    it (`should be okay for "The Man"`, () =>
+    {
+        let name = "The Man";
+        expect(util.HasNonNicknameCharacter(name)).to.be.false;
+    });
+
+    it (`should not be okay for "|"`, () =>
+    {
+        let name = "|";
+        expect(util.HasNonNicknameCharacter(name)).to.be.true;
+    });
+
+    it (`should not be okay for "Á"`, () =>
+    {
+        let name = "Á";
+        expect(util.HasNonNicknameCharacter(name)).to.be.true;
+    });
+
+    it (`should not be okay for "ab+cd"`, () =>
+    {
+        let name = "ab+cd";
+        expect(util.HasNonNicknameCharacter(name)).to.be.true;
+    });
+});
+
+
 describe("Test GetSpeciesName", () =>
 {
     it (`should be "Bulbasaur" for "SPECIES_BULBASAUR"`, () =>

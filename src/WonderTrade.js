@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
-import {GetIconSpeciesLink, GetNickname, GetSpecies, HasDuplicateMovesInMoveset,
+import {GetIconSpeciesLink, GetNickname, GetSpecies, HasDuplicateMovesInMoveset, HasHackedCharacterInNicknameOrOTName,
         IsEgg, IsHoldingBannedItem, IsValidPokemon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos, GetSpeciesName} from './Util';
 
@@ -85,6 +85,9 @@ export class WonderTrade extends Component
             return false;
 
         if (HasDuplicateMovesInMoveset(this.state.pokemon))
+            return false;
+
+        if (HasHackedCharacterInNicknameOrOTName(this.state.pokemon))
             return false;
 
         return true;

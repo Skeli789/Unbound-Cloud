@@ -252,7 +252,8 @@ module.exports.SetOTName = SetOTName;
  */
 function ReplaceNicknameWithSpeciesNameIfNeeded(pokemon)
 {
-    if (util.BadWordInText(GetNickname(pokemon)))
+    if (util.BadWordInText(GetNickname(pokemon))
+    || util.HasNonNicknameCharacter(GetNickname(pokemon)))
         GivePokemonSpeciesName(pokemon);
 }
 module.exports.ReplaceNicknameWithSpeciesNameIfNeeded = ReplaceNicknameWithSpeciesNameIfNeeded;
@@ -263,7 +264,8 @@ module.exports.ReplaceNicknameWithSpeciesNameIfNeeded = ReplaceNicknameWithSpeci
  */
 function ReplaceOTNameWithGenericNameIfNeeded(pokemon)
 {
-    if (util.BadWordInText(GetOTName(pokemon)))
+    if (util.BadWordInText(GetOTName(pokemon))
+    || util.HasNonNicknameCharacter(GetOTName(pokemon)))
     {
         let replacementOTNames = ["Red", "Blue", "Green", "Yellow", "Gold", "Silver", "Crystal", "Ruby", "Emerald", "Diamond", "Pearl", "Black", "White"];
         SetOTName(pokemon, replacementOTNames[Math.floor(Math.random() * replacementOTNames.length)]);

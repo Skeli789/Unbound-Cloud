@@ -83,8 +83,6 @@ const SUPPORTED_HACKS = ["Unbound >= v2.1.0",
                          "Magical Altering Gym Menagerie >= v1.2",
                          "Inflamed Red >= v1.1 (UNRELEASED)"];
 
-//TODO: Make sure Wonder Trading can't be hijacked
-
 
 export default class MainPage extends Component
 {
