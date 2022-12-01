@@ -68,6 +68,9 @@ function BadWordInText(textToCheck)
 
         if (checkContaining) //The banned word cannot be present in the name at all
         {
+            if (textToCheck.includes(bannedWord))
+                return true; //Original text includes a banned string
+
             let allLetters = textToCheck.replace(" ", "").replace("-", "").replace(".", "");
             if (allLetters.includes(bannedWord))
                 return true; //Includes a banned string

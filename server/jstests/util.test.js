@@ -121,6 +121,30 @@ describe("Test BadWordInText", () =>
         expect(util.BadWordInText(word)).to.be.true;
     });
 
+    it (`should be true for discord link .gg/`, () =>
+    {
+        let word = ".gg/hi";
+        expect(util.BadWordInText(word)).to.be.true;
+    });
+
+    it (`should be true for discord link variation .gg`, () =>
+    {
+        let word = ".gghi";
+        expect(util.BadWordInText(word)).to.be.true;
+    });
+
+    it (`should be true for discord link variation gg/`, () =>
+    {
+        let word = "gg/hi";
+        expect(util.BadWordInText(word)).to.be.true;
+    });
+
+    it (`should be true for discord link variation g/`, () =>
+    {
+        let word = "g/hi";
+        expect(util.BadWordInText(word)).to.be.true;
+    });
+
     it (`should be false for every species name`, () =>
     {
         for (let species of Object.keys(gSpeciesNames))
