@@ -663,6 +663,35 @@ describe("Test GetUserCloudBoxes & GetUserCloudTitles & SaveAccountCloudData", a
 });
 
 
+describe("Test IsUserBannedFromWonderTrade", async () =>
+{
+    it (`should not be banned from Wonder Trade for non-existent user`, () =>
+    {
+        expect(accounts.IsUserBannedFromWonderTrade(gTestUser2)).to.be.false;
+    });
+
+    it (`should not be banned from Wonder Trade for gTestUser`, () =>
+    {
+        expect(accounts.IsUserBannedFromWonderTrade(gTestUser)).to.be.false;
+    });
+
+    it (`should not be bannable  for non-existent user`, async () =>
+    {
+        expect(await accounts.BanUserFromFromWonderTrade(gTestUser2)).to.be.false;
+    });
+
+    it (`should be banned successfully for gTestUser`, async () =>
+    {
+        expect(await accounts.BanUserFromFromWonderTrade(gTestUser)).to.be.true;
+    });
+
+    it (`should be banned from Wonder Trade for gTestUser`, () =>
+    {
+        expect(accounts.IsUserBannedFromWonderTrade(gTestUser)).to.be.true;
+    });
+});
+
+
 describe("Test DeleteUser", async () =>
 {
     it (`should not delete ${gTestUser} with mismatched password`, async () =>

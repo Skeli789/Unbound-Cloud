@@ -849,3 +849,48 @@ async function SaveAccountCloudData(username, cloudBoxes, cloudTitles, isRandomi
     return retVal;
 }
 module.exports.SaveAccountCloudData = SaveAccountCloudData;
+
+/**
+ * Checks if a user is allowed to Wonder Trade.
+ * @param {String} username - The user to check is banned.
+ * @returns {Boolean} true if the user has been banned, false if they can still trade.
+ */
+ function IsUserBannedFromWonderTrade(username)
+ {
+    if (!UserExists(username))
+        return false;
+ 
+    var data = GetUserData(username);
+    return "wonderTradeBan" in data && data.wonderTradeBan;
+ }
+ module.exports.IsUserBannedFromWonderTrade = IsUserBannedFromWonderTrade;
+ 
+/**
+ * Bans a user from partaking in Wonder Trade.
+ * @param {String} username - The user to ban.
+ * @returns {Boolean} true if the user was successfully banned, false if there was a problem banning them.
+ */
+ async function BanUserFromFromWonderTrade(username)
+ {
+    await LockDB();
+
+    try
+    {
+        if (!UserExists(username))
+            throw(`Account for "${username}" doesn't exist`);
+
+        var data = GetUserData(username);
+        data.wonderTradeBan = true;
+        StoreUserData(username, data);
+        UnlockDB();
+        return true;
+    }
+    catch (e)
+    {
+        UnlockDB();
+        console.log(`An error occurred trying to ban the user ${username} from Wonder Trade:\n${e}`);
+        return false;
+    }
+ }
+ module.exports.BanUserFromFromWonderTrade = BanUserFromFromWonderTrade;
+ 
