@@ -14,6 +14,8 @@ const gTestEmail2 = "other@gmail.com";
 const gTestPassword = "blahblah";
 const gTestPassword2 = "glahflah";
 
+const sleep = ms => new Promise(res => setTimeout(res, ms));
+
 
 describe("Test LockDB and UnlockDB", async () =>
 {
@@ -33,13 +35,29 @@ describe("Test LockDB and UnlockDB", async () =>
 
     it (`Two LockDB's should cause the second one to pause until the database is unlocked`, async () =>
     {
+        //Lock the DB
         await accounts.LockDB();
-        accounts.LockDB(); //Run asyncronously
-        accounts.UnlockDB();
+        expect(accounts.IsDBLocked()).to.be.true;
+
+        //Create a promise to unlock the DB after half a second
+        const waitAndUnlock = async () =>
+        {
+            await sleep(200);
+            accounts.UnlockDB();
+        };
+        waitAndUnlock();
+
+        //Lock the DB again. Should pause until the DB is unlocked
+        timeStart = Date.now();
+        await accounts.LockDB();
+        timeEnd = Date.now();
+        expect(accounts.IsDBLocked()).to.be.true;
+        expect(timeEnd - timeStart).to.be.greaterThanOrEqual(200);
+
+        //Unlock the DB and make sure it stays unlocked
+        await accounts.UnlockDB();
+        new Promise(r => setTimeout(r, 200))
         expect(accounts.IsDBLocked()).to.be.false;
-        await new Promise(r => setTimeout(r, 1000)); //Sleep 1 second
-        expect(accounts.IsDBLocked()).to.be.true; //Locked by the asynchronous LockDB
-        accounts.UnlockDB();
     });
 });
 

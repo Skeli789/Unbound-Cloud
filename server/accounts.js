@@ -2,6 +2,7 @@
     Functions relating to user accounts.
 */
 
+const Mutex = require('async-mutex').Mutex;
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const _ = require('lodash'); 
@@ -17,7 +18,7 @@ const PASSWORD_RESET_COOLDOWN = 60 * 60 * 1000; //60 Minutes
 const ACTIATION_EMAIL_COOLDOWN = 2 * 60 * 1000; //2 Minutes
 const PASSWORD_RESET_EMAIL_COOLDOWN = 2 * 60 * 1000; //2 Minutes
 
-var gDBLocked = false;
+var gDatabaseMutex = new Mutex();
 
 
 /**
@@ -25,10 +26,7 @@ var gDBLocked = false;
  */
 async function LockDB()
 {
-    while (gDBLocked)
-        await new Promise(r => setTimeout(r, 1000)); //Sleep 1 second
-
-    gDBLocked = true;
+    await gDatabaseMutex.acquire();
 }
 module.exports.LockDB = LockDB;
 
@@ -37,7 +35,7 @@ module.exports.LockDB = LockDB;
  */
 async function UnlockDB()
 {
-    gDBLocked = false;
+    await gDatabaseMutex.release();
 }
 module.exports.UnlockDB = UnlockDB;
 
@@ -46,7 +44,7 @@ module.exports.UnlockDB = UnlockDB;
  */
 function IsDBLocked()
 {
-    return gDBLocked;
+    return gDatabaseMutex.isLocked();
 }
 module.exports.IsDBLocked = IsDBLocked;
 
