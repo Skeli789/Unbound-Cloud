@@ -1,7 +1,8 @@
+const Mutex = require('async-mutex').Mutex;
 const express = require('express');
 const app = express();
-var http = require('http').Server(app);
-var multer = require('multer');
+const http = require('http').Server(app);
+const multer = require('multer'); //Must stay v1.4.3, v1.4.4 and 1.4.5 break the file upload
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const {exec} = require('child_process');
@@ -34,7 +35,7 @@ const gWonderTradeClients = {};
 const gFriendTradeClients = {};
 const gCodesInUse = {};
 var gWonderTradeSpecies = {};
-var gWonderTradeLocked = false;
+var gWonderTradeMutex = new Mutex();
 var gLastWonderTradeAt = 0;
 
 const FRIEND_TRADE_INITIAL = 0;
@@ -67,10 +68,7 @@ function CreateFriendCode()
  */
 async function LockWonderTrade()
 {
-    while (gWonderTradeLocked)
-        await new Promise(r => setTimeout(r, 1000)); //Sleep 1 second
-
-    gWonderTradeLocked = true;
+    await gWonderTradeMutex.acquire();
 }
 
 /**
@@ -78,7 +76,7 @@ async function LockWonderTrade()
  */
 function UnlockWonderTrade()
 {
-    gWonderTradeLocked = false;
+    gWonderTradeMutex.release();
 }
 
 /**
@@ -492,6 +490,41 @@ function TryMakeTempFolder()
 }
 
 /**
+ * Finishes uploading a file to the server.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @returns {Promise} A promise with the error message if there is one. Resolved if the file is uploaded successfully.
+ */
+async function FinishFileUpload(req, res)
+{
+    //NOTE: This function will throw an error if upgrading past multer 1.4.3!
+    function uploadAsync(req, res)
+    {
+        return new Promise((resolve, reject) =>
+        {
+            upload(req, res, (err) =>
+            {
+                if (err)
+                    reject(err);
+                else
+                    resolve();
+            });
+        });
+    }
+
+    try
+    {
+        await uploadAsync(req, res);
+    }
+    catch (err)
+    {
+        return err;
+    }
+
+    return null;
+}
+
+/**
  * Endpoint: /uploadSaveFile - Uploads a save file and extracts the Boxes from it.
  * @param {String} username - The username of the account the file is for (if using an account system).
  * @param {String} accountCode - The account code of the account the file is for (if using an account system).
@@ -530,15 +563,10 @@ app.post('/uploadSaveFile', async (req, res) =>
                    && accountCode != null && accountCode !== "";
 
     //Finish the upload of the save file
-    upload(req, res, function (err)
-    {
-        if (err instanceof multer.MulterError)
-            return res.status(StatusCode.ServerErrorInternal).json(err)
-        else if (err)
-            return res.status(StatusCode.ServerErrorInternal).json(err)
-    })
-
-    if (req.files == null)
+    let fileUploadErr = await FinishFileUpload(req, res);
+    if (fileUploadErr != null)
+        return res.status(StatusCode.ServerErrorInternal).json(fileUploadErr);
+    else if (req.files == null)
         return res.status(StatusCode.ClientErrorBadRequest).json("ERROR: Uploaded save file did not reach the server");
 
     //Write the save file to a temp file
@@ -571,8 +599,9 @@ app.post('/uploadSaveFile', async (req, res) =>
         let oldVersion = data["oldVersion"];
         let accessible = inaccessibleReason === "";
 
-        if (gameId === "" || boxCount === 0 || boxes.length === 0 || titles.length === 0) //Bad save file
+        if (gameId === "" || boxCount === 0 || boxes.length === 0 || titles.length === 0)
         {
+            //Bad save file
             if (oldVersion !== "")
                 result = res.status(StatusCode.ClientErrorUpgradeRequired).json(`ERROR: The uploaded save file is from an old version (${oldVersion}).`);
             else
@@ -638,15 +667,10 @@ app.post('/uploadSaveFile', async (req, res) =>
 app.post('/uploadCloudData', async (req, res) =>
 {
     //Finish the upload of the home data file
-    upload(req, res, function (err)
-    {
-        if (err instanceof multer.MulterError)
-            return res.status(StatusCode.ServerErrorInternal).json(err);
-        else if (err)
-            return res.status(StatusCode.ServerErrorInternal).json(err);
-    })
-
-    if (req.files == null)
+    let fileUploadErr = await FinishFileUpload(req, res);
+    if (fileUploadErr != null)
+        return res.status(StatusCode.ServerErrorInternal).json(fileUploadErr);
+    else if (req.files == null)
         return res.status(StatusCode.ClientErrorBadRequest).json("ERROR: Uploaded file did not reach the server.");
 
     //Decrypt the data
