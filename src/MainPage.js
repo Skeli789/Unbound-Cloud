@@ -237,6 +237,11 @@ export default class MainPage extends Component
         this.setState(stateChange);
     }
 
+    async setStateAndWait(newState)
+    {
+        return new Promise(resolve => this.setState(newState, resolve));
+    }
+
     /**
      * Removes the error messages displayed on the page (if any).
      */
@@ -742,12 +747,12 @@ export default class MainPage extends Component
     {
         if (!this.isValidSaveFile(file))
         {
-            await this.setState({fileUploadError: true, serverConnectionError: false});
+            await this.setStateAndWait({fileUploadError: true, serverConnectionError: false});
             return false;
         }
         else
         {
-            await this.setState({selectedSaveFile: file, fileUploadError: false, serverConnectionError: false});
+            await this.setStateAndWait({selectedSaveFile: file, fileUploadError: false, serverConnectionError: false});
             return await this.handleUpload(true);
         }
     }
@@ -786,12 +791,12 @@ export default class MainPage extends Component
     {
         if (!this.isValidHomeFileName(file.name.toLowerCase()))
         {
-            await this.setState({fileUploadError: true, serverConnectionError: false});
+            await this.setStateAndWait({fileUploadError: true, serverConnectionError: false});
             return false;
         }
         else
         {
-            await this.setState({selectedHomeFile: file, fileUploadError: false, serverConnectionError: false});
+            await this.setStateAndWait({selectedHomeFile: file, fileUploadError: false, serverConnectionError: false});
             return await this.handleUpload(false); //Upload immediately
         }
     }
@@ -959,7 +964,7 @@ export default class MainPage extends Component
                         let homeFileHandle = await this.findFileHandleWithNameInDirHandle(this.getHomeFileName(), this.state.homeDirHandle);
                         if (homeFileHandle != null) //Home file has already been created
                         {
-                            await this.setState({homeFileHandle: homeFileHandle});
+                            await this.setStateAndWait({homeFileHandle: homeFileHandle});
                             if (!(await this.handleChooseHomeFile(await homeFileHandle.getFile()))
                             && !this.state.mismatchedRandomizerError)
                             {
@@ -1134,14 +1139,14 @@ export default class MainPage extends Component
             saveFileData: res.data.saveFileData,
         }
 
-        await this.setState(newState);
+        await this.setStateAndWait(newState);
 
         if (ACCOUNT_SYSTEM
         && "cloudBoxes" in res.data
         && "cloudTitles" in res.data
         && "cloudDataSyncKey" in res.data)
         {
-            await this.setState
+            await this.setStateAndWait
             ({
                 homeBoxes: res.data.cloudBoxes.length === 0 ? this.state.homeBoxes : res.data.cloudBoxes,
                 homeTitles: res.data.cloudTitles.length === 0 ? this.state.homeTitles : res.data.cloudTitles,
@@ -1164,7 +1169,7 @@ export default class MainPage extends Component
         {
             console.log("Could not connect to the server.");
 
-            await this.setState
+            await this.setStateAndWait
             ({
                 editState: newState,
                 fileUploadError: false,
@@ -1179,7 +1184,7 @@ export default class MainPage extends Component
         {
             console.log(error["response"]["data"]);
 
-            await this.setState
+            await this.setStateAndWait
             ({
                 editState: newState,
                 fileUploadError: true,
@@ -1296,7 +1301,7 @@ export default class MainPage extends Component
         else
             text = "The Cloud file uploaded is for randomized saves.<br/>Please upload a Cloud data file created for regular saves."
 
-        await this.setState({mismatchedRandomizerError: true}); //Prevent the pop-up from showing up for file handles
+        await this.setStateAndWait({mismatchedRandomizerError: true}); //Prevent the pop-up from showing up for file handles
 
         console.log("Home file randomizer doesn't match save randomizer.");
         PopUp.fire
@@ -1364,7 +1369,7 @@ export default class MainPage extends Component
             
                         let res = await axios.post(route, formData, {});
 
-                        await this.setState
+                        await this.setStateAndWait
                         ({
                             saveGameId: "cfru",
                             saveBoxCount: 0,
@@ -1609,7 +1614,7 @@ export default class MainPage extends Component
     async useSaveHandle(fileHandle)
     {
         this.wipeErrorMessage(); //In preparation for uploading the file
-        await this.setState({saveFileHandle: fileHandle});
+        await this.setStateAndWait({saveFileHandle: fileHandle});
         if (await this.uploadSaveFileHandle()) //True if file uploaded successfully
             this.wipeErrorMessage();
         else if (this.state.fileUploadError)
@@ -2423,6 +2428,7 @@ export default class MainPage extends Component
         var newBoxes = this.generateBlankHomeBoxes();
         var speciesIndexDict = {};
         var freeSlot = speciesList.length; //Free slot after the living dex mons
+        var homeBoxes = this.state.homeBoxes;
 
         //First build a hash table for quick access
         if (compareDexNums)
@@ -2438,13 +2444,13 @@ export default class MainPage extends Component
 
         //Then move any Pokemon that are already placed after where the living dex would end
         //This ensures those Pokemon at least may remain in their positions
-        for (i = speciesList.length; i < this.state.homeBoxes.length; ++i)
-            newBoxes[i] = this.state.homeBoxes[i];
+        for (i = speciesList.length; i < homeBoxes.length; ++i)
+            newBoxes[i] = homeBoxes[i];
 
         //Then move the Pokemon that are in the living dex area
         for (i = 0; i < speciesList.length; ++i)
         {
-            let pokemon = this.state.homeBoxes[i]
+            let pokemon = homeBoxes[i]
             let species = GetSpecies(pokemon, true);
             let inDict = (compareDexNums) ? species in gSpeciesToDexNum && gSpeciesToDexNum[species] in speciesIndexDict : species in speciesIndexDict;
 
@@ -2495,7 +2501,7 @@ export default class MainPage extends Component
             }
         }
 
-        this.state.homeBoxes = newBoxes;
+        this.setState({homeBoxes: newBoxes});
         return newBoxes;
     }
 
@@ -2719,7 +2725,14 @@ export default class MainPage extends Component
         formData.append("cloudDataSyncKey", this.state.cloudDataSyncKey); //Prevents issues with opening multiple tabs
         this.addHomeDataToFormData(homeData, formData);
 
-        localStorage.lastSavedCloudData = homeData; //In case the servers get wiped at least there will be a local backup
+        try
+        {
+            localStorage.lastSavedHomeData = homeData; //In case the servers get wiped at least there will be a local backup
+        }
+        catch (error)
+        {
+            console.log("Error saving local backup of Cloud Data. Local storage is full.");
+        }
 
         try
         {
@@ -3331,7 +3344,7 @@ export default class MainPage extends Component
     multiArkGamingLogo()
     {
         return (
-            <a href="https://discord.gg/multiarkgaming" target="_blank" rel="noopener noreferrer">
+            <a href="https://discord.gg/beKCycEGWq" target="_blank" rel="noopener noreferrer">
                 <img src={BASE_GFX_LINK + "MultiArkBanner.png"}
                         alt="Hosted By MultiArkGaming"
                         className="multi-ark-gaming-logo"/>

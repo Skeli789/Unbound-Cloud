@@ -52,7 +52,7 @@ export class BoxList extends Component
      */
     async componentDidMount()
     {
-        await new Promise(r => setTimeout(r, 10)); //Allows the loading screen to render
+        await new Promise(r => setTimeout(r, 50)); //Allows the loading screen to render
         this.setState({loaded: true});
 
         //Override back button
