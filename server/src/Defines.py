@@ -23,12 +23,13 @@ BallTypeDefines = "BallTypes.json"
 ## File Signatures ##
 VANILLA_FILE_SIGNATURE = 0x08012025
 CFRE_FILE_SIGNATURE = 0x29012004
-UNBOUND_FILE_SIGNATURE = 0x01121999
+UNBOUND_FILE_SIGNATURE = 0x01122000
 WISH_FILE_SIGNATURE = 0x18190804
 MAGM_FILE_SIGNATURE = 0xC7BBC1C7
 IR_FILE_SIGNATURE = 0x14B66BBC
 
 ## Old File Signatures ##
+UNBOUND_2_1_FILE_SIGNATURE = 0x01121999  # Unbound 2.1.0 - 2.1.1.1
 UNBOUND_2_0_FILE_SIGNATURE = 0x01121998  # Unbound 2.0.0 - 2.0.3.2 
 
 ## Flags and Vars ##
@@ -42,6 +43,10 @@ FLAG_UNBOUND_SANDBOX_MODE = 0x16E4
 FLAG_IR_SANDBOX_MODE = 0x1205
 VAR_UNBOUND_GAME_DIFFICULTY = 0x50DF
 FLAG_MAGM_PC_ACCESSED = 0x215
+
+## Pokedex Flags Enum ##
+CFRU_POKEDEX_FLAGS = 0
+CFRU_NEW_POKEDEX_FLAGS = 1
 
 ## Other Constants ##
 OLD_SHINY_ODDS = 8  # 1/8192
@@ -77,6 +82,7 @@ GameDetails = {
         "definesDir": "cfru",
         "shinyOdds": OLD_SHINY_ODDS,
         "boxCount": 14,
+        "pokedexFlags": CFRU_POKEDEX_FLAGS,
     },
     CFRE_FILE_SIGNATURE: {
         "name": "cfre",
@@ -88,6 +94,7 @@ GameDetails = {
         "shinyOdds": OLD_SHINY_ODDS,
         "boxCount": 25,
         "randomizerFlags": [FLAG_CFRU_SPECIES_RANDOMIZER, FLAG_CFRU_LEARNSET_RANDOMIZER],
+        "pokedexFlags": CFRU_POKEDEX_FLAGS,
     },
     UNBOUND_FILE_SIGNATURE: {
         "name": "unbound",
@@ -111,6 +118,31 @@ GameDetails = {
                 "reason": "Sandbox mode is active and the Pokémon League has not been defeated."
             }
         ],
+        "pokedexFlags": CFRU_NEW_POKEDEX_FLAGS,
+    },
+    UNBOUND_2_1_FILE_SIGNATURE: {  # TEMPORARY
+        "name": "unbound",
+        "version": VERSION_UNBOUND,
+        "baseVersion": VERSION_FIRERED,
+        "region": REGION_BORRIUS,
+        "cfru": True,
+        "definesDir": "unbound_2_1",
+        "shinyOdds": MODERN_SHINY_ODDS,
+        "boxCount": 25,
+        "randomizerFlags": [FLAG_UNBOUND_SPECIES_RANDOMIZER, FLAG_UNBOUND_LEARNSET_RANDOMIZER],
+        "inaccessible": [
+            {   # Insane difficulty
+                "varSetTo": (VAR_UNBOUND_GAME_DIFFICULTY, INSANE_DIFFICULTY_UNBOUND),
+                "butNotIfFlagSet": [FLAG_FR_GAME_CLEAR, FLAG_UNBOUND_NEW_GAME_PLUS],
+                "reason": "The difficulty is set to Insane and the Pokémon League has not been defeated."
+            },
+            {   # Sandbox Mode before post-game
+                "flagSet": FLAG_UNBOUND_SANDBOX_MODE,
+                "butNotIfFlagSet": FLAG_FR_GAME_CLEAR,
+                "reason": "Sandbox mode is active and the Pokémon League has not been defeated."
+            }
+        ],
+        "pokedexFlags": CFRU_POKEDEX_FLAGS,
     },
     # WISH_FILE_SIGNATURE: {
     #     "name": "wish",
@@ -122,6 +154,7 @@ GameDetails = {
     #     "shinyOdds": MODERN_SHINY_ODDS,
     #     "boxCount": 25,
     #     "randomizerFlags": [FLAG_CFRU_SPECIES_RANDOMIZER, FLAG_CFRU_LEARNSET_RANDOMIZER],
+    #     "pokedexFlags": CFRU_POKEDEX_FLAGS,
     # }
     MAGM_FILE_SIGNATURE: {
         "name": "magm",
@@ -137,7 +170,8 @@ GameDetails = {
                 "flagNotSet": FLAG_MAGM_PC_ACCESSED,
                 "reason": "The PC has never been accessed."
             }
-        ]
+        ],
+        "pokedexFlags": CFRU_POKEDEX_FLAGS,
     },
     IR_FILE_SIGNATURE: {
         "name": "inflamedred",
@@ -156,6 +190,7 @@ GameDetails = {
                 "reason": "Sandbox mode is active and the Pokémon League has not been defeated."
             }
         ],
+        "pokedexFlags": CFRU_POKEDEX_FLAGS,
     },
 }
 
@@ -175,6 +210,7 @@ CustomHackVersions = {  # GAME_NAME
 
 OldVersionFileSignatures = {
     UNBOUND_2_0_FILE_SIGNATURE: "Unbound 2.0",
+    # UNBOUND_2_1_FILE_SIGNATURE: "Unbound 2.1",  # TODO: Uncomment
 }
 
 
@@ -288,6 +324,13 @@ class Defines:
     @staticmethod
     def BoxCount() -> bool:
         return GameDetails[Defines.fileSignature]["boxCount"]
+
+    @staticmethod
+    def GetPokedexFlags() -> int:
+        if "pokedexFlags" in GameDetails[Defines.fileSignature]:
+            return GameDetails[Defines.fileSignature]["pokedexFlags"]
+
+        return 0
 
     @staticmethod
     def GetSpeciesDexNum(species: str) -> int:

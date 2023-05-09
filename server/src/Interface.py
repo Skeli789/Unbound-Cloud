@@ -3,7 +3,7 @@ from os import access
 import shutil
 import sys
 
-from Defines import Defines, UNBOUND_FILE_SIGNATURE
+from Defines import Defines, UNBOUND_2_1_FILE_SIGNATURE
 from PokemonProcessing import PokemonProcessing
 from SaveBlocks import SaveBlocks
 from SaveBlockProcessing import SaveBlockProcessing
@@ -61,10 +61,10 @@ def main():
                     with open(updatedDataJSON, 'r', encoding="utf-8") as jsonFile:
                         newPokemon = json.load(jsonFile)
 
-                    seenFlags, caughtFlags = SaveBlockProcessing.LoadCFRUPokedexFlags(saveBlocks)
+                    seenFlags, caughtFlags = SaveBlockProcessing.LoadPokedexFlags(saveBlocks)
                     seenFlags, caughtFlags = PokemonProcessing.UpdatePokedexFlags(seenFlags, caughtFlags, newPokemon)
                     newSaveBlocks = SaveBlockProcessing.UpdateCFRUBoxData(saveBlocks, newPokemon)
-                    newSaveBlocks = SaveBlockProcessing.UpdateCFRUPokedexFlags(newSaveBlocks, seenFlags, caughtFlags)
+                    newSaveBlocks = SaveBlockProcessing.UpdatePokedexFlags(newSaveBlocks, seenFlags, caughtFlags)
                     if not SaveBlocks.ReplaceAll(newFilePath, newSaveBlocks):
                         newFilePath = ""  # An error occurred 
 
@@ -73,7 +73,7 @@ def main():
         elif command == "CONVERT_OLD_CLOUD_FILE":
             if len(sys.argv) > 2:  # Has save path
                 cloudFilePath = sys.argv[2]
-                Defines.LoadAll(UNBOUND_FILE_SIGNATURE)  # Really just needed for the languages
+                Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)  # Really just needed for the languages
                 completed, error = PokemonProcessing.ConvertOldCloudFileToNew(cloudFilePath)
                 returnData({"completed": completed, "errorMsg": error})
                 return

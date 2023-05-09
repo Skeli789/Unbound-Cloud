@@ -348,7 +348,36 @@ function IsSpeciesGen8(species)
     if (speciesIndex > 0)
     {
         return speciesIndex >= speciesIds.indexOf("SPECIES_GROOKEY")
-            /*&& speciesIndex < speciesIds.indexOf("SPECIES_GROWLITHE_H")*/;
+            && speciesIndex < speciesIds.indexOf("SPECIES_SPRIGATITO");
+    }
+
+    return false;
+}
+
+/**
+ * Checks if a species was introduced in Gen 9.
+ * @param {String} species - The species to check.
+ * @returns {Boolean} True if the species was introduced in Gen 9. False for any other Gen.
+ */
+function IsSpeciesGen9(species)
+{
+    var speciesIndex = 0;
+    let speciesIds = Object.keys(SpeciesNames);
+
+    if (typeof(species) === "number")
+    {
+        speciesIndex = species;
+    }
+    else if (typeof(species) === "string")
+    {
+        if (species in SpeciesNames)
+            speciesIndex = speciesIds.indexOf(species);
+    }
+
+    if (speciesIndex > 0)
+    {
+        return speciesIndex >= speciesIds.indexOf("SPECIES_SPRIGATITO")
+            && speciesIndex < speciesIds.indexOf("SPECIES_WOOPER_P");
     }
 
     return false;
@@ -1539,16 +1568,6 @@ export function GetIVs(pokemon)
 }
 
 /**
- * Checks if a Pokemon has a species that was introduced in Gen 8.
- * @param {Pokemon} pokemon - The Pokemon to check.
- * @returns {Boolean} True if the Pokemon's species was introduced in Gen 8. False for any other Gen.
- */
-export function IsMonGen8(pokemon)
-{
-    return IsSpeciesGen8(GetSpecies(pokemon));
-}
-
-/**
  * Checks if two Pokemon are duplicates of each other.
  * @param {Pokemon} pokemon1 - The first Pokemon to check.
  * @param {Pokemon} pokemon2 - The second Pokemon to check.
@@ -1815,6 +1834,8 @@ export function GetIconSpeciesLinkBySpecies(species, isShiny, isFromUnbound)
 {    
     if (isShiny && isFromUnbound && species in UnboundShinies)
         return BASE_GFX_LINK + "unbound_shinies/" + species + ".png";
+    else if (IsSpeciesGen9(species))
+        return BASE_GFX_LINK + "gen_9/" + (isShiny ? "shiny/" : "") + species + ".png";
     else if (species === "SPECIES_PIKACHU_SURFING"
           || species === "SPECIES_PIKACHU_FLYING")
         return BASE_GFX_LINK + species + ".png";

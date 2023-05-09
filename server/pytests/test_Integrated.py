@@ -142,21 +142,21 @@ def LoadAndReplaceTest(saveName: str, definesAdjustmentFunc=None, shouldFail=Fal
 
     assert SaveBlockProcessing.IsAccessibleCurrently(saveBlocks)
     allPokemon = SaveBlockProcessing.LoadPCPokemon(saveBlocks)
-    seenFlags, caughtFlags = SaveBlockProcessing.LoadCFRUPokedexFlags(saveBlocks)
+    seenFlags, caughtFlags = SaveBlockProcessing.LoadPokedexFlags(saveBlocks)
 
     if len(allPokemon) == 0:  # Sanity check
         assert len(allPokemon) != 0
 
     # Save back to save
     newSaveBlocks = SaveBlockProcessing.UpdateCFRUBoxData(saveBlocks, allPokemon)
-    newSaveBlocks = SaveBlockProcessing.UpdateCFRUPokedexFlags(newSaveBlocks, seenFlags, caughtFlags)
+    newSaveBlocks = SaveBlockProcessing.UpdatePokedexFlags(newSaveBlocks, seenFlags, caughtFlags)
     shutil.copyfile(originalSaveFilePath, newFilePath)
     SaveBlocks.ReplaceAll(newFilePath, newSaveBlocks)
 
     # Load new file and make sure matches original
     saveBlocks, fileSignature = SaveBlocks.LoadAll(newFilePath)
     newPokemon = SaveBlockProcessing.LoadPCPokemon(saveBlocks)
-    newSeenFlags, newCaughtFlags = SaveBlockProcessing.LoadCFRUPokedexFlags(saveBlocks)
+    newSeenFlags, newCaughtFlags = SaveBlockProcessing.LoadPokedexFlags(saveBlocks)
 
     if shouldFail:
         assert allPokemon != newPokemon
@@ -184,7 +184,7 @@ def TransferTest(saveName: str, setMetGame: str, metGameAfterLoad: str, original
     saveBlocks, fileSignature = SaveBlocks.LoadAll(originalSaveFilePath)
     Defines.LoadAll(fileSignature)
     allPokemon = SaveBlockProcessing.LoadPCPokemon(saveBlocks)
-    seenFlags, caughtFlags = SaveBlockProcessing.LoadCFRUPokedexFlags(saveBlocks)
+    seenFlags, caughtFlags = SaveBlockProcessing.LoadPokedexFlags(saveBlocks)
 
     # Pretend Pokemon came from other game
     allPokemon[0]["metGame"] = setMetGame
@@ -192,7 +192,7 @@ def TransferTest(saveName: str, setMetGame: str, metGameAfterLoad: str, original
 
     # Save back to save
     newSaveBlocks = SaveBlockProcessing.UpdateCFRUBoxData(saveBlocks, allPokemon)
-    newSaveBlocks = SaveBlockProcessing.UpdateCFRUPokedexFlags(newSaveBlocks, seenFlags, caughtFlags)
+    newSaveBlocks = SaveBlockProcessing.UpdatePokedexFlags(newSaveBlocks, seenFlags, caughtFlags)
     shutil.copyfile(originalSaveFilePath, newFilePath)
     SaveBlocks.ReplaceAll(newFilePath, newSaveBlocks)
 

@@ -521,15 +521,5 @@
     "ITEM_GALARICA_WREATH": true,
     "ITEM_BLACK_AUGURITE": true,
     "ITEM_PEAT_BLOCK": true,
-    "ITEM_HISUI_ROCK": true,
-    "ITEM_BOOSTER_ENERGY": true,
-    "ITEM_ABILITY_SHIELD": true,
-    "ITEM_CLEAR_AMULET": true,
-    "ITEM_MIRROR_HERB": true,
-    "ITEM_PUNCHING_GLOVES": true,
-    "ITEM_COVERT_CLOAK": true,
-    "ITEM_LOADED_DICE": true,
-    "ITEM_LEADERS_CREST": true,
-    "ITEM_AUSPICIOUS_ARMOR": true,
-    "ITEM_MALICIOUS_ARMOR": true
+    "ITEM_HISUI_ROCK": true
 }

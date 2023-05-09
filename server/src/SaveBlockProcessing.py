@@ -1,6 +1,6 @@
 import copy
 from typing import List, Tuple, Dict
-from Defines import Defines
+from Defines import Defines, CFRU_NEW_POKEDEX_FLAGS
 from PokemonProcessing import PokemonProcessing, CFRUCompressedPokemonSize
 from SaveBlocks import BlockDataSize
 from Util import BytesToInt, BytesToString
@@ -12,10 +12,13 @@ BoxNamesSaveBlock = 13
 BoxNamesOffset = 0x361
 BoxNamesEndOffset = 0x442
 
-PokedexFlagsSaveBlock = 1
-SeenFlagsOffset = 0x310
-CaughtFlagsOffset = 0x38D
-CaughtFlagsEndOffset = 0x40A
+CFRUPokedexFlagsSaveBlock = 1
+CFRUSeenFlagsOffset = 0x310
+CFRUCaughtFlagsOffset = 0x38D
+CFRUCaughtFlagsEndOffset = 0x40A
+
+CFRUNewCaughtFlagsOffset = 0x3B4
+CFRUNewCaughtFlagsEndOffset = 0x458
 
 VanillaFlagsASaveBlock = 1
 VanillaFlagsAOffset = 0xEE0
@@ -88,6 +91,13 @@ StartingBoxMemoryOffsets = {
 
 class SaveBlockProcessing:
     @staticmethod
+    def GetCFRUPokedexFlagsOffsets() -> Tuple[int, int, int, int]:
+        if Defines.GetPokedexFlags() == CFRU_NEW_POKEDEX_FLAGS:
+            return CFRUPokedexFlagsSaveBlock, CFRUSeenFlagsOffset, CFRUNewCaughtFlagsOffset, CFRUNewCaughtFlagsEndOffset
+        else:
+            return CFRUPokedexFlagsSaveBlock, CFRUSeenFlagsOffset, CFRUCaughtFlagsOffset, CFRUCaughtFlagsEndOffset
+
+    @staticmethod
     def LoadPCPokemon(saveBlocks: Dict[int, List[int]]) -> List[dict]:
         allPokemon = []
 
@@ -144,13 +154,17 @@ class SaveBlockProcessing:
         return titles
 
     @staticmethod
-    def LoadCFRUPokedexFlags(saveBlocks: Dict[int, List[int]]) -> Tuple[List[int], List[int]]:
+    def LoadPokedexFlags(saveBlocks: Dict[int, List[int]]) -> Tuple[List[int], List[int]]:
         seenFlags, caughtFlags = 0, 0
 
-        if PokedexFlagsSaveBlock in saveBlocks:
-            seenFlags = saveBlocks[PokedexFlagsSaveBlock][SeenFlagsOffset:CaughtFlagsOffset]
-            caughtFlags = saveBlocks[PokedexFlagsSaveBlock][CaughtFlagsOffset:CaughtFlagsEndOffset]
-  
+        if Defines.IsCFRUHack():
+            dexFlagsSaveBlock, seenFlagsOffset, caughtFlagsOffset, caughtFlagsEndOffset = SaveBlockProcessing.GetCFRUPokedexFlagsOffsets()
+            if dexFlagsSaveBlock in saveBlocks:
+                seenFlags = saveBlocks[dexFlagsSaveBlock][seenFlagsOffset:caughtFlagsOffset]
+                caughtFlags = saveBlocks[dexFlagsSaveBlock][caughtFlagsOffset:caughtFlagsEndOffset]
+        else:
+            raise Exception("Pokedex flags not implemented for non-CFRU hacks")
+
         return seenFlags, caughtFlags
 
     @staticmethod
@@ -312,10 +326,13 @@ class SaveBlockProcessing:
                 saveBlockOffset = StartingBoxMemoryOffsets[saveBlockNum]
 
     @staticmethod
-    def UpdateCFRUPokedexFlags(saveBlocks: Dict[int, List[int]], seenFlags: List[int], caughtFlags: List[int]) -> Dict[int, List[int]]:
-        saveBlocks = copy.deepcopy(saveBlocks)
-        SaveBlockProcessing.SaveMemorySubset(saveBlocks, PokedexFlagsSaveBlock, seenFlags, SeenFlagsOffset,
-                                             len(seenFlags))
-        SaveBlockProcessing.SaveMemorySubset(saveBlocks, PokedexFlagsSaveBlock, caughtFlags, CaughtFlagsOffset,
-                                             len(caughtFlags))
+    def UpdatePokedexFlags(saveBlocks: Dict[int, List[int]], seenFlags: List[int], caughtFlags: List[int]) -> Dict[int, List[int]]:
+        if Defines.IsCFRUHack():
+            dexFlagsSaveBlock, seenFlagsOffset, caughtFlagsOffset, _ = SaveBlockProcessing.GetCFRUPokedexFlagsOffsets()
+            saveBlocks = copy.deepcopy(saveBlocks)
+            SaveBlockProcessing.SaveMemorySubset(saveBlocks, dexFlagsSaveBlock, seenFlags, seenFlagsOffset, len(seenFlags))
+            SaveBlockProcessing.SaveMemorySubset(saveBlocks, dexFlagsSaveBlock, caughtFlags, caughtFlagsOffset, len(caughtFlags))
+        else:
+            raise Exception("Pokedex flags not implemented for non-CFRU hacks")
+
         return saveBlocks

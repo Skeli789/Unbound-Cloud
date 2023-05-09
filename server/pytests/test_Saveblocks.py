@@ -116,7 +116,7 @@ class TestLoadAll:
 
     def testFlex(self):
         contents, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/flex.sav")
-        assert fileSignature == UNBOUND_FILE_SIGNATURE
+        assert fileSignature == UNBOUND_2_1_FILE_SIGNATURE
         with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as file:
             contentsJSON = json.dumps(contents)  # Convert the integer keys to strings like "0"
             contents = json.loads(contentsJSON)
@@ -124,7 +124,7 @@ class TestLoadAll:
 
     def testSingleSave(self):
         contents, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/single_save.sav")
-        assert fileSignature == UNBOUND_FILE_SIGNATURE
+        assert fileSignature == UNBOUND_2_1_FILE_SIGNATURE
         with open(f"{DATA_DIR}/single_save_saveblocks.json", "r") as file:
             contentsJSON = json.dumps(contents)  # Convert the integer keys to strings like "0"
             contents = json.loads(contentsJSON)
@@ -132,7 +132,7 @@ class TestLoadAll:
 
     def testSingleSave2(self):
         contents, fileSignature = SaveBlocks.LoadAll(f"{SAVE_DIR}/single_save_2.sav")
-        assert fileSignature == UNBOUND_FILE_SIGNATURE
+        assert fileSignature == UNBOUND_2_1_FILE_SIGNATURE
         with open(f"{DATA_DIR}/single_save_saveblocks.json", "r") as file:
             contentsJSON = json.dumps(contents)  # Convert the integer keys to strings like "0"
             contents = json.loads(contentsJSON)
