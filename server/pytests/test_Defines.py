@@ -22,7 +22,7 @@ class TestLoadAll:
         assert Defines.reverseSpecies["SPECIES_MEWTWO"] == 150
 
     def testSpeciesUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         species = sorted(Defines.species.items(), reverse=True)
         assert Defines.species[1259] == "SPECIES_ENAMORUS_THERIAN"
         assert Defines.reverseSpecies["SPECIES_ENAMORUS_THERIAN"] == 1259
@@ -35,7 +35,7 @@ class TestLoadAll:
         assert Defines.reverseMoves["MOVE_SPLASH"] == 150
     
     def testMovesUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.moves[766] == "MOVE_TAKEHEART"
         assert Defines.reverseMoves["MOVE_TAKEHEART"] == 766
 
@@ -48,7 +48,7 @@ class TestLoadAll:
         assert "ITEM_DREAM_MIST" not in Defines.items
 
     def testItemsUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.items[89] == "ITEM_DREAM_MIST"
         assert Defines.reverseItems["ITEM_DREAM_MIST"] == 89
 
@@ -60,7 +60,7 @@ class TestLoadAll:
         assert Defines.reverseBallTypes["BALL_TYPE_LUXURY_BALL"] == 10
 
     def testBallTypesUnbound(self):  # Not actually doing anything species right now
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.ballTypes[26] == "BALL_TYPE_DREAM_BALL"
         assert Defines.reverseBallTypes["BALL_TYPE_DREAM_BALL"] == 26
 
@@ -100,7 +100,7 @@ class TestLoadAll:
         }
 
     def testBaseStatsUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.baseStats["SPECIES_PONYTA"] == \
         {
             "baseHP": 50,
@@ -123,7 +123,7 @@ class TestLoadAll:
         assert Defines.shinyOdds == OLD_SHINY_ODDS
     
     def testShinyOddsUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.shinyOdds == MODERN_SHINY_ODDS
 
     def testNatures(self):
@@ -183,7 +183,7 @@ class TestGetCurrentGameName:
         assert Defines.GetCurrentGameName() == "cfre"
 
     def testUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.GetCurrentGameName() == "unbound"
 
     def testMAGM(self):
@@ -216,15 +216,15 @@ class TestGetOriginalGameName:
         assert Defines.GetMonOriginalGameName(VERSION_UNBOUND) == "unbound"
 
     def testUnboundLoadedMonFromUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.GetMonOriginalGameName(VERSION_FIRERED) == "unbound"
 
     def testUnboundLoadedMonFromCFRE(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.GetMonOriginalGameName(VERSION_UNBOUND) == "firered"
 
     def testUnboundLoadedMonFromMAGM(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.GetMonOriginalGameName(VERSION_MAGM) == "magm"
 
     def testMAGMLoadedMonFromUnbound(self):
@@ -232,7 +232,7 @@ class TestGetOriginalGameName:
         assert Defines.GetMonOriginalGameName(VERSION_UNBOUND) == "unbound"
 
     def testLoadedGame(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.GetMonOriginalGameName(0) == "unbound"
 
 
@@ -246,7 +246,7 @@ class TestGetMetIdToBeSaved:
         assert Defines.GetMetIdToBeSaved("firered") == VERSION_FIRERED
 
     def testUnboundToUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.GetMetIdToBeSaved("unbound") == VERSION_FIRERED
 
     def testUnboundToCFRE(self):
@@ -254,7 +254,7 @@ class TestGetMetIdToBeSaved:
         assert Defines.GetMetIdToBeSaved("unbound") == VERSION_UNBOUND  # metGame = Unbound
 
     def testCFREToUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)  # saveGame = Unbound
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)  # saveGame = Unbound
         assert Defines.GetMetIdToBeSaved("cfre") == VERSION_UNBOUND  # metGame = CFRE
 
     def testUnboundToMAGM(self):
@@ -262,11 +262,11 @@ class TestGetMetIdToBeSaved:
         assert Defines.GetMetIdToBeSaved("unbound") == VERSION_UNBOUND  # metGame = Unbound
 
     def testMAGMToUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)  # saveGame = Unbound
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)  # saveGame = Unbound
         assert Defines.GetMetIdToBeSaved("magm") == VERSION_MAGM  # metGame = MAGM
 
     def testUnknownMonHack(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.GetMetIdToBeSaved("unknown") == VERSION_FIRERED  # Base version for unknowns
 
     def testUnknownFileSignatureUnknownMonHack(self):
@@ -276,7 +276,7 @@ class TestGetMetIdToBeSaved:
 
 class TestIsValidFileSignature:
     def testValidFileSignature(self):
-        assert Defines.IsValidFileSignature(UNBOUND_FILE_SIGNATURE)
+        assert Defines.IsValidFileSignature(UNBOUND_2_1_FILE_SIGNATURE)
 
     def testInvalidFileSignature(self):
         assert not Defines.IsValidFileSignature(INVALID_FILE_SIGNATURE)
@@ -290,7 +290,7 @@ class TestIsOldVersionFileSignature:
         assert Defines.IsOldVersionFileSignature(UNBOUND_2_0_FILE_SIGNATURE)
 
     def testLatestFileSignature(self):
-        assert not Defines.IsOldVersionFileSignature(UNBOUND_FILE_SIGNATURE)
+        assert not Defines.IsOldVersionFileSignature(UNBOUND_2_1_FILE_SIGNATURE)
 
 
 class TestGetOldVersionGameName:
@@ -298,12 +298,32 @@ class TestGetOldVersionGameName:
         assert Defines.GetOldVersionGameName(UNBOUND_2_0_FILE_SIGNATURE) == "Unbound 2.0"
 
     def testLatestFileSignature(self):
-        assert Defines.GetOldVersionGameName(UNBOUND_FILE_SIGNATURE) == ""
+        assert Defines.GetOldVersionGameName(UNBOUND_2_1_FILE_SIGNATURE) == ""
+
+
+class TestGetBoxCount:
+    def testUnbound(self):
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
+        assert Defines.BoxCount() == 25
+
+    def testMAGM(self):
+        Defines.LoadAll(MAGM_FILE_SIGNATURE)
+        assert Defines.BoxCount() == 24
+
+
+class TestGetPokedexFlags:
+    def testUnbound(self):
+        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        assert Defines.GetPokedexFlags() == CFRU_NEW_POKEDEX_FLAGS
+
+    def testUnbound2_1(self):  # v2.1
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
+        assert Defines.GetPokedexFlags() == CFRU_POKEDEX_FLAGS
 
 
 class TestIsCFRUHack:
     def testUnbound(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert Defines.IsCFRUHack
 
 

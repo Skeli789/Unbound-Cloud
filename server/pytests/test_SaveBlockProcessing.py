@@ -21,7 +21,7 @@ VAR_UNBOUND_HEALING_MAP = 0x405A
 
 class TestLoadPCPokemon:
     def testFlex(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as saveBlockFile:
             saveBlocks = json.load(saveBlockFile)
             saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
@@ -33,7 +33,7 @@ class TestLoadPCPokemon:
 
 class TestLoadCFRUBoxTitles:
     def testFlex(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as saveBlockFile:
             saveBlocks = json.load(saveBlockFile)
             saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
@@ -43,22 +43,33 @@ class TestLoadCFRUBoxTitles:
                 assert boxTitles == correctTitles
 
 
-class TestLoadCFRUPokedexFlags:
-    def testFlex(self):
-        with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as saveBlockFile:
+class TestLoadPokedexFlags:
+    def testAllPokemon(self):
+        with open(f"{DATA_DIR}/all_pokemon_iron_leaves_saveblocks.json", "r") as saveBlockFile:
+            Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
             saveBlocks = json.load(saveBlockFile)
             saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
-            seenFlags, caughtFlags = SaveBlockProcessing.LoadCFRUPokedexFlags(saveBlocks)
+            seenFlags, caughtFlags = SaveBlockProcessing.LoadPokedexFlags(saveBlocks)
+            assert CalcFlagCount(seenFlags) == 1010
+            assert CalcFlagCount(caughtFlags) == 1010
+
+    def testFlex(self):
+        with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as saveBlockFile:
+            Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
+            saveBlocks = json.load(saveBlockFile)
+            saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
+            seenFlags, caughtFlags = SaveBlockProcessing.LoadPokedexFlags(saveBlocks)
             assert CalcFlagCount(seenFlags) == 809
             assert CalcFlagCount(caughtFlags) == 809
 
     def testNGPlus(self):
         with open(f"{DATA_DIR}/ngplus_saveblocks.json", "r") as saveBlockFile:
+            Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
             saveBlocks = json.load(saveBlockFile)
             saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
-            seenFlags, caughtFlags = SaveBlockProcessing.LoadCFRUPokedexFlags(saveBlocks)
+            seenFlags, caughtFlags = SaveBlockProcessing.LoadPokedexFlags(saveBlocks)
             assert CalcFlagCount(seenFlags) == 613
-            assert CalcFlagCount(caughtFlags) == 33
+            assert CalcFlagCount(caughtFlags) == 33        
 
 
 class TestLoadCFRUTrainerDetails:
@@ -142,14 +153,14 @@ class TestFlagGet:
 
     def testGameClearFlex(self):
         with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as saveBlockFile:
-            Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+            Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
             saveBlocks = json.load(saveBlockFile)
             saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
             assert SaveBlockProcessing.FlagGet(FLAG_FR_GAME_CLEAR, saveBlocks)
 
     def testNoGameClearSingleSave(self):
         with open(f"{DATA_DIR}/single_save_saveblocks.json", "r") as saveBlockFile:
-            Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+            Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
             saveBlocks = json.load(saveBlockFile)
             saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
             assert not SaveBlockProcessing.FlagGet(FLAG_FR_GAME_CLEAR, saveBlocks)
@@ -176,14 +187,14 @@ class TestFlagGet:
 
     def testNewGamePlus(self):
         with open(f"{DATA_DIR}/ngplus_saveblocks.json", "r") as saveBlockFile:
-            Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+            Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
             saveBlocks = json.load(saveBlockFile)
             saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
             assert SaveBlockProcessing.FlagGet(FLAG_UNBOUND_NEW_GAME_PLUS, saveBlocks)
 
     def testNoNewGamePlus(self):
         with open(f"{DATA_DIR}/flex_saveblocks.json", "r") as saveBlockFile:
-            Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+            Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
             saveBlocks = json.load(saveBlockFile)
             saveBlocks = {int(blockId): saveBlocks[blockId] for blockId in saveBlocks}
             assert not SaveBlockProcessing.FlagGet(FLAG_UNBOUND_NEW_GAME_PLUS, saveBlocks)
@@ -292,7 +303,7 @@ class TestIsAccessibleCurrently:
 
 def CalcFlagCount(flagList):
     counter = 0
-    flags = [False] * 999
+    flags = [False] * 9999
 
     for byte in flagList:
         for shift in range(0, 8):

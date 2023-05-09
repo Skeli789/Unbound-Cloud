@@ -120,7 +120,7 @@ class TestIsShiny:
         assert PokemonUtil.IsShiny(TEST_POKEMON) == TEST_POKEMON["shiny"]
 
     def testIsShiny(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert PokemonUtil.IsShiny(TEST_POKEMON_2) == TEST_POKEMON_2["shiny"]
 
     def testNullSpecies(self):
@@ -134,7 +134,7 @@ class TestIsShinyOtIdPersonality:
         assert not PokemonUtil.IsShinyOtIdPersonality(TEST_POKEMON_2["otId"], TEST_POKEMON_2["personality"])
 
     def testisShinyNewOdds(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert PokemonUtil.IsShinyOtIdPersonality(TEST_POKEMON_2["otId"], TEST_POKEMON_2["personality"])
 
 
@@ -374,20 +374,20 @@ class TestIsCloneAbility:
 
 class TestChangeAbility:
     def testChangeToSameAbility1(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON_2.copy()
         PokemonUtil.ChangeAbility(pokemon, 0)
         assert pokemon == TEST_POKEMON_2
 
     def testChangeToSameAbilityBitFromHiddenAbility(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON_2.copy()
         pokemon["hiddenAbility"] = True
         PokemonUtil.ChangeAbility(pokemon, 0)
         assert pokemon == TEST_POKEMON_2
 
     def testChangeToAbility1(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON_3.copy()
         PokemonUtil.ChangeAbility(pokemon, 0)
         assert PokemonUtil.GetAbility(pokemon) == "ABILITY_GUTS"
@@ -396,7 +396,7 @@ class TestChangeAbility:
         assert PokemonUtil.GetNature(pokemon) == TEST_POKEMON_3["nature"]  # Hasn't changed
 
     def testChangeToAbility2(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON_2.copy()
         PokemonUtil.ChangeAbility(pokemon, 1)
         assert PokemonUtil.GetAbility(pokemon) == "ABILITY_STRONGJAW"
@@ -405,7 +405,7 @@ class TestChangeAbility:
         assert PokemonUtil.GetNature(pokemon) == TEST_POKEMON_2["nature"]  # Hasn't changed
 
     def testChangeToHiddenAbility(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON_2.copy()
         PokemonUtil.ChangeAbility(pokemon, 2)
         assert PokemonUtil.GetAbility(pokemon) == "ABILITY_MOXIE"
@@ -413,13 +413,13 @@ class TestChangeAbility:
         assert pokemon == TEST_POKEMON_2  # Shouldn't have changed otherwise
 
     def testChangeUnownAbilityBit(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON_UNOWN.copy()
         PokemonUtil.ChangeAbility(pokemon, 1)
         assert pokemon == TEST_POKEMON_UNOWN  # Shouldn't actually change
 
     def testChangeMiniorAbilityBit(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON_MINIOR.copy()
         PokemonUtil.ChangeAbility(pokemon, 1)
         assert pokemon == TEST_POKEMON_MINIOR  # Shouldn't actually change

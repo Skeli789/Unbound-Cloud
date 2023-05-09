@@ -2158,6 +2158,42 @@
 	"ITEM_HISUI_ROCK": {
 		"name": "Hisui Rock"
 	},
+    "ITEM_BOOSTER_ENERGY": {
+		"name": "Booster Energy"
+	},
+    "ITEM_ABILITY_SHIELD": {
+		"name": "Ability Shield"
+	},
+    "ITEM_CLEAR_AMULET": {
+		"name": "Clear Amulet"
+	},
+    "ITEM_MIRROR_HERB": {
+		"name": "Mirror Herb"
+	},
+    "ITEM_PUNCHING_GLOVES": {
+		"name": "Punching Gloves"
+	},
+    "ITEM_COVERT_CLOAK": {
+		"name": "Covert Cloak"
+	},
+    "ITEM_LOADED_DICE": {
+		"name": "Loaded Dice"
+	},
+    "ITEM_LEADERS_CREST": {
+		"name": "Leader's Crest"
+	},
+    "ITEM_AUSPICIOUS_ARMOR": {
+		"name": "Auspicious Armor"
+	},
+    "ITEM_MALICIOUS_ARMOR": {
+		"name": "Malicious Armor"
+	},
+	"ITEM_SCROLL_OF_WATERS": {
+		"name": "Scroll of Waters"
+	},
+	"ITEM_SCROLL_OF_DARKNESS": {
+		"name": "Scroll of Darkness"
+	},
 	"ITEM_MAGM_BADGE": {
 		"name": "MAGM Badge"
 	}

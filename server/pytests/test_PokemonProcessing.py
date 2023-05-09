@@ -23,19 +23,19 @@ class TestLoadCFRUCompressedMonAtBoxOffset:
 
 class TestAssignConstantsToCFRUData:
     def testNormalData(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = OLD_TEST_POKEMON_RAW.copy()
         PokemonProcessing.AssignConstantsToCFRUData(pokemon)
         assert OLD_TEST_POKEMON_CONVERTED == pokemon
 
     def testBlankData(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = BLANK_TEST_POKEMON_RAW.copy()
         PokemonProcessing.AssignConstantsToCFRUData(pokemon)
         assert BLANK_TEST_POKEMON_CONVERTED == pokemon
 
     def testMissingData(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = OLD_TEST_POKEMON_RAW.copy()
         pokemon["language"] = 0xFF
         pokemon["moves"] = 0
@@ -51,7 +51,7 @@ class TestAssignConstantsToCFRUData:
         assert pokemon == correctPokemon
 
     def testBadEgg(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = OLD_TEST_POKEMON_RAW.copy()
         pokemon["sanity"] |= SANITY_IS_BAD_EGG
         PokemonProcessing.AssignConstantsToCFRUData(pokemon)
@@ -60,58 +60,58 @@ class TestAssignConstantsToCFRUData:
 
 class TestGetAllCFRUCompressedMons:
     def testBlankPokemon(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert PokemonProcessing.GetAllCFRUCompressedMons([BLANK_TEST_POKEMON_CONVERTED]) == [0] * CFRUCompressedPokemonSize
 
     def testBlankPokemonAndRealPokemon(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert PokemonProcessing.GetAllCFRUCompressedMons([BLANK_TEST_POKEMON_CONVERTED, TEST_POKEMON_NON_UNBOUND_DATA]) == \
                                                           [0] * CFRUCompressedPokemonSize + TESTING_POKEMON_NON_UNBOUND_DATA_BYTE_LIST
 
 
 class TestConvertPokemonToCFRUCompressedMon:
     def testNormalPokemon(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(TEST_POKEMON, 0) == TEST_POKEMON_BYTE_LIST
 
     def testBlankPokemon(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(BLANK_TEST_POKEMON_CONVERTED, 0)
         assert convertedData == [0] * CFRUCompressedPokemonSize
 
     def testBadChecksum(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         pokemon["hiddenAbility"] = True
         assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0) == [0] * CFRUCompressedPokemonSize
 
     def testMissingChecksum(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         del pokemon["checksum"]
         assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0) == [0] * CFRUCompressedPokemonSize
 
     def testFakeSpecies(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         pokemon["species"] = "SPECIES_FAKE"
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
         assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0) == [0] * CFRUCompressedPokemonSize
 
     def testMovesThatsANumber(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         pokemon["moves"] = 1
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
         assert PokemonProcessing.ConvertPokemonToCFRUCompressedMon(pokemon, 0) == [0] * CFRUCompressedPokemonSize
 
     def testPokemonWithNonUnboundData(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         convertedData = PokemonProcessing.ConvertPokemonToCFRUCompressedMon(TEST_POKEMON_NON_UNBOUND_DATA, 0)
         assert convertedData == TESTING_POKEMON_NON_UNBOUND_DATA_BYTE_LIST
 
     def testPokemonWithNoRealMoves(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON_NON_UNBOUND_DATA.copy()
         pokemon["moves"] = ["MOVE_FAKE"] * 4
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
@@ -119,7 +119,7 @@ class TestConvertPokemonToCFRUCompressedMon:
         assert convertedData == TESTING_POKEMON_NO_REAL_MOVES_BYTE_LIST
 
     def testUnofficialSpecies(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         Defines.unofficialSpecies[253] = True
         pokemon = TEST_MISSINGNO.copy()
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
@@ -127,7 +127,7 @@ class TestConvertPokemonToCFRUCompressedMon:
         assert convertedData == MISSINGNO_BYTE_LIST
 
     def testHoopaUnboundPresetBox(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         pokemon["species"] = "SPECIES_HOOPA_UNBOUND"
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
@@ -135,7 +135,7 @@ class TestConvertPokemonToCFRUCompressedMon:
         assert convertedData == HOOPA_UNBOUND_BYTE_LIST
 
     def testHoopaUnboundNonPresetBox(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         pokemon["species"] = "SPECIES_HOOPA_UNBOUND"
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
@@ -143,7 +143,7 @@ class TestConvertPokemonToCFRUCompressedMon:
         assert convertedData == HOOPA_BYTE_LIST
 
     def testShayminPresetBox(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         pokemon["species"] = "SPECIES_SHAYMIN_SKY"
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
@@ -151,7 +151,7 @@ class TestConvertPokemonToCFRUCompressedMon:
         assert convertedData == SHAYMIN_SKY_BYTE_LIST
 
     def testShayminNonPresetBox(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = TEST_POKEMON.copy()
         pokemon["species"] = "SPECIES_SHAYMIN_SKY"
         pokemon["checksum"] = PokemonUtil.CalculateChecksum(pokemon)
@@ -170,7 +170,7 @@ class TestConvertPokemonToCFRUCompressedMon:
 
 class TestUpdatePokedexFlags:
     def testVenusaur(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         seenFlags = [0] * DEX_FLAGS_SIZE
         caughtFlags = [0] * DEX_FLAGS_SIZE
         seenFlags, caughtFlags = PokemonProcessing.UpdatePokedexFlags(seenFlags, caughtFlags, [TEST_POKEMON])
@@ -178,7 +178,7 @@ class TestUpdatePokedexFlags:
         assert caughtFlags == [4] + [0] * (DEX_FLAGS_SIZE - 1)
 
     def testMightyena(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         seenFlags = [0] * DEX_FLAGS_SIZE
         caughtFlags = [0] * DEX_FLAGS_SIZE
         seenFlags, caughtFlags = PokemonProcessing.UpdatePokedexFlags(seenFlags, caughtFlags, [TEST_POKEMON_2])
@@ -186,7 +186,7 @@ class TestUpdatePokedexFlags:
         assert caughtFlags == [0] * 32 + [1 << 5] + [0] * (DEX_FLAGS_SIZE - 33)
 
     def testFakeSpecies(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         seenFlags = [0] * DEX_FLAGS_SIZE
         caughtFlags = [0] * DEX_FLAGS_SIZE
         pokemon = TEST_POKEMON.copy()
@@ -196,7 +196,7 @@ class TestUpdatePokedexFlags:
         assert caughtFlags == [0] * DEX_FLAGS_SIZE
 
     def testPokemonTwiceDoesntUnsetFlag(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         seenFlags = [0] * DEX_FLAGS_SIZE
         caughtFlags = [0] * DEX_FLAGS_SIZE
         seenFlags, caughtFlags = PokemonProcessing.UpdatePokedexFlags(seenFlags, caughtFlags, [TEST_POKEMON, TEST_POKEMON])
@@ -204,7 +204,7 @@ class TestUpdatePokedexFlags:
         assert caughtFlags == [4] + [0] * (DEX_FLAGS_SIZE - 1)
 
     def testFlagAlreadySet(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         seenFlags = [4] + [0] * (DEX_FLAGS_SIZE - 1)
         caughtFlags = [4] + [0] * (DEX_FLAGS_SIZE - 1)
         seenFlags, caughtFlags = PokemonProcessing.UpdatePokedexFlags(seenFlags, caughtFlags, [TEST_POKEMON])
@@ -214,13 +214,13 @@ class TestUpdatePokedexFlags:
 
 class TestConvertOldDataStructToNew:
     def testConvertOldTestPokemon(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = OLD_TEST_POKEMON.copy()
         pokemon = PokemonProcessing.ConvertOldDataStructToNew(pokemon)
         assert pokemon == OLD_TEST_POKEMON_CONVERTED
 
     def testConvertBlankPokemon(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         pokemon = OLD_BLANK_TEST_POKEMON.copy()
         pokemon = PokemonProcessing.ConvertOldDataStructToNew(pokemon)
         assert pokemon == BLANK_TEST_POKEMON_CONVERTED
@@ -228,14 +228,14 @@ class TestConvertOldDataStructToNew:
 
 class TestConvertOldCloudFileToNew:
     def testConvertOldTestOutput(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         shutil.copyfile(f"{DATA_DIR}/cloud_old_format.json", f"{DATA_DIR}/cloud_converted.json")
         completed, error = PokemonProcessing.ConvertOldCloudFileToNew(f"{DATA_DIR}/cloud_converted.json")
         assert error == ""
         assert completed
 
     def testConvertOldCloudData(self):
-        Defines.LoadAll(UNBOUND_FILE_SIGNATURE)
+        Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)
         shutil.copyfile(f"{DATA_DIR}/cloud_2_old_format.json", f"{DATA_DIR}/cloud_converted.json")
         completed, error = PokemonProcessing.ConvertOldCloudFileToNew(f"{DATA_DIR}/cloud_converted.json")
         assert error == ""
