@@ -340,6 +340,39 @@ describe("Test SetFriendship", () =>
 });
 
 
+describe("Test GetMonSpeciesName", () =>
+{
+    it(`should be Venusaur for gTestPokemon`, () =>
+    {
+        expect(pokemonUtil.GetMonSpeciesName(gTestPokemon)).to.equal("Venusaur");
+    });
+
+    it(`should be Gengar for gTestPokemon2`, () =>
+    {
+        expect(pokemonUtil.GetMonSpeciesName(gTestPokemon2)).to.equal("Gengar");
+    });
+
+    it(`should be null for null pokemon`, () =>
+    {
+        expect(pokemonUtil.GetMonSpeciesName(null)).to.equal("-");
+    });
+
+    it(`should be null for missing species field`, () =>
+    {
+        let pokemon = Object.assign({}, gTestPokemon);
+        delete pokemon["species"];
+        expect(pokemonUtil.GetMonSpeciesName(pokemon)).to.equal("-");
+    });
+
+    it(`should be null for invalid species`, () =>
+    {
+        let pokemon = Object.assign({}, gTestPokemon);
+        pokemon["checksum"] = 0;
+        expect(pokemonUtil.GetMonSpeciesName(pokemon)).to.equal("-");
+    });
+});
+
+
 describe("Test GetNickname & SetPokemonNickname", () =>
 {
     it(`should be valid after setting nickname`, () =>

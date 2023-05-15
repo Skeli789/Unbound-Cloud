@@ -13,10 +13,12 @@ const CryptoJS = require("crypto-js");
 const accounts = require('./accounts');
 const pokemonUtil = require('./pokemon-util');
 const util = require('./util');
+const {WebhookClient} = require('discord.js');
 const {StatusCode} = require('status-code-enum');
 require('dotenv').config({path: __dirname + '/.env'});
 
 const gSecretKey = process.env["ENCRYPTION_KEY"];
+const gWonderTradeDiscordWebhookURL = process.env["WONDER_TRADE_WEBHOOK"];
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
@@ -31,12 +33,19 @@ var io = require('socket.io')(http,
             Web Socket Functions            
 *******************************************/
 
+const gWonderTradeDiscordWebhook = new WebhookClient({url: gWonderTradeDiscordWebhookURL});
 const gWonderTradeClients = {};
 const gFriendTradeClients = {};
 const gCodesInUse = {};
 var gWonderTradeSpecies = {};
 var gWonderTradeMutex = new Mutex();
 var gLastWonderTradeAt = 0;
+var gWonderTradeDiscordMessageStatus = 0;
+var gLastDiscorWonderTradeMessageId = 0;
+
+const WONDER_TRADE_NOT_IN_PROGRESS = 0;
+const WONDER_TRADE_IN_PROGRESS = 1;
+const WONDER_TRADE_TRADED = 2;
 
 const FRIEND_TRADE_INITIAL = 0;
 const FRIEND_TRADE_CONNECTED = 1;
@@ -195,6 +204,48 @@ function TryWipeWonderTradeSpeciesData()
     }
 }
 
+async function SendWonderTradeDiscordMessage(title, color, newMessageStatus)
+{
+    gWonderTradeDiscordMessageStatus = newMessageStatus;
+
+    var params =
+    {
+        username: "Unbound Cloud",
+        content: "",
+        embeds: [
+            {
+                "title": title,
+                "color": color,
+            }
+        ]
+    };
+
+    //Try to edit a previously sent message
+    try
+    {
+        if (newMessageStatus !== WONDER_TRADE_IN_PROGRESS //Wonder Trades just starting should send a new message
+        && gLastDiscorWonderTradeMessageId !== 0)
+        {
+            await gWonderTradeDiscordWebhook.editMessage(gLastDiscorWonderTradeMessageId, params);
+            return;
+        }
+    }
+    catch (err)
+    {
+        console.log(`An error occurred editing the last Wonder Trade Discord message:\n${err}`);
+    }
+
+    //Send a new message
+    try
+    {
+        gWonderTradeDiscordWebhook.send(params).then((res) => gLastDiscorWonderTradeMessageId = res.id);
+    }
+    catch (err)
+    {
+        console.log(`An error occurred sending the Wonder Trade Discord message:\n${err}`);
+    }
+}
+
 // When a connection is made, loop forever until a Wonder Trade is made
 io.on("connection", async function(socket)
 {
@@ -238,6 +289,8 @@ io.on("connection", async function(socket)
                     {
                         if (!(clientId in gWonderTradeClients)) //Don't overwrite previously requested mon
                             gWonderTradeClients[clientId] = {username: username, pokemon: pokemonToSend, tradedWith: 0, randomizer: randomizer};
+
+                        SendWonderTradeDiscordMessage("Someone is waiting for a Wonder Trade!", 0x00FF00, WONDER_TRADE_IN_PROGRESS); //Green
                     }
                 }
 
@@ -249,6 +302,10 @@ io.on("connection", async function(socket)
                 await LockWonderTrade();
                 delete gWonderTradeClients[clientId]; //Remove data so no one trades with it
                 console.log(`WT-Client ${clientId} disconnected`);
+
+                if (gWonderTradeDiscordMessageStatus == WONDER_TRADE_IN_PROGRESS)
+                    SendWonderTradeDiscordMessage("The Wonder Trade was cancelled...", 0xFF0000, WONDER_TRADE_NOT_IN_PROGRESS); //Red
+
                 UnlockWonderTrade();
             });
         }
@@ -360,6 +417,7 @@ io.on("connection", async function(socket)
 
         if (clientId in gWonderTradeClients && gWonderTradeClients[clientId].tradedWith !== 0)
         {
+            await LockWonderTrade();
             originalPokemon = gWonderTradeClients[clientId].originalPokemon;
             friendPokemon = Object.assign({}, gWonderTradeClients[clientId].pokemon);
             pokemonUtil.UpdatePokemonAfterNonFriendTrade(friendPokemon, originalPokemon);
@@ -367,6 +425,16 @@ io.on("connection", async function(socket)
 
             if (clientId in gWonderTradeClients)
                 console.log(`WT-Client ${clientId} (${gWonderTradeClients[clientId].username}) received Pokemon from ${gWonderTradeClients[clientId].tradedWith} (${gWonderTradeClients[clientId].receivedFrom})`);
+
+            if (gWonderTradeDiscordMessageStatus == WONDER_TRADE_IN_PROGRESS)
+            {
+                let species1 = pokemonUtil.GetMonSpeciesName(originalPokemon);
+                let species2 = pokemonUtil.GetMonSpeciesName(friendPokemon);
+                SendWonderTradeDiscordMessage(`${species1} and ${species2} were traded!`, 0x0000FF, WONDER_TRADE_TRADED); //Blue
+            }
+
+            UnlockWonderTrade();
+
             //Data deleted when client disconnects in case they don't receive this transmission
         }
         else if (clientId in gFriendTradeClients

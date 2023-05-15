@@ -168,6 +168,16 @@ module.exports.SetFriendship = SetFriendship;
 
 /**
  * @param {Pokemon} pokemon - The Pokemon to process.
+ * @returns {String} The Pokemon's species name.
+ */
+function GetMonSpeciesName(pokemon)
+{
+    return util.GetSpeciesName(GetSpecies(pokemon));
+}
+module.exports.GetMonSpeciesName = GetMonSpeciesName;
+
+/**
+ * @param {Pokemon} pokemon - The Pokemon to process.
  * @returns {String} The Pokemon's nickname.
  */
 function GetNickname(pokemon)
