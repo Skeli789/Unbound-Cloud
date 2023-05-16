@@ -774,6 +774,14 @@
     "MOVE_MOUNTAINGALE": true,
     "MOVE_VICTORYDANCE": true,
     "MOVE_SHELTER": true,
+    "MOVE_BLEAKWINDSTORM": true,
+    "MOVE_WILDBOLTSTORM": true,
+    "MOVE_SANDSEARSTORM": true,
     "MOVE_SPRINGTIDESTORM": true,
-    "MOVE_SANDSEARSTORM": true
+    "MOVE_LUNARBLESSING": true,
+    "MOVE_TAKEHEART": true,
+    "MOVE_RAGEFIST": true,
+    "MOVE_TWINBEAM": true,
+    "MOVE_HYPERDRILL": true,
+    "MOVE_KOWTOWCLEAVE": true
 }

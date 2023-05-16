@@ -295,7 +295,7 @@ class TestIsOldVersionFileSignature:
 
 class TestGetOldVersionGameName:
     def testValidOldFileSignature(self):
-        assert Defines.GetOldVersionGameName(UNBOUND_2_0_FILE_SIGNATURE) == "Unbound 2.0"
+        assert Defines.GetOldVersionGameName(UNBOUND_2_0_FILE_SIGNATURE) == "Unbound v2.0"
 
     def testLatestFileSignature(self):
         assert Defines.GetOldVersionGameName(UNBOUND_2_1_FILE_SIGNATURE) == ""

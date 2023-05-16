@@ -61,6 +61,9 @@ class TestIntegrated:
     def testReplaceAllPokemonInflamedRed(self):
         LoadAndReplaceTest("inflamed_red")
 
+    def testReplaceAllPokemonInflamedRedGen9(self):
+        LoadAndReplaceTest("inflamed_red_gen_9")
+
     def testReplaceAllPokemonEmptySave(self):
         LoadAndReplaceTest("single_save")
 

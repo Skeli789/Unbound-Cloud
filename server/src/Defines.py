@@ -26,11 +26,12 @@ CFRE_FILE_SIGNATURE = 0x29012004
 UNBOUND_FILE_SIGNATURE = 0x01122000
 WISH_FILE_SIGNATURE = 0x18190804
 MAGM_FILE_SIGNATURE = 0xC7BBC1C7
-IR_FILE_SIGNATURE = 0x14B66BBC
+IR_FILE_SIGNATURE = 0x14B66BBD
 
 ## Old File Signatures ##
 UNBOUND_2_1_FILE_SIGNATURE = 0x01121999  # Unbound 2.1.0 - 2.1.1.1
-UNBOUND_2_0_FILE_SIGNATURE = 0x01121998  # Unbound 2.0.0 - 2.0.3.2 
+UNBOUND_2_0_FILE_SIGNATURE = 0x01121998  # Unbound 2.0.0 - 2.0.3.2
+IR_1_1_FILE_SIGNATURE = 0x14B66BBC
 
 ## Flags and Vars ##
 FLAG_FR_GAME_CLEAR = 0x82C
@@ -209,8 +210,9 @@ CustomHackVersions = {  # GAME_NAME
 }
 
 OldVersionFileSignatures = {
-    UNBOUND_2_0_FILE_SIGNATURE: "Unbound 2.0",
-    # UNBOUND_2_1_FILE_SIGNATURE: "Unbound 2.1",  # TODO: Uncomment
+    UNBOUND_2_0_FILE_SIGNATURE: "Unbound v2.0",
+    # UNBOUND_2_1_FILE_SIGNATURE: "Unbound v2.1",  # TODO: Uncomment
+    IR_1_1_FILE_SIGNATURE: "Inflamed Red v1.1.0pb1.1"
 }
 
 
@@ -567,20 +569,44 @@ def main():
     version = "inflamedred"
 
     ## Convert Defines File ##
-    # dicty = Defines.DictMaker(f"{GAME_DATA_DIR}/{version}/species.h")
-    # dict(sorted(dicty.items(), key=lambda item: item[1]))
-    # file = open(f"{GAME_DATA_DIR}/{version}/Species.json", "w")
-    # file.write(json.dumps(dicty, indent=4))
-    # file.close()
+    if os.path.exists(f"{GAME_DATA_DIR}/{version}/species.h"):
+        dicty = Defines.DictMaker(f"{GAME_DATA_DIR}/{version}/species.h")
+        dicty = {key: value for key, value in dicty.items()
+                    if value != "SPECIES_EGG"
+                    and value != "SPECIES_MISSINGNO"
+                    and value != "SPECIES_LUGIA_S"
+                    and value != "SPECIES_SHADOW_WARRIOR"}
+        dict(sorted(dicty.items(), key=lambda item: item[1]))
+        file = open(f"{GAME_DATA_DIR}/{version}/Species.json", "w")
+        file.write(json.dumps(dicty, indent=4) + "\n")
+        file.close()
+
+    if os.path.exists(f"{GAME_DATA_DIR}/{version}/moves.h"):
+        dicty = Defines.DictMaker(f"{GAME_DATA_DIR}/{version}/moves.h")
+        dict(sorted(dicty.items(), key=lambda item: item[1]))
+        file = open(f"{GAME_DATA_DIR}/{version}/Moves.json", "w")
+        file.write(json.dumps(dicty, indent=4) + "\n")
+        file.close()
+
+    if os.path.exists(f"{GAME_DATA_DIR}/{version}/items.h"):
+        dicty = Defines.DictMaker(f"{GAME_DATA_DIR}/{version}/items.h")
+        dict(sorted(dicty.items(), key=lambda item: item[1]))
+        file = open(f"{GAME_DATA_DIR}/{version}/Items.json", "w")
+        file.write(json.dumps(dicty, indent=4) + "\n")
+        file.close()
 
     ## Convert Base Stats C File ##
     defines = Defines.CStructArrayToDict(f"{GAME_DATA_DIR}/{version}/Base_Stats.c", "gBaseStats", {})
     with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "w") as file:
-        file.write(json.dumps(defines, indent=4))
+        file.write(json.dumps(defines, indent=4) + "\n")
 
     ## Trim Base Stats JSON File ##
     with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "r") as file:
         data = json.load(file)
+        del data["SPECIES_EGG"]
+        del data["SPECIES_MISSINGNO"]
+        del data["SPECIES_LUGIA_S"]
+        del data["SPECIES_SHADOW_WARRIOR"]
         for key in data:
             try:
                 del data[key]["idTag"]
@@ -604,7 +630,7 @@ def main():
                 pass
 
     with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "w") as file:
-        file.write(json.dumps(data, indent=4))
+        file.write(json.dumps(data, indent=4) + "\n")
 
 
 if __name__ == '__main__':

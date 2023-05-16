@@ -352,7 +352,7 @@
 		"link": "other-item/ability-patch"
 	},
 	"ITEM_DREAM_MIST": {
-		"name": "Dream Mist"
+		"name": "Dream Mist (Unbound)"
 	},
 	"ITEM_LIGHT_CLAY": {
 		"name": "Light Clay",
@@ -2231,6 +2231,78 @@
 		"name": "Scroll of Darkness"
 	},
 	"ITEM_MAGM_BADGE": {
-		"name": "MAGM Badge"
+		"name": "MAGM Badge (MAGM)"
+	},
+	"ITEM_FROST_ORB": {
+		"name": "Frost Orb (IR)"
+	},
+	"ITEM_BUTTERFREENITE": {
+		"name": "Butterfreenite (IR)"
+	},
+	"ITEM_MACHAMPITE": {
+		"name": "Machampite (IR)"
+	},
+	"ITEM_KINGLERITE": {
+		"name": "Kinglerite (IR)"
+	},
+	"ITEM_LAPRASITE": {
+		"name": "Laprasite (IR)"
+	},
+	"ITEM_SNORLAXITE": {
+		"name": "Snorlaxite (IR)"
+	},
+	"ITEM_GARBODORITE": {
+		"name": "Garbodorite (IR)"
+	},
+	"ITEM_MELMETALITE": {
+		"name": "Melmetalite (IR)"
+	},
+	"ITEM_RILLABOOMITE": {
+		"name": "Rillaboomite (IR)"
+	},
+	"ITEM_CINDERACITE": {
+		"name": "Cinderacite (IR)"
+	},
+	"ITEM_INTELEITE": {
+		"name": "Inteleite (IR)"
+	},
+	"ITEM_CORVISITE": {
+		"name": "Corvisite (IR)"
+	},
+	"ITEM_ORBEETLITE": {
+		"name": "Orbeetlite (IR)"
+	},
+	"ITEM_DREDNAWITE": {
+		"name": "Drednawite (IR)"
+	},
+	"ITEM_COALOSSITE": {
+		"name": "Coalossite (IR)"
+	},
+	"ITEM_APPLITE": {
+		"name": "Applite (IR)"
+	},
+	"ITEM_SANDACONDITE": {
+		"name": "Sandacondite (IR)"
+	},
+	"ITEM_TOXTRICITE": {
+		"name": "Toxtricite (IR)"
+	},
+	"ITEM_CENTISKITE": {
+		"name": "Centiskite (IR)"
+	},
+	"ITEM_HATTERENITE": {
+		"name": "Hatterenite (IR)"
+	},
+	"ITEM_GRIMMSNALITE": {
+		"name": "Grimmsnalite (IR)"
+	},
+	"ITEM_ALCREMITE": {
+		"name": "Alcremite (IR)"
+	},
+	"ITEM_COPPERANITE": {
+		"name": "Copperanite (IR)"
+	},
+	"ITEM_DURALUDONITE": {
+		"name": "Duraludonite (IR)"
 	}
 }
