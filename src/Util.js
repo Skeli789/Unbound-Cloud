@@ -137,7 +137,7 @@ export function GetItemIconLink(item)
         if ("link" in ItemNames[item])
             return `https://raw.githubusercontent.com/msikma/pokesprite/master/items/${ItemNames[item]["link"]}.png`;
 
-        return BASE_GFX_LINK + item + ".png";
+        return BASE_GFX_LINK + `items/${item}.png`;
     }
     
     return "";
