@@ -321,5 +321,11 @@
     "ABILITY_CRABBYTACTICS": "Crabby Tactics",
     "ABILITY_HONEYARMOR": "Honey Armor",
     "ABILITY_FACESHIELD": "Face Shield",
-    "ABILITY_ROYALROAR": "Royal Roar"
+    "ABILITY_ROYALROAR": "Royal Roar",
+
+	"ABILITY_IRONKICK": "Iron Kick",
+	"ABILITY_UNOWNPOWER": "Unown Power",
+	"ABILITY_HUNDREDLEGS": "Hundred Legs",
+	"ABILITY_GARBAGEABSORB": "Garbage Absorb",
+	"ABILITY_SOLIDSTEEL": "Solid Steel"
 }
