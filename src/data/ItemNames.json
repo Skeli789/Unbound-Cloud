@@ -1343,7 +1343,7 @@
 	},
 	"ITEM_COMET_SHARD": {
 		"name": "Comet Shard",
-		"link": "gem/comet"
+		"link": "valuable-item/comet-shard"
 	},
 	"ITEM_BALM_MUSHROOM": {
 		"name": "Balm Mushroom",
@@ -2064,6 +2064,42 @@
 	"ITEM_YELLOW_APRICORN": {
 		"name": "Yellow Apricorn",
 		"link": "apricorn/yellow"
+	},
+	"ITEM_DYNAMAX_CANDY": {
+		"name": "Dynamax Candy",
+		"link": "other-item/dynamax-candy"
+	},
+	"ITEM_DYNAMAX_CRYSTAL": {
+		"name": "Dynamax Crystal",
+		"link": "other-item/dynamax-crystal"
+	},
+	"ITEM_ARMORITE_ORE": {
+		"name": "Armorite Ore",
+		"link": "other-item/armorite-ore"
+	},
+	"ITEM_DYNITE_ORE": {
+		"name": "Dynite Ore",
+		"link": "other-item/dynite-ore"
+	},
+	"ITEM_EXP_CANDY_XS": {
+		"name": "Exp. Candy XS",
+		"link": "exp-candy/xs"
+	},
+	"ITEM_EXP_CANDY_S": {
+		"name": "Exp. Candy S",
+		"link": "exp-candy/s"
+	},
+	"ITEM_EXP_CANDY_M": {
+		"name": "Exp. Candy M",
+		"link": "exp-candy/m"
+	},
+	"ITEM_EXP_CANDY_L": {
+		"name": "Exp. Candy L",
+		"link": "exp-candy/l"
+	},
+	"ITEM_EXP_CANDY_XL": {
+		"name": "Exp. Candy XL",
+		"link": "exp-candy/xl"
 	},
 	"ITEM_EJECT_PACK": {
 		"name": "Eject Pack",

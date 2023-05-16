@@ -151,6 +151,12 @@
     grid-template-columns: auto auto;
 }
 
+.summary-item
+{
+    max-width: 32px;
+    max-height: 32px;
+}
+
 .summary-item-ball-warning
 {
     position: absolute;

@@ -337,7 +337,7 @@ export class PokemonSummary extends Component
                         <div style={{position: "relative"}}> {/*Relative allows the warning's absolute to function properly*/}
                             {loseItemWarning}
                             <OverlayTrigger placement="top" overlay={itemTooltip}>
-                                <img src={itemLink} alt="" onMouseDown={(e) => e.preventDefault()}/>
+                                <img src={itemLink} alt="" className="summary-item" onMouseDown={(e) => e.preventDefault()}/>
                             </OverlayTrigger>
                         </div>
                     :
