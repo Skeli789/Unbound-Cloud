@@ -279,7 +279,7 @@ export class WonderTrade extends Component
                     });
 
                     //Send Pokemon for trade
-                    socket.emit("tradeType", "WONDER_TRADE");
+                    socket.emit("tradeType", "WONDER_TRADE", thisObject.getGlobalState().username);
                     console.log("Connection established.");
                     console.log("Sending pokemon...");
                     socket.send(pokemon, thisObject.getGlobalState().isRandomizedSave,
