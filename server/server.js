@@ -206,6 +206,7 @@ function TryWipeWonderTradeSpeciesData()
 
 async function SendWonderTradeDiscordMessage(title, color, newMessageStatus)
 {
+    var attempts = 0;
     gWonderTradeDiscordMessageStatus = newMessageStatus;
 
     var params =
@@ -221,28 +222,35 @@ async function SendWonderTradeDiscordMessage(title, color, newMessageStatus)
     };
 
     //Try to edit a previously sent message
-    try
+    if (newMessageStatus !== WONDER_TRADE_IN_PROGRESS //Wonder Trades just starting should send a new message
+    && gLastDiscorWonderTradeMessageId !== 0) //A message was previously sent
     {
-        if (newMessageStatus !== WONDER_TRADE_IN_PROGRESS //Wonder Trades just starting should send a new message
-        && gLastDiscorWonderTradeMessageId !== 0)
+        for (attempts = 0; attempts < 3; attempts++) //Try 3 times in case there is a connection issue
         {
-            await gWonderTradeDiscordWebhook.editMessage(gLastDiscorWonderTradeMessageId, params);
-            return;
+            try
+            {
+                await gWonderTradeDiscordWebhook.editMessage(gLastDiscorWonderTradeMessageId, params);
+                return;
+            }
+            catch (err)
+            {
+                console.log(`An error occurred editing the last Wonder Trade Discord message:\n${err}`);
+            }
         }
-    }
-    catch (err)
-    {
-        console.log(`An error occurred editing the last Wonder Trade Discord message:\n${err}`);
     }
 
     //Send a new message
-    try
+    for (attempts = 0; attempts < 3; attempts++) //Try 3 times in case there is a connection issue
     {
-        gWonderTradeDiscordWebhook.send(params).then((res) => gLastDiscorWonderTradeMessageId = res.id);
-    }
-    catch (err)
-    {
-        console.log(`An error occurred sending the Wonder Trade Discord message:\n${err}`);
+        try
+        {
+            gWonderTradeDiscordWebhook.send(params).then((res) => gLastDiscorWonderTradeMessageId = res.id);
+            return;
+        }
+        catch (err)
+        {
+            console.log(`An error occurred sending the Wonder Trade Discord message:\n${err}`);
+        }
     }
 }
 
