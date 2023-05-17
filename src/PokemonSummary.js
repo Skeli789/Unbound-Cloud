@@ -10,7 +10,9 @@ import {CanMonGigantamax, ChangeMarking, GetAbility, /*GetBaseStats,*/ GetCaught
         GetEVs, GetIVs, GetMoveType, HasPokerus, IsEgg, MonWillLoseMoveInSave, MonWillLoseItemInSave, GetSpecies, WasCuredOfPokerus,
         MAX_FRIENDSHIP, NATURE_STAT_TABLE, MonWillLoseBallInSave} from "./PokemonUtil";
 import {BASE_GFX_LINK, GetAbilityName, GetBallName, GetItemIconLink, GetItemName, GetMoveName, GetNatureName, GetSpeciesName, GetTypeName} from "./Util";
-import MoveData from "./data/MoveData.json";
+import gDexNums from "./data/DexNum.json";
+import gMoveData from "./data/MoveData.json";
+import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 
 import {AiFillWarning} from "react-icons/ai";
 import {BsCircle, BsSquare, BsTriangle, BsHeart, BsCircleFill, BsSquareFill, BsTriangleFill, BsHeartFill} from "react-icons/bs";
@@ -87,9 +89,12 @@ export class PokemonSummary extends Component
      */
     printNickname()
     {
-        var speciesName = GetSpeciesName(GetSpecies(this.state.pokemon));
+        var species = GetSpecies(this.state.pokemon);
+        var speciesName = GetSpeciesName(species);
+        var dexNum = (species in gSpeciesToDexNum) ? gDexNums[gSpeciesToDexNum[species]] : 0;
+        var dexNumText = String(dexNum).padStart(3, "0");
         var nicknameText = GetNickname(this.state.pokemon);
-        var nickname = <span className="summary-name">{nicknameText}</span>
+        var nickname = <span>#{dexNumText} <span className="summary-name">{nicknameText}</span></span>
 
         if (nicknameText !== speciesName)
         {
@@ -507,7 +512,7 @@ export class PokemonSummary extends Component
             }
 
             //Print Type
-            if (move in MoveData)
+            if (move in gMoveData)
             {
                 var moveType = GetMoveType(move, this.state.pokemon, this.state.gameId);
                 typeNames[i] = GetTypeName(moveType);
@@ -529,14 +534,14 @@ export class PokemonSummary extends Component
             var moveName = GetMoveName(move);
             moves.push(<span className="summary-move" key={key++}>{moveName}</span>)
 
-            if (move in MoveData)
+            if (move in gMoveData)
             {
                 //Print PP
                 var pp = GetMovePP(this.state.pokemon, move, i);
                 moves.push(<span className="summary-pp" key={key++}>{pp}</span>);
 
                 //Print Move Split
-                var moveSplit = MoveData[move]["split"];
+                var moveSplit = gMoveData[move]["split"];
                 splitNames[i] = moveSplit.toLowerCase().charAt(6).toUpperCase() + moveSplit.toLowerCase().slice(7); //Start after SPLIT_
                 const splitNameTooltip = props => (<Tooltip {...props}>{splitNames[i]}</Tooltip>);
 
