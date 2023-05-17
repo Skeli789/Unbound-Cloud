@@ -42,6 +42,14 @@ def CopyData():
 
                 jsonFile.write(json.dumps(jsonData, indent=4) + "\n")
 
+    # Copy Dex Nums in reverse
+    dexNums = {}
+    with open(os.path.join(gServerDataDir, "DexNum.json"), "r") as file:
+        dexNums = json.load(file)
+        dexNums = {dexNums[x]: x for x in dexNums}
+    with open(os.path.join(gClientDataDir, "DexNum.json"), "w") as file:
+        file.write(json.dumps(dexNums, indent=4) + "\n")
+
     # Generate Unbound Shinies species list
     speciesList = {}
     for file in os.listdir(gUnboundShiniesDir):
