@@ -81,7 +81,8 @@ const mainTheme = new Audio(UnboundCloudTheme);
 const SUPPORTED_HACKS = ["Unbound >= v2.1.0",
                          "Unbound Battle Frontier Demo >= v2.0.0",
                          "Magical Altering Gym Menagerie >= v1.2",
-                         "Inflamed Red >= v1.1.0pb1.2"];
+                         "Inflamed Red >= v1.1.0pb1.2",
+                         "GS Chronicles >= 2.7.1"];
 
 
 export default class MainPage extends Component

@@ -2,30 +2,47 @@
  * Various utility functions related to Pokemon data.
  */
 
+import {BASE_GFX_LINK, GetSpeciesName} from "./Util";
+
+//General Data
 import ItemNames from "./data/ItemNames.json";
 import MoveData from "./data/MoveData.json";
 import SpeciesNames from "./data/SpeciesNames.json";
 import SpeciesToDexNum from "./data/SpeciesToDexNum.json";
 import ExperienceCurves from "./data/ExperienceCurves.json";
 import ImpossibleNicknameCharacters from "./data/ImpossibleNicknameChars.json";
-import UnboundShinies from "./data/UnboundShinies.json";
+
+//CFRU Data
 import CFRUBaseStats from "./data/cfru/BaseStats.json";
 import CFRUMoves from "./data/cfru/Moves.json";
 import CFRUItems from "./data/cfru/Items.json";
 import CFRUBallTypes from "./data/cfru/BallTypes.json";
+
+//Unbound Data
 import UnboundBaseStats from "./data/unbound/BaseStats.json";
 import UnboundMoves from "./data/unbound/Moves.json";
 import UnboundItems from "./data/unbound/Items.json";
 import UnboundBallTypes from "./data/unbound/BallTypes.json";
+import UnboundShinies from "./data/UnboundShinies.json";
+
+//MAGM Data
 import MAGMBaseStats from "./data/magm/BaseStats.json";
 import MAGMMoves from "./data/magm/Moves.json";
 import MAGMItems from "./data/magm/Items.json";
 import MAGMBallTypes from "./data/magm/BallTypes.json";
+
+//Inflamed Red Data
 import InflamedRedBaseStats from "./data/inflamedred/BaseStats.json";
 import InflamedRedMoves from "./data/inflamedred/Moves.json";
 import InflamedRedItems from "./data/inflamedred/Items.json";
 import InflamedRedBallTypes from "./data/inflamedred/BallTypes.json";
-import {BASE_GFX_LINK, GetSpeciesName} from "./Util";
+
+//GS Chronicles Data
+import GSChroniclesBaseStats from "./data/gschronicles/BaseStats.json";
+import GSChroniclesMoves from "./data/gschronicles/Moves.json";
+import GSChroniclesItems from "./data/gschronicles/Items.json";
+import GSChroniclesBallTypes from "./data/gschronicles/BallTypes.json";
+
 
 const SPECIES_FORMS_ICON_NAMES =
 {
@@ -245,6 +262,13 @@ const GAME_IDS_TO_DATA =
         "moves": InflamedRedMoves,
         "items": InflamedRedItems,
         "ballTypes": InflamedRedBallTypes,
+    },
+    "gschronicles":
+    {
+        "baseStats": GSChroniclesBaseStats,
+        "moves": GSChroniclesMoves,
+        "items": GSChroniclesItems,
+        "ballTypes": GSChroniclesBallTypes,
     }
 }
 

@@ -27,6 +27,7 @@ UNBOUND_FILE_SIGNATURE = 0x01122000
 WISH_FILE_SIGNATURE = 0x18190804
 MAGM_FILE_SIGNATURE = 0xC7BBC1C7
 IR_FILE_SIGNATURE = 0x14B66BBD
+GS_CHRONICLES_FILE_SIGNATURE = 0x66290096
 
 ## Old File Signatures ##
 UNBOUND_2_1_FILE_SIGNATURE = 0x01121999  # Unbound 2.1.0 - 2.1.1.1
@@ -35,6 +36,7 @@ IR_1_1_FILE_SIGNATURE = 0x14B66BBC
 
 ## Flags and Vars ##
 FLAG_FR_GAME_CLEAR = 0x82C
+FLAG_FR_SYS_PC_BILL = 0x834
 FLAG_CFRU_SPECIES_RANDOMIZER = 0x940
 FLAG_CFRU_LEARNSET_RANDOMIZER = 0x941
 FLAG_UNBOUND_SPECIES_RANDOMIZER = 0x9FD
@@ -42,6 +44,8 @@ FLAG_UNBOUND_LEARNSET_RANDOMIZER = 0x9FE
 FLAG_UNBOUND_NEW_GAME_PLUS = 0x16DB
 FLAG_UNBOUND_SANDBOX_MODE = 0x16E4
 FLAG_IR_SANDBOX_MODE = 0x1205
+FLAG_GS_CHRONICLES_SPECIES_RANDOMIZER = 0x1440
+FLAG_GS_CHRONICLES_LEARNSET_RANDOMIZER = 0x1441
 VAR_UNBOUND_GAME_DIFFICULTY = 0x50DF
 FLAG_MAGM_PC_ACCESSED = 0x215
 
@@ -61,6 +65,7 @@ VERSION_RUBY = 2
 VERSION_EMERALD = 3
 VERSION_FIRERED = 4
 VERSION_LEAFGREEN = 5
+VERSION_GS_CHRONICLES = 12
 VERSION_WISH = 13
 VERSION_MAGM = 14
 VERSION_UNBOUND = 15
@@ -71,6 +76,7 @@ REGION_HOENN = 1
 REGION_BORRIUS = 2
 REGION_MAGM = 3
 REGION_WISH = 4
+REGION_JOHTO = 5
 
 
 GameDetails = {
@@ -193,6 +199,24 @@ GameDetails = {
         ],
         "pokedexFlags": CFRU_POKEDEX_FLAGS,
     },
+    GS_CHRONICLES_FILE_SIGNATURE: {
+        "name": "gschronicles",
+        "version": VERSION_GS_CHRONICLES,
+        "baseVersion": VERSION_FIRERED,
+        "region": REGION_JOHTO,
+        "cfru": True,
+        "definesDir": "gschronicles",
+        "shinyOdds": OLD_SHINY_ODDS,
+        "boxCount": 25,
+        "randomizerFlags": [FLAG_GS_CHRONICLES_SPECIES_RANDOMIZER, FLAG_GS_CHRONICLES_LEARNSET_RANDOMIZER],
+        "inaccessible": [
+            {   # Not until Bill is spoken with
+                "flagNotSet": FLAG_FR_SYS_PC_BILL,
+                "reason": "Bill's PC has not been unlocked."
+            },
+        ],
+        "pokedexFlags": CFRU_POKEDEX_FLAGS,
+    }
 }
 
 BaseVersionNames = {
@@ -566,7 +590,7 @@ class Defines:
 
 # Helper code
 def main():
-    version = "inflamedred"
+    version = "gschronicles"
 
     ## Convert Defines File ##
     if os.path.exists(f"{GAME_DATA_DIR}/{version}/species.h"):
@@ -604,9 +628,12 @@ def main():
     with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "r") as file:
         data = json.load(file)
         del data["SPECIES_EGG"]
-        del data["SPECIES_MISSINGNO"]
-        del data["SPECIES_LUGIA_S"]
-        del data["SPECIES_SHADOW_WARRIOR"]
+        if "SPECIES_MISSINGNO" in data:
+            del data["SPECIES_MISSINGNO"]
+        if "SPECIES_LUGIA_S" in data:
+            del data["SPECIES_LUGIA_S"]
+        if "SPECIES_SHADOW_WARRIOR" in data:
+            del data["SPECIES_SHADOW_WARRIOR"]
         for key in data:
             try:
                 del data[key]["idTag"]

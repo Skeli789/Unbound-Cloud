@@ -833,5 +833,13 @@
 	"MOVE_FIERYDOOM": {"type": "TYPE_FIRE", "split": "SPLIT_SPECIAL", "pp": 5},
 	"MOVE_REALITYSHIFT": {"type": "TYPE_MYSTERY", "split": "SPLIT_SPECIAL", "pp": 5},
 	"MOVE_STRIPEDDIVE": {"type": "TYPE_WATER", "split": "SPLIT_PHYSICAL", "pp": 10},
-	"MOVE_SHADOWSTORM": {"type": "TYPE_DARK", "split": "SPLIT_SPECIAL", "pp": 10}
+	"MOVE_SHADOWSTORM": {"type": "TYPE_DARK", "split": "SPLIT_SPECIAL", "pp": 10},
+
+	"MOVE_AQUA_SCALES": {"type": "TYPE_WATER", "split": "SPLIT_PHYSICAL", "pp": 15},
+	"MOVE_DRAGON_CRUSH": {"type": "TYPE_DRAGON", "split": "SPLIT_PHYSICAL", "pp": 10},
+	"MOVE_MAGMA_GEYSER": {"type": "TYPE_FIRE", "split": "SPLIT_SPECIAL", "pp": 15},
+	"MOVE_SHARP_FLINT": {"type": "TYPE_GROUND", "split": "SPLIT_SPECIAL", "pp": 10},
+	"MOVE_FLORAL_STREAM": {"type": "TYPE_GRASS", "split": "SPLIT_SPECIAL", "pp": 15},
+	"MOVE_SHINING_BEAM": {"type": "TYPE_STEEL", "split": "SPLIT_SPECIAL", "pp": 10},
+	"MOVE_STARDUST_PUNCH": {"type": "TYPE_BUG", "split": "SPLIT_PHYSICAL", "pp": 10}
 }
