@@ -834,5 +834,13 @@
 	"MOVE_FIERYDOOM": "Fiery Doom",
 	"MOVE_REALITYSHIFT": "Reality Shift",
 	"MOVE_STRIPEDDIVE": "Striped Dive",
-	"MOVE_SHADOWSTORM": "Shadow Storm"
+	"MOVE_SHADOWSTORM": "Shadow Storm",
+
+	"MOVE_AQUA_SCALES": "Aqua Scales",
+	"MOVE_DRAGON_CRUSH": "Dragon Crush",
+	"MOVE_MAGMA_GEYSER": "Magma Geyser",
+	"MOVE_SHARP_FLINT": "Sharp Flint",
+	"MOVE_FLORAL_STREAM": "Floral Stream",
+	"MOVE_SHINING_BEAM": "Shining Beam",
+	"MOVE_STARDUST_PUNCH": "Stardust Punch"
 }
