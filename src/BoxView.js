@@ -1307,7 +1307,15 @@ export class BoxView extends Component
                 return ""; //All done
 
             species = speciesList[i];
-            if (species === speciesInSlot) //Correct species is already in slot
+            let dexNum = gSpeciesToDexNum[species];
+
+            if (species === speciesInSlot //Correct species is already in slot
+            || (speciesInSlot in gSpeciesToDexNum
+            && dexNum === gSpeciesToDexNum[speciesInSlot]
+            && (dexNum === gSpeciesToDexNum["SPECIES_EXEGGCUTE"] //These species are always equivalent
+             || dexNum === gSpeciesToDexNum["SPECIES_CUBONE"]    //to the base form since they're identical
+             || dexNum === gSpeciesToDexNum["SPECIES_KOFFING"]   //in every way
+             || dexNum === gSpeciesToDexNum["SPECIES_MIME_JR"])))
                 return ""; //Display full colour image instead
         }
         else
