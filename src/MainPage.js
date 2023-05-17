@@ -23,6 +23,7 @@ import {GoogleAd} from "./GoogleAd";
 import {Login} from "./Login";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname, GetSpecies,
         HasIllegalEVs, HasEggLockeOT, IsBlankMon, IsEgg, IsHoldingBannedItem, IsShiny,
+        UpdateSpeciesBasedOnIdenticalRegionalForm, UpdateSpeciesBasedOnMonGender,
         /*PokemonAreDuplicates,*/ WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
 import {SymbolTutorial} from "./SymbolTutorial";
 import {SignUp} from "./SignUp";
@@ -2456,15 +2457,8 @@ export default class MainPage extends Component
 
             if (!compareDexNums)
             {
-                //These species are always equivalent to the base form since they're identical in every way
-                if (species == "SPECIES_EXEGGCUTE_A")
-                    species = "SPECIES_EXEGGCUTE";
-                else if (species == "SPECIES_CUBONE_A")
-                    species = "SPECIES_CUBONE";
-                else if (species == "SPECIES_KOFFING_G")
-                    species = "SPECIES_KOFFING";
-                else if (species == "SPECIES_MIME_JR_G")
-                    species = "SPECIES_MIME_JR";
+                species = UpdateSpeciesBasedOnMonGender(species, pokemon);
+                species = UpdateSpeciesBasedOnIdenticalRegionalForm(species);
             }
 
             let inDict = (compareDexNums) ? species in gSpeciesToDexNum && gSpeciesToDexNum[species] in speciesIndexDict : species in speciesIndexDict;

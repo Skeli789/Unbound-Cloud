@@ -117,6 +117,7 @@ const SPECIES_FORMS_ICON_NAMES =
     "SPECIES_URSHIFU_RAPID": "urshifu",
     "SPECIES_BASCULEGION_M": "basculegion",
     "SPECIES_BASCULEGION_F": "female/basculegion",
+    "SPECIES_EGG_MANAPHY": "egg-manaphy",
 };
 
 const BASE_FORMS_OF_BANNED_SPECIES = //All forms that can't exist outside of battle
@@ -1752,35 +1753,14 @@ function GetMonVisibleSpecies(pokemon)
         else if (species.endsWith("_PRIMAL")) //Can't exist outside of battle
             species = species.split("_PRIMAL")[0];
 
+        species = UpdateSpeciesBasedOnMonGender(species, pokemon);
+        species = UpdateSpeciesBasedOnIdenticalRegionalForm(species);
+
         switch (species)
         {
             case "SPECIES_WOBBUFFET":
                 if (IsFemale(pokemon))
                     species = "SPECIES_WOBBUFFET_F"; //Not an actual species, but needed to load the red lips
-                break;
-            case "SPECIES_HIPPOPOTAS":
-                if (IsFemale(pokemon))
-                    species = "SPECIES_HIPPOPOTAS_F";
-                break;
-            case "SPECIES_HIPPOWDON":
-                if (IsFemale(pokemon))
-                    species = "SPECIES_HIPPOWDON_F";
-                break;
-            case "SPECIES_UNFEZANT":
-                if (IsFemale(pokemon))
-                    species = "SPECIES_UNFEZANT_F";
-                break;
-            case "SPECIES_FRILLISH":
-                if (IsFemale(pokemon))
-                    species = "SPECIES_FRILLISH_F";
-                break;
-            case "SPECIES_JELLICENT":
-                if (IsFemale(pokemon))
-                    species = "SPECIES_JELLICENT_F";
-                break;
-            case "SPECIES_PYROAR":
-                if (IsFemale(pokemon))
-                    species = "SPECIES_PYROAR_FEMALE";
                 break;
             case "SPECIES_ALCREMIE_STRAWBERRY":
             case "SPECIES_ALCREMIE_BERRY":
@@ -1803,6 +1783,49 @@ function GetMonVisibleSpecies(pokemon)
 
     if (species in BASE_FORMS_OF_BANNED_SPECIES) //Forms that can't exist outside of battle
         species = BASE_FORMS_OF_BANNED_SPECIES[species];
+
+    return species;
+}
+
+/**
+ * Updates a species based on an aesthetic gender difference.
+ * @param {String} species - The species to update.
+ * @param {Pokemon} pokemon - The Pokemon the species is for.
+ * @returns {String} The updated species.
+ */
+export function UpdateSpeciesBasedOnMonGender(species, pokemon)
+{
+    const femaleForms = {
+        "SPECIES_HIPPOPOTAS": "SPECIES_HIPPOPOTAS_F",
+        "SPECIES_HIPPOWDON": "SPECIES_HIPPOWDON_F",
+        "SPECIES_UNFEZANT": "SPECIES_UNFEZANT_F",
+        "SPECIES_FRILLISH": "SPECIES_FRILLISH_F",
+        "SPECIES_JELLICENT": "SPECIES_JELLICENT_F",
+        "SPECIES_PYROAR": "SPECIES_PYROAR_FEMALE",
+    };
+
+    if (species in femaleForms && IsFemale(pokemon))
+        species = femaleForms[species];
+
+    return species;
+}
+
+/**
+ * Updates a species based on an identical regional form.
+ * @param {String} species - The species to update.
+ * @returns {String} The updated species.
+*/
+export function UpdateSpeciesBasedOnIdenticalRegionalForm(species)
+{
+    const identicalRegionalForms = {
+        "SPECIES_EXEGGCUTE_A": "SPECIES_EXEGGCUTE",
+        "SPECIES_CUBONE_A": "SPECIES_CUBONE",
+        "SPECIES_KOFFING_G": "SPECIES_KOFFING",
+        "SPECIES_MIME_JR_G": "SPECIES_MIME_JR",
+    };
+
+    if (species in identicalRegionalForms)
+        species = identicalRegionalForms[species];
 
     return species;
 }

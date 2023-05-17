@@ -10,7 +10,8 @@ import withReactContent from 'sweetalert2-react-content';
 
 import {PokemonSummary} from "./PokemonSummary";
 import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, GetNickname, GetSpecies, HasDuplicateMovesInMoveset,
-        IsBlankMon, IsEgg, IsHoldingBannedItem, IsHoldingItem, IsShiny, IsValidPokemon, MonWillLoseDataInSave} from "./PokemonUtil";
+        IsBlankMon, IsEgg, IsHoldingBannedItem, IsHoldingItem, IsShiny, IsValidPokemon, MonWillLoseDataInSave,
+        UpdateSpeciesBasedOnIdenticalRegionalForm, UpdateSpeciesBasedOnMonGender} from "./PokemonUtil";
 import {MatchesSearchCriteria, Search} from "./Search";
 import {ShowdownExport} from "./ShowdownExport";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxPosBoxColumn, GetBoxPosBoxRow, GetBoxStartIndex,
@@ -1307,15 +1308,7 @@ export class BoxView extends Component
                 return ""; //All done
 
             species = speciesList[i];
-            let dexNum = gSpeciesToDexNum[species];
-
-            if (species === speciesInSlot //Correct species is already in slot
-            || (speciesInSlot in gSpeciesToDexNum
-            && dexNum === gSpeciesToDexNum[speciesInSlot]
-            && (dexNum === gSpeciesToDexNum["SPECIES_EXEGGCUTE"] //These species are always equivalent
-             || dexNum === gSpeciesToDexNum["SPECIES_CUBONE"]    //to the base form since they're identical
-             || dexNum === gSpeciesToDexNum["SPECIES_KOFFING"]   //in every way
-             || dexNum === gSpeciesToDexNum["SPECIES_MIME_JR"])))
+            if (species === speciesInSlot) //Correct species is already in slot
                 return ""; //Display full colour image instead
         }
         else
@@ -1421,7 +1414,11 @@ export class BoxView extends Component
 
             if (addLivingDexIcon)
             {
-                livingDexIcon = this.getLivingDexSpeciesIcon(i, GetSpecies(pokemon, true));
+                let iconSpecies = GetSpecies(pokemon, true);
+                iconSpecies = UpdateSpeciesBasedOnMonGender(iconSpecies, pokemon);
+                iconSpecies = UpdateSpeciesBasedOnIdenticalRegionalForm(iconSpecies);
+
+                livingDexIcon = this.getLivingDexSpeciesIcon(i, iconSpecies);
                 if (livingDexIcon !== "")
                     icon = livingDexIcon;
             }
