@@ -2453,6 +2453,20 @@ export default class MainPage extends Component
         {
             let pokemon = homeBoxes[i]
             let species = GetSpecies(pokemon, true);
+
+            if (!compareDexNums)
+            {
+                //These species are always equivalent to the base form since they're identical in every way
+                if (species == "SPECIES_EXEGGCUTE_A")
+                    species = "SPECIES_EXEGGCUTE";
+                else if (species == "SPECIES_CUBONE_A")
+                    species = "SPECIES_CUBONE";
+                else if (species == "SPECIES_KOFFING_G")
+                    species = "SPECIES_KOFFING";
+                else if (species == "SPECIES_MIME_JR_G")
+                    species = "SPECIES_MIME_JR";
+            }
+
             let inDict = (compareDexNums) ? species in gSpeciesToDexNum && gSpeciesToDexNum[species] in speciesIndexDict : species in speciesIndexDict;
 
             if (inDict)
