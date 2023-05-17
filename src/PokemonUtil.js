@@ -1862,7 +1862,7 @@ export function GetIconSpeciesLinkBySpecies(species, isShiny, isFromUnbound)
         return BASE_GFX_LINK + "gen_9/" + (isShiny ? "shiny/" : "") + species + ".png";
     else if (species === "SPECIES_PIKACHU_SURFING"
           || species === "SPECIES_PIKACHU_FLYING")
-        return BASE_GFX_LINK + species + ".png";
+        return BASE_GFX_LINK + species + (isShiny ? "_SHINY" : "") + ".png";
 
     var iconSpeciesName = GetIconSpeciesNameBySpecies(species);
     var baseLink = "https://raw.githubusercontent.com/msikma/pokesprite/master/";
