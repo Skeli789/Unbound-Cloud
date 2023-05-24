@@ -598,6 +598,17 @@ describe("Test TryActivateTradeEvolution", () =>
         expect(pokemon).to.eql(beforeTrade);
     });
 
+    it(`Kadabra holding an Everstone should not evolve`, () =>
+    {
+        let pokemon = Object.assign({}, gTestTradeNormalPokemon);
+        pokemon.item = "ITEM_EVERSTONE";
+        pokemon["checksum"] = pokemonUtil.CalculateMonChecksum(pokemon);
+        pokemonUtil.TryActivateTradeEvolution(pokemon, "SPECIES_HAUNTER");
+        expect(pokemonUtil.GetSpecies(pokemon)).to.equal("SPECIES_KADABRA");
+        expect(pokemonUtil.GetNickname(pokemon)).to.equal(pokemonUtil.GetNickname(gTestTradeNormalPokemon));
+        expect(pokemonUtil.GetItem(pokemon)).to.equal("ITEM_EVERSTONE"); //Confirm item is kept
+    });
+
     it(`Pokemon with nickname should keep it`, () =>
     {
         let pokemon = Object.assign({}, gTestTradeNormalPokemon);
