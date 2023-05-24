@@ -294,7 +294,7 @@ function TryActivateTradeEvolution(pokemon, tradedWithSpecies)
     var monSpecies = GetSpecies(pokemon);
     var removeItemPostEvo = false;
 
-    if (IsEgg(pokemon))
+    if (IsEgg(pokemon) || GetItem(pokemon) === "ITEM_EVERSTONE")
         return;
 
     for (let species of Object.keys(gTradeEvolutions))
