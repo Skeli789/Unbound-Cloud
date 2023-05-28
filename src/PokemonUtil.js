@@ -25,6 +25,12 @@ import UnboundItems from "./data/unbound/Items.json";
 import UnboundBallTypes from "./data/unbound/BallTypes.json";
 import UnboundShinies from "./data/UnboundShinies.json";
 
+//Unbound 2.1 Data
+import Unbound21BaseStats from "./data/unbound_2_1/BaseStats.json";
+import Unbound21Moves from "./data/unbound_2_1/Moves.json";
+import Unbound21Items from "./data/unbound_2_1/Items.json";
+import Unbound21BallTypes from "./data/unbound_2_1/BallTypes.json";
+
 //MAGM Data
 import MAGMBaseStats from "./data/magm/BaseStats.json";
 import MAGMMoves from "./data/magm/Moves.json";
@@ -249,6 +255,13 @@ const GAME_IDS_TO_DATA =
         "moves": UnboundMoves,
         "items": UnboundItems,
         "ballTypes": UnboundBallTypes,
+    },
+    "unbound_2_1":
+    {
+        "baseStats": Unbound21BaseStats,
+        "moves": Unbound21Moves,
+        "items": Unbound21Items,
+        "ballTypes": Unbound21BallTypes,
     },
     "magm":
     {
