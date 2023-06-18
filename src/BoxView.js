@@ -74,6 +74,7 @@ export class BoxView extends Component
             fixingLivingDex: false,
             searching: false,
             viewingShowdown: false,
+            viewingWonderTradeSummary: false,
 
             allPokemon: props.pokemonJSON,
             titles: props.titles,
@@ -581,9 +582,6 @@ export class BoxView extends Component
         if (selectedNullSpecies && !otherSelectionActive)
             return true; //Clicking a blank spot in the same box deselects the current choice. Otherwise it'll move the Pokemon
 
-        if (this.isMonAtPosInWonderTrade(boxPos) && !otherSelectionActive)
-            return true; //Treat like a blank spot
-
         return false; //Keep selected
     }
 
@@ -807,6 +805,7 @@ export class BoxView extends Component
         var newSummaryMon = this.getParentState().summaryMon;
         var speciesNameSelected = this.getSpeciesNameInCurrentBoxAt(boxPos);
         var selectedNullSpecies = IsNullSpeciesName(speciesNameSelected);
+        var viewingWonderTradeSummary = false;
 
         //Check if can select the current spot
         if (this.canSelectMonAtPos(boxPos))
@@ -815,6 +814,13 @@ export class BoxView extends Component
             {
                 newSelectedMonPos[boxSlot] = CreateSingleBlankSelectedPos(); //Deselect all
                 this.state.parent.wipeErrorMessage();
+            }
+            else if (this.isMonAtPosInWonderTrade(boxPos) && !this.otherBoxHasSelection())
+            {
+                //Treat like a blank spot with the exception that the summary is locked
+                newSelectedMonPos[boxSlot] = CreateSingleBlankSelectedPos(); //Deselect all
+                this.state.parent.wipeErrorMessage();
+                viewingWonderTradeSummary = true;
             }
             else if (this.doesClickingSpotDeselectChoice(boxPos))
             {
@@ -858,7 +864,7 @@ export class BoxView extends Component
                 this.state.parent.swapDifferentBoxSlotPokemon(multiSwap);
         });
 
-        this.setState({viewingShowdown: false});
+        this.setState({viewingShowdown: false, viewingWonderTradeSummary: viewingWonderTradeSummary});
     }
 
     /**
@@ -1435,7 +1441,8 @@ export class BoxView extends Component
             var onHoverFunc = () =>
             {
                 this.handleSetDraggingOver(i);
-                if (!isMobile && !this.areAnyPokemonSelectedInCurrentBox())
+                if (!isMobile && !this.areAnyPokemonSelectedInCurrentBox()
+                && !this.state.viewingWonderTradeSummary) //Pokemon in Wonder Trade can't be selected, so this is a special check to account for that
                     this.handleSelectMonForViewing(null, key, pokemon); //Show the summary as the mouse moves over the mon, show it's summary
             };
 
