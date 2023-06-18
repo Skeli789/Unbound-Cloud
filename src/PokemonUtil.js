@@ -415,7 +415,7 @@ function IsSpeciesGen9(species)
     if (speciesIndex > 0)
     {
         return speciesIndex >= speciesIds.indexOf("SPECIES_SPRIGATITO")
-            && speciesIndex < speciesIds.indexOf("SPECIES_WOOPER_P");
+            && speciesIndex <= speciesIds.indexOf("SPECIES_WOOPER_P");
     }
 
     return false;
