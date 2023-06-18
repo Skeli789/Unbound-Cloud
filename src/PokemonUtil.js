@@ -483,6 +483,8 @@ export function GetBaseStats(pokemon, gameId)
 
         if (allBaseStats != null && species in allBaseStats)
             return allBaseStats[species];
+        else if (GetMetGame(pokemon) !== gameId)
+            return GetBaseStats(pokemon, GetMetGame(pokemon)); //Use the met game if there are no base stats recorded for the loaded game
     }
 
     return baseStats;
