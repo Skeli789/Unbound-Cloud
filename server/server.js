@@ -423,9 +423,9 @@ io.on("connection", async function(socket)
     {
         let friend, friendPokemon, originalPokemon;
 
+        await LockWonderTrade();
         if (clientId in gWonderTradeClients && gWonderTradeClients[clientId].tradedWith !== 0)
         {
-            await LockWonderTrade();
             originalPokemon = gWonderTradeClients[clientId].originalPokemon;
             friendPokemon = Object.assign({}, gWonderTradeClients[clientId].pokemon);
             pokemonUtil.UpdatePokemonAfterNonFriendTrade(friendPokemon, originalPokemon);
@@ -439,11 +439,11 @@ io.on("connection", async function(socket)
                 if ("discordMessageId" in gWonderTradeClients[clientId])
                     await SendWonderTradeDiscordMessage(`${species1} and ${species2} were traded!`, 0x0000FF, gWonderTradeClients[clientId].discordMessageId); //Blue
             }
-
-            UnlockWonderTrade();
             //Data deleted when client disconnects in case they don't receive this transmission
         }
-        else if (clientId in gFriendTradeClients
+        UnlockWonderTrade();
+
+        if (clientId in gFriendTradeClients
         && gFriendTradeClients[clientId].friend !== "")
         {
             let username = gFriendTradeClients[clientId].username;
