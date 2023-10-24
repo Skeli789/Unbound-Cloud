@@ -623,7 +623,9 @@ async function FinishFileUpload(req, res)
 app.post('/uploadSaveFile', async (req, res) =>
 {
     var username, accountCode, isAccountSystem;
-    
+    const funcStartTime = Date.now();
+    var startTime = funcStartTime;
+
     //If using an account system, these variables must be retrieved now because after the file upload they disappear
     try
     {
@@ -645,10 +647,12 @@ app.post('/uploadSaveFile', async (req, res) =>
         return res.status(StatusCode.ServerErrorInternal).json(fileUploadErr);
     else if (req.files == null)
         return res.status(StatusCode.ClientErrorBadRequest).json("ERROR: Uploaded save file did not reach the server");
+    console.log(`Save file upload for ${username} took ${Date.now() - startTime}ms.`);
 
     //Write the save file to a temp file
-    var saveFileData = req.files.file.data;
     var saveFileName, fileIdNumber;
+    var saveFileData = req.files.file.data;
+    startTime = Date.now();
 
     do //Get a temp name that's not already in use
     {
@@ -658,9 +662,10 @@ app.post('/uploadSaveFile', async (req, res) =>
 
     TryMakeTempFolder();
     fs.writeFileSync(saveFileName, saveFileData);
-    console.log(`Temp save file saved to server as ${saveFileName}.`);
+    console.log(`Temp save file for ${username} saved to server as ${saveFileName} in ${Date.now() - startTime}ms.`);
 
     //Run the Python script
+    startTime = Date.now();
     var result;
     try
     {
@@ -698,16 +703,19 @@ app.post('/uploadSaveFile', async (req, res) =>
                 saveFileData: saveFileData,
                 fileIdNumber: fileIdNumber
             };
+            console.log(`Save data for ${username} extracted in ${Date.now() - startTime}ms.`)
 
             //Try to send back Cloud boxes too if there's an account system
+            startTime = Date.now();
             if (isAccountSystem)
             {
                 if (accounts.GetUserAccountCode(username) === accountCode)
                 {
                     await accounts.UpdateUserLastAccessed(username);
-                    retData["cloudBoxes"] = accounts.GetUserCloudBoxes(username, randomizer);
-                    retData["cloudTitles"] = accounts.GetUserCloudTitles(username, randomizer);
                     retData["cloudDataSyncKey"] = await accounts.CreateCloudDataSyncKey(username, randomizer);
+                    retData["cloudBoxes"] = await accounts.GetUserCloudBoxes(username, randomizer);
+                    retData["cloudTitles"] = await accounts.GetUserCloudTitles(username, randomizer);
+                    console.log(`Cloud data for ${username} loaded in ${Date.now() - startTime}ms.`);
                 }
             }
 
@@ -728,6 +736,7 @@ app.post('/uploadSaveFile', async (req, res) =>
         console.log(`Temp save file ${saveFileName} deleted from server.`);
     }
 
+    console.log(`/uploadSaveFile for ${username} completed in ${Date.now() - funcStartTime}ms.`);
     return result;
 });
 
@@ -1115,7 +1124,9 @@ app.post('/activateUser', async (req, res) =>
         return res.status(StatusCode.SuccessOK).json("");
     }
     else
+    {
         return res.status(StatusCode.ClientErrorForbidden).send({errorMsg: "INVALID_ACTIVATION_CODE"});
+    }
 });
 
 /**
@@ -1233,11 +1244,12 @@ app.post('/getAccountCloudData', async (req, res) =>
         else
         {
             await accounts.UpdateUserLastAccessed(username);
+            let cloudDataSyncKey = await accounts.CreateCloudDataSyncKey(username, randomizer);
             return res.status(StatusCode.SuccessOK).json
             ({
-                cloudBoxes: accounts.GetUserCloudBoxes(username, randomizer),
-                cloudTitles: accounts.GetUserCloudTitles(username, randomizer),
-                cloudDataSyncKey: await accounts.CreateCloudDataSyncKey(username, randomizer),
+                cloudBoxes: await accounts.GetUserCloudBoxes(username, randomizer),
+                cloudTitles: await accounts.GetUserCloudTitles(username, randomizer),
+                cloudDataSyncKey: cloudDataSyncKey,
             });
         }   
     }
@@ -1288,7 +1300,7 @@ app.post('/saveAccountCloudData', async (req, res) =>
                 if (await accounts.SaveAccountCloudData(username, cloudBoxes, cloudTitles, cloudData.randomizer))
                     return res.status(StatusCode.SuccessOK).json({});
                 else
-                    return res.status(StatusCode.ClientErrorNotFound).json("Username was not found!");  
+                    return res.status(StatusCode.ClientErrorNotFound).json("Username was not found!");
             } 
         }
         else
