@@ -16,48 +16,67 @@ const gTestPassword2 = "glahflah";
 
 const sleep = ms => new Promise(res => setTimeout(res, ms));
 
+before(async function()
+{
+    await ClearTestDatabase();
+});
+
+async function ClearTestDatabase()
+{
+    //Remove the cloud data directory
+    var cloudDir = process.env.APPDATA + "/unboundcloud";
+    if (fs.existsSync(cloudDir))
+        fs.rmdirSync(cloudDir, {recursive: true, force: true});
+}
+
 
 describe("Test LockDB and UnlockDB", async () =>
 {
+    const testUserName = gTestUser;
+
     it (`LockDB should lock the database`, async () =>
     {
-        expect(accounts.IsDBLocked()).to.be.false;
-        await accounts.LockDB();
-        expect(accounts.IsDBLocked()).to.be.true;
+        expect(accounts.IsAccountDBLocked(testUserName)).to.be.false;
+        await accounts.LockAccountDB(testUserName);
+        expect(accounts.IsAccountDBLocked(testUserName)).to.be.true;
     });
 
     it (`UnlockDB should unlock the database`, async () =>
     {
-        expect(accounts.IsDBLocked()).to.be.true;
-        await accounts.UnlockDB();
-        expect(accounts.IsDBLocked()).to.be.false;
+        expect(accounts.IsAccountDBLocked(testUserName)).to.be.true;
+        await accounts.UnlockAccountDB(testUserName);
+        expect(accounts.IsAccountDBLocked(testUserName)).to.be.false;
     });
 
     it (`Two LockDB's should cause the second one to pause until the database is unlocked`, async () =>
     {
         //Lock the DB
-        await accounts.LockDB();
-        expect(accounts.IsDBLocked()).to.be.true;
+        await accounts.LockAccountDB(testUserName);
+        expect(accounts.IsAccountDBLocked(testUserName)).to.be.true;
+        console.log(`Locked Users After 1st Lock: [${accounts.GetLockedUsers()}]`);
 
         //Create a promise to unlock the DB after half a second
         const waitAndUnlock = async () =>
         {
             await sleep(200);
-            accounts.UnlockDB();
+            await accounts.UnlockAccountDB(testUserName);
+            console.log(`Locked Users After 1st Unlock: [${accounts.GetLockedUsers()}]`);
         };
         waitAndUnlock();
 
         //Lock the DB again. Should pause until the DB is unlocked
         timeStart = Date.now();
-        await accounts.LockDB();
+        await accounts.LockAccountDB(testUserName);
+        console.log(`Locked Users After 2nd Lock: [${accounts.GetLockedUsers()}]`);
         timeEnd = Date.now();
-        expect(accounts.IsDBLocked()).to.be.true;
+        expect(accounts.IsAccountDBLocked(testUserName)).to.be.true;
         expect(timeEnd - timeStart).to.be.greaterThanOrEqual(200);
 
         //Unlock the DB and make sure it stays unlocked
-        await accounts.UnlockDB();
+        await accounts.UnlockAccountDB(testUserName);
+        console.log(`Locked Users After 2nd Unlock: [${accounts.GetLockedUsers()}]`);
         new Promise(r => setTimeout(r, 200))
-        expect(accounts.IsDBLocked()).to.be.false;
+        expect(accounts.IsAccountDBLocked(testUserName)).to.be.false;
     });
 });
 
@@ -105,7 +124,7 @@ describe("Test EncryptPassword & ValidatePassword", () =>
 });
 
 
-describe("Test EmailToUsernameTableExists & EmailExists & GetContentsOfEmailToUsernameTable & AddEmailUsernamePairToTable & RemoveEmailUsernamePairFromTable", () =>
+describe("Test EmailToUsernameTableExists & EmailExists & GetContentsOfEmailToUsernameTable & AddEmailUsernamePairToTable & RemoveEmailUsernamePairFromTable", async () =>
 {
     it (`email to username table should not exist`, () =>
     {
@@ -122,15 +141,15 @@ describe("Test EmailToUsernameTableExists & EmailExists & GetContentsOfEmailToUs
         expect(accounts.EmailExists(gTestEmail)).to.be.false;
     });
 
-    it (`removing email should do nothing`, () =>
+    it (`removing email should do nothing`, async () =>
     {
-        accounts.RemoveEmailUsernamePairFromTable(gTestEmail);
+        await accounts.RemoveEmailUsernamePairFromTable(gTestEmail);
         expect(Object.keys(accounts.GetContentsOfEmailToUsernameTable()).length).to.equal(0);
     });
 
-    it (`contents of table should be updated after adding pair`, () =>
+    it (`contents of table should be updated after adding pair`, async () =>
     {
-        accounts.AddEmailUsernamePairToTable(gTestEmail, gTestUser);
+        await accounts.AddEmailUsernamePairToTable(gTestEmail, gTestUser);
         var expected = {};
         expected[gTestEmail] = gTestUser;
         expect(accounts.GetContentsOfEmailToUsernameTable()).to.eql(expected);
@@ -156,18 +175,18 @@ describe("Test EmailToUsernameTableExists & EmailExists & GetContentsOfEmailToUs
         expect(accounts.EmailToUsername(gTestEmail2)).to.be.equal("");
     });
 
-    it (`contents of table should be updated after adding second pair`, () =>
+    it (`contents of table should be updated after adding second pair`, async () =>
     {
-        accounts.AddEmailUsernamePairToTable(gTestEmail2, gTestUser2);
+        await accounts.AddEmailUsernamePairToTable(gTestEmail2, gTestUser2);
         var expected = {};
         expected[gTestEmail] = gTestUser;
         expected[gTestEmail2] = gTestUser2;
         expect(accounts.GetContentsOfEmailToUsernameTable()).to.eql(expected);
     });
 
-    it (`removing ${gTestEmail} should only leave one other pair`, () =>
+    it (`removing ${gTestEmail} should only leave one other pair`, async () =>
     {
-        accounts.RemoveEmailUsernamePairFromTable(gTestEmail);
+        await accounts.RemoveEmailUsernamePairFromTable(gTestEmail);
         var expected = {};
         expected[gTestEmail2] = gTestUser2;
         expect(accounts.GetContentsOfEmailToUsernameTable()).to.eql(expected);
@@ -183,17 +202,17 @@ describe("Test EmailToUsernameTableExists & EmailExists & GetContentsOfEmailToUs
         expect(accounts.EmailExists(gTestEmail2)).to.be.true;
     });
 
-    it (`removing ${gTestEmail} again should do nothing`, () =>
+    it (`removing ${gTestEmail} again should do nothing`, async () =>
     {
-        accounts.RemoveEmailUsernamePairFromTable(gTestEmail);
+        await accounts.RemoveEmailUsernamePairFromTable(gTestEmail);
         var expected = {};
         expected[gTestEmail2] = gTestUser2;
         expect(accounts.GetContentsOfEmailToUsernameTable()).to.eql(expected);
     });
 
-    it (`removing ${gTestEmail2} should remove file`, () =>
+    it (`removing ${gTestEmail2} should remove file`, async () =>
     {
-        accounts.RemoveEmailUsernamePairFromTable(gTestEmail2);
+        await accounts.RemoveEmailUsernamePairFromTable(gTestEmail2);
         expect(accounts.EmailToUsernameTableExists()).to.be.false;
     });
 });
@@ -604,34 +623,34 @@ describe("Test CreateCloudDataSyncKey & GetCloudDataSyncKey", async () =>
 
 describe("Test GetUserCloudBoxes & GetUserCloudTitles & SaveAccountCloudData", async () =>
 {
-    it (`should no Boxes for regular Boxes`, () =>
+    it (`should no Boxes for regular Boxes`, async () =>
     {
-        expect(accounts.GetUserCloudTitles(gTestUser, false)).to.eql([]);
+        expect(await accounts.GetUserCloudTitles(gTestUser, false)).to.eql([]);
     });
 
-    it (`should no titles for regular Boxes`, () =>
+    it (`should no titles for regular Boxes`, async () =>
     {
-        expect(accounts.GetUserCloudTitles(gTestUser, false)).to.eql([]);
+        expect(await accounts.GetUserCloudTitles(gTestUser, false)).to.eql([]);
     });
 
-    it (`should be no boxes for randomizer Boxes`, () =>
+    it (`should be no boxes for randomizer Boxes`, async () =>
     {
-        expect(accounts.GetUserCloudBoxes(gTestUser, true)).to.eql([]);
+        expect(await accounts.GetUserCloudBoxes(gTestUser, true)).to.eql([]);
     });
 
-    it (`should be no titles for randomizer Boxes`, () =>
+    it (`should be no titles for randomizer Boxes`, async () =>
     {
-        expect(accounts.GetUserCloudTitles(gTestUser, true)).to.eql([]);
+        expect(await accounts.GetUserCloudTitles(gTestUser, true)).to.eql([]);
     });
 
-    it (`should be no boxes for non-existent user`, () =>
+    it (`should be no boxes for non-existent user`, async () =>
     {
-        expect(accounts.GetUserCloudBoxes(gTestUser2, false)).to.eql([]);
+        expect(await accounts.GetUserCloudBoxes(gTestUser2, false)).to.eql([]);
     });
 
-    it (`should be no titles for non-existent user`, () =>
+    it (`should be no titles for non-existent user`, async () =>
     {
-        expect(accounts.GetUserCloudTitles(gTestUser2, false)).to.eql([]);
+        expect(await accounts.GetUserCloudTitles(gTestUser2, false)).to.eql([]);
     });
 
     it (`should fail to save with a fake username`, async () =>
@@ -655,28 +674,28 @@ describe("Test GetUserCloudBoxes & GetUserCloudTitles & SaveAccountCloudData", a
         expect(await accounts.SaveAccountCloudData(gTestUser, boxes, titles, true)).to.be.true;
     });
 
-    it (`should be newly saved Boxes`, () =>
+    it (`should be newly saved Boxes`, async () =>
     {
         var boxes = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/all_pokemon.json")));
-        expect(accounts.GetUserCloudBoxes(gTestUser, false)).to.eql(boxes);
+        expect(await accounts.GetUserCloudBoxes(gTestUser, false)).to.eql(boxes);
     });
 
-    it (`should be newly saved titles`, () =>
+    it (`should be newly saved titles`, async () =>
     {
         var titles = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/all_pokemon_titles.json")));
-        expect(accounts.GetUserCloudTitles(gTestUser, false)).to.eql(titles);
+        expect(await accounts.GetUserCloudTitles(gTestUser, false)).to.eql(titles);
     });
 
-    it (`should be newly saved randomizer Boxes`, () =>
+    it (`should be newly saved randomizer Boxes`, async () =>
     {
         var boxes = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/flex.json")));
-        expect(accounts.GetUserCloudBoxes(gTestUser, true)).to.eql(boxes);
+        expect(await accounts.GetUserCloudBoxes(gTestUser, true)).to.eql(boxes);
     });
 
-    it (`should be newly saved randomizer titles`, () =>
+    it (`should be newly saved randomizer titles`, async () =>
     {
         var titles = JSON.parse(fs.readFileSync(path.join(process.cwd(), "pytests/data/flex_titles.json")));
-        expect(accounts.GetUserCloudTitles(gTestUser, true)).to.eql(titles);
+        expect(await accounts.GetUserCloudTitles(gTestUser, true)).to.eql(titles);
     });
 });
 

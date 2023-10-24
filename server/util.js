@@ -158,7 +158,7 @@ function IsValidUsername(username)
         && pattern.test(username);
 }
 module.exports.IsValidUsername = IsValidUsername;
- 
+
 /**
  * Checks if an entered password is considered a valid password.
  * @param {String} password - The password to check.

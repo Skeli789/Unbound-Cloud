@@ -17,36 +17,93 @@ const PASSWORD_RESET_CODE_EXPIRATION_TIME = 60 * 60 * 1000; //60 Minutes
 const PASSWORD_RESET_COOLDOWN = 60 * 60 * 1000; //60 Minutes
 const ACTIATION_EMAIL_COOLDOWN = 2 * 60 * 1000; //2 Minutes
 const PASSWORD_RESET_EMAIL_COOLDOWN = 2 * 60 * 1000; //2 Minutes
+module.exports.EMAIL_TO_USER_FILE = EMAIL_TO_USER_FILE;
 
-var gDatabaseMutex = new Mutex();
-
-
-/**
- * Locks the database files and prevents them from being modified until the current process unlocks them.
- */
-async function LockDB()
-{
-    await gDatabaseMutex.acquire();
-}
-module.exports.LockDB = LockDB;
+var gUsernameMutexes = {};
+const gUsernameMutexesMutex = new Mutex();
+const gEmailToUsernameTableMutex = new Mutex();
 
 /**
- * Unlocks the database files for editing again.
+ * Gets a list of all the account names that currently have their DB files locked.
+ * @returns {Array<String>} - A list of account names.
  */
-async function UnlockDB()
+function GetLockedUsers()
 {
-    await gDatabaseMutex.release();
+    return Object.keys(gUsernameMutexes)
 }
-module.exports.UnlockDB = UnlockDB;
+module.exports.GetLockedUsers = GetLockedUsers;
 
 /**
- * Checks if the Database is currently locked for editing.
+ * Locks the database account files and prevents them from being modified until the current process unlocks them.
  */
-function IsDBLocked()
+async function LockAccountDB(username)
 {
-    return gDatabaseMutex.isLocked();
+    //console.log(`Trying to lock DB writing for ${username}`);
+
+    await gUsernameMutexesMutex.acquire(); //Lock the mutex that protects the mutex hash
+    if (!(username in gUsernameMutexes))
+        gUsernameMutexes[username] = new Mutex(); //Create a new mutex for the account if one doesn't already exist
+    var userMutex = gUsernameMutexes[username];
+    gUsernameMutexesMutex.release(); //Unlock the mutex that protects the mutex hash
+    await userMutex.acquire(); //Lock the mutex that protects the DB file
+
+    //console.log(`DB writing locked for ${username}`);
 }
-module.exports.IsDBLocked = IsDBLocked;
+module.exports.LockAccountDB = LockAccountDB;
+
+/**
+ * Unlocks the database account files for editing again.
+ */
+async function UnlockAccountDB(username)
+{
+    await gUsernameMutexesMutex.acquire(); //Lock the mutex that protects the mutex hash
+
+    if (username in gUsernameMutexes)
+    {
+        let mutex = gUsernameMutexes[username];
+        //console.log(`Trying to unlock DB writing for ${username}`);
+        mutex.release(); //Unlock the mutex that protects the DB file
+
+        //If there's no one waiting for the mutex then remove it from the hash
+        if (!mutex.isLocked()) //Really a semaphore since the isLocked function checks if the number of waiting locks is <= 0
+            delete gUsernameMutexes[username];
+
+        //console.log(`DB writing unlocked for ${username}`);
+    }
+
+    gUsernameMutexesMutex.release(); //Unlock the mutex that protects the mutex hash
+}
+module.exports.UnlockAccountDB = UnlockAccountDB;
+
+/**
+ * Locks the table that maps emails to usernames.
+ */
+async function LockEmailUsernameTable()
+{
+    console.log("Trying to lock email to username table");
+    await gEmailToUsernameTableMutex.acquire();
+    console.log("Email to username table locked");
+}
+
+/**
+ * Unlocks the table that maps emails to usernames.
+ */
+function UnlockEmailUsernameTable()
+{
+    console.log("Trying to unlock email to username table");
+    gEmailToUsernameTableMutex.release();
+    console.log("Email to username table unlocked");
+}
+
+/**
+ * Checks if a user's account DB is currently locked.
+ */
+function IsAccountDBLocked(username)
+{
+    return username in gUsernameMutexes
+        && gUsernameMutexes[username].isLocked();
+}
+module.exports.IsAccountDBLocked = IsAccountDBLocked;
 
 /**
  * Creates the Unbound Cloud directory in AppData if it doesn't alrady exist.
@@ -187,11 +244,14 @@ module.exports.GetContentsOfEmailToUsernameTable = GetContentsOfEmailToUsernameT
  * @param {String} email - The email to be the key.
  * @param {String} username - The username to be the value.
  */
-function AddEmailUsernamePairToTable(email, username)
+async function AddEmailUsernamePairToTable(email, username)
 {
+    await LockEmailUsernameTable();
+    TryMakeUnboundCloudStorageDirectory();
     var data = GetContentsOfEmailToUsernameTable();
     data[email] = username
     SaveEmailToUsernameTable(data);
+    UnlockEmailUsernameTable();
 }
 module.exports.AddEmailUsernamePairToTable = AddEmailUsernamePairToTable;
 
@@ -199,8 +259,9 @@ module.exports.AddEmailUsernamePairToTable = AddEmailUsernamePairToTable;
  * Removes an email-username pair from the table.
  * @param {String} email - The email to remove.
  */
-function RemoveEmailUsernamePairFromTable(email)
+async function RemoveEmailUsernamePairFromTable(email)
 {
+    await LockEmailUsernameTable();
     if (email != null && EmailToUsernameTableExists())
     {
         var data = GetContentsOfEmailToUsernameTable();
@@ -210,6 +271,7 @@ function RemoveEmailUsernamePairFromTable(email)
             SaveEmailToUsernameTable(data);
         }
     }
+    UnlockEmailUsernameTable();
 }
 module.exports.RemoveEmailUsernamePairFromTable = RemoveEmailUsernamePairFromTable;
 
@@ -224,7 +286,6 @@ function SaveEmailToUsernameTable(data)
     else
         fs.writeFileSync(EMAIL_TO_USER_FILE, JSON.stringify(data));
 }
-module.exports.SaveEmailToUsernameTable = SaveEmailToUsernameTable;
 
 /**
  * Encrypts a password for 10 rounds of hashing.
@@ -287,7 +348,8 @@ module.exports.VerifyCorrectPassword = VerifyCorrectPassword;
  */
 async function CreateUser(email, username, password, cloudBoxes=[], cloudTitles=[], cloudRandomizerBoxes=[], cloudRandomizerTitles=[])
 {
-    await LockDB();
+    var ret;
+    await LockAccountDB(username);
 
     try
     {
@@ -325,7 +387,7 @@ async function CreateUser(email, username, password, cloudBoxes=[], cloudTitles=
         StoreUserData(username, data);
 
         //Update email to username table
-        AddEmailUsernamePairToTable(email, username);
+        await AddEmailUsernamePairToTable(email, username);
 
         //Send activation code
         if (!(await messages.SendActivationEmail(email, username, activationCode)))
@@ -334,15 +396,16 @@ async function CreateUser(email, username, password, cloudBoxes=[], cloudTitles=
             throw(`Could not send email to ${email}`);
         }
 
-        UnlockDB();
-        return [true, ""];
+        ret = [true, ""];
     }
     catch (e)
     {
-        UnlockDB();
         console.log(`An error occurred trying to create the user account for ${email}:\n${e}`);
-        return [false, e];
+        ret = [false, e];
     }
+
+    await UnlockAccountDB(username);
+    return ret;
 }
 module.exports.CreateUser = CreateUser;
 
@@ -398,7 +461,8 @@ module.exports.GetUserActivationCode = GetUserActivationCode;
  */
 async function ActivateUser(username, activationCode)
 {
-    await LockDB();
+    var ret;
+    await LockAccountDB(username);
 
     try
     {   
@@ -415,15 +479,16 @@ async function ActivateUser(username, activationCode)
         delete data.lastActivationEmailSentAt;
         StoreUserData(username, data);
 
-        UnlockDB();
-        return true;
+        ret = true;
     }
     catch (e)
     {
-        UnlockDB();
         console.log(`An error occurred trying to activate the user account for ${username}:\n${e}`);
-        return false;
+        ret = false;
     }
+
+    await UnlockAccountDB(username);
+    return ret;
 }
 module.exports.ActivateUser = ActivateUser;
  
@@ -437,7 +502,7 @@ async function ResendActivationEmail(username)
     if (!UserExists(username))
         return false;
 
-    await LockDB();
+    await LockAccountDB(username);
 
     var email = UsernameToEmail(username);
     var activationCode = GetUserActivationCode(username);
@@ -448,7 +513,7 @@ async function ResendActivationEmail(username)
         var timeSince = Date.now() - data.lastActivationEmailSentAt;
         if (timeSince < ACTIATION_EMAIL_COOLDOWN)
         {
-            UnlockDB();
+            await UnlockAccountDB(username);
             return false;
         }
     }
@@ -458,11 +523,11 @@ async function ResendActivationEmail(username)
         data.lastActivationEmailSentAt = Date.now();
         StoreUserData(username, data);
 
-        UnlockDB();
+        await UnlockAccountDB(username);
         return true;
     }
 
-    UnlockDB();
+    await UnlockAccountDB(username);
     return false;
 }
 module.exports.ResendActivationEmail = ResendActivationEmail;
@@ -499,7 +564,8 @@ module.exports.SendPasswordResetCode = SendPasswordResetCode;
  */
 async function CreatePasswordResetCode(username)
 {
-    await LockDB();
+    var ret;
+    await LockAccountDB(username);
 
     try
     {
@@ -510,15 +576,16 @@ async function CreatePasswordResetCode(username)
         data.passwordResetCode = randomstring.generate({length: 6, charset: "alphanumeric"});
         data.passwordResetCodeCreatedAt = Date.now();
         StoreUserData(username, data);
-        UnlockDB();
-        return data.passwordResetCode;
+        ret = data.passwordResetCode;
     }
     catch (e)
     {
-        UnlockDB();
         console.log(`An error occurred trying to create a password reset code for ${username}:\n${e}`);
-        return null;
+        ret = null;
     }
+
+    await UnlockAccountDB(username);
+    return ret;
 }
 module.exports.CreatePasswordResetCode = CreatePasswordResetCode;
 
@@ -588,7 +655,8 @@ module.exports.ResetPasswordTooRecently = ResetPasswordTooRecently;
  */
 async function ChangePassword(username, newPassword)
 {
-    await LockDB();
+    var ret;
+    await LockAccountDB(username);
 
     try
     {
@@ -603,15 +671,16 @@ async function ChangePassword(username, newPassword)
         delete data.passwordResetCode;
         delete data.passwordResetCodeCreatedAt;
         StoreUserData(username, data);
-        UnlockDB();
-        return true;
+        ret = true;
     }
     catch (e)
     {
-        UnlockDB();
         console.log(`An error occurred trying to change the password for ${username}:\n${e}`);
-        return false;
+        ret = false;
     }
+
+    await UnlockAccountDB(username);
+    return ret;
 }
 module.exports.ChangePassword = ChangePassword;
 
@@ -623,7 +692,8 @@ module.exports.ChangePassword = ChangePassword;
   */
 async function DeleteUser(username, password)
 {
-    await LockDB();
+    var ret;
+    await LockAccountDB(username);
 
     try
     {
@@ -634,16 +704,17 @@ async function DeleteUser(username, password)
 
         var email = GetUserData(username).email;
         StoreUserData(username, {}); //Deletes the file
-        RemoveEmailUsernamePairFromTable(email);
-        UnlockDB();
-        return true;
+        await RemoveEmailUsernamePairFromTable(email);
+        ret = true;
     }
     catch (e)
     {
-        UnlockDB();
         console.log(`An error occurred trying to delete the user account for ${username}:\n${e}`);
-        return false;
+        ret = false;
     }
+
+    await UnlockAccountDB(username);
+    return ret;
 }
 module.exports.DeleteUser = DeleteUser;
 
@@ -669,7 +740,8 @@ module.exports.DeleteUser = DeleteUser;
  */
 async function UpdateUserLastAccessed(username)
 {
-    await LockDB();
+    var ret;
+    await LockAccountDB(username);
 
     try
     {
@@ -679,15 +751,16 @@ async function UpdateUserLastAccessed(username)
         var data = GetUserData(username);
         data.lastAccessed = Date.now();
         StoreUserData(username, data);
-        UnlockDB();
-        return true;
+        ret = true;
     }
     catch (e)
     {
-        UnlockDB();
         console.log(`An error occurred trying to update the last accessed time for ${username}:\n${e}`);
-        return false;
+        ret = false;
     }
+
+    await UnlockAccountDB(username);
+    return ret;
 }
 module.exports.UpdateUserLastAccessed = UpdateUserLastAccessed;
 
@@ -714,7 +787,7 @@ module.exports.GetUserAccountCode = GetUserAccountCode;
  */
 async function CreateCloudDataSyncKey(username, isRandomizer)
 {
-    await LockDB();
+    await LockAccountDB(username);
 
     try
     {
@@ -730,12 +803,12 @@ async function CreateCloudDataSyncKey(username, isRandomizer)
             data.cloudDataRandomizerSyncKey = key;
 
         StoreUserData(username, data);
-        UnlockDB();
+        await UnlockAccountDB(username);
         return key;
     }
     catch (e)
     {
-        UnlockDB();
+        await UnlockAccountDB(username);
         throw(`An error occurred trying to create a cloud sync key for ${username}:\n${e}`);
     }
 }
@@ -749,7 +822,8 @@ module.exports.CreateCloudDataSyncKey = CreateCloudDataSyncKey;
  */
 async function GetCloudDataSyncKey(username, isRandomizer)
 {
-    await LockDB();
+    var ret;
+    await LockAccountDB(username);
 
     try
     {
@@ -757,16 +831,16 @@ async function GetCloudDataSyncKey(username, isRandomizer)
             throw(`Account for "${username}" doesn't exist`);
 
         var data = GetUserData(username);
-        data = (!isRandomizer) ? data.cloudDataSyncKey : data.cloudDataRandomizerSyncKey;
-        UnlockDB();
-        return data;
+        ret = (!isRandomizer) ? data.cloudDataSyncKey : data.cloudDataRandomizerSyncKey;
     }
     catch (e)
     {
-        UnlockDB();
         console.log(`An error occurred trying to retrieve the cloud sync key for ${username}:\n${e}`);
-        return "";
+        ret = "";
     }
+
+    await UnlockAccountDB(username);
+    return ret;
 }
 module.exports.GetCloudDataSyncKey = GetCloudDataSyncKey;
 
@@ -776,13 +850,15 @@ module.exports.GetCloudDataSyncKey = GetCloudDataSyncKey;
  * @param {Boolean} isRandomizer - Whether or not to load the randomizer Pokemon or the regular Pokemon.
  * @returns {Array<Object>} A list of Pokemon.
  */
-function GetUserCloudBoxes(username, isRandomizer)
+async function GetUserCloudBoxes(username, isRandomizer)
 {
-   if (!UserExists(username))
+    if (!UserExists(username))
        return [];
 
-   var data = GetUserData(username);
-   return isRandomizer ? data.cloudRandomizerBoxes : data.cloudBoxes;
+    await LockAccountDB(username);
+    var data = GetUserData(username);
+    await UnlockAccountDB(username);
+    return isRandomizer ? data.cloudRandomizerBoxes : data.cloudBoxes;
 }
 module.exports.GetUserCloudBoxes = GetUserCloudBoxes;
 
@@ -792,13 +868,15 @@ module.exports.GetUserCloudBoxes = GetUserCloudBoxes;
  * @param {Boolean} isRandomizer Whether or not to load the randomizer Box names or the regular Box names.
  * @returns {Array<String>} A list of Box names.
  */
-function GetUserCloudTitles(username, isRandomizer)
+async function GetUserCloudTitles(username, isRandomizer)
 {
    if (!UserExists(username))
        return [];
 
-   var data = GetUserData(username);
-   return isRandomizer ? data.cloudRandomizerTitles : data.cloudTitles;
+    await LockAccountDB(username);
+    var data = GetUserData(username);
+    await UnlockAccountDB(username);
+    return isRandomizer ? data.cloudRandomizerTitles : data.cloudTitles;
 }
 module.exports.GetUserCloudTitles = GetUserCloudTitles;
 
@@ -815,7 +893,7 @@ async function SaveAccountCloudData(username, cloudBoxes, cloudTitles, isRandomi
     if (!UserExists(username))
         return false;
 
-    await LockDB();
+    await LockAccountDB(username);
 
     var data = GetUserData(username);
     if (isRandomizer)
@@ -832,19 +910,19 @@ async function SaveAccountCloudData(username, cloudBoxes, cloudTitles, isRandomi
     StoreUserData(username, data);
 
     //Confirm data was saved successfully
-    var retVal;
+    var ret;
     data = GetUserData(username);
     var savedBoxes = isRandomizer ? data.cloudRandomizerBoxes : data.cloudBoxes;
     var savedTitles = isRandomizer ? data.cloudRandomizerTitles : data.cloudTitles;
     
     if (!_.isEqual(savedBoxes, cloudBoxes)
     || !_.isEqual(savedTitles, cloudTitles))
-        retVal = false; //Data was not saved successfully
+        ret = false; //Data was not saved successfully
     else
-        retVal = true;
+        ret = true;
 
-    UnlockDB();
-    return retVal;
+    await UnlockAccountDB(username);
+    return ret;
 }
 module.exports.SaveAccountCloudData = SaveAccountCloudData;
 
@@ -870,7 +948,8 @@ module.exports.SaveAccountCloudData = SaveAccountCloudData;
  */
  async function BanUserFromFromWonderTrade(username)
  {
-    await LockDB();
+    var ret;
+    await LockAccountDB(username);
 
     try
     {
@@ -880,15 +959,16 @@ module.exports.SaveAccountCloudData = SaveAccountCloudData;
         var data = GetUserData(username);
         data.wonderTradeBan = true;
         StoreUserData(username, data);
-        UnlockDB();
-        return true;
+        ret = true;
     }
     catch (e)
     {
-        UnlockDB();
         console.log(`An error occurred trying to ban the user ${username} from Wonder Trade:\n${e}`);
-        return false;
+        ret = false;
     }
+
+    await UnlockAccountDB(username);
+    return ret;
  }
  module.exports.BanUserFromFromWonderTrade = BanUserFromFromWonderTrade;
  
