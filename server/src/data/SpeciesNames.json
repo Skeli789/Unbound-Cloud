@@ -1464,9 +1464,18 @@
     "SPECIES_TAUROS_BLAZE_P": "Tauros",
     "SPECIES_TAUROS_AQUA_P": "Tauros",
     "SPECIES_WOOPER_P": "Wooper",
-    "SPECIES_MONKIDORI": "Monkidori",
-    "SPECIES_OKIDOGI": "Okidogi",
-    "SPECIES_FEZANDIPITI": "Fezandipiti",
-    "SPECIES_OGERPON": "Ogerpon",
-    "SPECIES_TERAPAGOS": "Terapagos"
+	"SPECIES_URSALUNA_BLOODMOON": "Ursaluna",
+	"SPECIES_DIPPLIN": "Dipplin",
+	"SPECIES_POLTCHAGEIST": "Poltchageist",
+	"SPECIES_POLTCHAGEIST_ARTISAN": "Poltchageist",
+	"SPECIES_SINISTCHA": "Sinistcha",
+	"SPECIES_SINISTCHA_MASTERPIECE": "Sinistcha",
+	"SPECIES_OKIDOGI": "Okidogi",
+	"SPECIES_MUNKIDORI": "Munkidori",
+	"SPECIES_FEZANDIPITI": "Fezandipiti",
+	"SPECIES_OGERPON": "Ogerpon",
+	"SPECIES_OGERPON_WELLSPRING_MASK": "Ogerpon",
+	"SPECIES_OGERPON_HEARTHFLAME_MASK": "Ogerpon",
+	"SPECIES_OGERPON_CORNERSTONE_MASK": "Ogerpon",
+	"SPECIES_TERAPAGOS": "Terapagos"
 }

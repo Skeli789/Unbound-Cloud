@@ -828,6 +828,10 @@
 	"MOVE_NOXIOUSTORQUE": {"type": "TYPE_POISON", "split": "SPLIT_PHYSICAL", "pp": 10},
 	"MOVE_COMBATTORQUE": {"type": "TYPE_FIGHTING", "split": "SPLIT_PHYSICAL", "pp": 10},
 	"MOVE_MAGICALTORQUE": {"type": "TYPE_FAIRY", "split": "SPLIT_PHYSICAL", "pp": 10},
+	"MOVE_SYRUPBOMB": {"type": "TYPE_GRASS", "split": "SPLIT_SPECIAL", "pp": 10},
+	"MOVE_BLOODMOON": {"type": "TYPE_NORMAL", "split": "SPLIT_SPECIAL", "pp": 5},
+	"MOVE_MATCHAGOTCHA": {"type": "TYPE_GRASS", "split": "SPLIT_SPECIAL", "pp": 15},
+	"MOVE_IVYCUDGEL": {"type": "TYPE_GRASS", "split": "SPLIT_PHYSICAL", "pp": 10},
 
 	"MOVE_DARKINTENTS": {"type": "TYPE_DARK", "split": "SPLIT_PHYSICAL", "pp": 10},
 	"MOVE_FIERYDOOM": {"type": "TYPE_FIRE", "split": "SPLIT_SPECIAL", "pp": 5},

@@ -2230,6 +2230,28 @@
 	"ITEM_SCROLL_OF_DARKNESS": {
 		"name": "Scroll of Darkness"
 	},
+	"ITEM_FAIRY_FEATHER": {
+		"name": "Fairy Feather"
+	},
+	"ITEM_CORNERSTONE_MASK": {
+		"name": "Cornerstone Mask"
+	},
+	"ITEM_WELLSPRING_MASK": {
+		"name": "Wellspring Mask"
+	},
+	"ITEM_HEARTHFLAME_MASK": {
+		"name": "Hearthflame Mask"
+	},
+	"ITEM_SYRUPY_APPLE": {
+		"name": "Syrupy Apple"
+	},
+	"ITEM_UNREMARKABLE_TEACUP": {
+		"name": "Unremarkable Teacup"
+	},
+	"ITEM_MASTERPIECE_TEACUP": {
+		"name": "Masterpiece Teacup"
+	},
+
 	"ITEM_MAGM_BADGE": {
 		"name": "MAGM Badge (MAGM)"
 	},
@@ -2310,13 +2332,13 @@
 	"ITEM_LUXRANITE": {
 		"name": "Luxranite (GSC)"
 	},
-"ITEM_MEGANIUMITE": {
+	"ITEM_MEGANIUMITE": {
 		"name": "Meganiumite (GSC)"
 	},
 	"ITEM_TYPHLOSIONITE": {
 		"name": "Typhlosinite (GSC)"
 	},
-"ITEM_FERALIGATITE": {
+	"ITEM_FERALIGATITE": {
 		"name": "Feraligatite (GSC)"
 	},
 	"ITEM_RED_MINT": {
