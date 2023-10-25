@@ -815,5 +815,9 @@
     "MOVE_WICKEDTORQUE": true,
     "MOVE_NOXIOUSTORQUE": true,
     "MOVE_COMBATTORQUE": true,
-    "MOVE_MAGICALTORQUE": true
+    "MOVE_MAGICALTORQUE": true,
+    "MOVE_SYRUPBOMB": true,
+    "MOVE_BLOODMOON": true,
+    "MOVE_MATCHAGOTCHA": true,
+    "MOVE_IVYCUDGEL": true
 }

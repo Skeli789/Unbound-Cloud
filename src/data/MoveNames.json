@@ -829,6 +829,10 @@
 	"MOVE_NOXIOUSTORQUE": "Noxious Torque",
 	"MOVE_COMBATTORQUE": "Combat Torque",
 	"MOVE_MAGICALTORQUE": "Magical Torque",
+	"MOVE_SYRUPBOMB": "Syrup Bomb",
+	"MOVE_BLOODMOON": "Blood Moon",
+	"MOVE_MATCHAGOTCHA": "Matcha Gotcha",
+	"MOVE_IVYCUDGEL": "Ivy Cudgel",
 
 	"MOVE_DARKINTENTS": "Dark Intents",
 	"MOVE_FIERYDOOM": "Fiery Doom",
