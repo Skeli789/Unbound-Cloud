@@ -320,23 +320,23 @@ export class WonderTrade extends Component
                     {
                         clearInterval(timerInterval);
                     }
-                    }).then(() =>
-                    {
-                        if (!socket.connected)
-                        {
-                            socket.close();
-                            this.setGlobalState({wonderTradeData: null});
-                            PopUp.fire
-                            ({
-                                title: "Couldn't connect!\nPlease try again later.",
-                                cancelButtonText: `Awww`,
-                                showConfirmButton: false,
-                                showCancelButton: true,
-                                icon: 'error',
-                                scrollbarPadding: false,
-                            });
-                        }
-                    });
+                }).then(() =>
+				{
+					if (!socket.connected)
+					{
+						socket.close();
+						this.setGlobalState({wonderTradeData: null});
+						PopUp.fire
+						({
+							title: "Couldn't connect!\nPlease try again later.",
+							cancelButtonText: `Awww`,
+							showConfirmButton: false,
+							showCancelButton: true,
+							icon: 'error',
+							scrollbarPadding: false,
+						});
+					}
+				});
             });
         }
     }

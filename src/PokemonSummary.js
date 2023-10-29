@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import {OverlayTrigger, Tooltip} from "react-bootstrap";
 
-import {CanMonGigantamax, ChangeMarking, GetAbility, /*GetBaseStats,*/ GetCaughtBall, GetFriendship, GetGender, GetItem, GetLevel,
+import {CanMonGigantamax, ChangeMarking, GetAbility, /*GetBaseStats,*/ GetCaughtBall, GetFriendship, GetGender, GetIconSpeciesLink, GetItem, GetLevel,
         GetMarkings, GetMovePP, GetMoves, GetNature, GetNickname, GetOTGender, GetOTName, GetVisibleNature, GetVisibleOTId, GetVisibleStats,
         GetEVs, GetIVs, GetMoveType, HasPokerus, IsEgg, MonWillLoseMoveInSave, MonWillLoseItemInSave, GetSpecies, WasCuredOfPokerus,
         MAX_FRIENDSHIP, NATURE_STAT_TABLE, MonWillLoseBallInSave} from "./PokemonUtil";
@@ -47,6 +47,7 @@ export class PokemonSummary extends Component
             boxType: props.boxType,
             areBoxViewsVertical: props.areBoxViewsVertical,
             inTrade: props.inTrade,
+            inGTS: props.inGTS,
             gameId: props.gameId,
             viewingEVsIVs: props.viewingEVsIVs,
             isSaveBox: props.isSaveBox,
@@ -94,7 +95,9 @@ export class PokemonSummary extends Component
         var dexNum = (species in gSpeciesToDexNum) ? gDexNums[gSpeciesToDexNum[species]] : 0;
         var dexNumText = String(dexNum).padStart(3, "0");
         var nicknameText = GetNickname(this.state.pokemon);
-        var nickname = <span>#{dexNumText} <span className="summary-name">{nicknameText}</span></span>
+        var nickname = <span className="summary-name">{nicknameText}</span>
+        if (!this.state.inGTS)
+            nickname = <span>#{dexNumText} {nickname}</span>
 
         if (nicknameText !== speciesName)
         {
@@ -176,11 +179,11 @@ export class PokemonSummary extends Component
             </OverlayTrigger>
         );
     }
- 
-     /**
-      * Prints a visible symbol if the Pokemon has the Gigantamax factor.
-      * @returns {JSX} An element containing the Giganatamax symbol.
-      */
+
+    /**
+     * Prints a visible symbol if the Pokemon has the Gigantamax factor.
+     * @returns {JSX} An element containing the Giganatamax symbol.
+     */
     printGigantamaxSymbol()
     {
         var gigantamaxTooltip = props => (<Tooltip {...props}>Gigantamax</Tooltip>);
@@ -198,8 +201,8 @@ export class PokemonSummary extends Component
     }
 
     /**
-      * Prints a visible symbol if the Pokemon is infected with or was cured from Pokerus.
-      * @returns {JSX} An element containing the Pokerus symbol.
+     * Prints a visible symbol if the Pokemon is infected with or was cured from Pokerus.
+     * @returns {JSX} An element containing the Pokerus symbol.
      */
     printPokerusSymbol()
     {
@@ -280,14 +283,12 @@ export class PokemonSummary extends Component
     }
 
     /**
-     * Prints the caught ball icon and held item icon.
-     * @returns {JSX} The container for the caught ball and held item icons.
+     * Prints the caught ball icon.
+     * @returns {JSX} The container for the caught ball icon.
      */
-    printBallAndItemIcon()
+    printBallIcon()
     {
-        var loseItemWarning, loseBallWarning;
-
-        //Caught Ball Details
+        var loseBallWarning;
         var ballType = GetCaughtBall(this.state.pokemon);
         var ballName = GetBallName(ballType);
         var baseBallName = ballName.split(" Ball")[0].toLowerCase().replaceAll("é", "e");
@@ -311,7 +312,23 @@ export class PokemonSummary extends Component
             loseBallWarning = <span className="summary-item-ball-warning summary-ball-warning"/>;
         }
 
-        //Held Item Details
+        return (
+            <div style={{position: "relative"}}>
+                {loseBallWarning}
+                <OverlayTrigger placement="top" overlay={ballNameTooltip}>
+                    <img src={POKE_BALL_GFX_LINK + baseBallName + ".png"} alt="" onMouseDown={(e) => e.preventDefault()}/>
+                </OverlayTrigger>
+            </div>
+        );
+    }
+
+    /**
+     * Prints the held item icon.
+     * @returns {JSX} The container for the held item icons.
+     */
+    printItemIcon()
+    {
+        var loseItemWarning;
         var item = GetItem(this.state.pokemon);
         var itemName = GetItemName(item);
         var itemLink = GetItemIconLink(item);
@@ -336,25 +353,31 @@ export class PokemonSummary extends Component
         }
 
         return (
-            <div className="summary-ball-icon-container">
-                {   //Held Item
-                    itemLink !== "" ?
-                        <div style={{position: "relative"}}> {/*Relative allows the warning's absolute to function properly*/}
-                            {loseItemWarning}
-                            <OverlayTrigger placement="top" overlay={itemTooltip}>
-                                <img src={itemLink} alt="" className="summary-item" onMouseDown={(e) => e.preventDefault()}/>
-                            </OverlayTrigger>
-                        </div>
-                    :
-                        ""
-                }
-                {/*Caught Ball*/}
-                <div style={{position: "relative"}}>
-                    {loseBallWarning}
-                    <OverlayTrigger placement="top" overlay={ballNameTooltip}>
-                        <img src={POKE_BALL_GFX_LINK + baseBallName + ".png"} alt="" onMouseDown={(e) => e.preventDefault()}/>
+            itemLink !== "" ?
+                <div className={this.state.inGTS ? "summary-item-container-gts" : ""} style={{position: "relative"}}> {/*Relative allows the warning's absolute to function properly*/}
+                    {loseItemWarning}
+                    <OverlayTrigger placement="top" overlay={itemTooltip}>
+                        <img src={itemLink} alt="" className="summary-item" onMouseDown={(e) => e.preventDefault()}/>
                     </OverlayTrigger>
                 </div>
+            :
+                ""
+        );
+    }
+
+    /**
+     * Prints the caught ball icon and held item icon.
+     * @returns {JSX} The container for the caught ball and held item icons.
+     */
+    printBallAndItemIcon()
+    {
+        return (
+            <div className="summary-ball-icon-container">
+                {/*Held Item*/}
+                {this.printItemIcon()}
+
+                {/*Caught Ball*/}
+                {this.printBallIcon()}
             </div>
         )
     }
@@ -571,6 +594,21 @@ export class PokemonSummary extends Component
     }
 
     /**
+     * Prints the Pokemon's species icon and held item when viewing the Pokemon offer in the GTS.
+     * @returns {JSX} The container for the Pokemon's species icon and held item icon.
+     */
+    printGTSMonIconAndItem()
+    {
+        return (
+            <div className="summary-mon-icon-item-gts">
+                <img src={GetIconSpeciesLink(this.state.pokemon)} alt={GetNickname(this.state.pokemon)}
+                    className="summary-mon-icon-gts" onMouseDown={(e) => e.preventDefault()}/>
+                {this.printItemIcon()}
+            </div>
+        );
+    }
+    
+    /**
      * Prints the Pokemon's summary view
      */
     render()
@@ -595,7 +633,10 @@ export class PokemonSummary extends Component
         }
 
         return (
-            <div className="pokemon-summary-container">
+            <div className={"pokemon-summary-container" + (this.state.inGTS ? "-gts" : "")}>
+                {/*Mon Icon in GTS*/}
+                {this.state.inGTS ? this.printGTSMonIconAndItem(): ""}
+
                 {/*Nickname, Gender, Level, Friendship, & Gigantamax Row*/}
                 <div className="summary-name-level-container">
                     {/*Nickname*/}
@@ -612,13 +653,13 @@ export class PokemonSummary extends Component
                     </span>
 
                     {/*Friendship*/}
-                    {this.printFriendshipSymbol()}
+                    {!this.state.inGTS ? this.printFriendshipSymbol() : ""}
 
                     {/*Gigantamax*/}
                     {this.printGigantamaxSymbol()}
 
                     {/*Pokerus*/}
-                    {this.printPokerusSymbol()}
+                    {!this.state.inGTS ? this.printPokerusSymbol() : ""}
 
                     {/*Types*/}
                     {/*<span>
@@ -636,21 +677,26 @@ export class PokemonSummary extends Component
                 </div>
 
                 {/*Nature Row*/}
-                <div className="summary-nature">
-                    Nature: {nature} {nature !== natureMint ? `(${natureMint} Mint)` : ""}
-                </div>
+                {
+                    !this.state.inGTS ?
+                        <div className="summary-nature">
+                            Nature: {nature} {nature !== natureMint ? `(${natureMint} Mint)` : ""}
+                        </div>
+                    :
+                        ""
+                }
 
                 {/*Ball & Item in Corner*/}
-                {this.printBallAndItemIcon()}
+                {!this.state.inGTS ?this.printBallAndItemIcon() : ""}
 
                 {/*Markings Underneath Ball & Item*/}
-                {this.printMarkings()}
+                {!this.state.inGTS ? this.printMarkings() : ""}
 
                 {/*Stats Column*/}
-                {this.printStats()}
+                {!this.state.inGTS ? this.printStats() : ""}
 
                 {/*Moves Column*/}
-                {this.printMoves()}
+                {!this.state.inGTS ? this.printMoves() : ""}
             </div>
         );
     }

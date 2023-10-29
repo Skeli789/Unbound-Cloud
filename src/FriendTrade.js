@@ -813,7 +813,7 @@ export class FriendTrade extends Component
                                         gameId={this.getGlobalState().saveGameId}  viewingEVsIVs={this.getGlobalState().viewingSummaryEVsIVs}
                                         isSaveBox={false}
                                         setGlobalState={this.setGlobalState.bind(this)}
-                                        key={0} inTrade={true}/>
+                                        key={0} inTrade={true} inGTS={false}/>
                     :
                         <div className="pokemon-summary-container">None Yet</div>
                 }

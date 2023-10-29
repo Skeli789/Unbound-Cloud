@@ -738,7 +738,7 @@ export class Search extends Component
  */
 export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
 {
-    if (searchCriteria == null || searchCriteria === {})
+    if (searchCriteria == null || Object.keys(searchCriteria).length === 0)
         return false; //No search criteria
 
     var isEgg = IsEgg(pokemon);

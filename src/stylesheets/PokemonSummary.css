@@ -6,6 +6,19 @@
     width: var(--min-mobile-width); /*Same size as box view*/
     margin-bottom: 1%;
     row-gap: 2px;
+}
+
+.pokemon-summary-container-gts
+{
+    display: grid;
+    grid-template-columns: auto;
+    width: 200px;
+}
+
+.pokemon-summary-container, .pokemon-summary-container-gts
+{
+    margin-bottom: 1%;
+    row-gap: 2px;
 
     /*Ripped from Showdown*/
     border: 1px solid #aaa;
@@ -151,6 +164,13 @@
     grid-template-columns: auto auto;
 }
 
+.summary-item-container-gts
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /*Align item to bottom left*/
+}
+
 .summary-item
 {
     max-width: 32px;
@@ -241,6 +261,17 @@
 {
     grid-column: 5;
     height: 24px;
+}
+
+.summary-mon-icon-item-gts
+{
+    display: grid;
+    grid-template-columns: 33% 34% 33%;
+}
+
+.summary-mon-icon-gts
+{
+    grid-column: 2;
 }
 
 .male-gender-symbol

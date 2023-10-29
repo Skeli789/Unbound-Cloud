@@ -1524,7 +1524,7 @@ export class BoxView extends Component
                                        gameId={this.getParentState().saveGameId} viewingEVsIVs={this.getParentState().viewingSummaryEVsIVs}
                                        isSaveBox={this.isSaveBox()}
                                        setGlobalState={this.state.parent.setState.bind(this.state.parent)}
-                                       key={this.getSummaryMonKey()} inTrade={this.isTrading()}/>);
+                                       key={this.getSummaryMonKey()} inTrade={this.isTrading()} inGTS={false}/>);
         }
         else
             return "";

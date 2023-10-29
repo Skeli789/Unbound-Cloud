@@ -18,6 +18,7 @@ import {/*ClearBrowserDB,*/ GetDBVal, SetDBVal} from "./BrowserDB";
 import {ForgotPassword} from "./ForgotPassword";
 import {NO_SERVER_CONNECTION_ERROR} from "./FormUtil";
 import {FriendTrade} from "./FriendTrade";
+import {GlobalTradeStation} from "./GlobalTradeStation";
 // eslint-disable-next-line
 import {GoogleAd} from "./GoogleAd";
 import {Login} from "./Login";
@@ -161,6 +162,7 @@ export default class MainPage extends Component
             muted: ("muted" in localStorage && localStorage.muted === "true") ? true : false,
             songMuted: ("songOff" in localStorage && localStorage.songOff === "true") ? true : false,
             inFriendTrade: false,
+            inGTS: false,
             tradeData: null,
             viewingSummaryEVsIVs: false,
             isSaving: false,
@@ -425,6 +427,8 @@ export default class MainPage extends Component
             this.setState({viewingBoxList: -1}); //Overrides Friend Trade because could be jumping boxes looking for a Pokemon
         else if (this.state.inFriendTrade)
             this.tryResetFriendTradeState();
+        else if (this.state.inGTS)
+            this.tryResetGTSState();
     }
 
 
@@ -2403,14 +2407,39 @@ export default class MainPage extends Component
      */
     openGTS()
     {
-        PopUp.fire
+        if (this.state.inGTS)
+        {
+            this.tryResetGTSState();
+        }
+        else if (CanUseFileHandleAPI() && this.state.changeWasMade.some((x) => x)) //Some boxes aren't saved
+        {
+            //Force a save
+            PopUp.fire
+            ({
+                icon: 'warning',
+                title: "Your data must be saved before starting a trade.",
+                confirmButtonText: "OK, Save It",
+                cancelButtonText: "I'll Do It Myself",
+                showCancelButton: true,
+                scrollbarPadding: false,
+            }).then((result) =>
+            {
+                if (result.isConfirmed)
+                    this.trySaveAndExit(false);
+            });
+        }
+        else
+        {
+            this.setState({inGTS: !this.state.inGTS});
+            this.wipeErrorMessage();
+        }
+    }
+
+    tryResetGTSState()
+    {
+        this.setState
         ({
-            icon: "error",
-            title: "The GTS is currently unavailable.\nWe apologize for the inconvenience.",
-            cancelButtonText: "Awww",
-            showConfirmButton: false,
-            showCancelButton: true,
-            scrollbarPadding: false,
+            inGTS: false,
         });
     }
 
@@ -3139,7 +3168,7 @@ export default class MainPage extends Component
         //Appear above everything when boxes are side by side
         //Otherwise scroll with everything else if possible
 
-        var viewingNonBoxView = this.state.viewingBoxList >= 0 || this.state.inFriendTrade;
+        var viewingNonBoxView = this.state.viewingBoxList >= 0 || this.state.inFriendTrade || this.state.inGTS;
         var sticky = viewingNonBoxView || !this.areBoxViewsVertical();
 
         if (viewingNonBoxView)
@@ -3302,11 +3331,13 @@ export default class MainPage extends Component
      */
     footerButtons()
     {
+        var tradeScreen = this.state.inFriendTrade || this.state.inGTS;
+
         if (document.documentElement.clientWidth >= 600) //Mainly desktop devices, but also includes some mobile ones like iPads
         {
             return (
                 <div className={"footer-buttons"
-                              + (this.state.inFriendTrade && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}>
+                              + (tradeScreen && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}>
                     {this.symbolTutorialButton()}
 
                     <div style={{display: "flex", justifyContent: "center"}}>
@@ -3325,8 +3356,8 @@ export default class MainPage extends Component
             //The footer bar here is twice the height to allow the help button to be on it's own row
             return (
                 <div className={"footer-buttons footer-buttons-mobile"
-                              + (this.state.inFriendTrade && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}
-                     style={this.state.inFriendTrade ? {height: "56px"} : {}}>
+                              + (tradeScreen && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}
+                     style={tradeScreen ? {height: "56px"} : {}}>
                     <div className="footer-buttons-mobile-top-row">
                         {this.startTradeButton()}
                         {this.openGTSButton()}
@@ -3334,7 +3365,7 @@ export default class MainPage extends Component
                         {this.muteMusicButton()}
                     </div>
                     {
-                        !this.state.inFriendTrade ? //Help is hidden during a trade so there's more space
+                        !tradeScreen ? //Help is hidden during a trade so there's more space
                             <div style={{textAlign: "center"}}>
                                 {this.symbolTutorialButton()}
                             </div>
@@ -3407,6 +3438,23 @@ export default class MainPage extends Component
                             homeBoxes={this.state.homeBoxes}
                             homeTitles={this.state.homeTitles}
                             finishFriendTrade={this.finishWonderTrade.bind(this)}/>
+                {this.state.viewingBoxList < 0 ? this.footerButtons() : ""}
+            </div>
+        );
+    }
+
+    /**
+     * Gets the screen shown when trying to trade in the Global Trade Station.
+     * @returns {JSX} The GTS page.
+     */
+    gtsScreen()
+    {
+        return (
+            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
+                <GlobalTradeStation globalState={this}
+                     setGlobalState={this.setState.bind(this)}
+                     homeBoxes={this.state.homeBoxes}
+                     homeTitles={this.state.homeTitles}/>
                 {this.state.viewingBoxList < 0 ? this.footerButtons() : ""}
             </div>
         );
@@ -3788,6 +3836,9 @@ export default class MainPage extends Component
                 this.state.inFriendTrade ?
                     this.friendTradeScreen()
                 :
+                this.state.inGTS ?
+                    this.gtsScreen()
+                :
                 this.state.viewingBoxList >= 0 ?
                     this.boxListScreen()
                 :
@@ -3828,6 +3879,9 @@ export default class MainPage extends Component
                 this.state.inFriendTrade ?
                     this.friendTradeScreen()
                 :
+                this.state.inGTS ?
+                    this.gtsScreen()
+                :
                 this.state.viewingBoxList >= 0 ?
                     this.boxListScreen()
                 :
@@ -3867,6 +3921,9 @@ export default class MainPage extends Component
                 {
                     this.state.inFriendTrade ?
                         this.friendTradeScreen()
+                    :
+                    this.state.inGTS ?
+                        this.gtsScreen()
                     :
                     this.state.viewingBoxList >= 0 ?
                         this.boxListScreen()
