@@ -146,6 +146,9 @@ const BASE_FORMS_OF_BANNED_SPECIES = //All forms that can't exist outside of bat
     "SPECIES_ZACIAN_CROWNED": "SPECIES_ZACIAN",
     "SPECIES_ZAMAZENTA_CROWNED": "SPECIES_ZAMAZENTA",
     "SPECIES_ETERNATUS_ETERNAMAX": "SPECIES_ETERNATUS",
+    "SPECIES_PALAFIN_HERO": "SPECIES_PALAFIN",
+    "SPECIES_TERAPAGOS_TERASTAL": "SPECIES_TERAPAGOS",
+    "SPECIES_TERAPAGOS_STELLAR": "SPECIES_TERAPAGOS",
 };
 
 const ALCREMIE_COLOURS =
@@ -415,7 +418,7 @@ function IsSpeciesGen9(species)
     if (speciesIndex > 0)
     {
         return speciesIndex >= speciesIds.indexOf("SPECIES_SPRIGATITO")
-            && speciesIndex <= speciesIds.indexOf("SPECIES_OGERPON_CORNERSTONE_MASK");
+            && speciesIndex <= speciesIds.indexOf("SPECIES_PECHARUNT");
     }
 
     return false;

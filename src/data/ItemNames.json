@@ -2251,6 +2251,9 @@
 	"ITEM_MASTERPIECE_TEACUP": {
 		"name": "Masterpiece Teacup"
 	},
+	"ITEM_METAL_ALLOY": {
+		"name": "Metal Alloy"
+	},
 
 	"ITEM_MAGM_BADGE": {
 		"name": "MAGM Badge (MAGM)"
