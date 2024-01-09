@@ -43,6 +43,7 @@ FLAG_UNBOUND_SPECIES_RANDOMIZER = 0x9FD
 FLAG_UNBOUND_LEARNSET_RANDOMIZER = 0x9FE
 FLAG_UNBOUND_NEW_GAME_PLUS = 0x16DB
 FLAG_UNBOUND_SANDBOX_MODE = 0x16E4
+FLAG_UNBOUND_SANDBOX_POSTGAME_WITH_NO_CLOUD = 0x1765
 FLAG_IR_SANDBOX_MODE = 0x1205
 FLAG_GS_CHRONICLES_SPECIES_RANDOMIZER = 0x1440
 FLAG_GS_CHRONICLES_LEARNSET_RANDOMIZER = 0x1441
@@ -118,6 +119,11 @@ GameDetails = {
                 "varSetTo": (VAR_UNBOUND_GAME_DIFFICULTY, INSANE_DIFFICULTY_UNBOUND),
                 "butNotIfFlagSet": [FLAG_FR_GAME_CLEAR, FLAG_UNBOUND_NEW_GAME_PLUS],
                 "reason": "The difficulty is set to Insane and the Pokémon League has not been defeated."
+            },
+            {
+                # Sandbox Mode with post-game enabled
+                "flagSet": FLAG_UNBOUND_SANDBOX_POSTGAME_WITH_NO_CLOUD,
+                "reason": "Sandbox with post-game enabled cannot connect to Cloud."
             },
             {   # Sandbox Mode before post-game
                 "flagSet": FLAG_UNBOUND_SANDBOX_MODE,
@@ -590,7 +596,7 @@ class Defines:
 
 # Helper code
 def main():
-    version = "gschronicles"
+    version = "unbound"
 
     ## Convert Defines File ##
     if os.path.exists(f"{GAME_DATA_DIR}/{version}/species.h"):
