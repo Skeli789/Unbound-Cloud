@@ -1,4 +1,4 @@
-import json, os, requests, shutil
+import json, os, shutil
 
 # Setup directories
 gCurrentDir = os.path.dirname(os.path.realpath(__file__))

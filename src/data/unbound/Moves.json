@@ -819,5 +819,20 @@
     "MOVE_SYRUPBOMB": true,
     "MOVE_BLOODMOON": true,
     "MOVE_MATCHAGOTCHA": true,
-    "MOVE_IVYCUDGEL": true
+    "MOVE_IVYCUDGEL": true,
+    "MOVE_ELECTROSHOT": true,
+    "MOVE_TERASTARSTORM": true,
+    "MOVE_FICKLEBEAM": true,
+    "MOVE_BURNINGBULWARK": true,
+    "MOVE_THUNDERCLAP": true,
+    "MOVE_MIGHTYCLEAVE": true,
+    "MOVE_TACHYONCUTTER": true,
+    "MOVE_HARDPRESS": true,
+    "MOVE_DRAGONCHEER": true,
+    "MOVE_ALLURINGVOICE": true,
+    "MOVE_TEMPERFLARE": true,
+    "MOVE_SUPERCELLSLAM": true,
+    "MOVE_PSYCHICNOISE": true,
+    "MOVE_UPPERHAND": true,
+    "MOVE_MALIGNANTCHAIN": true
 }
