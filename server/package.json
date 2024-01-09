@@ -8,7 +8,9 @@
     "testEnvironment": "node"
   },
   "scripts": {
-    "test": "npx nyc mocha jstests --timeout 5000",
+    "test-js": "npx nyc mocha jstests --timeout 5000",
+    "test-py": "pytest pytests",
+    "test-all": "yarn test-js && yarn test-py",
     "start": "node server.js"
   },
   "author": "",
