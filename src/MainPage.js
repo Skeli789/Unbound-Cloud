@@ -2430,8 +2430,19 @@ export default class MainPage extends Component
         }
         else
         {
-            this.setState({inGTS: !this.state.inGTS});
-            this.wipeErrorMessage();
+            PopUp.fire
+            ({
+                icon: "error",
+                title: "The GTS is still incomplete.\nPlease use the #cloud-trades channel in the Unbound Discord server to find trades in the meantime.",
+                cancelButtonText: "Awww",
+                showConfirmButton: false,
+                showCancelButton: true,
+                scrollbarPadding: false,
+                inGTS: false,
+            });
+
+            // this.setState({inGTS: !this.state.inGTS});
+            // this.wipeErrorMessage();
         }
     }
 
