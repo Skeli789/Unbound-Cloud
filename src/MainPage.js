@@ -3395,7 +3395,7 @@ export default class MainPage extends Component
     multiArkGamingLogo()
     {
         return (
-            <a href="https://discord.gg/beKCycEGWq" target="_blank" rel="noopener noreferrer">
+            <a href="https://aventhar.com" target="_blank" rel="noopener noreferrer">
                 <img src={BASE_GFX_LINK + "MultiArkBanner.png"}
                         alt="Hosted By MultiArkGaming"
                         className="multi-ark-gaming-logo"/>
