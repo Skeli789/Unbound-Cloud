@@ -185,7 +185,7 @@ export class Login extends Component
                 </div>
     
                 <Form onSubmit={(e) => this.submitLogin(e)}>
-                    {/*Username Input*/}
+                    {/*Username or Email Input*/}
                     <Form.Group className="mb-3" controlId="formBasicUsername">
                         <Form.Label>Username or Email{required}</Form.Label>
                         <Form.Control
@@ -193,7 +193,7 @@ export class Login extends Component
                             name="username"
                             autoComplete='username'
                             value={this.state.usernameInput}
-                            onChange={(e) => this.setState({usernameInput: ProcessTextInput(e, "USERNAME", true)})}
+                            onChange={(e) => this.setState({usernameInput: ProcessTextInput(e, "EMAIL", true)})} //Use EMAIL because it has a longer max length
                         />
                     </Form.Group>
 
