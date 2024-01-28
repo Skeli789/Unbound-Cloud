@@ -243,6 +243,13 @@ const DRIVES_TO_TYPES =
     "ITEM_CHILL_DRIVE": "TYPE_ICE",
 }
 
+const MASKS_TO_TYPES =
+{
+    "ITEM_CORNERSTONE_MASK": "TYPE_ROCK",
+    "ITEM_WELLSPRING_MASK": "TYPE_WATER",
+    "ITEM_HEARTHFLAME_MASK": "TYPE_FIRE",
+}
+
 const GAME_IDS_TO_DATA =
 {
     "cfru":
@@ -907,6 +914,28 @@ export function GetMoveType(move, pokemon, gameId)
             let baseStats = GetBaseStats(pokemon, gameId);
             if (baseStats != null)
                 type =  baseStats["type1"];
+            break;
+        case "MOVE_RAGINGBULL":
+            switch (species)
+            {
+                case "SPECIES_TAUROS_P":
+                    type = "TYPE_FIGHTING";
+                    break;
+                case "SPECIES_TAUROS_BLAZE_P":
+                    type = "TYPE_FIRE";
+                    break;
+                case "SPECIES_TAUROS_AQUA_P":
+                    type = "TYPE_WATER";
+                    break;
+            }
+            break;
+        case "MOVE_IVYCUDGEL":
+            if (species in SpeciesToDexNum && SpeciesToDexNum[species] === "NATIONAL_DEX_OGERPON")
+            {
+                let item = GetItem(pokemon);
+                if (item in MASKS_TO_TYPES)
+                    type = MASKS_TO_TYPES[item];
+            }
             break;
         default:
             break;
