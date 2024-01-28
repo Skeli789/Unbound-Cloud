@@ -477,9 +477,10 @@ function IsBooleanArray(array, minSize)
  * Gets the base stats of a specific Pokemon
  * @param {Pokemon} pokemon - The Pokemon to get the base stats for.
  * @param {String} gameId - The game to get the base stats from.
+ * @param {Boolean} useMetGameIfMissing - Whether or not to use the met game if the base stats aren't found in the loaded game.
  * @returns {Object} The base stats of the requested Pokemon.
  */
-export function GetBaseStats(pokemon, gameId)
+export function GetBaseStats(pokemon, gameId, useMetGameIfMissing=true)
 {
     var baseStats = null;
 
@@ -493,7 +494,7 @@ export function GetBaseStats(pokemon, gameId)
 
         if (allBaseStats != null && species in allBaseStats)
             return allBaseStats[species];
-        else if (GetMetGame(pokemon) !== gameId)
+        else if (GetMetGame(pokemon) !== gameId && useMetGameIfMissing)
             return GetBaseStats(pokemon, GetMetGame(pokemon)); //Use the met game if there are no base stats recorded for the loaded game
     }
 
@@ -1672,7 +1673,7 @@ export function DoesPokemonSpeciesExistInGame(pokemon, gameId)
 
     return species === "" //Always allow blank slots to be transferred in
         || species === "SPECIES_NONE"
-        || GetBaseStats(pokemon, gameId) != null;
+        || GetBaseStats(pokemon, gameId, false) != null;
 }
 
 /**
