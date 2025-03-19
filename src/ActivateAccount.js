@@ -132,11 +132,13 @@ export class ActivateAccount extends Component
         var errorMsg = this.getErrorMessage();
         if (errorMsg === "") //No error
         {
-            const formData = new FormData();
-            formData.append("username", this.getGlobalState().username);
-            formData.append("activationCode", this.state.codeInput);
+            const requestData =
+            {
+                username: this.getGlobalState().username,
+                activationCode: this.state.codeInput,
+            }
 
-            await SendFormToServer(formData, this, this.mainPage, "/activateUser", CompletedActivationPopUp);
+            await SendFormToServer(requestData, this, this.mainPage, "/activateUser", CompletedActivationPopUp);
         }
         else
         {
@@ -155,11 +157,13 @@ export class ActivateAccount extends Component
         if (timeSince >= RESEND_CODE_COOLDOWN)
         {
             //Can resend code again
-            const formData = new FormData();
-            formData.append("username", this.getGlobalState().username);
-            formData.append("accountCode", this.getGlobalState().accountCode);
+            const requestData =
+            {
+                username: this.getGlobalState().username,
+                accountCode: this.getGlobalState().accountCode,
+            }
     
-            await SendFormToServer(formData, this, this.mainPage, "/resendActivationCode", this.checkEmailForNewCodePopUp.bind(this));
+            await SendFormToServer(requestData, this, this.mainPage, "/resendActivationCode", this.checkEmailForNewCodePopUp.bind(this));
         }
         else
         {

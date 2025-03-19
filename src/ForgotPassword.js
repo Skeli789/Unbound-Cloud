@@ -183,10 +183,8 @@ export class ForgotPassword extends Component
 
         if (errorMsg === "") //No error
         {
-            const formData = new FormData();
-            formData.append("email", this.state.emailInput);
-
-            await SendFormToServer(formData, this, this.mainPage, "/sendPasswordResetCode", this.passwordResetCodeSentPopUp.bind(this));
+            const requestData = {email: this.state.emailInput};
+            await SendFormToServer(requestData, this, this.mainPage, "/sendPasswordResetCode", this.passwordResetCodeSentPopUp.bind(this));
         }
         else
         {
@@ -238,12 +236,14 @@ export class ForgotPassword extends Component
 
         if (errorMsg === "") //No error
         {
-            const formData = new FormData();
-            formData.append("email", this.state.emailInput);
-            formData.append("resetCode", this.state.codeInput);
-            formData.append("newPassword", this.state.passwordInput);
+            const requestData =
+            {
+                email: this.state.emailInput,
+                resetCode: this.state.codeInput,
+                newPassword: this.state.passwordInput,
+            };
 
-            await SendFormToServer(formData, this, this.mainPage, "/resetPassword", this.completedPasswordResetPopUp.bind(this));
+            await SendFormToServer(requestData, this, this.mainPage, "/resetPassword", this.completedPasswordResetPopUp.bind(this));
         }
         else
         {

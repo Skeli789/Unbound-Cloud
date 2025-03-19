@@ -154,10 +154,6 @@ export async function SendFormToServer(data, classObj, mainPageObj, axiosRoute, 
                     }
                 }
             },
-        }).then(() =>
-        {
-            classObj.setState({showedErrorPopUp: true}); //So not to show twice if it closed while the request was still active
-            classObj.errorPopUp("NO_SERVER_CONNECTION");
         });
     });
 }

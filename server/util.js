@@ -2,7 +2,7 @@
     Various utility functions for the server.
 */
 
-const latinize = require('latinize');
+const latinize = require('latinize'); //Must be v1.0.0 or it breaks
 const pokemonUtil = require('./pokemon-util');
 const gBannedWords = require('./src/data/BannedWords.json');
 const gAllowedNicknameLetters = require('./src/data/AllowedNicknameLetters.json');

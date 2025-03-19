@@ -1,6 +1,5 @@
 import json
 from typing import List, Tuple
-from xmlrpc.client import Boolean
 from Defines import Defines
 from PokemonUtil import PokemonUtil  # , NUM_STATS
 from Util import BytesToString, BytesToInt, ConvertToReverseByteList

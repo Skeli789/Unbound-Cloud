@@ -928,6 +928,8 @@ export function GetMoveType(move, pokemon, gameId)
                 case "SPECIES_TAUROS_AQUA_P":
                     type = "TYPE_WATER";
                     break;
+                default:
+                    break;
             }
             break;
         case "MOVE_IVYCUDGEL":

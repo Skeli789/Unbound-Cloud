@@ -105,7 +105,7 @@ export default class MainPage extends Component
             editState: GetInitialPageState(), //STATE_MOVING_POKEMON,
 
             //Uploading & Downloading Files
-            uploadProgress: BLANK_PROGRESS_BAR,
+            uploadProgress: -1,
             isFirstTime: false,
             selectedSaveFile: null,
             selectedHomeFile: null,
@@ -833,25 +833,20 @@ export default class MainPage extends Component
      */
     async useLastSavedHomeFile(errorMsg)
     {
-        const formData = new FormData(); //formData contains the Home boxes
         var homeData = (this.state.isRandomizedSave) ? localStorage.lastSavedRandomizerHomeData : localStorage.lastSavedHomeData;
-        var route = `${config.dev_server}/uploadLastCloudData`;
+        var route = `${config.dev_server}/uploadCloudData`;
 
-        this.addHomeDataToFormData(homeData, formData);
         this.setState
         ({
             editState: STATE_UPLOADING_HOME_FILE,
-            uploadProgress: BLANK_PROGRESS_BAR, //Update here in case the connection has been lost
+            uploadProgress: BOX_HOME,
             selectedHomeFile: {"name": "last saved Cloud data"},
         });
 
         let res;
         try
         {
-            res = await axios.post(route, formData,
-            {
-                onUploadProgress: (progressEvent) => this.updateUploadProgress(progressEvent, false)
-            });
+            res = await axios.post(route, {file: homeData});
         }
         catch (error)
         {
@@ -906,29 +901,48 @@ export default class MainPage extends Component
         var isUsingFileHandles = (isSaveFile && this.state.saveFileHandle != null)
                              || (!isSaveFile && this.state.homeFileHandle != null); //Using modern FileSystem API
 
-        const formData = new FormData(); //formData contains the file to be sent to the server
-        formData.append("file", file);
-        formData.append("isSaveFile", isSaveFile);
+        //Read file as an array buffer and convert to array of bytes
+        var fileData = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                if (isSaveFile)
+                    resolve(new Uint8Array(reader.result));
+                else //Cloud data is sent as plain text
+                    resolve(reader.result);
+            }
+            reader.onerror = () => {
+                reject(reader.error);
+            }
+
+            if (isSaveFile)
+                reader.readAsArrayBuffer(file);
+            else //Cloud data is sent as plain text
+                reader.readAsText(file);
+        });
+
+        const requestData =
+        {
+            file: fileData,
+            isSaveFile: isSaveFile,
+        }
+
         if (ACCOUNT_SYSTEM)
         {
-            formData.append("username", this.state.username);
-            formData.append("accountCode", this.state.accountCode); //Used for an extra layer of security
+            requestData.username = this.state.username;
+            requestData.accountCode = this.state.accountCode; //Used for an extra layer of security
         }
 
         this.setState
         ({
             editState: ACCOUNT_SYSTEM && !isSaveFile ? this.state.editState : //A tester uploading their Cloud file should stay on the same page
                     isSaveFile ? STATE_UPLOADING_SAVE_FILE : STATE_UPLOADING_HOME_FILE,
-            uploadProgress: BLANK_PROGRESS_BAR, //Update here in case the connection has been lost
+            uploadProgress: (isSaveFile) ? BOX_SAVE : BOX_HOME,
         });
 
         let res;
         try
         {
-            res = await axios.post(route, formData,
-            {
-                onUploadProgress: (progressEvent) => this.updateUploadProgress(progressEvent, isSaveFile)
-            });
+            res = await axios.post(route, requestData);
         }
         catch (error)
         {
@@ -993,7 +1007,7 @@ export default class MainPage extends Component
                     catch (e)
                     {
                         //Site can't be used at all
-                        console.log(`Error uploading last Cloud directory: ${this.state.homeDirHandle.name} was not found.`);
+                        console.error(`Error uploading last Cloud directory: ${this.state.homeDirHandle.name} was not found.`);
                         PopUp.fire
                         ({
                             icon: "error",
@@ -1054,7 +1068,7 @@ export default class MainPage extends Component
                 }
 
                 this.wipeErrorMessage();
-                this.setState({uploadProgress: BLANK_PROGRESS_BAR});
+                this.setState({uploadProgress: -1});
             }
             else if ((this.state.isRandomizedSave && res.data.randomizer)
             || (!this.state.isRandomizedSave && !res.data.randomizer))
@@ -1080,52 +1094,6 @@ export default class MainPage extends Component
         }
 
         return true;
-    }
-
-    /**
-     * Adds the Home boxes to form data for sending to the server.
-     * @param {Array} homeData - The Home boxes to send to the server.
-     * @param {Object} formData - The object used to send them to the server.
-     */
-    addHomeDataToFormData(homeData, formData)
-    {
-        //The data is split into four parts to guarantee it'll all be sent
-        for (let i = 0; i < 4; ++i)
-        {
-            if (i + 1 >= 4)
-                formData.append(`homeDataP${i + 1}`, homeData.slice((homeData.length / 4) * i, homeData.length));
-            else
-                formData.append(`homeDataP${i + 1}`, homeData.slice((homeData.length / 4) * i, (homeData.length / 4) * (i + 1)));
-        }
-    }
-
-    /**
-     * Updates the upload status during a file upload.
-     * @param {Object} progressEvent - An object containing the current state of the upload.
-     * @param {Boolean} isSaveFile - True if a save file is being uploaded. False if a Home data file is being uploaded.
-     */
-    updateUploadProgress(progressEvent, isSaveFile)
-    {
-        if (progressEvent.loaded <= 0 || progressEvent.total <= 0) //Faulty numbers
-            return;
-
-        var progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-
-        if (progress >= 100)
-        {
-            var fileName;
-
-            if (isSaveFile)
-                fileName = this.state.selectedSaveFile.name;
-            else
-                fileName = this.state.selectedHomeFile.name;
-
-            progress = `Processing ${fileName}`;
-        }
-        else
-            progress = <ProgressBar className="upload-progress-bar" now={progress} label={`${progress}%`} />;
-
-        this.setState({uploadProgress: progress});
     }
 
     /**
@@ -1368,12 +1336,14 @@ export default class MainPage extends Component
                 {
                     try
                     {
-                        const formData = new FormData(); //formData contains the file to be sent to the server
-                        formData.append("username", this.state.username);
-                        formData.append("accountCode", this.state.accountCode); //Used for an extra layer of security
-                        formData.append("randomizer", false);
+                        const requestData =
+                        {
+                            username: this.state.username,
+                            accountCode: this.state.accountCode, //Used for an extra layer of security
+                            randomizer: false,
+                        };
             
-                        let res = await axios.post(route, formData, {});
+                        let res = await axios.post(route, requestData);
 
                         await this.setStateAndWait
                         ({
@@ -1397,7 +1367,7 @@ export default class MainPage extends Component
                     catch (error)
                     {
                         let errorMsg = (error.message === "Network Error") ? NO_SERVER_CONNECTION_ERROR : error.response.data;
-                        console.log(`Error loading Cloud data: ${errorMsg}`);
+                        console.error(`Error loading Cloud data: ${errorMsg}`);
 
                         PopUp.fire
                         ({
@@ -1407,14 +1377,6 @@ export default class MainPage extends Component
                         });
                     }
                 },
-            }).then(() =>
-            {
-                PopUp.fire
-                ({
-                    icon: 'error',
-                    title: NO_SERVER_CONNECTION_ERROR,
-                    scrollbarPadding: false,
-                });
             });
         }
     }
@@ -1463,7 +1425,7 @@ export default class MainPage extends Component
         }
         catch (e)
         {
-            console.log(`Failed to pick Home directory: ${e}`);
+            console.error(`Failed to pick Home directory: ${e}`);
 
             PopUp.fire
             ({
@@ -1501,7 +1463,7 @@ export default class MainPage extends Component
         catch (e)
         {
             var errorTitle, errorText;
-            console.log(`Failed to pick last Home directory: ${e}`);
+            console.error(`Failed to pick last Home directory: ${e}`);
 
             if (e.message != null && e.message === "A requested file or directory could not be found at the time an operation was processed.")
             {
@@ -1557,7 +1519,7 @@ export default class MainPage extends Component
         }
         catch (e)
         {
-            console.log(`Failed to pick save file: ${e}`);
+            console.error(`Failed to pick save file: ${e}`);
 
             PopUp.fire
             ({
@@ -1590,7 +1552,7 @@ export default class MainPage extends Component
         catch (e)
         {
             var errorTitle, errorText;
-            console.log(`Failed to pick last save file: ${e}`);
+            console.error(`Failed to pick last save file: ${e}`);
 
             if (e.message != null && e.message === "A requested file or directory could not be found at the time an operation was processed.")
             {
@@ -2630,7 +2592,7 @@ export default class MainPage extends Component
         //Get Encrypted Home File
         if (!ACCOUNT_SYSTEM && this.state.changeWasMade[BOX_HOME]) //Don't waste time if there's no updated version
         {
-            this.printSavingPopUp("Preparing Cloud data...");
+            await this.printSavingPopUp("Preparing Cloud data...");
             encryptedHomeData = await this.getEncryptedHomeFile(serverConnectionErrorMsg);
             if (encryptedHomeData == null)
                 return false;
@@ -2639,7 +2601,7 @@ export default class MainPage extends Component
         //Get Updated Save File
         if (this.state.changeWasMade[BOX_SAVE]) //Don't waste time if there's no updated version
         {
-            this.printSavingPopUp("Preparing Save data...");
+            await this.printSavingPopUp("Preparing Save data...");
             dataBuffer = await this.getUpdatedSaveFile(serverConnectionErrorMsg);
             if (dataBuffer == null)
                 return false;
@@ -2648,7 +2610,7 @@ export default class MainPage extends Component
         //Save Cloud Boxes for the account system
         if (ACCOUNT_SYSTEM && this.state.changeWasMade[BOX_HOME])
         {
-            this.printSavingPopUp("Saving Cloud data...");
+            await this.printSavingPopUp("Saving Cloud data...");
             let success = await this.saveAccountCloudData(serverConnectionErrorMsg);
             if (!success)
                 return false;
@@ -2657,7 +2619,7 @@ export default class MainPage extends Component
         //Download the Save Data (downloaded first because more likely to be problematic)
         if (this.state.changeWasMade[BOX_SAVE])
         {
-            this.printSavingPopUp("Downloading Save data...");
+            await this.printSavingPopUp("Downloading Save data...");
             if (!(await this.downloadSaveFile(dataBuffer))) //Couldn't save because file probably in use
                 return false;
         }
@@ -2665,7 +2627,7 @@ export default class MainPage extends Component
         //Download the Home Data
         if (!ACCOUNT_SYSTEM && this.state.changeWasMade[BOX_HOME])
         {
-            this.printSavingPopUp("Downloading Cloud data...");
+            await this.printSavingPopUp("Downloading Cloud data...");
             if (!(await this.downloadHomeData(encryptedHomeData))) //Couldn't save because file missing
                 return false;
         }
@@ -2701,21 +2663,20 @@ export default class MainPage extends Component
      * Displays a pop-up while saving is in progress.
      * @param {String} text - The text to display in the pop-up.
      */
-    printSavingPopUp(text)
+    async printSavingPopUp(text)
     {
-        this.setState({savingMessage: text, isSaving: true}, () =>
-        {
-            PopUp.fire
-            ({
-                title: text,
-                allowOutsideClick: false,
-                scrollbarPadding: false,
-                didOpen: () =>
-                {
-                    PopUp.showLoading();
-                }
-            });
-        })
+        await this.setStateAndWait({savingMessage: text, isSaving: true});
+
+        PopUp.fire
+        ({
+            title: text,
+            allowOutsideClick: false,
+            scrollbarPadding: false,
+            didOpen: () =>
+            {
+                PopUp.showLoading();
+            }
+        });
     }
 
     /**
@@ -2726,27 +2687,24 @@ export default class MainPage extends Component
     async getEncryptedHomeFile(serverConnectionErrorMsg)
     {
         var res;
-        var homeRoute = `${config.dev_server}/encryptCloudData`;
-        var formData = new FormData(); //formData contains the home data split into four parts to guarantee it'll all be sent
-        var homeData = JSON.stringify
-        ({
+        const homeRoute = `${config.dev_server}/encryptCloudData`;
+        const homeData =
+        {
             titles: this.state.homeTitles,
             boxes: this.state.homeBoxes,
             randomizer: this.state.isRandomizedSave,
             version: 2, //No version was in the original tester release
-        });
-
-        this.addHomeDataToFormData(homeData, formData);
+        };
 
         try
         {
-            res = await axios.post(homeRoute, formData, {});
+            res = await axios.post(homeRoute, {homeData: homeData});
             return res.data.newHomeData;
         }
         catch (error)
         {
             let errorMsg = (error.message === "Network Error") ? serverConnectionErrorMsg : error.response.data;
-            console.log(`Error saving Home data: ${errorMsg}`);
+            console.error(`Error saving Home data: ${errorMsg}`);
             this.setState({savingMessage: errorMsg});
             return null;
         }
@@ -2759,20 +2717,22 @@ export default class MainPage extends Component
      */
     async saveAccountCloudData(serverConnectionErrorMsg)
     {
-        var homeRoute = `${config.dev_server}/saveAccountCloudData`;
-        var formData = new FormData(); //formData contains the home data split into four parts to guarantee it'll all be sent
-        var homeData = JSON.stringify
-        ({
+        const homeRoute = `${config.dev_server}/saveAccountCloudData`;
+        const homeData =
+        {
             titles: this.state.homeTitles,
             boxes: this.state.homeBoxes,
             randomizer: this.state.isRandomizedSave,
             version: 2, //No version was in the original tester release
-        });
+        };
 
-        formData.append("username", this.state.username);
-        formData.append("accountCode", this.state.accountCode); //Used for an extra layer of security
-        formData.append("cloudDataSyncKey", this.state.cloudDataSyncKey); //Prevents issues with opening multiple tabs
-        this.addHomeDataToFormData(homeData, formData);
+        const requestData =
+        {
+            username: this.state.username,
+            accountCode: this.state.accountCode, //Used for an extra layer of security
+            cloudDataSyncKey: this.state.cloudDataSyncKey, //Prevents issues with opening multiple tabs
+            homeData: homeData,
+        }
 
         try
         {
@@ -2780,19 +2740,19 @@ export default class MainPage extends Component
         }
         catch (error)
         {
-            console.log("Error saving local backup of Cloud Data. Local storage is full.");
+            console.error("Error saving local backup of Cloud Data. Local storage is full.");
         }
 
         try
         {
-            await axios.post(homeRoute, formData, {});
+            await axios.post(homeRoute, requestData);
             return true;
         }
         catch (error)
         {
             let errorMsg = (error.message === "Network Error") ? serverConnectionErrorMsg : error.response.data;
-            console.log(`Error saving Home data: ${errorMsg}`);
-            this.setState({savingMessage: errorMsg});
+            console.error(`Error saving Home data: ${errorMsg}`);
+            await this.setStateAndWait({savingMessage: errorMsg});
             return false;
         }
     }
@@ -2804,13 +2764,15 @@ export default class MainPage extends Component
      */
     async getUpdatedSaveFile(serverConnectionErrorMsg)
     {
-        var res, originalSaveContents, formData;
-        var saveRoute = `${config.dev_server}/getUpdatedSaveFile`;
+        let res, originalSaveContents, requestData;
+        const saveRoute = `${config.dev_server}/getUpdatedSaveFile`;
 
-        formData = new FormData(); //formData contains the data to send to the server
-        formData.append("newBoxes", JSON.stringify(this.state.saveBoxes));
-        formData.append("saveFileData", JSON.stringify(this.state.saveFileData["data"]));
-        formData.append("fileIdNumber", JSON.stringify(this.state.saveFileNumber));
+        requestData =
+        {
+            newBoxes: this.state.saveBoxes,
+            saveFileData: this.state.saveFileData["data"],
+            fileIdNumber: this.state.saveFileNumber,
+        };
 
         //Check if save has been externally modified while using the app
         if (this.state.saveFileHandle != null) //Only possible to check when using save file handles
@@ -2822,13 +2784,13 @@ export default class MainPage extends Component
             }
             catch (e)
             {
-                console.log(`Error loading the save file: ${e}`);
+                console.error(`Error loading the save file: ${e}`);
                 let errorMsg = "Save file was not found.";
-                this.setState({savingMessage: errorMsg});
+                await this.setStateAndWait({savingMessage: errorMsg});
                 return null;
             }
 
-            var typedArray = new Uint8Array(await originalSaveContents.arrayBuffer());
+            let typedArray = new Uint8Array(await originalSaveContents.arrayBuffer());
             typedArray = Array.from(typedArray);
 
             //Compare original save contents to the one saved in the state
@@ -2838,7 +2800,7 @@ export default class MainPage extends Component
             {
                 //Save file has been modified and can't be overwritten
                 let errorMsg = <span>Saving can't be completed.<br/>The save file has been used recently.<br/>Please reload the page.</span>;
-                this.setState({savingMessage: errorMsg});
+                await this.setStateAndWait({savingMessage: errorMsg});
                 return null;
             }
         }
@@ -2846,13 +2808,13 @@ export default class MainPage extends Component
         //Get the updated save file contents
         try
         {
-            res = await axios.post(saveRoute, formData, {});
+            res = await axios.post(saveRoute, requestData);
         }
         catch (error)
         {
             let errorMsg = (error.message === "Network Error") ? serverConnectionErrorMsg : error.response.data;
-            console.log(`Error saving Save data: ${errorMsg}`);
-            this.setState({savingMessage: errorMsg});
+            console.error(`Error saving Save data: ${errorMsg}`);
+            await this.setStateAndWait({savingMessage: errorMsg});
             return null;
         }
 
@@ -2895,9 +2857,9 @@ export default class MainPage extends Component
                 catch (e)
                 {
                     //Cloud file is missing so cancel the save altogether
-                    console.log(`Cancelling saving save file since Cloud file was not found: ${e}`);
+                    console.error(`Cancelling saving save file since Cloud file was not found: ${e}`);
                     let errorMsg = "Cloud file was not found.";
-                    this.setState({savingMessage: errorMsg});
+                    await this.setStateAndWait({savingMessage: errorMsg});
                     return false;
                 }
             }
@@ -2910,9 +2872,9 @@ export default class MainPage extends Component
             }
             catch (e)
             {
-                console.log(`Error saving Save file: ${e}`);
+                console.error(`Error saving Save file: ${e}`);
                 let errorMsg = <span>Save file is being used elsewhere.<br/>Close open emulators before trying again.</span>;
-                this.setState({savingMessage: errorMsg});
+                await this.setStateAndWait({savingMessage: errorMsg});
                 return false;
             }
         }
@@ -2972,9 +2934,9 @@ export default class MainPage extends Component
             }
             catch (e)
             {
-                console.log(`Error saving Cloud file: ${e}`);
+                console.error(`Error saving Cloud file: ${e}`);
                 let errorMsg = "Cloud file was not found.";
-                this.setState({savingMessage: errorMsg});
+                await this.setStateAndWait({savingMessage: errorMsg});
                 return false;
             }
         }
@@ -3597,20 +3559,17 @@ export default class MainPage extends Component
      */
     printUploadingFile()
     {
-        var uploadProgress;
-
-        if (typeof(this.state.uploadProgress) === "string" && this.state.uploadProgress.startsWith("Processing"))
-            uploadProgress = <h2>{this.state.uploadProgress}</h2>;
+        let fileName, progress;
+        if (this.state.uploadProgress === BOX_SAVE)
+            fileName = this.state.selectedSaveFile.name;
         else
-            uploadProgress =
-                <>
-                    <h2>Uploading</h2>
-                    {this.state.uploadProgress}
-                </>;
+            fileName = this.state.selectedHomeFile.name;
+
+        progress = `Processing ${fileName}`;
 
         return (
             <div className="main-page-intro-container fade-in">
-                {uploadProgress}
+                <h2>{progress}</h2>
                 <h3>Please wait...</h3>
                 <span style={{visibility: "visible"}}>{this.navBarNoButtons()}</span> {/*Used to centre uploading bar*/}
             </div>
@@ -3626,7 +3585,7 @@ export default class MainPage extends Component
         return (
             <div className={"main-page-intro-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
                 {
-                    this.state.username !== "" ?
+                    ACCOUNT_SYSTEM && this.state.username !== "" &&
                         <div>
                             <h1>Welcome back, {this.state.username}!</h1>
                             <div className="already-have-account-button"
@@ -3634,8 +3593,6 @@ export default class MainPage extends Component
                                 This isn't me.
                             </div>
                         </div>
-                    :
-                        ""
                 }
                 <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
                     <h2>Upload your save file.</h2>
