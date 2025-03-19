@@ -115,11 +115,13 @@ export class Login extends Component
 
         if (errorMsg === "") //No error
         {
-            const formData = new FormData();
-            formData.append("username", this.state.usernameInput);
-            formData.append("password", this.state.passwordInput);
+            const requestData =
+            {
+                username: this.state.usernameInput,
+                password: this.state.passwordInput,
+            };
 
-            await SendFormToServer(formData, this, this.mainPage, "/checkUser", this.completedLoginPopUp.bind(this));
+            await SendFormToServer(requestData, this, this.mainPage, "/checkUser", this.completedLoginPopUp.bind(this));
         }
         else
         {

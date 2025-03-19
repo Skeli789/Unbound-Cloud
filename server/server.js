@@ -1,28 +1,31 @@
-const Mutex = require('async-mutex').Mutex;
 const express = require('express');
 const app = express();
-const http = require('http').Server(app);
-const multer = require('multer'); //Must stay v1.4.3, v1.4.4 and 1.4.5 break the file upload
+
+const Mutex = require('async-mutex').Mutex;
+const axios = require('axios');
+const bodyParser = require('body-parser');
 const cors = require('cors');
-const fileUpload = require('express-fileupload');
-const {exec} = require('child_process');
-const path = require('path');
-const fs = require('fs');
-const randomstring = require("randomstring");
 const CryptoJS = require("crypto-js");
+const {WebhookClient} = require('discord.js');
+const fs = require('fs');
+const http = require('http').Server(app);
+const randomstring = require("randomstring");
+const {StatusCode} = require('status-code-enum');
+
 const accounts = require('./accounts');
 const pokemonUtil = require('./pokemon-util');
 const util = require('./util');
-const {WebhookClient} = require('discord.js');
-const {StatusCode} = require('status-code-enum');
 require('dotenv').config({path: __dirname + '/.env'});
 
 const gSecretKey = process.env["ENCRYPTION_KEY"];
 const gWonderTradeDiscordWebhookURL = process.env["WONDER_TRADE_WEBHOOK"];
 const PORT = process.env.PORT || 3001;
 
+const MAX_PAYLOAD_SIZE = 10; //10 MB
 app.use(cors());
-app.use(fileUpload());
+app.use(bodyParser.json({ limit: `${MAX_PAYLOAD_SIZE}mb` })); 
+app.use(bodyParser.urlencoded({ limit: `${MAX_PAYLOAD_SIZE}mb`, extended: false }));
+
 app.use(express.static('./images'));
 
 var io = require('socket.io')(http, 
@@ -517,42 +520,18 @@ http.listen(PORT, function()
            Axios Request Functions          
 *******************************************/
 
-//Variables for facilitating file upload to the server.
-var storage = multer.diskStorage
-({
-    destination: function (req, file, cb)
-    {
-        cb(null, 'public')
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname)
-    }
-});
-
-var upload = multer({storage: storage}).single('file');
-
-
 /**
- * Runs some server command.
- * @param {String} command - The command to run on the server.
- * @returns {Promise} A promise with the command line output. Resolved if the command is run successfully.
+ * Sends a request to the Python server.
+ * @param {String} route - The route to send the request to.
+ * @param {Object} params - The parameters to send with the request.
+ * @returns {Promise} The response from the Python server.
+ * @throws {Error} If the request fails.
  */
-function RunCommand(command) {
-    return new Promise((resolve, reject) =>
-    {
-        exec(command, (err, stdout, stderr) =>
-        {
-            if (err)
-            {
-                console.log(err);
-                reject("Can't run this command.");
-            }
-            else
-            {
-                resolve(stdout);
-            }
-        });
-    });
+async function SendRequestToPythonServer(route, params)
+{
+    const url = `http://localhost:3005/${route}`;
+    const keyPairs = Object.keys(params).map(key => `${key}=${params[key]}`).join("&");
+    return await axios.get(`${url}?${keyPairs}`);
 }
 
 /**
@@ -564,41 +543,6 @@ function TryMakeTempFolder()
 
     if (!fs.existsSync(dir))
         fs.mkdirSync(dir);
-}
-
-/**
- * Finishes uploading a file to the server.
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {Promise} A promise with the error message if there is one. Resolved if the file is uploaded successfully.
- */
-async function FinishFileUpload(req, res)
-{
-    //NOTE: This function will throw an error if upgrading past multer 1.4.3!
-    function uploadAsync(req, res)
-    {
-        return new Promise((resolve, reject) =>
-        {
-            upload(req, res, (err) =>
-            {
-                if (err)
-                    reject(err);
-                else
-                    resolve();
-            });
-        });
-    }
-
-    try
-    {
-        await uploadAsync(req, res);
-    }
-    catch (err)
-    {
-        return err;
-    }
-
-    return null;
 }
 
 /**
@@ -622,40 +566,38 @@ async function FinishFileUpload(req, res)
  */
 app.post('/uploadSaveFile', async (req, res) =>
 {
-    var username, accountCode, isAccountSystem;
+    console.log("----------------------------------------------");
+    console.log("Handling save file upload...");
+    let username, accountCode, fileBytes, isAccountSystem;
     const funcStartTime = Date.now();
-    var startTime = funcStartTime;
+    let startTime = funcStartTime;
 
-    //If using an account system, these variables must be retrieved now because after the file upload they disappear
+    //Get the params from the request
     try
     {
         username = req.body.username;
         accountCode = req.body.accountCode;
+        fileBytes = Object.values(req.body.file); //File is sent as a Uint8Array so it gets converted to a map in the request
     }
     catch (e)
     {
-        console.log(`An error occurred trying to load the username and accountCode from the save file upload:\n{e}`);
+        console.error(`An error occurred trying to load the request params from the save file upload:\n${e}`);
         return res.status(StatusCode.ClientErrorBadRequest).json(`Request body was not found!`);
     }
 
-    isAccountSystem = username != null && username !== ""
-                   && accountCode != null && accountCode !== "";
+    isAccountSystem = username && accountCode;
 
-    //Finish the upload of the save file
-    let fileUploadErr = await FinishFileUpload(req, res);
-    if (fileUploadErr != null)
-        return res.status(StatusCode.ServerErrorInternal).json(fileUploadErr);
-    else if (req.files == null)
-        return res.status(StatusCode.ClientErrorBadRequest).json("ERROR: Uploaded save file did not reach the server");
-    console.log(`Save file upload for ${username} took ${Date.now() - startTime}ms.`);
+    //Set a placeholder username if the account system isn't in use
+    if (!isAccountSystem)
+        username = "cloud user";
 
     //Write the save file to a temp file
-    var saveFileName, fileIdNumber;
-    var saveFileData = req.files.file.data;
-    startTime = Date.now();
+    let saveFileName, fileIdNumber;
+    let saveFileData = Buffer.from(fileBytes);
 
-    do //Get a temp name that's not already in use
+    do
     {
+        //Get a temp name that's not already in use
         fileIdNumber = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
         saveFileName = `temp/savefile_${fileIdNumber}.sav`;
     } while(fs.existsSync(saveFileName));
@@ -666,12 +608,11 @@ app.post('/uploadSaveFile', async (req, res) =>
 
     //Run the Python script
     startTime = Date.now();
-    var result;
+    let result;
     try
     {
-        var pythonFile = path.resolve('src/Interface.py');
-        let pythonOutput = await RunCommand(`python "${pythonFile}" UPLOAD_SAVE "${saveFileName}"`);
-        let data = JSON.parse(pythonOutput).data;
+        pythonOutput = await SendRequestToPythonServer("uploadsave", {saveFilePath: saveFileName});
+        let data = pythonOutput.data;
         let gameId = data["gameId"];
         let boxCount = data["boxCount"];
         let boxes = data["boxes"];
@@ -681,7 +622,7 @@ app.post('/uploadSaveFile', async (req, res) =>
         let oldVersion = data["oldVersion"];
         let accessible = inaccessibleReason === "";
 
-        if (gameId === "" || boxCount === 0 || boxes.length === 0 || titles.length === 0)
+        if (!gameId || !boxCount || !boxes || boxes.length === 0 || !titles || !titles.length === 0)
         {
             //Bad save file
             if (oldVersion !== "")
@@ -724,9 +665,8 @@ app.post('/uploadSaveFile', async (req, res) =>
     }
     catch (err)
     {
-        console.log("An error occurred processing the save file.");
-        console.log(err);
-        result = res.status(StatusCode.ServerErrorInternal).json(err);
+        console.error(`An error occurred processing the save file:\n${err}`);
+        result = res.status(StatusCode.ServerErrorInternal).json(`${err}`);
     }
 
     //Delete the temp file
@@ -736,7 +676,7 @@ app.post('/uploadSaveFile', async (req, res) =>
         console.log(`Temp save file ${saveFileName} deleted from server.`);
     }
 
-    console.log(`/uploadSaveFile for ${username} completed in ${Date.now() - funcStartTime}ms.`);
+    console.log(`Save file upload for ${username} completed in ${Date.now() - funcStartTime}ms.`);
     return result;
 });
 
@@ -752,82 +692,55 @@ app.post('/uploadSaveFile', async (req, res) =>
  */
 app.post('/uploadCloudData', async (req, res) =>
 {
-    //Finish the upload of the home data file
-    let fileUploadErr = await FinishFileUpload(req, res);
-    if (fileUploadErr != null)
-        return res.status(StatusCode.ServerErrorInternal).json(fileUploadErr);
-    else if (req.files == null)
-        return res.status(StatusCode.ClientErrorBadRequest).json("ERROR: Uploaded file did not reach the server.");
+    console.log("----------------------------------------------");
+    console.log("Processing uploaded cloud data...");
+    const funcStartTime = Date.now();
+    let startTime = funcStartTime;
 
-    //Decrypt the data
     try
     {
-        var homeData = req.files.file.data.toString()
-        var bytes = CryptoJS.AES.decrypt(homeData, gSecretKey);
-        var data = JSON.parse(JSON.parse(bytes.toString(CryptoJS.enc.Utf8))); //Decrypted
-        console.log("The home file has been successfully decrypted.");
+        //Decrypt the data
+        const cloudData = req.body.file;
+        let bytes = CryptoJS.AES.decrypt(cloudData, gSecretKey);
+        let data = JSON.parse(JSON.parse(bytes.toString(CryptoJS.enc.Utf8))); //Decrypted
+        console.log(`Cloud file decrypted in ${Date.now() - startTime}ms.`);
+
+        //Try to update the data if it's from an old version
         data = await TryUpdateOldCloudData(data, res);
         if (data != null)
+        {
+            console.log(`Cloud data processed in ${Date.now() - funcStartTime}ms.`);
             return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"],
                                                           randomizer: data["randomizer"] ? true : false});
+        }
+
+        throw("Cloud data could not be processed.");
     }
     catch (err)
     {
-        console.log("An error occurred processing the home data file.");
-        console.log(err);
-        return res.status(StatusCode.ClientErrorBadRequest).json(err);
-    }
-});
-
-/**
- * Endpoint: /uploadLastCloudData - Uploads the last save encrypted Cloud data file stored in the user's cookies.
- * @param {String} homeDataPX - 4 chunks of strings when combined together form the Cloud Boxes that were uploaded.
- * @returns {StatusCode} SuccessOK with an object of format
- *                       {
- *                            boxes: The Cloud Boxes.
- *                            titles: The titles of the Cloud Boxes.
- *                            randomizer: Whether or not the Boxes were for a randomized save file.
- *                       }
- *                       If the Boxes were extracted successfully, error codes if not.
- */
-app.post("/uploadLastCloudData", async (req, res) =>
-{
-    //Finish the upload of the home data file
-    var homeData = req.body.homeDataP1 + req.body.homeDataP2 + req.body.homeDataP3 + req.body.homeDataP4; //Split into 4 parts so it will be sent over guaranteed
-
-    //Decrypt the data
-    try
-    {
-        var bytes = CryptoJS.AES.decrypt(homeData, gSecretKey);
-        var data = JSON.parse(JSON.parse(bytes.toString(CryptoJS.enc.Utf8))); //Decrypted
-        console.log("The home file has been successfully decrypted.");
-        data = await TryUpdateOldCloudData(data, res)
-        if (data != null)
-            return res.status(StatusCode.SuccessOK).json({boxes: data["boxes"], titles: data["titles"],
-                                                          randomizer: data["randomizer"] ? true : false});
-    }
-    catch (err)
-    {
-        console.log("An error occurred processing the last saved home data file.");
-        console.log(err);
-        return res.status(StatusCode.ClientErrorBadRequest).json(err);
+        console.error(`An error occurred processing the cloud data file:\n${err}`);
+        return res.status(StatusCode.ClientErrorBadRequest).json(`${err}`);
     }
 });
 
 /**
  * Endpoint: /encryptCloudData - Encrypts Cloud data and sends back the encrypted version.
- * @param {String} homeDataPX - 4 chunks of strings when combined together form the Cloud Boxes and Box names that were uploaded.
+ * @param {String} homeData - The Cloud Boxes and Box names that were uploaded.
  * @returns {StatusCode} SuccessOK with an object of format {newHomeData}.
  */
 app.post('/encryptCloudData', (req, res) =>
 {
-    console.log("Encrypting home data...");
-    var homeData = req.body.homeDataP1 + req.body.homeDataP2 + req.body.homeDataP3 + req.body.homeDataP4; //Split into 4 parts so it will be sent over guaranteed
+    console.log("----------------------------------------------");
+    console.log("Encrypting cloud data...");
+    const funcStartTime = Date.now();
 
-    //Get the data for the encrypted home data
-    homeData = CryptoJS.AES.encrypt(JSON.stringify(homeData), gSecretKey).toString();
+    //Get the data for the encrypted cloud data
+    let cloudData = req.body.homeData;
+    cloudData = CryptoJS.AES.encrypt(JSON.stringify(cloudData), gSecretKey).toString();
 
-    result = res.status(StatusCode.SuccessOK).json({newHomeData: homeData});
+    //Send the encrypted data back
+    console.log(`Cloud data encrypted in ${Date.now() - funcStartTime}ms.`);
+    return res.status(StatusCode.SuccessOK).json({newHomeData: cloudData});
 });
 
 /**
@@ -840,43 +753,47 @@ app.post('/encryptCloudData', (req, res) =>
  */
 app.post('/getUpdatedSaveFile', async (req, res) =>
 {
-    var result;
-    var saveFileData = JSON.parse(req.body.saveFileData);
-    var newBoxes = req.body.newBoxes;
-    var fileIdNumber = req.body.fileIdNumber;
-    var saveFileName = `temp/savefile_${fileIdNumber}.sav`;
-    var newBoxesName = `temp/newBoxes_${fileIdNumber}.json`;
-    var newSavePath = null;
+    console.log("----------------------------------------------");
+    let result, error;
+    const funcStartTime = Date.now();
+    let startTime = funcStartTime;
+    let saveFileData = Object.values(req.body.saveFileData);
+    let newBoxes = req.body.newBoxes;
+    let fileIdNumber = req.body.fileIdNumber;
+    let saveFileName = `temp/savefile_${fileIdNumber}.sav`;
+    let newBoxesName = `temp/newBoxes_${fileIdNumber}.json`;
+    let newSavePath = null;
+    console.log(`Updating save file with fileIdNumber "${fileIdNumber}"`);
 
     //Check if the save file data came back intact
     if (saveFileData.length == 0)
     {
-        var error = "Save file data was empty.";
-        console.log(error);
+        error = "Save file data was empty.";
+        console.error(error);
         return res.status(StatusCode.ClientErrorBadRequest).json(error);
     }
 
     //Save the original save file back to the server
     TryMakeTempFolder();
     fs.writeFileSync(saveFileName, Buffer.from(saveFileData));
-    console.log(`Temp save file saved to server as ${saveFileName}.`);
+    console.log(`Temp save file saved to server as ${saveFileName} in ${Date.now() - startTime}ms.`);
 
     //Save the updated boxes to the server
+    startTime = Date.now();
     TryMakeTempFolder();
-    fs.writeFileSync(newBoxesName, newBoxes);
-    console.log("New boxes saved to server.");
+    fs.writeFileSync(newBoxesName, JSON.stringify(newBoxes));
+    console.log(`New boxes saved to server in ${Date.now() - startTime}ms.`);
 
     //Create the updated save file
     try
     {
         //Update the save file
-        var pythonFile = path.resolve('src/Interface.py');
-        var pythonOutput = await RunCommand(`python "${pythonFile}" UPDATE_SAVE ${newBoxesName} ${saveFileName}`);
-        newSavePath = JSON.parse(pythonOutput).data;
+        let pythonOutput = await SendRequestToPythonServer("updatesave", {updatedDataJSON: newBoxesName, originalSaveFilePath: saveFileName});
 
-        if (newSavePath === "")
+        newSavePath = pythonOutput.data;
+        if (!newSavePath)
         {
-            console.log("An error occurred in Python while trying to create an updated save file.");
+            console.error("An error occurred in Python while trying to create an updated save file.");
             result = res.status(StatusCode.ServerErrorInternal).json({err: "Unknown error."});
         }
         else
@@ -890,9 +807,8 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
     }
     catch (err)
     {
-        console.log("An error occurred trying to create an updated save file.");
-        console.log(err);
-        result = res.status(StatusCode.ServerErrorInternal).json(err);
+        console.error(`An error occurred trying to create an updated save file:\n${err}`);
+        result = res.status(StatusCode.ServerErrorInternal).json(`${err}`);
     }
 
     //Delete the temp files
@@ -914,6 +830,7 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
         console.log(`Temp save file ${newSavePath} deleted from server.`);
     }
 
+    console.log(`Save file updated in ${Date.now() - funcStartTime}ms.`);
     return result;
 });
 
@@ -932,47 +849,43 @@ async function TryUpdateOldCloudData(cloudData, res)
         do //Get a temp name that's not already in use
         {
             fileIdNumber = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-            homeFileName = `temp/homedata_${fileIdNumber}.json`;
-        } while(fs.existsSync(homeFileName));
+            cloudFileName = `temp/clouddata_${fileIdNumber}.json`;
+        } while(fs.existsSync(cloudFileName));
 
         TryMakeTempFolder();
-        fs.writeFileSync(homeFileName, JSON.stringify(cloudData));
-        console.log(`Temp home file saved to server as ${homeFileName}.`);
+        fs.writeFileSync(cloudFileName, JSON.stringify(cloudData));
+        console.log(`Temp cloud file saved to server as ${cloudFileName}.`);
 
         //Run the Python script
         var result;
         try
         {
-            var pythonFile = path.resolve('src/Interface.py');
-            let pythonOutput = await RunCommand(`python "${pythonFile}" CONVERT_OLD_CLOUD_FILE "${homeFileName}"`);
-            let data = JSON.parse(pythonOutput).data;
-
-            if (!data["completed"]) //Bad home file
+            let pythonOutput = await SendRequestToPythonServer("convertoldcloudfile", {cloudFilePath: cloudFileName});
+            let data = pythonOutput.data;
+            if (!data.completed) //Bad cloud file
             {
-                console.log("An error occurred converting the home file.");
-                console.log(data["errorMsg"]);
-                result = res.status(StatusCode.ClientErrorBadRequest).json(`ERROR: The uploaded home file could not be converted:\n${data["errorMsg"]}`);
+                console.error(`An error occurred converting the cloud file:\n${data.errorMsg}`);
+                result = res.status(StatusCode.ClientErrorBadRequest).json(`ERROR: The uploaded cloud file could not be converted:\n${data.errorMsg}`);
                 cloudData = null;
             }
             else
             {
-                cloudData = fs.readFileSync(homeFileName);
+                cloudData = fs.readFileSync(cloudFileName);
                 cloudData = JSON.parse(cloudData);
             }
         }
         catch (err)
         {
-            console.log("An error occurred converting the home file.");
-            console.log(err);
+            console.error(`An error occurred converting the cloud file:\n${err}`);
             res.status(StatusCode.ServerErrorInternal).json(err);
             cloudData = null;
         }
 
         //Delete the temp file
-        if (fs.existsSync(homeFileName))
+        if (fs.existsSync(cloudFileName))
         {
-            fs.unlinkSync(homeFileName);
-            console.log(`Temp home file ${homeFileName} deleted from server.`);
+            fs.unlinkSync(cloudFileName);
+            console.log(`Temp cloud file ${cloudFileName} deleted from server.`);
         }
     }
 
@@ -994,7 +907,8 @@ async function TryUpdateOldCloudData(cloudData, res)
  */
 app.post('/createUser', async (req, res) =>
 {
-    var email, username, password, totalCloudData, cloudBoxes, cloudTitles, cloudRandomizerData, cloudRandomizerTitles;
+    var email, username, password, cloudBoxes, cloudTitles, cloudRandomizerData, cloudRandomizerTitles;
+    console.log("----------------------------------------------");
     console.log("Trying to create user account...");
 
     //Get the data sent from the client
@@ -1003,45 +917,39 @@ app.post('/createUser', async (req, res) =>
         email = req.body.email;
         username = req.body.username;
         password = req.body.password;
-        totalCloudData = "";
-
-        for (let i = 1; i <= 8; ++i)
-            totalCloudData += req.body[`cloudDataP${i}`]; //Split into 8 parts so it will be sent over guaranteed
-
-        totalCloudData = JSON.parse(totalCloudData);
-        cloudBoxes = totalCloudData.cloudBoxes;
-        cloudTitles = totalCloudData.cloudTitles;
-        cloudRandomizerData = totalCloudData.cloudRandomizerData;
-        cloudRandomizerTitles = totalCloudData.cloudRandomizerTitles;
+        cloudBoxes = req.body.cloudBoxes;
+        cloudTitles = req.body.cloudTitles;
+        cloudRandomizerData = req.body.cloudRandomizerData;
+        cloudRandomizerTitles = req.body.cloudRandomizerTitles;
     }
     catch (e)
     {
-        console.log(`Could not process data sent from the client:\n${e}`);
+        console.error(`Could not process data sent from the client:\n${e}`);
         return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "UNKNOWN_ERROR"});
     }
 
     //Process the data received
     if (username == null || email == null || password == null)
     {
-        console.log(`Email/username/password is null`);
+        console.error(`Email/username/password is null`);
         return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "NULL_ACCOUNT"});
     }
 
     if (email == "" || username == "" || password == "")
     {
-        console.log(`Email/username/password is blank`);
+        console.error(`Email/username/password is blank`);
         return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "BLANK_INPUT"});
     }
 
     if (accounts.EmailExists(email))
     {
-        console.log(`Account for ${email} already exists`);
+        console.error(`Account for ${email} already exists`);
         return res.status(StatusCode.ClientErrorConflict).send({errorMsg: "EMAIL_EXISTS"});
     }
 
     if (accounts.UserExists(username))
     {
-        console.log(`Account for ${username} already exists`);
+        console.error(`Account for ${username} already exists`);
         return res.status(StatusCode.ClientErrorConflict).send({errorMsg: "USER_EXISTS"});
     }
 
@@ -1059,7 +967,7 @@ app.post('/createUser', async (req, res) =>
         });
     }
     else
-        return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "UNKNOWN_ERROR", errorText: error});
+        return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "UNKNOWN_ERROR", errorText: `${error}`});
 });
  
 /**
@@ -1077,7 +985,7 @@ app.post('/checkUser', async (req, res) =>
     }
     catch (e)
     {
-        console.log(`Could not process data sent from the client:\n${e}`);
+        console.error(`Could not process login data sent from the client:\n${e}`);
         return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "UNKNOWN_ERROR"});
     }
 
@@ -1114,6 +1022,7 @@ app.post('/activateUser', async (req, res) =>
 {
     username = req.body.username;
     activationCode = req.body.activationCode;
+    console.log("----------------------------------------------");
     console.log(`Trying to activate account for "${username}"...`);
 
     if (!accounts.UserExists(username))
@@ -1125,6 +1034,7 @@ app.post('/activateUser', async (req, res) =>
     }
     else
     {
+        console.error(`Account for ${username} could not be activated.`);
         return res.status(StatusCode.ClientErrorForbidden).send({errorMsg: "INVALID_ACTIVATION_CODE"});
     }
 });
@@ -1139,6 +1049,7 @@ app.post('/resendActivationCode', async (req, res) =>
 {
     username = req.body.username;
     accountCode = req.body.accountCode;
+    console.log("----------------------------------------------");
     console.log(`Resending activation code for "${username}"...`);
 
     if (!accounts.UserExists(username))
@@ -1166,6 +1077,7 @@ app.post('/resendActivationCode', async (req, res) =>
 app.post('/sendPasswordResetCode', async (req, res) =>
 {
     email = req.body.email;
+    console.log("----------------------------------------------");
     console.log(`Trying to send a password reset code to "${email}"...`);
 
     if (!accounts.EmailExists(email))
@@ -1190,6 +1102,7 @@ app.post('/resetPassword', async (req, res) =>
     email = req.body.email;
     newPassword = req.body.newPassword;
     resetCode = req.body.resetCode;
+    console.log("----------------------------------------------");
     console.log(`Trying to reset the password for "${email}"...`);
 
     if (email == null || newPassword == null || resetCode == null)
@@ -1233,6 +1146,9 @@ app.post('/getAccountCloudData', async (req, res) =>
     var accountCode = req.body.accountCode;
     var randomizer = req.body.randomizer;
 
+    console.log("----------------------------------------------");
+    console.log(`Getting account Cloud data for ${username}...`);
+
     try
     {
         randomizer = (randomizer === "true"); //Convert to Boolean
@@ -1255,14 +1171,14 @@ app.post('/getAccountCloudData', async (req, res) =>
     }
     catch (err)
     {
-        console.log(err);
+        console.error(`An error occurred trying to get ${username}'s Cloud data:\n${err}`);
         return res.status(StatusCode.ClientErrorBadRequest).json(err);
     }
 });
 
 /**
  * Endpoint: /saveAccountCloudData - Saves a user's saved Cloud Boxes and Box names.
- * @param {String} homeDataPX - 4 chunks of strings when combined together form the Cloud Boxes and titles that were uploaded.
+ * @param {String} homeData - 4 chunks of strings when combined together form the Cloud Boxes and titles that were uploaded.
  * @returns {StatusCode} SuccessOK if the data was saved successfully, error codes if not.
  */
 app.post('/saveAccountCloudData', async (req, res) =>
@@ -1270,11 +1186,13 @@ app.post('/saveAccountCloudData', async (req, res) =>
     var username = req.body.username;
     var accountCode = req.body.accountCode;
     var cloudDataSyncKey = req.body.cloudDataSyncKey;
+    var startTime = Date.now();
+    console.log("----------------------------------------------");
+    console.log(`Saving account Cloud data for ${username}...`);
 
     try
     {
-        var cloudData = JSON.parse(req.body.homeDataP1 + req.body.homeDataP2
-                                 + req.body.homeDataP3 + req.body.homeDataP4); //Split into 4 parts so it will be sent over guaranteed
+        var cloudData = req.body.homeData;
         var cloudBoxes = cloudData.boxes;
         var cloudTitles = cloudData.titles;
 
@@ -1298,7 +1216,10 @@ app.post('/saveAccountCloudData', async (req, res) =>
             else
             {
                 if (await accounts.SaveAccountCloudData(username, cloudBoxes, cloudTitles, cloudData.randomizer))
+                {
+                    console.log(`Cloud data for ${username} saved in ${Date.now() - startTime}ms.`);
                     return res.status(StatusCode.SuccessOK).json({});
+                }
                 else
                     return res.status(StatusCode.ClientErrorNotFound).json("Username was not found!");
             } 
@@ -1308,7 +1229,7 @@ app.post('/saveAccountCloudData', async (req, res) =>
     }
     catch (err)
     {
-        console.log(err);
+        console.error(`An error occurred trying to save the Cloud data for ${username}:\n${err}`);
         return res.status(StatusCode.ClientErrorBadRequest).json(err);
     }
 });

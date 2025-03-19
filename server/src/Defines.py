@@ -1,4 +1,3 @@
-from importlib.metadata import files
 import json
 import os
 import sys

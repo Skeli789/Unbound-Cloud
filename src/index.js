@@ -1,16 +1,18 @@
 import React from 'react';
+import {createRoot} from 'react-dom/client';
 import {isMobile} from "react-device-detect";
-import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import './stylesheets/Index.css';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+//Get the root element from the DOM
+const container = document.getElementById('root');
+
+//Create a root
+const root = createRoot(container);
+
+//Initial render
+root.render(<App />);
 
 const styleLink = document.createElement("link");
 styleLink.rel = "stylesheet";

@@ -176,25 +176,6 @@ export class SignUp extends Component
             && this.state.invalidEmail === this.state.emailInput;
     }
 
-    /**
-     * Adds all of the Cloud data to form data for sending to the server.
-     * @param {Array} totalCloudData - All of the data to send to the server.
-     * @param {Object} formData - The object used to send them to the server.
-     */
-    addCloudDataToFormData(totalCloudData, formData)
-    {
-        var parts = 8;
-        var len = totalCloudData.length;
-
-        //The data is split into four parts to guarantee it'll all be sent
-        for (let i = 0; i < parts; ++i)
-        {
-            if (i + 1 >= parts)
-                formData.append(`cloudDataP${i + 1}`, totalCloudData.slice((len / 4) * i, len));
-            else
-                formData.append(`cloudDataP${i + 1}`, totalCloudData.slice((len / 4) * i, (len / 4) * (i + 1)));
-        }
-    }
 
     /**
      * Finalizes the user's registration.
@@ -207,22 +188,18 @@ export class SignUp extends Component
 
         if (errorMsg === "") //No error
         {
-            const formData = new FormData();
-            formData.append("email", this.state.emailInput);
-            formData.append("username", this.state.usernameInput);
-            formData.append("password", this.state.passwordInput);
-
-            var totalCloudData = JSON.stringify
-            ({
+            const requestData =
+            {
+                email: this.state.emailInput,
+                username: this.state.usernameInput,
+                password: this.state.passwordInput,
                 cloudBoxes: this.getGlobalState().homeBoxes,
                 cloudTitles: this.getGlobalState().homeTitles,
                 cloudRandomizerData: this.getGlobalState().randomizedHomeBoxes ? this.getGlobalState().randomizedHomeBoxes : [], //Don't waste space unless the user actually saves a randomized file
                 cloudRandomizerTitles: this.getGlobalState().randomizedHomeTitles ? this.getGlobalState().randomizedHomeTitles : [],
-            });
+            }
 
-            this.addCloudDataToFormData(totalCloudData, formData);
-
-            await SendFormToServer(formData, this, this.mainPage, "/createuser", CompletedRegistrationPopUp);
+            await SendFormToServer(requestData, this, this.mainPage, "/createuser", CompletedRegistrationPopUp);
         }
         else
         {

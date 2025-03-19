@@ -3,13 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@popperjs/core": "^2.11.7",
-    "@types/react": "^18.2.6",
-    "axios": "^1.4.0",
-    "bootstrap": "^5.2.3",
-    "file-saver": "^2.0.5",
-    "overlayscrollbars": "^2.1.1",
-    "overlayscrollbars-react": "^0.5.0",
+    "axios": "^1.8.3",
+    "bootstrap": "^5.3.3",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.4",
     "react-device-detect": "^2.2.3",
@@ -17,12 +12,11 @@
     "react-icons": "^4.8.0",
     "react-scripts": "^5.0.1",
     "semantic-ui-react": "^2.1.4",
-    "socket.io": "^4.6.1",
-    "socket.io-client": "^4.6.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "status-code-enum": "^1.0.0",
-    "sweetalert2": "^11.7.5",
-    "sweetalert2-react-content": "^5.0.7",
-    "typescript": "^5.0.4"
+    "sweetalert2": "^11.17.2",
+    "sweetalert2-react-content": "^5.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.21.8",
