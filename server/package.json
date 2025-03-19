@@ -14,13 +14,15 @@
     "test-py": "pytest --cov pytests -s",
     "test-all": "yarn test-js && yarn test-py",
     "start-node-server": "node server.js",
-    "start-python-server": "python src/Interface.py"
+    "start-python-server": "python src/Interface.py",
+    "start": "concurrently \"yarn start-node-server\" \"yarn start-python-server\""
   },
   "dependencies": {
     "async-mutex": "^0.5.0",
     "axios": "^1.8.3",
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.3",
+    "concurrently": "^9.1.2",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "discord.js": "^14.18.0",
