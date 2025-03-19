@@ -50,13 +50,6 @@ body.swal2-height-auto /*Undoes pop up ruining mobile view*/
     width: 100%;
 }
 
-.friend-trade-code-button
-{
-    background-color: rebeccapurple !important;
-    border-color: rebeccapurple !important;
-    box-shadow: unset !important;
-}
-
 /*Created Code Display Page*/
 
 .friend-trade-code-display-page

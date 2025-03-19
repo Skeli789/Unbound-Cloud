@@ -225,7 +225,7 @@ export class ActivateAccount extends Component
                         <div className="activate-account-buttons">
                             <div className="friend-trade-code-input-button">
                                 <OverlayTrigger placement="bottom" overlay={submitTooltip}>
-                                    <Button size="lg" className="friend-trade-offer-button friend-trade-code-button"
+                                    <Button size="lg" className="friend-trade-offer-button"
                                             aria-label="Submit Code"
                                             type="submit">
                                         <AiOutlineCheckCircle size={confirmButtonSize}/>
@@ -234,7 +234,7 @@ export class ActivateAccount extends Component
                             </div>
                             <div className="friend-trade-code-input-button">
                                 <OverlayTrigger placement="bottom" overlay={resendCodeTooltip}>
-                                    <Button size="lg" className="friend-trade-offer-button friend-trade-code-button"
+                                    <Button size="lg" className="friend-trade-offer-button"
                                             aria-label="Resend Code"
                                             onClick={this.resendActivationCode.bind(this)}>
                                         <AiOutlineMail size={confirmButtonSize}/>
@@ -285,7 +285,7 @@ export function PasteCodeButton(pasteButtonSize, pasteFunc)
 
     return (
         <OverlayTrigger placement="bottom" overlay={pasteTooltip}>
-            <Button size="sm" className="friend-trade-offer-button friend-trade-code-button"
+            <Button size="sm" className="friend-trade-offer-button"
                     aria-label="Paste Code"
                     onClick={pasteFunc}>
                 <ImPaste size={pasteButtonSize}/>

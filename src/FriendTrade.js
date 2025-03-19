@@ -841,12 +841,12 @@ export class FriendTrade extends Component
                     <h2>The other enters the code created.</h2>
                 </div>
                 <div className="friend-trade-code-choice-buttons">
-                    <Button className="friend-trade-offer-button friend-trade-code-button"
+                    <Button className="friend-trade-offer-button"
                             onClick={this.createCode.bind(this)}>
                         Create Code
                     </Button>
 
-                    <Button className="friend-trade-offer-button friend-trade-code-button"
+                    <Button className="friend-trade-offer-button"
                             onClick={() => this.setFriendTradeState(FRIEND_TRADE_INPUT_CODE)}>
                         Enter Code
                     </Button>
@@ -904,7 +904,7 @@ export class FriendTrade extends Component
                             onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}/>
 
                         <OverlayTrigger placement="bottom" overlay={pasteTooltip}>
-                            <Button size="sm" className="friend-trade-offer-button friend-trade-code-button"
+                            <Button size="sm" className="friend-trade-offer-button"
                                     aria-label="Paste Code"
                                     onClick={this.pasteCode.bind(this)}>
                                 <ImPaste size={pasteButtonSize}/>
@@ -914,7 +914,7 @@ export class FriendTrade extends Component
 
                     <div className="friend-trade-code-input-button">
                         <OverlayTrigger placement="bottom" overlay={submitTooltip}>
-                            <Button size="lg" className="friend-trade-offer-button friend-trade-code-button"
+                            <Button size="lg" className="friend-trade-offer-button"
                                     aria-label="Submit Code"
                                     type="submit">
                                 <AiOutlineCheckCircle size={confirmButtonSize}/>
