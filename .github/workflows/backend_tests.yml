@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - ".github/backend_tests.yml"
+      - ".github/workflows/backend_tests.yml"
       - "server/**"
 
 jobs:
