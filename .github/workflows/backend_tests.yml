@@ -1,0 +1,48 @@
+name: Node.js CI
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/node_tests.yml"
+      - "server/**"
+
+jobs:
+  test-node:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+
+      - name: Install dependencies
+        run: cd server && yarn install
+
+      - name: Running tests
+        run: cd server && yarn test-js
+        env:
+          UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+          UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+          WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+
+  test-python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Use Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: cd server && pip install -r requirements.txt
+
+      - name: Running tests
+        run: cd server && yarn test-py

@@ -2,6 +2,8 @@
   "name": "unbound-cloud-server",
   "version": "1.0.0",
   "description": "",
+  "author": "",
+  "license": "ISC",
   "main": "server.js",
   "proxy": "https://unboundcloud.net",
   "jest": {
@@ -11,10 +13,9 @@
     "test-js": "npx nyc mocha jstests --timeout 5000",
     "test-py": "pytest pytests",
     "test-all": "yarn test-js && yarn test-py",
-    "start": "node server.js"
+    "start-node-server": "node server.js",
+    "start-python-server": "python src/Interface.py"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "async-mutex": "^0.5.0",
     "axios": "^1.8.3",
