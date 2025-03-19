@@ -208,12 +208,28 @@ export class FriendTrade extends Component
                 });
                 socket.on('createCode', function(code) //Code is received from server
                 {
-                    navigator.clipboard.writeText(code).then((text) => //Copy to clipboard
+                    console.log(`Received code: ${code}`);
+
+                    let advanceState = (codeCopied) =>
                     {
-                        thisSetState({codeInput: code, codeCopied: true});
+                        thisSetState({codeInput: code, codeCopied: codeCopied});
                         thisSetFriendTradeState(FRIEND_TRADE_CREATED_CODE);
                         PopUp.close(); //Closes "Connecting..." pop up
-                    });
+                    }
+
+                    if (navigator.clipboard && navigator.clipboard.writeText)
+                    {
+                        navigator.clipboard.writeText(code).then((text) => //Copy to clipboard
+                        {
+                            advanceState(true);
+                        }).catch((err) => //In case the copy fails on mobile browsers
+                        {
+                            console.error(`Couldn't copy code to clipboard: ${err}`);
+                            advanceState(false);
+                        });
+                    }
+                    else //In case the copy fails on mobile browsers
+                        advanceState(false);
                 });
 
                 //Get or send friend code
