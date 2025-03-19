@@ -1142,6 +1142,7 @@ app.post('/resetPassword', async (req, res) =>
  */
 app.post('/getAccountCloudData', async (req, res) =>
 {
+    const funcStartTime = Date.now();
     var username = req.body.username;
     var accountCode = req.body.accountCode;
     var randomizer = req.body.randomizer;
@@ -1161,12 +1162,14 @@ app.post('/getAccountCloudData', async (req, res) =>
         {
             await accounts.UpdateUserLastAccessed(username);
             let cloudDataSyncKey = await accounts.CreateCloudDataSyncKey(username, randomizer);
-            return res.status(StatusCode.SuccessOK).json
-            ({
+            const cloudData =
+            {
                 cloudBoxes: await accounts.GetUserCloudBoxes(username, randomizer),
                 cloudTitles: await accounts.GetUserCloudTitles(username, randomizer),
                 cloudDataSyncKey: cloudDataSyncKey,
-            });
+            };
+            console.log(`Cloud data for ${username} retrieved in ${Date.now() - funcStartTime}ms.`);
+            return res.status(StatusCode.SuccessOK).json(cloudData);
         }   
     }
     catch (err)
