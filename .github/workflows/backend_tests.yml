@@ -43,7 +43,7 @@ jobs:
           python-version: "3.13"
 
       - name: Install dependencies
-        run: cd server && pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Running tests
         run: cd server && yarn test-py
