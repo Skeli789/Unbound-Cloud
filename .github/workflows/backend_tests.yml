@@ -25,6 +25,7 @@ jobs:
       - name: Running tests
         run: cd server && yarn test-js
         env:
+          APPDATA: ${{ vars.APPDATA }}
           UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
           UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
           WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
