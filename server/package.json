@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test-js": "npx nyc mocha jstests --timeout 5000",
-    "test-py": "pytest pytests",
+    "test-py": "pytest --cov pytests -s",
     "test-all": "yarn test-js && yarn test-py",
     "start-node-server": "node server.js",
     "start-python-server": "python src/Interface.py"
