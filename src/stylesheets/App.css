@@ -65,7 +65,7 @@ button, input, optgroup, select, textarea
     border-color: rebeccapurple;
 }
 
-.btn-primary:hover
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus, .btn-primary:focus-visible, .btn-primary:active:focus
 {
     color: #fff;
     background: rebeccapurple;
