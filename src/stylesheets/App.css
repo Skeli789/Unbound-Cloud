@@ -42,3 +42,68 @@ button, input, optgroup, select, textarea
 {
     z-index: 1050 !important; /*Just lower than the swal pop-up (normally 1060px)*/
 }
+
+
+/* make buttons look more modern */
+.btn
+{
+    border-radius: 0;
+    background-color: #fff;
+}
+
+.btn:not(.top-bar-button) /* Add CSS to .btn as long as it's not also .top-bar-button */
+{
+    font-size: 1em;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0.75em 1em;
+}
+
+.btn-primary
+{
+    color: rebeccapurple;
+    border-color: rebeccapurple;
+}
+
+.btn-primary:hover
+{
+    color: #fff;
+    background: rebeccapurple;
+    border-color: rebeccapurple;
+}
+
+.btn-secondary
+{
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover
+{
+    color: #fff;
+    background: #545b62;
+}
+
+.btn-success
+{
+    color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover
+{
+    color: #fff;
+    background: #1e7e34;
+}
+
+.btn-danger
+{
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover
+{
+    color: #fff;
+    background: #bd2130;
+}

@@ -122,9 +122,6 @@
 
 .confirm-save-file-upload-button
 {
-    background-color: rebeccapurple !important;
-    border-color: rebeccapurple !important;
-    box-shadow: unset !important;
     width: fit-content !important;
     font-size: 24px;
 }
@@ -205,11 +202,12 @@
 
 .top-bar-button
 {
+    color: white !important;
     background-color: rebeccapurple !important;
     border-color: rebeccapurple !important;
     box-shadow: unset !important;
     width: 100%;
-    font-size: 24px;
+    font-size: 24px !important;
     border-radius: 0px;
 }
 
@@ -263,10 +261,11 @@
 
 .footer-button
 {
+    color: white !important;
     background-color: rebeccapurple !important;
     border-color: rebeccapurple !important;
     box-shadow: unset !important;
-    font-size: 24px;
+    font-size: 24px !important;
     border: none;
     border-radius: 0px;
     max-height: 56px;

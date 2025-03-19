@@ -3711,8 +3711,8 @@ export default class MainPage extends Component
     {
         var showLastUsedButton = this.state.saveFileHandle != null;
         var lastUsedButton = 
-            <Button size="lg" variant="info" onClick={() => this.useMostRecentSaveHandle()}
-                    className="choose-home-file-button">
+            <Button size="lg" onClick={() => this.useMostRecentSaveHandle()}
+                    variant="info" className="choose-home-file-button">
                 <b>Last Used</b>
             </Button>;
 
@@ -3761,7 +3761,7 @@ export default class MainPage extends Component
 
                         <div>
                             <Button size="lg" onClick={() => this.chooseSaveFileHandle()}
-                                    className="btn-success choose-home-file-button">
+                                    variant="success" className="choose-home-file-button">
                                 Choose File
                             </Button>
                         </div>
@@ -3770,7 +3770,7 @@ export default class MainPage extends Component
                             ACCOUNT_SYSTEM ?
                                 <div>
                                     <Button size="lg" onClick={() => this.skipSaveFileUpload()}
-                                            className="btn-danger choose-home-file-button">
+                                            variant="danger" className="choose-home-file-button">
                                         Just Cloud
                                     </Button>
                                 </div>

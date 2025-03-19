@@ -312,7 +312,7 @@ export class ForgotPassword extends Component
 
                         <div className="friend-trade-code-input-button">
                             <OverlayTrigger placement="bottom" overlay={sendCodeTooltip}>
-                                <Button size="lg" className="friend-trade-offer-button friend-trade-code-button"
+                                <Button size="lg" className="friend-trade-offer-button"
                                         aria-label="Send Code"
                                         type="submit">
                                     <AiOutlineMail size={42}/>
