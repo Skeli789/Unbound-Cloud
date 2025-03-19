@@ -702,7 +702,7 @@ app.post('/uploadCloudData', async (req, res) =>
         //Decrypt the data
         const cloudData = req.body.file;
         let bytes = CryptoJS.AES.decrypt(cloudData, gSecretKey);
-        let data = JSON.parse(JSON.parse(bytes.toString(CryptoJS.enc.Utf8))); //Decrypted
+        let data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8)); //Decrypted
         console.log(`Cloud file decrypted in ${Date.now() - startTime}ms.`);
 
         //Try to update the data if it's from an old version
