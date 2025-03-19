@@ -3677,7 +3677,7 @@ export default class MainPage extends Component
 
                     <div>
                         <Button size="lg" onClick={() => this.chooseHomeFileDirectory()}
-                                className="btn-success choose-home-file-button">
+                                variant="success" className="choose-home-file-button">
                             Choose Folder
                         </Button>
                     </div>
