@@ -1137,7 +1137,7 @@ export default class MainPage extends Component
     async handleUploadError(error, newState)
     {
         var errorText;
-        console.log("An error occurred uploading the file.");
+        console.error("An error occurred uploading the file.");
 
         if (error.message === "Network Error")
         {
@@ -1156,8 +1156,6 @@ export default class MainPage extends Component
         }
         else
         {
-            console.log(error["response"]["data"]);
-
             await this.setStateAndWait
             ({
                 editState: newState,
@@ -1169,6 +1167,7 @@ export default class MainPage extends Component
             });
 
             errorText = "Server error!\nPlease try again later."; //Will usually be overwritten with a more specific error
+            console.error(error["response"]["data"]);
         }
 
         PopUp.fire
