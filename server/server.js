@@ -9,6 +9,7 @@ const CryptoJS = require("crypto-js");
 const {WebhookClient} = require('discord.js');
 const fs = require('fs');
 const http = require('http').Server(app);
+const _ = require('lodash');
 const randomstring = require("randomstring");
 const {StatusCode} = require('status-code-enum');
 
@@ -567,7 +568,7 @@ function TryMakeTempFolder()
 app.post('/uploadSaveFile', async (req, res) =>
 {
     console.log("----------------------------------------------");
-    console.log("Handling save file upload...");
+    console.log(`[${new Date().toLocaleString()}] Handling save file upload...`);
     let username, accountCode, fileBytes, isAccountSystem;
     const funcStartTime = Date.now();
     let startTime = funcStartTime;
@@ -575,6 +576,18 @@ app.post('/uploadSaveFile', async (req, res) =>
     //Get the params from the request
     try
     {
+        if (req.body == null)
+            throw("Request body was not found!");
+
+        if (req.body.username == null || req.body.accountCode == null)
+            throw("Username or account code was not found!");
+
+        if (req.body.file == null)
+            throw("Save file was null!");
+
+        if (_.isEmpty(req.body.file))
+            throw("Save file was empty!");
+
         username = req.body.username;
         accountCode = req.body.accountCode;
         fileBytes = Object.values(req.body.file); //File is sent as a Uint8Array so it gets converted to a map in the request
@@ -693,7 +706,7 @@ app.post('/uploadSaveFile', async (req, res) =>
 app.post('/uploadCloudData', async (req, res) =>
 {
     console.log("----------------------------------------------");
-    console.log("Processing uploaded cloud data...");
+    console.log(`[${new Date().toLocaleString()}] Processing uploaded cloud data...`);
     const funcStartTime = Date.now();
     let startTime = funcStartTime;
 
@@ -731,7 +744,7 @@ app.post('/uploadCloudData', async (req, res) =>
 app.post('/encryptCloudData', (req, res) =>
 {
     console.log("----------------------------------------------");
-    console.log("Encrypting cloud data...");
+    console.log(`[${new Date().toLocaleString()}] Encrypting cloud data...`);
     const funcStartTime = Date.now();
 
     //Get the data for the encrypted cloud data
@@ -763,7 +776,7 @@ app.post('/getUpdatedSaveFile', async (req, res) =>
     let saveFileName = `temp/savefile_${fileIdNumber}.sav`;
     let newBoxesName = `temp/newBoxes_${fileIdNumber}.json`;
     let newSavePath = null;
-    console.log(`Updating save file with fileIdNumber "${fileIdNumber}"`);
+    console.log(`[${new Date().toLocaleString()}] Updating save file with fileIdNumber "${fileIdNumber}"`);
 
     //Check if the save file data came back intact
     if (saveFileData.length == 0)
@@ -909,7 +922,7 @@ app.post('/createUser', async (req, res) =>
 {
     var email, username, password, cloudBoxes, cloudTitles, cloudRandomizerData, cloudRandomizerTitles;
     console.log("----------------------------------------------");
-    console.log("Trying to create user account...");
+    console.log(`[${new Date().toLocaleString()}] Trying to create user account...`);
 
     //Get the data sent from the client
     try
@@ -1023,7 +1036,7 @@ app.post('/activateUser', async (req, res) =>
     username = req.body.username;
     activationCode = req.body.activationCode;
     console.log("----------------------------------------------");
-    console.log(`Trying to activate account for "${username}"...`);
+    console.log(`[${new Date().toLocaleString()}] Trying to activate account for "${username}"...`);
 
     if (!accounts.UserExists(username))
         return res.status(StatusCode.ClientErrorNotFound).send({errorMsg: "NO_ACCOUNT_FOUND"});
@@ -1050,7 +1063,7 @@ app.post('/resendActivationCode', async (req, res) =>
     username = req.body.username;
     accountCode = req.body.accountCode;
     console.log("----------------------------------------------");
-    console.log(`Resending activation code for "${username}"...`);
+    console.log(`[${new Date().toLocaleString()}] Resending activation code for "${username}"...`);
 
     if (!accounts.UserExists(username))
         return res.status(StatusCode.ClientErrorNotFound).send({errorMsg: "NO_ACCOUNT_FOUND"});
@@ -1078,7 +1091,7 @@ app.post('/sendPasswordResetCode', async (req, res) =>
 {
     email = req.body.email;
     console.log("----------------------------------------------");
-    console.log(`Trying to send a password reset code to "${email}"...`);
+    console.log(`[${new Date().toLocaleString()}] Trying to send a password reset code to "${email}"...`);
 
     if (!accounts.EmailExists(email))
         return res.status(StatusCode.ClientErrorNotFound).send({errorMsg: "INVALID_EMAIL"});
@@ -1103,7 +1116,7 @@ app.post('/resetPassword', async (req, res) =>
     newPassword = req.body.newPassword;
     resetCode = req.body.resetCode;
     console.log("----------------------------------------------");
-    console.log(`Trying to reset the password for "${email}"...`);
+    console.log(`[${new Date().toLocaleString()}] Trying to reset the password for "${email}"...`);
 
     if (email == null || newPassword == null || resetCode == null)
         return res.status(StatusCode.ClientErrorBadRequest).send({errorMsg: "NULL_ACCOUNT"});
@@ -1148,7 +1161,7 @@ app.post('/getAccountCloudData', async (req, res) =>
     var randomizer = req.body.randomizer;
 
     console.log("----------------------------------------------");
-    console.log(`Getting account Cloud data for ${username}...`);
+    console.log(`[${new Date().toLocaleString()}] Getting account Cloud data for ${username}...`);
 
     try
     {
@@ -1191,7 +1204,7 @@ app.post('/saveAccountCloudData', async (req, res) =>
     var cloudDataSyncKey = req.body.cloudDataSyncKey;
     var startTime = Date.now();
     console.log("----------------------------------------------");
-    console.log(`Saving account Cloud data for ${username}...`);
+    console.log(`[${new Date().toLocaleString()}] Saving account Cloud data for ${username}...`);
 
     try
     {
