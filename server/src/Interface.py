@@ -25,17 +25,20 @@ def uploadSave(saveFilePath: str):
     inaccessibleReason = ""
     oldVersion = ""
 
-    if Defines.IsOldVersionFileSignature(fileSignature):
-        oldVersion = Defines.GetOldVersionGameName(fileSignature)
-    elif saveBlocks != {} and fileSignature != 0 and Defines.LoadAll(fileSignature):
-        allPokemon = SaveBlockProcessing.LoadPCPokemon(saveBlocks)
-        boxTitles = SaveBlockProcessing.LoadCFRUBoxTitles(saveBlocks)
+    try:
+        if Defines.IsOldVersionFileSignature(fileSignature):
+            oldVersion = Defines.GetOldVersionGameName(fileSignature)
+        elif saveBlocks != {} and fileSignature != 0 and Defines.LoadAll(fileSignature):
+            allPokemon = SaveBlockProcessing.LoadPCPokemon(saveBlocks)
+            boxTitles = SaveBlockProcessing.LoadCFRUBoxTitles(saveBlocks)
 
-        if SaveBlockProcessing.IsRandomizedSave(saveBlocks):
-            randomizer = True
+            if SaveBlockProcessing.IsRandomizedSave(saveBlocks):
+                randomizer = True
 
-        if not SaveBlockProcessing.IsAccessibleCurrently(saveBlocks):
-            inaccessibleReason = SaveBlockProcessing.GetInaccessibleReason(saveBlocks)
+            if not SaveBlockProcessing.IsAccessibleCurrently(saveBlocks):
+                inaccessibleReason = SaveBlockProcessing.GetInaccessibleReason(saveBlocks)
+    except Exception as e:
+        print("Error reading save data: " + str(e))
 
     return {"gameId": Defines.GetCurrentDefinesDir(), "boxCount": Defines.BoxCount(),  # gameId is used on the front-end to load game-specific data
             "boxes": allPokemon, "titles": boxTitles, "randomizer": randomizer, "inaccessibleReason": inaccessibleReason, "oldVersion": oldVersion}
@@ -45,24 +48,28 @@ def uploadSave(saveFilePath: str):
 def updateSave(updatedDataJSON: str, originalSaveFilePath: str):
     if updatedDataJSON == "" or originalSaveFilePath == "":
         print("No updated data or save file path provided")
-        return {}
+        return ""
 
-    saveBlocks, fileSignature = SaveBlocks.LoadAll(originalSaveFilePath)
-    newFilePath = ""  # In case error reading save file
+    try:
+        saveBlocks, fileSignature = SaveBlocks.LoadAll(originalSaveFilePath)
+        newFilePath = ""  # In case error reading save file
 
-    if saveBlocks != {} and fileSignature != 0 and Defines.LoadAll(fileSignature):
-        newFilePath = originalSaveFilePath.split(".sav")[0] + "_new.sav"
-        shutil.copyfile(originalSaveFilePath, newFilePath)
+        if saveBlocks != {} and fileSignature != 0 and Defines.LoadAll(fileSignature):
+            newFilePath = originalSaveFilePath.split(".sav")[0] + "_new.sav"
+            shutil.copyfile(originalSaveFilePath, newFilePath)
 
-        with open(updatedDataJSON, 'r', encoding="utf-8") as jsonFile:
-            newPokemon = json.load(jsonFile)
+            with open(updatedDataJSON, 'r', encoding="utf-8") as jsonFile:
+                newPokemon = json.load(jsonFile)
 
-        seenFlags, caughtFlags = SaveBlockProcessing.LoadPokedexFlags(saveBlocks)
-        seenFlags, caughtFlags = PokemonProcessing.UpdatePokedexFlags(seenFlags, caughtFlags, newPokemon)
-        newSaveBlocks = SaveBlockProcessing.UpdateCFRUBoxData(saveBlocks, newPokemon)
-        newSaveBlocks = SaveBlockProcessing.UpdatePokedexFlags(newSaveBlocks, seenFlags, caughtFlags)
-        if not SaveBlocks.ReplaceAll(newFilePath, newSaveBlocks):
-            newFilePath = ""  # An error occurred 
+            seenFlags, caughtFlags = SaveBlockProcessing.LoadPokedexFlags(saveBlocks)
+            seenFlags, caughtFlags = PokemonProcessing.UpdatePokedexFlags(seenFlags, caughtFlags, newPokemon)
+            newSaveBlocks = SaveBlockProcessing.UpdateCFRUBoxData(saveBlocks, newPokemon)
+            newSaveBlocks = SaveBlockProcessing.UpdatePokedexFlags(newSaveBlocks, seenFlags, caughtFlags)
+            if not SaveBlocks.ReplaceAll(newFilePath, newSaveBlocks):
+                newFilePath = ""  # An error occurred 
+    except Exception as e:
+        print("Error updating save data: " + str(e))
+        newFilePath = ""
 
     return newFilePath
 
@@ -71,7 +78,7 @@ def updateSave(updatedDataJSON: str, originalSaveFilePath: str):
 def convertOldCloudFile(cloudFilePath: str):
     if cloudFilePath == "":
         print("No cloud file path provided")
-        return {}
+        return {"completed": False, "errorMsg": "No cloud file path provided"}
 
     Defines.LoadAll(UNBOUND_2_1_FILE_SIGNATURE)  # Really just needed for the languages
     completed, error = PokemonProcessing.ConvertOldCloudFileToNew(cloudFilePath)
