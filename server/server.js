@@ -264,7 +264,7 @@ io.on("connection", async function(socket)
     {
         if (tradeType === "WONDER_TRADE")
         {
-            console.log(`WT-Client ${clientId} (${username}) wants a Wonder Trade`);
+            console.log(`[WT] ${clientId} (${username}) wants a Wonder Trade`);
 
             socket.on("message", async (pokemonToSend, randomizer, username, cloudDataSyncKey) =>
             {
@@ -277,7 +277,7 @@ io.on("connection", async function(socket)
 
                 if (!pokemonUtil.ValidatePokemon(pokemonToSend, false))
                 {
-                    console.log(`WT-Client ${username} sent an invalid Pokemon for a Wonder Trade`);
+                    console.log(`[WT] ${username} sent an invalid Pokemon for a Wonder Trade`);
                     socket.emit("invalidPokemon");
                 }
                 else
@@ -310,7 +310,7 @@ io.on("connection", async function(socket)
             socket.on('disconnect', async () =>
             {
                 await LockWonderTrade();
-                console.log(`WT-Client ${username} disconnected`);
+                console.log(`[WT] ${username} disconnected`);
 
                 if (clientId in gWonderTradeClients && gWonderTradeClients[clientId].tradedWith === 0)
                     await SendWonderTradeDiscordMessage("The Wonder Trade was cancelled...", 0xFF0000, gWonderTradeClients[clientId].discordMessageId); //Red
@@ -321,7 +321,7 @@ io.on("connection", async function(socket)
         }
         else if (tradeType === "FRIEND_TRADE")
         {
-            console.log(`FT-Client ${clientId} (${username}) wants a Friend Trade`);
+            console.log(`[FT] ${clientId} (${username}) wants a Friend Trade`);
 
             socket.on("createCode", async (randomizer, username, cloudDataSyncKey) =>
             {                
@@ -330,7 +330,7 @@ io.on("connection", async function(socket)
 
                 let code = CreateFriendCode();
                 socket.emit("createCode", code);
-                console.log(`FT-Client ${username} has created code "${code}"`);
+                console.log(`[FT] ${username} has created code "${code}"`);
                 gFriendTradeClients[clientId] = {username: username, code: code, friend: "", randomizer: randomizer, state: FRIEND_TRADE_INITIAL};
                 gCodesInUse[code] = true;
             });
@@ -338,7 +338,7 @@ io.on("connection", async function(socket)
             socket.on("checkCode", async (code, randomizer, username, cloudDataSyncKey) =>
             {
                 let partnerFound = false;
-                console.log(`FT-Client ${username} is looking for code "${code}"`);
+                console.log(`[FT] ${username} is looking for code "${code}"`);
 
                 if (!(await CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, randomizer, socket, "FT", clientId)))
                     return;
@@ -351,7 +351,7 @@ io.on("connection", async function(socket)
                     && gFriendTradeClients[otherClientId].code === code) //Code matches so this will be the partner
                     {
                         partnerFound = true;
-                        console.log(`FT-Client ${username} has matched with ${otherUserName}`);
+                        console.log(`[FT] ${username} has matched with ${otherUserName}`);
 
                         if ((!randomizer && !gFriendTradeClients[otherClientId].randomizer)
                         || (randomizer && gFriendTradeClients[otherClientId].randomizer)) //Randomizer status matches
@@ -362,7 +362,7 @@ io.on("connection", async function(socket)
                         }
                         else
                         {
-                            console.log(`But FT-Clients ${username} and ${otherUserName} don't match randomizer statuses`);
+                            console.log(`But [FT]s ${username} and ${otherUserName} don't match randomizer statuses`);
                             socket.emit("mismatchedRandomizer");
                         }
                     }
@@ -370,7 +370,7 @@ io.on("connection", async function(socket)
 
                 if (!partnerFound)
                 {
-                    console.log(`FT-Client ${username} could not find partner`);
+                    console.log(`[FT] ${username} could not find partner`);
                     socket.emit("friendNotFound");
                 }
             });
@@ -379,15 +379,15 @@ io.on("connection", async function(socket)
             {
                 if (!pokemonUtil.ValidatePokemon(pokemon, true))
                 {
-                    console.log(`FT-Client ${username} sent an invalid Pokemon for a Friend Trade`);
+                    console.log(`[FT] ${username} sent an invalid Pokemon for a Friend Trade`);
                     socket.emit("invalidPokemon");
                 }
                 else if (clientId in gFriendTradeClients)
                 {
                     if (pokemon != null && "species" in pokemon)
-                        console.log(`FT-Client ${username} is offering ${pokemonUtil.GetSpecies(pokemon)}`);
+                        console.log(`[FT] ${username} is offering ${pokemonUtil.GetSpecies(pokemon)}`);
                     else
-                        console.log(`FT-Client ${username} cancelled the trade offer`);
+                        console.log(`[FT] ${username} cancelled the trade offer`);
 
                     gFriendTradeClients[clientId].offeringPokemon = pokemon;
                     gFriendTradeClients[clientId].notifiedFriendOfOffer = false;
@@ -406,7 +406,7 @@ io.on("connection", async function(socket)
 
             socket.on('tradeAgain', () =>
             {
-                console.log(`FT-Client ${username} wants to trade again`);
+                console.log(`[FT] ${username} wants to trade again`);
                 gFriendTradeClients[clientId].state = FRIEND_TRADE_NOTIFIED_CONNECTION;
                 gFriendTradeClients[clientId].offeringPokemon = null;
                 gFriendTradeClients[clientId].notifiedFriendOfOffer = false;
@@ -418,7 +418,7 @@ io.on("connection", async function(socket)
                 if (clientId in gFriendTradeClients)
                     delete gCodesInUse[gFriendTradeClients[clientId].code];
                 delete gFriendTradeClients[clientId]; //Remove data so no one trades with it
-                console.log(`FT-Client ${username} disconnected`);
+                console.log(`[FT] ${username} disconnected`);
             });
         }
     });
@@ -439,7 +439,7 @@ io.on("connection", async function(socket)
             {
                 let species1 = pokemonUtil.GetMonSpeciesName(originalPokemon);
                 let species2 = pokemonUtil.GetMonSpeciesName(friendPokemon);
-                console.log(`WT-Client ${gWonderTradeClients[clientId].username} received ${species2} from ${gWonderTradeClients[clientId].receivedFrom}`);
+                console.log(`[WT] ${gWonderTradeClients[clientId].username} received ${species2} from ${gWonderTradeClients[clientId].receivedFrom}`);
                 if ("discordMessageId" in gWonderTradeClients[clientId])
                     await SendWonderTradeDiscordMessage(`${species1} and ${species2} were traded!`, 0x0000FF, gWonderTradeClients[clientId].discordMessageId); //Blue
             }
@@ -455,7 +455,7 @@ io.on("connection", async function(socket)
             switch (gFriendTradeClients[clientId].state)
             {
                 case FRIEND_TRADE_CONNECTED:
-                    console.log(`FT-Client ${username} has been notified of the friend connection`);
+                    console.log(`[FT] ${username} has been notified of the friend connection`);
                     gFriendTradeClients[clientId].state = FRIEND_TRADE_NOTIFIED_CONNECTION;
                     socket.emit("friendFound");
                     break;
@@ -475,9 +475,9 @@ io.on("connection", async function(socket)
                                 friendPokemon = gFriendTradeClients[friend].offeringPokemon;
 
                                 if (friendPokemon == null || !("species" in friendPokemon))
-                                    console.log(`FT-Client ${username} has been notified of the the trade offer cancellation`);
+                                    console.log(`[FT] ${username} has been notified of the the trade offer cancellation`);
                                 else
-                                    console.log(`FT-Client ${username} received offer for ${pokemonUtil.GetSpecies(friendPokemon)}`);
+                                    console.log(`[FT] ${username} received offer for ${pokemonUtil.GetSpecies(friendPokemon)}`);
 
                                 socket.emit("tradeOffer", friendPokemon); //Can be sent null (means partner cancelled offer)
                                 gFriendTradeClients[friend].notifiedFriendOfOffer = true;
@@ -499,7 +499,7 @@ io.on("connection", async function(socket)
                     pokemonUtil.UpdatePokemonAfterFriendTrade(friendPokemon, gFriendTradeClients[clientId].offeringPokemon);
                     socket.emit("acceptedTrade", friendPokemon);
                     gFriendTradeClients[clientId].state = FRIEND_TRADE_ENDING_TRADE;
-                    console.log(`FT-Client ${username} received ${pokemonUtil.GetSpecies(friendPokemon)} from ${gFriendTradeClients[friend].username}`);
+                    console.log(`[FT] ${username} received ${pokemonUtil.GetSpecies(friendPokemon)} from ${gFriendTradeClients[friend].username}`);
                     break;
                 default:
                     break;
@@ -532,7 +532,7 @@ async function SendRequestToPythonServer(route, params)
 {
     const url = `http://localhost:3005/${route}`;
     const keyPairs = Object.keys(params).map(key => `${key}=${params[key]}`).join("&");
-    return await axios.get(`${url}?${keyPairs}`);
+    return await axios.get(`${url}?${keyPairs}`, { timeout: 10000 }); //10 second timeout);
 }
 
 /**
@@ -673,6 +673,8 @@ app.post('/uploadSaveFile', async (req, res) =>
                 }
             }
 
+            //Send the data back
+            startTime = Date.now();
             result = res.status(StatusCode.SuccessOK).json(retData);
         }
     }
@@ -686,7 +688,7 @@ app.post('/uploadSaveFile', async (req, res) =>
     if (fs.existsSync(saveFileName))
     {
         fs.unlinkSync(saveFileName);
-        console.log(`Temp save file ${saveFileName} deleted from server.`);
+        console.log(`Temp save file ${saveFileName} deleted from server in ${Date.now() - startTime}ms.`);
     }
 
     console.log(`Save file upload for ${username} completed in ${Date.now() - funcStartTime}ms.`);
