@@ -2,9 +2,10 @@ import React, {Component} from 'react';
 import {Button, Form, OverlayTrigger, Tooltip} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import TextField from '@mui/material/TextField';
 
 import {BLANK_PROGRESS_BAR, STATE_ENTER_ACTIVATION_CODE, STATE_LOGIN, UNOFFICIAL_RELEASE} from "./MainPage";
-import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, RequiredTooltip, SendFormToServer,
+import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
 
 import {AiOutlineCheckCircle, AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
@@ -227,7 +228,6 @@ export class SignUp extends Component
      */
     render()
     {
-        var required = RequiredTooltip();
         const cloudFileUploadError = "Make sure it was a proper Cloud data file and is not corrupted.";
         const showPasswordFunc = () => this.setState({showPassword: !this.state.showPassword});
 
@@ -243,31 +243,31 @@ export class SignUp extends Component
                 <Form onSubmit={(e) => this.submitRegistration(e)}>
                     {/*Username Input*/}
                     <Form.Group className="mb-3" controlId="formBasicUsername">
-                        <Form.Label style={{marginBottom: "0px"}}>Username{required}</Form.Label>
-                        <br/>
-                        <Form.Text>This is public. Don't enter your email here!</Form.Text>
-                        <Form.Control
+                        <TextField
                             required
+                            fullWidth
+                            label="Username"
+                            variant="outlined"
                             name="username"
-                            autoComplete='username'
-                            //placeholder="billybob"
+                            autoComplete="username"
                             value={this.state.usernameInput}
-                            style={{marginTop: "0.5rem"}}
                             className={`form-control ${this.state.usernameInput !== ""
                                                    && (!this.validUsername() || this.usernameAlreadyInUse()) ? 'is-invalid' : ''}`}
                             onChange={(e) => this.setState({usernameInput: ProcessTextInput(e, "USERNAME", true),
                                                             isTester: this.state.isTester || ProcessTextInput(e, "USERNAME", true).toLowerCase() === "iamatester"})}
                         />
+                        <Form.Text>This is public. Don't enter your email here!</Form.Text>
                     </Form.Group>
 
                     {/*Email Input*/}
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Email Address{required}</Form.Label>
-                        <Form.Control
+                        <TextField
                             required
+                            fullWidth
+                            label="Email Address"
+                            variant="outlined"
                             name="email"
-                            autoComplete='email'
-                            //placeholder="example@gmail.com"
+                            autoComplete="email"
                             value={this.state.emailInput}
                             className={`form-control ${this.state.emailInput !== ""
                                                    && (!this.validEmail() || this.emailAlreadyInUse()) ? 'is-invalid' : ''}`}
@@ -276,31 +276,34 @@ export class SignUp extends Component
                     </Form.Group>
 
                     {/*Password Input*/}
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>Password{required} {ShowPasswordSymbol(this.state.showPassword, showPasswordFunc)}</Form.Label>
-                        <Form.Control
+                    <Form.Group className="mb-3 d-flex" controlId="formBasicPassword">
+                        <TextField
                             required
-                            type={this.state.showPassword ? "text" : "password"}
+                            fullWidth
+                            label="Password"
+                            variant="outlined"
                             name="password"
                             autoComplete='new-password'
-                            //placeholder="Password"
+                            type={this.state.showPassword ? "text" : "password"}
                             value={this.state.passwordInput}
                             className={`form-control ${this.state.passwordInput !== "" && !this.validPassword() ? 'is-invalid' : ''}`}
-                            onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", false)})}
+                            onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", true)})}
                         />
+                        {ShowPasswordSymbol(this.state.showPassword, showPasswordFunc)}
                     </Form.Group>
 
                     {/*Confirm Password Input*/}
                     <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
-                        <Form.Label>Confirm Password{required}</Form.Label>
-                        <Form.Control
+                        <TextField
                             required
-                            type={this.state.showPassword ? "text" : "password"}
+                            fullWidth
+                            label="Confirm Password"
+                            variant="outlined"
                             name="confirmPassword"
                             autoComplete='new-password'
-                            //placeholder="Password"
-                            className={`form-control ${this.bothPasswordsFilled() && !this.passwordsMatch() ? 'is-invalid' : ''}`}
+                            type={this.state.showPassword ? "text" : "password"}
                             value={this.state.confirmPasswordInput}
+                            className={`form-control ${this.bothPasswordsFilled() && !this.passwordsMatch() ? 'is-invalid' : ''}`}
                             onChange={(e) => this.setState({confirmPasswordInput: ProcessTextInput(e, "PASSWORD", true)})}
                         />
                     </Form.Group>

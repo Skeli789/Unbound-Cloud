@@ -3,10 +3,11 @@ import React, {Component} from 'react';
 import {Button, Form} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import TextField from '@mui/material/TextField';
 
 import {STATE_SIGN_UP, STATE_FORGOT_PASSWORD, STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE,
         STATE_ENTER_ACTIVATION_CODE, CanUseFileHandleAPI} from "./MainPage";
-import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, RequiredTooltip, SendFormToServer,
+import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
 
 import {AiOutlineCheckCircle} from "react-icons/ai";
@@ -175,8 +176,6 @@ export class Login extends Component
     */
     render()
     {
-        var required = RequiredTooltip();
-
         return (
             <div className="form-page">
                 <h1 className="form-title">Login to Unbound Cloud</h1>
@@ -189,24 +188,28 @@ export class Login extends Component
                 <Form onSubmit={(e) => this.submitLogin(e)}>
                     {/*Username or Email Input*/}
                     <Form.Group className="mb-3" controlId="formBasicUsername">
-                        <Form.Label>Username or Email{required}</Form.Label>
-                        <Form.Control
+                        <TextField
                             required
+                            fullWidth
+                            label="Username or Email"
+                            variant="outlined"
                             name="username"
                             autoComplete='username'
                             value={this.state.usernameInput}
-                            onChange={(e) => this.setState({usernameInput: ProcessTextInput(e, "EMAIL", true)})} //Use EMAIL because it has a longer max length
+                            onChange={(e) => this.setState({usernameInput: ProcessTextInput(e, "EMAIL", true)})}
                         />
                     </Form.Group>
 
                     {/*Password Input*/}
                     <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>Password{required}</Form.Label>
-                        <Form.Control
+                        <TextField
                             required
-                            type="password"
+                            fullWidth
+                            label="Password"
+                            variant="outlined"
                             name="password"
-                            autoComplete='password'
+                            autoComplete="current-password"
+                            type="password"
                             value={this.state.passwordInput}
                             onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", true)})}
                         />

@@ -37,7 +37,7 @@ body.swal2-height-auto /*Undoes pop up ruining mobile view*/
 
 .friend-trade-code-choice-title
 {
-    color: rebeccapurple;
+    color: var(--purple);
     font-weight: bold !important;
     margin-left: 2% !important;
     margin-right: 2% !important;

@@ -36,6 +36,7 @@ button, input, optgroup, select, textarea
 .app
 {
     height: 100% !important;
+    --purple: rgb(147 51 234);
 }
 
 .tooltip
@@ -61,15 +62,15 @@ button, input, optgroup, select, textarea
 
 .btn-primary
 {
-    color: rebeccapurple;
-    border-color: rebeccapurple;
+    color: var(--purple);
+    border-color: var(--purple);
 }
 
 .btn-primary:hover, .btn-primary:active, .btn-primary:focus, .btn-primary:focus-visible, .btn-primary:active:focus
 {
     color: #fff;
-    background: rebeccapurple;
-    border-color: rebeccapurple;
+    background: var(--purple);
+    border-color: var(--purple);
 }
 
 .btn-secondary
