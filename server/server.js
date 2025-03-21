@@ -579,8 +579,9 @@ app.post('/uploadSaveFile', async (req, res) =>
         if (req.body == null)
             throw("Request body was not found!");
 
-        if (req.body.username == null || req.body.accountCode == null)
-            throw("Username or account code was not found!");
+        //username and accountCode can be null
+        //if (req.body.username == null || req.body.accountCode == null)
+        //    throw("Username or account code was not found!");
 
         if (req.body.file == null)
             throw("Save file was null!");

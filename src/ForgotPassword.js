@@ -1,13 +1,13 @@
 
 import React, {Component} from 'react';
 import {Button, Form, OverlayTrigger, Tooltip} from "react-bootstrap";
-import {isMobile} from 'react-device-detect';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import TextField from '@mui/material/TextField';
 
 import {PasteCodeButton} from "./ActivateAccount";
 import {STATE_LOGIN} from "./MainPage";
-import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, RequiredTooltip, SendFormToServer,
+import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, SendFormToServer,
         ValidateEmail, ValidatePassword} from "./FormUtil";
 import {ShowPasswordSymbol} from "./SignUp";
 
@@ -292,35 +292,35 @@ export class ForgotPassword extends Component
         const sendCodeTooltip = props => (<Tooltip {...props}>Send Code</Tooltip>);
 
         return (
-            <div className="friend-trade-page"
-                 style={!isMobile ? {paddingLeft: "var(--scrollbar-width)"} : {}}>
-                <div className="friend-trade-code-input-page">
-                    <Form onSubmit={(e) => this.sendForgotPasswordCode(e)}>
-                        <Form.Label><h2>I forgot my password!</h2></Form.Label>
+            <div className="form-page">
+                <Form onSubmit={(e) => this.sendForgotPasswordCode(e)}>
+                    <h1 className="form-title mb-3">I forgot my password!</h1>
 
-                        {/*Email Input*/}
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Control
-                                required
-                                name="email"
-                                autoComplete="email"
-                                placeholder="Email"
-                                value={this.state.emailInput}
-                                onChange={(e) => this.setState({emailInput: ProcessTextInput(e, "EMAIL", true)})}
-                            />
-                        </Form.Group>
+                    {/*Email Input*/}
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <TextField
+                            className="bg-white"
+                            required
+                            fullWidth
+                            label="Email"
+                            variant="outlined"
+                            name="email"
+                            autoComplete="email"
+                            value={this.state.emailInput}
+                            onChange={(e) => this.setState({emailInput: ProcessTextInput(e, "EMAIL", true)})}
+                        />
+                    </Form.Group>
 
-                        <div className="friend-trade-code-input-button">
-                            <OverlayTrigger placement="bottom" overlay={sendCodeTooltip}>
-                                <Button size="lg" className="friend-trade-offer-button"
-                                        aria-label="Send Code"
-                                        type="submit">
-                                    <AiOutlineMail size={42}/>
-                                </Button>
-                            </OverlayTrigger>
-                        </div>
-                    </Form>
-                </div>
+                    <div className="friend-trade-code-input-button">
+                        <OverlayTrigger placement="bottom" overlay={sendCodeTooltip}>
+                            <Button size="lg" className="friend-trade-offer-button"
+                                    aria-label="Send Code"
+                                    type="submit">
+                                <AiOutlineMail size={42}/>
+                            </Button>
+                        </OverlayTrigger>
+                    </div>
+                </Form>
             </div>
         );
     }
@@ -331,7 +331,6 @@ export class ForgotPassword extends Component
      */
     renderChangePassword()
     {
-        const required = RequiredTooltip();
         const showPasswordFunc = () => this.setState({showPassword: !this.state.showPassword});
         const pasteButtonSize = 24;
 
@@ -342,10 +341,12 @@ export class ForgotPassword extends Component
                 <Form onSubmit={(e) => this.submitPasswordReset(e)}>
                     {/*Email Input*/}
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Email{required}</Form.Label>
-                        <Form.Control
+                        <TextField
                             required
+                            fullWidth
                             disabled={true} //Should have been set earlier
+                            label="Email"
+                            variant="outlined"
                             name="email"
                             value={this.state.emailInput}
                         />
@@ -353,45 +354,52 @@ export class ForgotPassword extends Component
 
                     {/*Code Input*/}
                     <Form.Group className="mb-3" controlId="code">
-                        <Form.Label>Code Sent to Your Email{required}</Form.Label>
-                        <div className="friend-trade-code-input-container">
-                            <Form.Control
+                        <div className="d-flex">
+                            <TextField
                                 required
+                                fullWidth
+                                label="Code"
+                                variant="outlined"
                                 name="one-time-code"
                                 autoComplete="one-time-code"
                                 value={this.state.codeInput}
-                                onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}/>
-
+                                onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}
+                            />
                             {PasteCodeButton(pasteButtonSize, this.pasteCode.bind(this))}
                         </div>
                     </Form.Group>
 
                     {/*New Password Input*/}
                     <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>New Password{required} {ShowPasswordSymbol(this.state.showPassword, showPasswordFunc)}</Form.Label>
-                        <Form.Control
-                            required
-                            type={this.state.showPassword ? "text" : "password"}
-                            name="password"
-                            autoComplete='new-password'
-                            //placeholder="Password"
-                            value={this.state.passwordInput}
-                            className={`form-control ${this.state.passwordInput !== "" && !this.validPassword() ? 'is-invalid' : ''}`}
-                            onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", false)})}
-                        />
+                        <div className="d-flex">
+                            <TextField
+                                required
+                                fullWidth
+                                label="New Password"
+                                variant="outlined"
+                                name="password"
+                                autoComplete='new-password'
+                                type={this.state.showPassword ? "text" : "password"}
+                                value={this.state.passwordInput}
+                                className={`form-control ${this.state.passwordInput !== "" && !this.validPassword() ? 'is-invalid' : ''}`}
+                                onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", true)})}
+                            />
+                            {ShowPasswordSymbol(this.state.showPassword, showPasswordFunc)}
+                        </div>
                     </Form.Group>
 
                     {/*Confirm Password Input*/}
                     <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
-                        <Form.Label>Confirm Password{required}</Form.Label>
-                        <Form.Control
+                        <TextField
                             required
-                            type={this.state.showPassword ? "text" : "password"}
+                            fullWidth
+                            label="Confirm Password"
+                            variant="outlined"
                             name="confirmPassword"
                             autoComplete='new-password'
-                            //placeholder="Password"
-                            className={`form-control ${this.bothPasswordsFilled() && !this.passwordsMatch() ? 'is-invalid' : ''}`}
+                            type={this.state.showPassword ? "text" : "password"}
                             value={this.state.confirmPasswordInput}
+                            className={`form-control ${this.bothPasswordsFilled() && !this.passwordsMatch() ? 'is-invalid' : ''}`}
                             onChange={(e) => this.setState({confirmPasswordInput: ProcessTextInput(e, "PASSWORD", true)})}
                         />
                     </Form.Group>

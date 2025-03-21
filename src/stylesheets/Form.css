@@ -1,32 +1,14 @@
-.form-page
-{
-    max-width: 500px;
-    margin: auto;
-    margin-top: 1%;
-    /*display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 75%;*/
-}
-
-@media (max-width: 500px)
-{
-    /*Screen <= 500px*/
-    .form-page
-    {
-        max-width: default;
-        margin: 5%;
-    }
-}
-
 .form-title
 {
     text-align: center;
+    font-weight: 600  !important; /*Semi-bold*/
+    font-size: 1.5rem !important;
+    line-height: 2rem  !important;
 }
 
 .already-have-account-button
 {
-    color: blue;
+    color: rgb(59 130 246);
     cursor: pointer;
     width: fit-content;
     margin: auto;
@@ -40,8 +22,11 @@
 
 .show-password-symbol
 {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     cursor: pointer;
+    margin-left: 0.5rem;
 }
 
 .submit-form-button-container

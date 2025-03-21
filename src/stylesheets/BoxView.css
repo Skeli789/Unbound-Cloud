@@ -37,7 +37,7 @@
 
 .box-name-button
 {
-    background-color: rebeccapurple;
+    background-color: var(--purple);
     color: white;
     padding-left: 3px !important;
     padding-right: 3px !important;

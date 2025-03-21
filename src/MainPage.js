@@ -34,7 +34,7 @@ import SaveData from "./data/Test Output.json";
 import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 
 import {BiArrowBack} from "react-icons/bi";
-import {FaArrowAltCircleRight, FaCloud, FaGamepad} from "react-icons/fa";
+import {FaCloud, FaGamepad} from "react-icons/fa";
 import {RiVolumeUpFill, RiVolumeMuteFill} from "react-icons/ri"
 import {MdSwapVert, MdMusicNote, MdMusicOff, MdHelp} from "react-icons/md"
 
@@ -3453,7 +3453,7 @@ export default class MainPage extends Component
     {
         var nextState;
         var title = <h1 className="main-page-title">Welcome to Unbound Cloud</h1>;
-        var explanation = <h3>This is a tool for ROM Hacks to connect with each other and store Boxes outside of save files.</h3>
+        var explanation = <p>This is a tool for ROM Hacks to connect with each other and store Boxes outside of save files.</p>
 
         if (ACCOUNT_SYSTEM)
             nextState = localStorage.visitedBefore ? STATE_LOGIN : STATE_SIGN_UP;
@@ -3461,12 +3461,14 @@ export default class MainPage extends Component
             nextState = CanUseFileHandleAPI() ? STATE_CHOOSE_HOME_FOLDER : STATE_ASK_FIRST_TIME;
 
         return (
-            <div className="main-page-intro-container fade-in">
+            <div className="welcome-container">
+                
                 {title}
                 {explanation}
-                <FaArrowAltCircleRight aria-label="Next" className="main-page-purple-icon-button"
-                        size={64}
-                        onClick={() => this.setState({editState: nextState})} />
+                <Button className="choose-home-file-button"
+                        onClick={() => this.setState({editState: nextState})} >
+                    Get Started ➤
+                </Button>
             </div>
         );
     }
@@ -3478,7 +3480,7 @@ export default class MainPage extends Component
     printAskFirstTime()
     {
         return (
-            <div className="main-page-intro-container fade-in">
+            <div className="welcome-container fade-in">
                 <h2>Is this your first time here?</h2>
                 <div>
                     <div>
@@ -3508,45 +3510,37 @@ export default class MainPage extends Component
         const error = "Make sure it was a proper Cloud data file and is not corrupted.";
 
         return (
-            <div className="main-page-intro-container fade-in">
-                <h2>Upload your Cloud data.</h2>
-                <h3>It should be a file called <b>{this.getHomeFileName()}</b>.</h3>
+            <div className="welcome-container fade-in">
+                <p className="choose-save-file-heading">Upload your Cloud data.</p>
+                <p className="save-file-location-explanation mb-3">It should be a file called <span className="font-monospace">{this.getHomeFileName()}</span>.</p>
                 <div>
                     {
-                        this.existsLastSavedHomeData() ?
-                            <div>
-                                <Button size="lg" variant="info" onClick={() => this.useLastSavedHomeFile(error)}
-                                        className="choose-home-file-button">
-                                    Last Saved
-                                </Button>
-                            </div>
-                        :
-                            ""
+                        this.existsLastSavedHomeData() &&
+                            <Button size="lg" variant="info" onClick={() => this.useLastSavedHomeFile(error)}
+                                    className="choose-home-file-button">
+                                Last Saved
+                            </Button>
                     }
 
-                    <div>
-                        <label className="btn btn-success btn-lg choose-home-file-button">
-                            Upload File
-                            <input type="file" hidden onChange={(e) => this.chooseHomeFile(e, error)}
-                                   accept=".dat" />
-                        </label>
-                    </div>
+                    <label className="btn btn-success btn-lg w-100 choose-home-file-button">
+                        Upload File
+                        <input type="file" hidden onChange={(e) => this.chooseHomeFile(e, error)}
+                                accept=".dat" />
+                    </label>
 
-                    <div>
-                        <Button size="lg" onClick={() => this.setState
-                            ({
-                                editState: STATE_MOVING_POKEMON,
-                                fileUploadError: false,
-                                serverConnectionError: false
-                            }, () =>
-                            {
-                                this.playOrPauseMainMusicTheme();
-                                this.showSymbolTutorial();
-                            })}
-                                className="choose-home-file-button">
-                            Create New
-                        </Button>
-                    </div>
+                    <Button size="lg" onClick={() => this.setState
+                        ({
+                            editState: STATE_MOVING_POKEMON,
+                            fileUploadError: false,
+                            serverConnectionError: false
+                        }, () =>
+                        {
+                            this.playOrPauseMainMusicTheme();
+                            this.showSymbolTutorial();
+                        })}
+                            className="choose-home-file-button">
+                        Create New
+                    </Button>
                 </div>
             </div>
         );
@@ -3567,10 +3561,9 @@ export default class MainPage extends Component
         progress = `Processing ${fileName}`;
 
         return (
-            <div className="main-page-intro-container fade-in">
-                <h2>{progress}</h2>
+            <div className="welcome-container fade-in">
+                <h1 className="form-title">{progress}</h1>
                 <h3>Please wait...</h3>
-                <span style={{visibility: "visible"}}>{this.navBarNoButtons()}</span> {/*Used to centre uploading bar*/}
             </div>
         );
     }
@@ -3582,11 +3575,11 @@ export default class MainPage extends Component
     printUploadSaveFile()
     {
         return (
-            <div className={"main-page-intro-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+            <div className={"welcome-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
                 {
                     ACCOUNT_SYSTEM && this.state.username !== "" &&
                         <div>
-                            <h1>Welcome back, {this.state.username}!</h1>
+                            <h1 className="form-title">Welcome back, {this.state.username}!</h1>
                             <div className="already-have-account-button"
                                 onClick={() => this.navBackButtonPressed()}>
                                 This isn't me.
@@ -3594,29 +3587,27 @@ export default class MainPage extends Component
                         </div>
                 }
                 <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
-                    <h2>Upload your save file.</h2>
-                    <h3>If you don't know where it is, start by looking in the same place as your ROM.</h3>
-                    <h3>The save file is a 128 kB .sav, .srm, .sa1, or .fla file that has your ROM's name.</h3>
-                    <div className="already-have-account-button"
+                    <p className="choose-save-file-heading">Choose your save file.</p>
+                    <p className="save-file-location-explanation">
+                        If you don't know where it is, start by looking in the same folder as your ROM.
+                        The save file is a 128 kB <span className="font-monospace">.sav</span>, <span className="font-monospace">.srm</span>, <span className="font-monospace">.sa1</span>, <span className="font-monospace">.fla</span> file that has your ROM's name.
+                    </p>
+                    <div className="already-have-account-button mb-1"
                         onClick={() => this.printSupportedHacks()}>
                         Which hacks are supported?
                     </div>
-                    <div>
-                        <label className="btn btn-success btn-lg choose-save-file-button">
+                    <div className="w-100">
+                        <label className="btn btn-success btn-lg w-100 choose-home-file-button">
                             Upload File
                             <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)}
                                 accept=".sav,.srm,.sa1,.fla" />
                         </label>
                         {
-                            ACCOUNT_SYSTEM ?
-                                <div>
-                                    <Button size="lg" onClick={() => this.skipSaveFileUpload()}
-                                            className="btn-danger choose-home-file-button">
-                                        Just Cloud
-                                    </Button>
-                                </div>
-                            :
-                                ""
+                            ACCOUNT_SYSTEM &&
+                                <Button size="lg" onClick={() => this.skipSaveFileUpload()}
+                                        variant="danger" className="choose-home-file-button">
+                                    Just Cloud
+                                </Button>
                         }
                     </div>
                 </div>
@@ -3649,54 +3640,48 @@ export default class MainPage extends Component
         }
 
         return (
-            <div className={"main-page-intro-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+            <div className={"welcome-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
                 {
-                    showLastUsedButton ?
-                        <h1 className="main-page-welcome-back-title">Welcome Back to Unbound Cloud</h1>
-                    :
-                        ""
+                    showLastUsedButton &&
+                        <h1 className="form-title">Welcome Back to Unbound Cloud</h1>
                 }
-                <h2>Choose your Cloud Data folder.</h2>
-                <h3>This is the folder on your {isMobile ? "device" : "computer"} where your Boxes {showLastUsedButton ? "are" : "will be"} stored.</h3>
-                {
-                    showLastUsedButton ?
-                        <h3>Since you've made one before, pick <b>Last Used</b>.</h3>
-                    :
-                        <h3>It's best to <b>create</b> a folder called <b>Unbound Cloud</b> in your <b>Documents</b> and save it there.</h3>
-                }
-                <div>
-                    {
-                        showLastUsedButton ? //Loaded one in the past
-                            <div>
-                                {lastUsedButton}
-                            </div>
-                        :
-                            ""
-                    }
 
-                    <div>
+                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                    <p className="choose-save-file-heading">Choose your Cloud Data folder.</p>
+                    <p className="save-file-location-explanation">
+                        This is the folder on your {isMobile ? "device" : "computer"} where your Boxes {showLastUsedButton ? "are" : "will be"} stored.
+                        {
+                            showLastUsedButton ?
+                                <>Since you've made one before, pick <b>Last Used</b>.</>
+                            :
+                                <>It's best to <b>create</b> a folder called <b>Unbound Cloud</b> in your <b>Documents</b> and save it there.</>
+                        }
+                    </p>
+                    <div className="w-100 mt-3">
+                        {
+                            showLastUsedButton && //Loaded one in the past
+                                lastUsedButton
+                        }
+
                         <Button size="lg" onClick={() => this.chooseHomeFileDirectory()}
                                 variant="success" className="choose-home-file-button">
                             Choose Folder
                         </Button>
+
+                        {
+                            !showLastUsedButton && !isMobile &&
+                                <div className="main-page-home-storage-example-container">
+                                    <img src={BASE_GFX_LINK + "DataStorageExample1.png"}
+                                        alt="Make a new folder in Documents."
+                                        className="main-page-home-storage-example"/>
+                                    <img src={BASE_GFX_LINK + "DataStorageExample2.png"}
+                                        alt="Name that folder Unbound Cloud and select it."
+                                        className="main-page-home-storage-example"/>
+                                </div>
+                        }
                     </div>
-                    {
-                        !showLastUsedButton && !isMobile ?
-                            <div className="main-page-home-storage-example-container">
-                                <img src={BASE_GFX_LINK + "DataStorageExample1.png"}
-                                    alt="Make a new folder in Documents."
-                                    className="main-page-home-storage-example"/>
-                                <img src={BASE_GFX_LINK + "DataStorageExample2.png"}
-                                     alt="Name that folder Unbound Cloud and select it."
-                                     className="main-page-home-storage-example"/>
-                            </div>
-                        : showLastUsedButton ? //To offset the push down by the welcome back title
-                            <div style={{marginBottom: "30%"}}/>
-                        :
-                            ""
-                    }
+                    {showLastUsedButton ? this.printServerConnectionError() : "" /*Won't actually get used here, but needed to fill space*/}
                 </div>
-                {showLastUsedButton ? this.printServerConnectionError() : "" /*Won't actually get used here, but needed to fill space*/}
             </div>
         );
     }
@@ -3720,61 +3705,50 @@ export default class MainPage extends Component
             const tooltip = props => (<Tooltip {...props}>{localStorage.mostRecentSaveFile}</Tooltip>);
 
             lastUsedButton =
-                <OverlayTrigger placement="bottom" overlay={tooltip}>
+                <OverlayTrigger placement="top" overlay={tooltip}>
                     {lastUsedButton}
                 </OverlayTrigger>
         }
 
         return (
-            <div className={"main-page-intro-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}
-                 style={{justifyContent: "space-evenly"}}>
+            <div className={"welcome-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
                 {
-                    this.state.username !== "" ?
+                    ACCOUNT_SYSTEM && this.state.username !== "" &&
                         <div>
-                            <h1>Welcome back, {this.state.username}!</h1>
+                            <h1 className="form-title">Welcome back, {this.state.username}!</h1>
                             <div className="already-have-account-button"
                                 onClick={() => this.navBackButtonPressed()}>
                                 This isn't me.
                             </div>
                         </div>
-                    :
-                        ""
                 }
                 <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
-                    <h2>Choose your save file.</h2>
-                    <h3>If you don't know where it is, start by looking in the same folder as your ROM.</h3>
-                    <h3>The save file is a 128 kB .sav, .srm, .sa1, or .fla file that has your ROM's name.</h3>
+                    <p className="choose-save-file-heading">Choose your save file.</p>
+                    <p className="save-file-location-explanation">
+                        If you don't know where it is, start by looking in the same folder as your ROM.
+                        The save file is a 128 kB <span className="font-monospace">.sav</span>, <span className="font-monospace">.srm</span>, <span className="font-monospace">.sa1</span>, <span className="font-monospace">.fla</span> file that has your ROM's name.
+                    </p>
                     <div className="already-have-account-button mb-1"
                         onClick={() => this.printSupportedHacks()}>
                         Which hacks are supported?
                     </div>
-                    <div>
+                    <div className="w-100">
                         {
-                            showLastUsedButton ? //Loaded one in the past
-                                <div>
-                                    {lastUsedButton}
-                                </div>
-                            :
-                                ""
+                            showLastUsedButton && //Loaded one in the past
+                                lastUsedButton
                         }
 
-                        <div>
-                            <Button size="lg" onClick={() => this.chooseSaveFileHandle()}
-                                    variant="success" className="choose-home-file-button">
-                                Choose File
-                            </Button>
-                        </div>
+                        <Button size="lg" onClick={() => this.chooseSaveFileHandle()}
+                                variant="success" className="choose-home-file-button">
+                            Choose File
+                        </Button>
 
                         {
-                            ACCOUNT_SYSTEM ?
-                                <div>
-                                    <Button size="lg" onClick={() => this.skipSaveFileUpload()}
-                                            variant="danger" className="choose-home-file-button">
-                                        Just Cloud
-                                    </Button>
-                                </div>
-                            :
-                                ""
+                            ACCOUNT_SYSTEM &&
+                                <Button size="lg" onClick={() => this.skipSaveFileUpload()}
+                                        variant="danger" className="choose-home-file-button">
+                                    Just Cloud
+                                </Button>
                         }
                     </div>
                 </div>
@@ -3920,11 +3894,7 @@ export default class MainPage extends Component
     printSignUpPage()
     {
         
-        return (
-            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                <SignUp mainPage={this}/>
-            </div>
-        );
+        return <SignUp mainPage={this}/>;
     }
 
     /**
@@ -3933,11 +3903,7 @@ export default class MainPage extends Component
      */
     printLoginPage()
     {
-        return (
-            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                <Login mainPage={this}/>
-            </div>
-        );
+        return <Login mainPage={this}/>;
     }
 
     /**
@@ -3946,11 +3912,7 @@ export default class MainPage extends Component
      */
     printAccountActivationPage()
     {
-        return (
-            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                <ActivateAccount mainPage={this}/>
-            </div>
-        );
+        return <ActivateAccount mainPage={this}/>;
     }
 
     /**
@@ -3959,11 +3921,7 @@ export default class MainPage extends Component
      */
     printForgotPasswordPage()
     {
-        return (
-            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                <ForgotPassword mainPage={this}/>
-            </div>
-        );
+        return <ForgotPassword mainPage={this}/>;
     }
 
     /**
@@ -3973,7 +3931,7 @@ export default class MainPage extends Component
     printNotSupportedInBrowser()
     {
         return (
-            <div className="main-page-intro-container fade-in">
+            <div className="welcome-container fade-in">
                 <h2>😞 <b>Unbound Cloud is not supported in this browser. 😞</b></h2>
                 <h3>Please use an updated Google Chrome, Microsoft Edge, or Opera.</h3>
                 <h3>Why? See <a href="https://caniuse.com/?search=showOpenFilePicker">here</a>.</h3>
@@ -3988,7 +3946,7 @@ export default class MainPage extends Component
     printUndergoingMaintence()
     {
         return (
-            <div className="main-page-intro-container fade-in">
+            <div className="welcome-container fade-in">
                 <h2><b>Unbound Cloud is currently undergoing maintenece. 🛠️</b></h2>
                 <h3>Hopefully, this won't last too long.</h3>
                 <input style={{marginTop: "5%"}}
@@ -4004,7 +3962,7 @@ export default class MainPage extends Component
     printNotSupportedOnMobile()
     {
         return (
-            <div className="main-page-intro-container fade-in">
+            <div className="welcome-container fade-in">
                 <h2><b>Unbound Cloud is currently not supported on mobile. 😞</b></h2>
                 <h3>Hopefully, this won't last too long.</h3>
                 <input style={{marginTop: "5%"}}
@@ -4020,7 +3978,7 @@ export default class MainPage extends Component
     printNotOfficiallyReleased()
     {
         return (
-            <div className="main-page-intro-container fade-in">
+            <div className="welcome-container fade-in">
                 <h2><b>Unbound Cloud is not officially released.</b></h2>
                 <input style={{marginTop: "5%"}}
                        onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
@@ -4035,6 +3993,7 @@ export default class MainPage extends Component
     {
         var page, draggingImg;
         var navBar = false;
+        var center = true;
         var noScroll = true;
 
         switch (this.state.editState)
@@ -4085,16 +4044,19 @@ export default class MainPage extends Component
                 page = this.printEditingHomeBoxes(); //Don't display title
                 navBar = true;
                 noScroll = false;
+                center = false;
                 break;
             case STATE_EDITING_SAVE_FILE:
                 page = this.printEditingSaveBoxes(); //Don't display title
                 navBar = true;
                 noScroll = false;
+                center = false;
                 break;
             case STATE_MOVING_POKEMON:
                 page = this.printMovingPokemon(); //Don't display title
                 navBar = true;
                 noScroll = false;
+                center = false;
                 break;
             default:
                 page = "";
@@ -4139,7 +4101,7 @@ export default class MainPage extends Component
                  style={{...cursorStyle, ...scrollStyle}}
                  onMouseMove={(e) => this.moveDraggingMonIcon(e)}>
                 {navBar ? this.navBarButtons() : this.navBarNoButtons()}
-                {page}
+                {center ? <div className="main-page-content">{page}</div> : page}
                 {draggingImg}
             </div>
         );

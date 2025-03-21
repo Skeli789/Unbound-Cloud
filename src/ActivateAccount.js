@@ -1,9 +1,9 @@
 
 import React, {Component} from 'react';
 import {Button, Form, OverlayTrigger, Tooltip} from "react-bootstrap";
-import {isMobile} from 'react-device-detect';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import TextField from '@mui/material/TextField';
 
 import {STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE, CanUseFileHandleAPI} from "./MainPage";
 import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, SendFormToServer} from "./FormUtil";
@@ -207,43 +207,44 @@ export class ActivateAccount extends Component
         var confirmButtonSize = 42;
 
         return (
-            <div className="friend-trade-page"
-                 style={!isMobile ? {paddingLeft: "var(--scrollbar-width)"} : {}}>
-                <div className="friend-trade-code-input-page">
-                    <Form onSubmit={(e) => this.submitCode(e)}>
-                        <Form.Label><h2>Enter the code sent to your email!</h2></Form.Label>
-                        <Form.Group controlId="code" className="friend-trade-code-input-container">
-                            <Form.Control type="text"
-                                autoComplete="one-time-code"
-                                size="lg"
-                                value={this.state.codeInput}
-                                onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}/>
+            <div className="form-page">
+                <Form onSubmit={(e) => this.submitCode(e)}>
+                    <h1 className="form-title mb-3">Enter the code sent to your email!</h1>
+                    <Form.Group controlId="code" className="friend-trade-code-input-container">
+                        <TextField
+                            required
+                            fullWidth
+                            label="Activation Code"
+                            variant="outlined"
+                            name="code"
+                            autoComplete="one-time-code"
+                            value={this.state.codeInput}
+                            onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}
+                        />
+                        {PasteCodeButton(pasteButtonSize, this.pasteCode.bind(this))}
+                    </Form.Group>
 
-                            {PasteCodeButton(pasteButtonSize, this.pasteCode.bind(this))}
-                        </Form.Group>
-
-                        <div className="activate-account-buttons">
-                            <div className="friend-trade-code-input-button">
-                                <OverlayTrigger placement="bottom" overlay={submitTooltip}>
-                                    <Button size="lg" className="friend-trade-offer-button"
-                                            aria-label="Submit Code"
-                                            type="submit">
-                                        <AiOutlineCheckCircle size={confirmButtonSize}/>
-                                    </Button>
-                                </OverlayTrigger>
-                            </div>
-                            <div className="friend-trade-code-input-button">
-                                <OverlayTrigger placement="bottom" overlay={resendCodeTooltip}>
-                                    <Button size="lg" className="friend-trade-offer-button"
-                                            aria-label="Resend Code"
-                                            onClick={this.resendActivationCode.bind(this)}>
-                                        <AiOutlineMail size={confirmButtonSize}/>
-                                    </Button>
-                                </OverlayTrigger>
-                            </div>
+                    <div className="activate-account-buttons">
+                        <div className="friend-trade-code-input-button">
+                            <OverlayTrigger placement="bottom" overlay={submitTooltip}>
+                                <Button size="lg" className="friend-trade-offer-button"
+                                        aria-label="Submit Code"
+                                        type="submit">
+                                    <AiOutlineCheckCircle size={confirmButtonSize}/>
+                                </Button>
+                            </OverlayTrigger>
                         </div>
-                    </Form>
-                </div>
+                        <div className="friend-trade-code-input-button">
+                            <OverlayTrigger placement="bottom" overlay={resendCodeTooltip}>
+                                <Button size="lg" className="friend-trade-offer-button"
+                                        aria-label="Resend Code"
+                                        onClick={this.resendActivationCode.bind(this)}>
+                                    <AiOutlineMail size={confirmButtonSize}/>
+                                </Button>
+                            </OverlayTrigger>
+                        </div>
+                    </div>
+                </Form>
             </div>
         );
     }

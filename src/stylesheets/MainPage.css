@@ -1,20 +1,9 @@
 .main-page-title
 {
+    font-weight: 600  !important; /*Semi-bold*/
     text-align: center;
     margin-top: 1%;
-    margin-bottom: 2%;
-}
-
-.main-page-welcome-back-title
-{
-    margin-bottom: 3% !important;
-}
-
-.main-page-purple-icon-button
-{
-    margin-top: 20px;
-    color: rebeccapurple;
-    cursor: pointer;
+    margin-bottom: 1rem;
 }
 
 .fade-in
@@ -65,17 +54,33 @@
     100% {opacity:1;}
 }
 
-.main-page-intro-container
+.main-page-content
+{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-width: var(--min-mobile-width);
+}
+
+.welcome-container
 {
     display: flex;
     flex-direction: column; /*Top to bottom rows*/
     justify-content: center;
     align-items: center;
     text-align: center;
-    height: 100%;
+}
+
+.welcome-container, .form-page
+{
     width: 100%;
     min-width: var(--min-mobile-width);
-    overflow-y: auto;
+    max-width: 32rem;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--bs-box-shadow-lg) !important;
+    background-color: white;
 }
 
 .main-page-upload-instructions
@@ -84,6 +89,21 @@
     flex-direction: column; /*Top to bottom rows*/
     justify-content: center;
     align-items: center;
+}
+
+.choose-save-file-heading
+{
+    color: rgb(75 85 99);
+    margin-top: 1rem !important;
+    margin-bottom: 0;
+}
+
+.save-file-location-explanation
+{
+    color: rgb(107 114 128);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    margin-bottom: 0.5rem;
 }
 
 .file-handle-page-mobile
@@ -95,13 +115,7 @@
 .choose-home-file-button
 {
     width: 100%;
-    margin-top: 10%;
-    margin-bottom: 10%;
-}
-
-.choose-save-file-button
-{
-    margin-top: 10%;
+    margin-bottom: 0.75rem;
 }
 
 .error-text
@@ -181,7 +195,7 @@
 
 .navbar-blank
 {
-    background-color: rebeccapurple !important;
+    background-color: var(--purple) !important;
     position: static;
     margin-bottom: 0px;
 }
@@ -203,8 +217,8 @@
 .top-bar-button
 {
     color: white !important;
-    background-color: rebeccapurple !important;
-    border-color: rebeccapurple !important;
+    background-color: var(--purple) !important;
+    border-color: var(--purple) !important;
     box-shadow: unset !important;
     width: 100%;
     font-size: 24px !important;
@@ -220,8 +234,8 @@
 .top-bar-back-button
 {
     color: white;
-    background-color: rebeccapurple !important;
-    border-color: rebeccapurple !important;
+    background-color: var(--purple) !important;
+    border-color: var(--purple) !important;
     box-shadow: unset !important;
     height: 100%;
     width: 100%;
@@ -231,7 +245,7 @@
 
 .footer-buttons
 {
-    background-color: rebeccapurple;
+    background-color: var(--purple);
     height: 56px;
     flex-shrink: 0; /*Allows footer to stick at bottom*/
     display: flex; /*The contents of the footer*/
@@ -262,8 +276,8 @@
 .footer-button
 {
     color: white !important;
-    background-color: rebeccapurple !important;
-    border-color: rebeccapurple !important;
+    background-color: var(--purple) !important;
+    border-color: var(--purple) !important;
     box-shadow: unset !important;
     font-size: 24px !important;
     border: none;

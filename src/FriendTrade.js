@@ -8,6 +8,7 @@ import {isMobile} from 'react-device-detect';
 import io from 'socket.io-client';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import TextField from '@mui/material/TextField';
 
 import {BoxView, HIGHEST_HOME_BOX_NUM} from './BoxView';
 import {config} from "./config";
@@ -914,11 +915,15 @@ export class FriendTrade extends Component
                 <Form onSubmit={(e) => this.submitCode(e)}>
                     <Form.Label><h2>Enter the code your friend created!</h2></Form.Label>
                     <Form.Group controlId="code" className="friend-trade-code-input-container">
-                        <Form.Control type="text"
-                            size="lg"
+                        <TextField
+                            className="form-control"
+                            label="Trade Code"
+                            variant="outlined"
+                            name="code"
+                            autoComplete="one-time-code"
                             value={this.state.codeInput}
-                            onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}/>
-
+                            onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}
+                        />
                         <OverlayTrigger placement="bottom" overlay={pasteTooltip}>
                             <Button size="sm" className="friend-trade-offer-button"
                                     aria-label="Paste Code"
