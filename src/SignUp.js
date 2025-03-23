@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import TextField from '@mui/material/TextField';
 
-import {BLANK_PROGRESS_BAR, STATE_ENTER_ACTIVATION_CODE, STATE_LOGIN, UNOFFICIAL_RELEASE} from "./MainPage";
+import {BLANK_PROGRESS_BAR, STATE_ENTER_ACTIVATION_CODE, STATE_LOGIN, UNOFFICIAL_RELEASE, PURPLE_CLOUD} from "./MainPage";
 import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
 
@@ -233,7 +233,7 @@ export class SignUp extends Component
 
         return (
             <div className="form-page">
-                <h1 className="form-title">Unbound Cloud Sign-Up</h1>
+                <h1 className="form-title">Sign Up for Unbound Cloud {PURPLE_CLOUD}</h1>
                 {/*Redirect to Login Page Button*/}
                 <div className="already-have-account-button"
                      onClick={() => this.getMainPage().setState({editState: STATE_LOGIN})}>
