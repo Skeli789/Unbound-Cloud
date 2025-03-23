@@ -256,7 +256,7 @@ export class SignUp extends Component
                             onChange={(e) => this.setState({usernameInput: ProcessTextInput(e, "USERNAME", true),
                                                             isTester: this.state.isTester || ProcessTextInput(e, "USERNAME", true).toLowerCase() === "iamatester"})}
                         />
-                        <Form.Text>This is public. Don't enter your email here!</Form.Text>
+                        <Form.Text>Username is public. Don't enter your email here!</Form.Text>
                     </Form.Group>
 
                     {/*Email Input*/}
