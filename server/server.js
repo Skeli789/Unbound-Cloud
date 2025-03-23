@@ -487,19 +487,24 @@ io.on("connection", async function(socket)
                             && "acceptedTrade" in gFriendTradeClients[friend]
                             && gFriendTradeClients[friend].acceptedTrade)
                             {
+                                //Swap all necessary data now so in case one partner disconnects after they receive their Pokemon the trade will still complete
                                 gFriendTradeClients[clientId].state = FRIEND_TRADE_ACCEPTED_TRADE;
+                                gFriendTradeClients[clientId].friendPokemon = gFriendTradeClients[friend].offeringPokemon;
+                                gFriendTradeClients[clientId].friendUsername = gFriendTradeClients[friend].username;
                                 gFriendTradeClients[friend].state = FRIEND_TRADE_ACCEPTED_TRADE;
+                                gFriendTradeClients[friend].friendPokemon = gFriendTradeClients[clientId].offeringPokemon;
+                                gFriendTradeClients[friend].friendUsername = gFriendTradeClients[clientId].username;
                             }
                         }
                     }
                     break;
                 case FRIEND_TRADE_ACCEPTED_TRADE:
                     friend = gFriendTradeClients[clientId].friend;
-                    friendPokemon = Object.assign({}, gFriendTradeClients[friend].offeringPokemon);
+                    friendPokemon = Object.assign({}, gFriendTradeClients[clientId].friendPokemon);
                     pokemonUtil.UpdatePokemonAfterFriendTrade(friendPokemon, gFriendTradeClients[clientId].offeringPokemon);
                     socket.emit("acceptedTrade", friendPokemon);
                     gFriendTradeClients[clientId].state = FRIEND_TRADE_ENDING_TRADE;
-                    console.log(`[FT] ${username} received ${pokemonUtil.GetSpecies(friendPokemon)} from ${gFriendTradeClients[friend].username}`);
+                    console.log(`[FT] ${username} received ${pokemonUtil.GetSpecies(friendPokemon)} from ${gFriendTradeClients[clientId].friendUsername}`);
                     break;
                 default:
                     break;
