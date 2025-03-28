@@ -356,14 +356,14 @@ describe("Test GetMonSpeciesName", () =>
     {
         let pokemon = Object.assign({}, gTestPokemon2);
         pokemon["species"] = "SPECIES_FLOETTE_BLUE";
-        expect(pokemonUtil.GetMonSpeciesName(gTestPokemon2)).to.equal("Floette");
+        expect(pokemonUtil.GetMonSpeciesName(pokemon)).to.equal("Floette");
     });
 
     it(`should be Floette-Blue when using alt species names`, () =>
     {
         let pokemon = Object.assign({}, gTestPokemon2);
         pokemon["species"] = "SPECIES_FLOETTE_BLUE";
-        expect(pokemonUtil.GetMonSpeciesName(gTestPokemon2, true)).to.equal("Floette-Blue");
+        expect(pokemonUtil.GetMonSpeciesName(pokemon, true)).to.equal("Floette-Blue");
     });
 
     it(`should be null for null pokemon`, () =>
