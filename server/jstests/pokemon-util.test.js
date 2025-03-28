@@ -356,6 +356,7 @@ describe("Test GetMonSpeciesName", () =>
     {
         let pokemon = Object.assign({}, gTestPokemon2);
         pokemon["species"] = "SPECIES_FLOETTE_BLUE";
+        pokemon["checksum"] = pokemonUtil.CalculateMonChecksum(pokemon);
         expect(pokemonUtil.GetMonSpeciesName(pokemon)).to.equal("Floette");
     });
 
@@ -363,6 +364,7 @@ describe("Test GetMonSpeciesName", () =>
     {
         let pokemon = Object.assign({}, gTestPokemon2);
         pokemon["species"] = "SPECIES_FLOETTE_BLUE";
+        pokemon["checksum"] = pokemonUtil.CalculateMonChecksum(pokemon);
         expect(pokemonUtil.GetMonSpeciesName(pokemon, true)).to.equal("Floette-Blue");
     });
 
