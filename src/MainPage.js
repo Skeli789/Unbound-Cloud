@@ -1782,7 +1782,7 @@ export default class MainPage extends Component
             if (IsEgg(pokemon))
                 errorMessage[toBoxSlot] = "The Egg's Pokémon doesn't exist in this game.";
             else
-                errorMessage[toBoxSlot] = `${GetSpeciesName(GetSpecies(pokemon))} doesn't exist in this game.`;
+                errorMessage[toBoxSlot] = `${GetSpeciesName(GetSpecies(pokemon), true)} doesn't exist in this game.`;
         }
 
         if (impossibleMovement[0] == null)
@@ -4094,7 +4094,7 @@ export default class MainPage extends Component
 
         draggingImg = ""
         if (this.shouldViewDraggingImg())
-            draggingImg = <img src={this.state.draggingImg} alt={GetSpeciesName(GetSpecies(this.getMonAtBoxPos(this.state.draggingFromBox, this.state.draggingMon)))}
+            draggingImg = <img src={this.state.draggingImg} alt={GetSpeciesName(GetSpecies(this.getMonAtBoxPos(this.state.draggingFromBox, this.state.draggingMon)), true)}
                                onMouseDown={(e) => e.preventDefault()} id="moving-icon" className="dragging-image"/>;
 
         let cursorStyle = draggingImg !== "" ? {cursor: "grabbing"} : {};

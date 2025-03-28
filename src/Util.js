@@ -7,6 +7,7 @@ import ItemNames from "./data/ItemNames.json";
 import MoveNames from "./data/MoveNames.json";
 import NatureNames from "./data/NatureNames.json";
 import SpeciesNames from "./data/SpeciesNames.json";
+import AltSpeciesNames from "./data/SpeciesNamesAlts.json";
 import TypeNames from "./data/TypeNames.json";
 
 export const BASE_GFX_LINK = "images/";
@@ -146,12 +147,16 @@ export function GetItemIconLink(item)
 /**
  * Gets the pretty name like "Venusaur" for a species id.
  * @param {String} species - The species' STRING_BASED id.
+ * @param {Boolean} useAltName - Whether to use the alternate Showdown name or not.
  * @returns {String} The name of the item.
  */
-export function GetSpeciesName(species)
+export function GetSpeciesName(species, useAltName=false)
 {
     if (typeof(species) == "string")
     {
+        if (useAltName && species in AltSpeciesNames)
+            return AltSpeciesNames[species];
+
         if (species in SpeciesNames)
             return SpeciesNames[species];
     }

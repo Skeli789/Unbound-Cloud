@@ -91,7 +91,7 @@ export class PokemonSummary extends Component
     printNickname()
     {
         var species = GetSpecies(this.state.pokemon);
-        var speciesName = GetSpeciesName(species);
+        var speciesName = GetSpeciesName(species, true);
         var dexNum = (species in gSpeciesToDexNum) ? gDexNums[gSpeciesToDexNum[species]] : 0;
         var dexNumText = String(dexNum).padStart(3, "0");
         var nicknameText = GetNickname(this.state.pokemon);

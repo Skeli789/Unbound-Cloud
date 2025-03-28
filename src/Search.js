@@ -116,7 +116,7 @@ export class Search extends Component
             if (speciesId === "SPECIES_NONE")
                 continue;
 
-            var name = GetSpeciesName(speciesId);
+            var name = GetSpeciesName(speciesId, false);
             if (name in namesAdded || name === "Unknown Species")
                 continue; //Don't add duplicate names
 
@@ -364,7 +364,7 @@ export class Search extends Component
         const reduceFunc = (a, key) => ({ ...a, [key]: true}); //Converts list into object - turns all search checks into O(1)
 
         if (this.state.speciesIds.length > 0)
-            criteria["species"] = this.state.speciesIds.map((species) => GetSpeciesName(species)).reduce(reduceFunc, {});
+            criteria["species"] = this.state.speciesIds.map((species) => GetSpeciesName(species, false)).reduce(reduceFunc, {});
 
         if (this.state.moveIds.length > 0)
             criteria["move"] = this.state.moveIds.reduce(reduceFunc, {});
@@ -746,7 +746,7 @@ export function MatchesSearchCriteria(pokemon, searchCriteria, gameId)
     //Check Wanted Species
     if ("species" in searchCriteria)
     {
-        let name = isEgg ? "Egg" : GetSpeciesName(GetSpecies(pokemon));
+        let name = isEgg ? "Egg" : GetSpeciesName(GetSpecies(pokemon, false));
         if (!(name in searchCriteria["species"]))
             return false;
     }

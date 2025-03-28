@@ -7,6 +7,7 @@ const pokemonUtil = require('./pokemon-util');
 const gBannedWords = require('./src/data/BannedWords.json');
 const gAllowedNicknameLetters = require('./src/data/AllowedNicknameLetters.json');
 const gSpeciesNames = require('./src/data/SpeciesNames.json');
+const gAltSpeciesNames = require('./src/data/SpeciesNamesAlts.json');
 
 const MAX_TITLE_LENGTH = 16;
 const HIGHEST_HOME_BOX_NUM = 100;
@@ -110,12 +111,16 @@ module.exports.HasNonNicknameCharacter = HasNonNicknameCharacter;
 /**
  * Gets the pretty name like "Venusaur" for a species id.
  * @param {String} species - The species' STRING_BASED id.
+ * @param {Boolean} useAltName - Whether to use the alternate Showdown name or not.
  * @returns {String} The name of the item.
  */
-function GetSpeciesName(species)
+function GetSpeciesName(species, useAltName=false)
 {
     if (typeof(species) == "string")
     {
+        if (useAltName && species in gAltSpeciesNames)
+            return gAltSpeciesNames[species];
+
         if (species in gSpeciesNames)
             return gSpeciesNames[species];
     }

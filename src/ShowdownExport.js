@@ -39,7 +39,7 @@ export class ShowdownExport extends Component
     {
         var i, nameLine;
         var nickname = GetNickname(pokemon);
-        var speciesName = GetSpeciesName(GetSpecies(pokemon));
+        var speciesName = GetSpeciesName(GetSpecies(pokemon), true);
         var genderLetter = GetGender(pokemon);
         var itemName = GetItemName(GetItem(pokemon));
         var abilityLine = "Ability: " + GetAbilityName(GetAbility(pokemon, this.state.gameId));
