@@ -1333,7 +1333,7 @@ export class BoxView extends Component
         }
 
         let link = GetIconSpeciesLinkBySpecies(species, false, false);
-        let alt = GetSpeciesName(species);
+        let alt = GetSpeciesName(species, true);
         let icon = <img src={link} alt={alt} aria-label={alt} className="box-icon-image living-dex-icon"
                         onMouseDown={(e) => e.preventDefault()}/>; //Prevent image dragging
 

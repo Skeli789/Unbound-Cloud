@@ -437,8 +437,8 @@ io.on("connection", async function(socket)
 
             if (clientId in gWonderTradeClients)
             {
-                let species1 = pokemonUtil.GetMonSpeciesName(originalPokemon);
-                let species2 = pokemonUtil.GetMonSpeciesName(friendPokemon);
+                let species1 = pokemonUtil.GetMonSpeciesName(originalPokemon, true);
+                let species2 = pokemonUtil.GetMonSpeciesName(friendPokemon, true);
                 console.log(`[WT] ${gWonderTradeClients[clientId].username} received ${species2} from ${gWonderTradeClients[clientId].receivedFrom}`);
                 if ("discordMessageId" in gWonderTradeClients[clientId])
                     await SendWonderTradeDiscordMessage(`${species1} and ${species2} were traded!`, 0x0000FF, gWonderTradeClients[clientId].discordMessageId); //Blue

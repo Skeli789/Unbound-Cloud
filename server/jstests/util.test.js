@@ -209,6 +209,13 @@ describe("Test GetSpeciesName", () =>
         expect(util.GetSpeciesName(species)).to.equal(expectedName);
     });
 
+    it (`should be "Enamorus-Therian" for "SPECIES_ENAMORUS_THERIAN" when using alt species names`, () =>
+    {
+        let species = "SPECIES_ENAMORUS_THERIAN";
+        let expectedName = "Enamorus-Therian";
+        expect(util.GetSpeciesName(species, true)).to.equal(expectedName);
+    });
+    
     it (`should be "Unknown Species" for "SPECIES_FAKE"`, () =>
     {
         let species = "SPECIES_FAKE";

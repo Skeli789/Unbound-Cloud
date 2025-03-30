@@ -168,11 +168,12 @@ module.exports.SetFriendship = SetFriendship;
 
 /**
  * @param {Pokemon} pokemon - The Pokemon to process.
+ * @param {Boolean} useAltName - Whether to use the alternate Showdown name or not.
  * @returns {String} The Pokemon's species name.
  */
-function GetMonSpeciesName(pokemon)
+function GetMonSpeciesName(pokemon, useAltName=false)
 {
-    return util.GetSpeciesName(GetSpecies(pokemon));
+    return util.GetSpeciesName(GetSpecies(pokemon), useAltName);
 }
 module.exports.GetMonSpeciesName = GetMonSpeciesName;
 

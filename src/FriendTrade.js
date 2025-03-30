@@ -709,7 +709,7 @@ export class FriendTrade extends Component
         if (!this.getGlobalState().muted)
             tradeCompleteSound.play();
 
-        var newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon));
+        let newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon, true)); //Use full names so to always show alt forms
         PopUp.fire
         ({
             title: `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} was received!`,

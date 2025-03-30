@@ -58,12 +58,19 @@ def CopyData():
         file.write(json.dumps(speciesList, indent=4) + "\n")
 
     # Copy Entire Files
-    entireFiles = ["ExperienceCurves.json", "SpeciesNames.json", "SpeciesToDexNum.json"]
+    entireFiles = ["ExperienceCurves.json", "SpeciesNames.json", "SpeciesNamesAlts.json", "SpeciesToDexNum.json"]
     for file in entireFiles:
         try:
+            # Validate proper JSON
+            with open(os.path.join(gServerDataDir, file), "r") as jsonFile:
+                jsonData = json.load(jsonFile)
+
             shutil.copy(os.path.join(gServerDataDir, file), os.path.join(gClientDataDir, file))
         except shutil.SameFileError:
             pass
+        except json.JSONDecodeError:
+            print(f"Error: {file} is not a valid JSON file. Skipping copy.")
+            continue
     print("Data copied successfully!")
 
 
@@ -91,12 +98,19 @@ def ValidateData():
         "Items.json": (itemNames, "Item"),
         "BallTypes.json": (ballTypeNames, "BallType"),
         "BaseStats.json": (speciesNames, "Species"),
+        "SpeciesNamesAlts.json": (speciesNames, "Species"),
     }
 
     # Validate all game data
-    for gameDir in gameDirs:
+    for i, gameDir in enumerate(gameDirs):
         for fileName, (defines, nameType) in validationRules.items():
-            filePath = os.path.join(gameDir, fileName)
+            if fileName == "SpeciesNamesAlts.json":
+                if i != 0:
+                    continue # Only validate SpeciesNamesAlts once
+                filePath = os.path.join(gClientDataDir, fileName)
+            else:
+                filePath = os.path.join(gameDir, fileName)
+
             allData = LoadJSONFile(filePath)
             for dataItem in allData:
                 try:
