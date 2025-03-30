@@ -5,7 +5,7 @@
 import axios from "axios";
 import React, {Component} from 'react';
 import {Button, ProgressBar, OverlayTrigger, Tooltip} from "react-bootstrap";
-import {isMobile} from "react-device-detect";
+import {isMobile, isSmartTV, isWearable, isConsole, isEmbedded, isAndroid, isWinPhone, isIOS} from "react-device-detect";
 import {StatusCode} from "status-code-enum";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -4149,7 +4149,12 @@ export function CanUseFileHandleAPI()
     if (DEBUG_ORIGINAL_FILE_METHOD)
         return false;
 
-    return typeof(window.showOpenFilePicker) === "function";
+    //Only allows the FileSystem API if the user is on desktop or phone
+    return typeof(window.showOpenFilePicker) === "function"
+        && !isSmartTV
+        && !isWearable
+        && !isConsole
+        && !isEmbedded;
 }
 
 /**
@@ -4161,5 +4166,12 @@ function IsMobileBrowser()
     //Some mobile devices can be run in desktop mode, so this determines that
     //X11 is not mobile specific, but it's needed to get Chrome on Android in desktop view working
     return isMobile
-        || navigator.userAgent.match(/Mobile|Windows Phone|Lumia|Android|webOS|iPhone|iPod|Blackberry|PlayBook|BB10|X11|Opera Mini|\bCrMo\/|Opera Mobi|Tablet|iPad/i);
+        || isSmartTV
+        || isWearable
+        || isConsole
+        || isEmbedded
+        || isAndroid
+        || isWinPhone
+        || isIOS
+        || navigator.userAgent.match(/Mobile|Lumia|Blackberry|PlayBook|BB10|X11|Opera Mini|\bCrMo\/|Opera Mobi|Tablet/i);
 }
