@@ -365,7 +365,7 @@ export class WonderTrade extends Component
         if (!this.getGlobalState().muted)
             tradeCompleteSound.play();
 
-        var newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon));
+        var newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon), true);
         PopUp.fire
         ({
             title: `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} has just arrived from ${receivedFrom}!\nIt was placed in "${this.state.boxName}".`,
