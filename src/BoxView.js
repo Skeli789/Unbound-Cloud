@@ -1687,62 +1687,54 @@ export class BoxView extends Component
                 </OverlayTrigger>
 
                 { /*Select/Deselect All Icon*/
-                    !this.isTrading() ?
+                    !this.isTrading() &&
                         <OverlayTrigger placement="bottom" overlay={this.areAnyPokemonSelectedInCurrentBox(true) ? deselectAllTooltip : selectAllTooltip}>
                             <div className="box-lower-icon-div">
                                 <GrMultiple size={28} className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
                             </div>
                         </OverlayTrigger>
-                    :
-                        ""
                 }
 
                 { /*Save Icon*/
-                    this.getParentState().changeWasMade[this.state.boxType] && !this.isTrading() ?
+                    this.getParentState().changeWasMade[this.state.boxType] && !this.isTrading() &&
                         <OverlayTrigger placement="bottom" overlay={saveTooltip}>
                             <div className="box-lower-icon-div">
                                 <AiOutlineSave size={36} className="box-lower-icon"
                                                onClick={() => this.state.parent.trySaveAndExit(this.state.parent.areOnlyHomeBoxesAccessible() ? false : true)}/>
                             </div>
                         </OverlayTrigger>
-                    :
-                        ""
                 }
 
                 { /*Fix Living Dex Icon*/
-                    this.getLivingDexState() !== LIVING_DEX_NONE && !this.state.fixingLivingDex && this.isHomeBox() && !this.isTrading() ?
+                    this.getLivingDexState() !== LIVING_DEX_NONE && !this.state.fixingLivingDex && this.isHomeBox() && !this.isTrading() &&
                         <OverlayTrigger placement="bottom" overlay={fixLivingDexTooltip}>
                             <div className="box-lower-icon-div">
                                 <AiOutlineTool size={36} className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
                             </div>
                         </OverlayTrigger>
-                    :
-                        ""
                 }
 
                 { /*Release & Showdown Icons*/
                     <>
                         {
-                            this.canViewReleaseButton() ?
+                            this.canViewReleaseButton() &&
                                 <OverlayTrigger placement="bottom" overlay={releaseTooltip}>
                                     <div className="box-lower-icon-div">
                                         <GrTrash size={28} className="box-lower-icon"
                                                  onClick={this.releaseSelectedPokemon.bind(this)}/>
                                     </div>
                                 </OverlayTrigger>
-                            :
-                                ""
                         }
                         {
-                            this.canViewShowdownButton() ?
-                                <OverlayTrigger placement="bottom" overlay={showdownTooltip}>
+                            this.canViewShowdownButton() &&
+                                //Showdown overlay appears above on mobile because it's tap based, not hover based
+                                //This way it doesn't cover the Showdown box
+                                <OverlayTrigger placement={isMobile ? "top" : "bottom"} overlay={showdownTooltip}>
                                     <div className="box-lower-icon-div">
                                         <RiBoxingLine size={32} className="box-lower-icon"
                                                       onClick = {this.viewShowdownExport.bind(this)}/>
                                     </div>
                                 </OverlayTrigger>
-                            :
-                                ""
                         }
                     </>
                 }

@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 
 import {CanMonGigantamax, GetAbility, GetEVs, GetFriendship, GetGender, GetItem, GetIVs,
-        GetLevel, GetMoves, GetNickname, GetSpecies, GetVisibleNature, IsShiny} from './PokemonUtil';
+        GetLevel, GetMoves, GetNickname, GetSpecies, GetVisibleNature, IsShiny, GetAlcremieColour} from './PokemonUtil';
 import {GetAbilityName, GetItemName, GetMoveName, GetNatureName, GetSpeciesName} from "./Util";
 
 import "./stylesheets/ShowdownExport.css";
@@ -39,7 +39,10 @@ export class ShowdownExport extends Component
     {
         var i, nameLine;
         var nickname = GetNickname(pokemon);
-        var speciesName = GetSpeciesName(GetSpecies(pokemon), true);
+        var species = GetSpecies(pokemon);
+        if (species.startsWith("SPECIES_ALCREMIE")) //Only for Showdown export, show the Showdown name
+            species = species.replaceAll("ALCREMIE", `ALCREMIE_${GetAlcremieColour(pokemon)}`);
+        var speciesName = GetSpeciesName(species, true);
         var genderLetter = GetGender(pokemon);
         var itemName = GetItemName(GetItem(pokemon));
         var abilityLine = "Ability: " + GetAbilityName(GetAbility(pokemon, this.state.gameId));
