@@ -34,3 +34,6 @@ yarn-debug.log*
 yarn-error.log*
 desktop.ini
 MultiArkGamingSSH.sh
+
+/jstests
+src/savefile
