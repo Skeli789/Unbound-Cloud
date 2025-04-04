@@ -45,18 +45,18 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable
 
-    - name: Start Website
+    - name: Start Website & Server
       run: |
         set -e
         nohup yarn start &
+        cd server && nohup yarn start &
         sleep 10  # Wait for the site to start
-
-    - name: Start server
-      run: |
-        set -e
-        cd server
-        nohup yarn start &
-        sleep 10  # Wait for the server to start
+      env:
+        APPDATA: ${{ vars.APPDATA }}
+        UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+        UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+        WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+        ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
 
     - name: Run Selenium tests
       run: |
