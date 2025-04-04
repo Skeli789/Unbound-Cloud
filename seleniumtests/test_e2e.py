@@ -10,11 +10,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, ElementClickInterceptedException
 
-from seleniumtests.TestUtils import *
-from seleniumtests.SignUpUtil import HandleSignUp, RemoveExistingAccounts
 from seleniumtests.ActivationUtil import ActivateAccount
+from seleniumtests.LoginUtil import HandleLogin
+from seleniumtests.SignUpUtil import HandleSignUp, RemoveExistingAccounts
+from seleniumtests.TestUtils import *
 
 URL_SITE = "http://localhost:3000"
+
 
 # @pytest.mark.incremental
 class TestE2E(TestCase):
@@ -59,3 +61,6 @@ class TestE2E(TestCase):
 
     def test_4_ActivateAccount(self):
         ActivateAccount(self.driver, self)
+
+    def test_5_Login(self):
+        HandleLogin(self.driver, self)

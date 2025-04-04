@@ -57,7 +57,6 @@ def HandleSignUp(driver: webdriver.Chrome, tester: TestCase):
 
     # Get elements on the page
     signUpForm = driver.find_element(By.ID, "sign-up-form")
-    signUpButton = signUpForm.find_element(By.ID, "sign-up-button")
 
     # Fill in the registration form
     FillInSignUpForm(signUpForm, TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD)
@@ -66,6 +65,8 @@ def HandleSignUp(driver: webdriver.Chrome, tester: TestCase):
     ConfirmPasswordViewToggleWorks(signUpForm, tester)
 
     # Click the sign up button
+    time.sleep(0.1)
+    signUpButton = signUpForm.find_element(By.ID, "sign-up-button")
     signUpButton.click()
 
     # Wait for the registration complete

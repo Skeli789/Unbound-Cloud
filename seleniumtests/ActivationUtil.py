@@ -8,6 +8,7 @@ from unittest import TestCase
 
 from seleniumtests.TestUtils import *
 
+
 def LoadActivationCode() -> str:
     """
     Load the activation code from the account file.
@@ -19,6 +20,7 @@ def LoadActivationCode() -> str:
         activationCode = accountData["activationCode"]
 
     return activationCode
+
 
 def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
     activationForm = driver.find_element(By.ID, "activation-form")
