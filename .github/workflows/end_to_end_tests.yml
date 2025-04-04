@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Use Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: "3.13"
 
@@ -45,9 +45,11 @@ jobs:
     - name: Run Selenium tests
       run: |
         yarn test-selenium
+      env:
+        APPDATA: ${{ vars.APPDATA }}
 
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()  # Run this step even if previous steps fail
       with:
         name: selenium-test-results
