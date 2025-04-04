@@ -6,41 +6,9 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import NoSuchElementException
 
 APPDATA = os.getenv("APPDATA")
-
-
-def RemoveExistingAccounts():
-    # Remove all files and folders in the unboundcloud directory
-    # Check if AppData exists
-    if not os.path.exists(APPDATA):
-        print(f"Directory {APPDATA} does not exist.")
-        return
-
-    # Check if unboundcloud directory exists
-    unboundcloudDir = os.path.join(APPDATA, "unboundcloud")
-    if not os.path.exists(unboundcloudDir):
-        print(f"Directory {unboundcloudDir} does not exist.")
-        return
-
-    try:
-        # Remove the unboundcloud directory and delete all files and folders inside it
-        for root, dirs, files in os.walk(unboundcloudDir, topdown=False):
-            # Delete all files
-            for name in files:
-                filePath = os.path.join(root, name)
-                os.remove(filePath)
-                print(f"Removed file: {filePath}")
-
-            # Delete all directories
-            for name in dirs:
-                dirPath = os.path.join(root, name)
-                os.rmdir(dirPath)
-                print(f"Removed directory: {dirPath}")
-
-        # Remove the main directory after its contents are deleted
-        os.rmdir(unboundcloudDir)
-        print(f"Removed directory: {unboundcloudDir}")
-    except OSError as e:
-        print(f"Error removing files or directories in {unboundcloudDir}: {e}")
+TEST_EMAIL = "test@gmail.com"
+TEST_USERNAME = "test_user"
+TEST_PASSWORD = "test_password"
 
 
 def WaitForElement(driver: webdriver.Chrome, byType: str, byValue: str) -> WebElement:
