@@ -50,8 +50,10 @@ def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
     tester.assertEqual(activationCode, newActivationCode, "Activation code is not the same as before.")
 
     # Use the paste button
-    pasteButton = activationForm.find_element(By.ID, "paste-button")
-    pasteButton.click()
+    if not APPDATA == "/":
+        # For Windows, use the paste button
+        pasteButton = activationForm.find_element(By.ID, "paste-button")
+        pasteButton.click()
 
     # Confirm the activation code is pasted correctly
     tester.assertEqual(activationCodeField.get_attribute("value"), newActivationCode, "Activation code is not pasted correctly.")
