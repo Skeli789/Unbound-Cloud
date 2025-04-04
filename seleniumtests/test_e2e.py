@@ -1,7 +1,6 @@
 import json
 import os
 import pyperclip
-import pyautogui
 import pytest
 import shutil
 import time
