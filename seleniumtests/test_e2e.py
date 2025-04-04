@@ -11,7 +11,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, ElementClickInterceptedException
 
 from seleniumtests.ActivationUtil import ActivateAccount
-from seleniumtests.LoginUtil import HandleLogin
+from seleniumtests.LoginUtil import HandleLogin, LogOut
 from seleniumtests.SignUpUtil import HandleSignUp, RemoveExistingAccounts
 from seleniumtests.TestUtils import *
 
@@ -63,4 +63,5 @@ class TestE2E(TestCase):
         ActivateAccount(self.driver, self)
 
     def test_5_Login(self):
-        HandleLogin(self.driver, self)
+        LogOut(self.driver)
+        HandleLogin(self.driver)

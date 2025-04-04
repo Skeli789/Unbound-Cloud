@@ -236,7 +236,7 @@ export class SignUp extends Component
                 <h1 className="form-title">Sign Up for Unbound Cloud {PURPLE_CLOUD}</h1>
                 {/*Redirect to Login Page Button*/}
                 <div className="already-have-account-button"
-                     id="login-button"
+                     id="switch-to-login-button"
                      onClick={() => this.getMainPage().setState({editState: STATE_LOGIN})}>
                     I already have an account
                 </div>

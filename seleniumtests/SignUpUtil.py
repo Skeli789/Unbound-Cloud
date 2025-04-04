@@ -65,7 +65,6 @@ def HandleSignUp(driver: webdriver.Chrome, tester: TestCase):
     ConfirmPasswordViewToggleWorks(signUpForm, tester)
 
     # Click the sign up button
-    time.sleep(0.1)
     signUpButton = signUpForm.find_element(By.ID, "sign-up-button")
     signUpButton.click()
 

@@ -33,12 +33,12 @@ def HandleLogin(driver: webdriver.Chrome):
     """
     # Click the sign-up button
     loginForm = WaitForLoginPage(driver)
-    signUpButton = loginForm.find_element(By.ID, "sign-up-button")
+    signUpButton = loginForm.find_element(By.ID, "switch-to-sign-up-button")
     signUpButton.click()
 
     # Click the login button again
     signUpPage = WaitForSignUpPage(driver)
-    loginButton = signUpPage.find_element(By.ID, "login-button")
+    loginButton = signUpPage.find_element(By.ID, "switch-to-login-button")
     loginButton.click()
 
     # Get the elements on the page
