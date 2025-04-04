@@ -3061,6 +3061,7 @@ export default class MainPage extends Component
 
         return (
             <Button size="lg" className={"top-bar-button" + (buttonSelected ? " top-bar-button-selected" : "")}
+                    id="home-to-home-button"
                     style={!buttonClickable ? {cursor: "default"} : {}}
                     aria-label="Home to Home"
                     onClick={() => this.changeBoxView(STATE_EDITING_HOME_BOXES)}>
@@ -3079,6 +3080,7 @@ export default class MainPage extends Component
 
         return (
             <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_EDITING_SAVE_FILE ? " top-bar-button-selected" : "")}
+                    id="save-to-save-button"
                     aria-label="Save File to Save File"
                     onClick={() => this.changeBoxView(STATE_EDITING_SAVE_FILE)}>
                 <FaGamepad size={size} /> ↔ <FaGamepad size={size} />
@@ -3096,6 +3098,7 @@ export default class MainPage extends Component
 
         return (
             <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_MOVING_POKEMON ? " top-bar-button-selected" : "")}
+                    id="home-to-save-button"
                     aria-label="Home to Save File"
                     onClick={() => this.changeBoxView(STATE_MOVING_POKEMON)}>
                 <FaCloud size={size} /> ↔ <FaGamepad size={size} />
@@ -3114,6 +3117,7 @@ export default class MainPage extends Component
 
         return (
             <BiArrowBack size={size} className="top-bar-back-button" style={{paddingRight: paddingRight}}
+                         id="back-button"
                          aria-label="Back" onClick={this.navBackButtonPressed.bind(this)}/>
         );
     }
@@ -3466,6 +3470,7 @@ export default class MainPage extends Component
                     {title}
                     {explanation}
                     <Button className="choose-home-file-button"
+                            id="get-started-button"
                             onClick={() => this.setState({editState: nextState})} >
                         Get Started ➤
                     </Button>
@@ -3584,12 +3589,14 @@ export default class MainPage extends Component
                         <div>
                             <h1 className="form-title">Welcome back, {this.state.username}! {PURPLE_CLOUD}</h1>
                             <div className="already-have-account-button"
+                                id="logout-button"
                                 onClick={() => this.navBackButtonPressed()}>
                                 This isn't me.
                             </div>
                         </div>
                 }
-                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}
+                     id="upload-instructions">
                     <p className="choose-save-file-heading">Choose your save file.</p>
                     <p className="save-file-location-explanation">
                         If you don't know where it is, start by looking in the same folder as your ROM.
@@ -3600,7 +3607,7 @@ export default class MainPage extends Component
                         Which hacks are supported?
                     </div>
                     <div className="w-100">
-                        <label className="btn btn-success btn-lg w-100 choose-home-file-button">
+                        <label className="btn btn-success btn-lg w-100 choose-home-file-button" id="upload-save-button">
                             Upload File
                             <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)}
                                 accept=".sav,.srm,.sa1,.fla" />
@@ -3608,7 +3615,7 @@ export default class MainPage extends Component
                         {
                             ACCOUNT_SYSTEM &&
                                 <Button size="lg" onClick={() => this.skipSaveFileUpload()}
-                                        variant="danger" className="choose-home-file-button">
+                                        variant="danger" className="choose-home-file-button" id="just-cloud-button">
                                     Just Cloud
                                 </Button>
                         }
@@ -3649,7 +3656,8 @@ export default class MainPage extends Component
                         <h1 className="form-title">Welcome Back to Unbound Cloud {PURPLE_CLOUD}</h1>
                 }
 
-                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}
+                     id="upload-instructions">
                     <p className="choose-save-file-heading">Choose your Cloud Data folder.</p>
                     <p className="save-file-location-explanation">
                         This is the folder on your {isMobile ? "device" : "computer"} where your Boxes {showLastUsedButton ? "are" : "will be"} stored.
@@ -3720,12 +3728,14 @@ export default class MainPage extends Component
                         <div>
                             <h1 className="form-title">Welcome back, {this.state.username}! {PURPLE_CLOUD}</h1>
                             <div className="already-have-account-button"
+                                id="logout-button"
                                 onClick={() => this.navBackButtonPressed()}>
                                 This isn't me.
                             </div>
                         </div>
                 }
-                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}
+                     id="upload-instructions">
                     <p className="choose-save-file-heading">Choose your save file.</p>
                     <p className="save-file-location-explanation">
                         If you don't know where it is, start by looking in the same folder as your ROM.
@@ -3742,14 +3752,14 @@ export default class MainPage extends Component
                         }
 
                         <Button size="lg" onClick={() => this.chooseSaveFileHandle()}
-                                variant="success" className="choose-home-file-button">
+                                variant="success" className="choose-home-file-button" id="upload-save-button">
                             Choose File
                         </Button>
 
                         {
                             ACCOUNT_SYSTEM &&
                                 <Button size="lg" onClick={() => this.skipSaveFileUpload()}
-                                        variant="danger" className="choose-home-file-button">
+                                        variant="danger" className="choose-home-file-button" id="just-cloud-button">
                                     Just Cloud
                                 </Button>
                         }

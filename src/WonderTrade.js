@@ -11,7 +11,7 @@ import withReactContent from 'sweetalert2-react-content';
 import {config} from "./config";
 import {GetIconSpeciesLink, GetNickname, GetSpecies, HasDuplicateMovesInMoveset, HasHackedCharacterInNicknameOrOTName,
         IsEgg, IsHoldingBannedItem, IsValidPokemon} from "./PokemonUtil";
-import {CreateSingleBlankSelectedPos, GetSpeciesName} from './Util';
+import {CreateSingleBlankSelectedPos, GetSpeciesName, IsHomeBox} from './Util';
 
 import {CgExport, CgImport} from "react-icons/cg";
 import SfxTradeComplete from './audio/TradeComplete.mp3';
@@ -477,7 +477,7 @@ export class WonderTrade extends Component
      */
     render()
     {
-        var iconSize = 30;
+        const iconSize = 30;
 
         if (!this.state.isMonInWonderTrade)
         {
@@ -485,6 +485,7 @@ export class WonderTrade extends Component
                 <OverlayTrigger placement="bottom" overlay={wonderTradeTooltip}>
                     <div className="box-lower-icon-div">
                         <CgExport size={iconSize} className="box-lower-icon"
+                                id="start-wonder-trade-button"
                                 onClick = {this.tryStartWonderTrade.bind(this)}/>
                     </div>
                 </OverlayTrigger>
@@ -496,6 +497,7 @@ export class WonderTrade extends Component
                 <OverlayTrigger placement="bottom" overlay={cancelWonderTradeTooltip}>
                     <div className="box-lower-icon-div">
                         <CgImport size={iconSize} className="box-lower-icon cancel-wonder-trade-icon"
+                                id="cancel-wonder-trade-button"
                                 onClick = {this.tryCancelWonderTrade.bind(this)}/>
                     </div>
                 </OverlayTrigger>

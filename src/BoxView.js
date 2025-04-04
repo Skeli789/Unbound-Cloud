@@ -1437,6 +1437,7 @@ export class BoxView extends Component
                               + (this.isMonAtPosSelected(key) ? ` ${selectedBoxClassName}` : "")
                               + (isInWonderTrade ? " wonder-trade-box-icon" : "")
                               + (this.shouldShowIconImpossibleMoveWarning(key) ? " error-box-icon" : "");
+            let id = (this.isSaveBox() ? `save-box-icon-${key}` : `home-box-icon-${key}`);
 
             var onHoverFunc = () =>
             {
@@ -1449,14 +1450,14 @@ export class BoxView extends Component
             if ((addLivingDexIcon && livingDexIcon !== "") //Can't click on this
             || species === "unknown") //Unknown species - can still click on "none" species, just not unknown one
             {
-                icons.push(<span className={spanClassName}
+                icons.push(<span className={spanClassName} id={id}
                     onMouseEnter = {this.handleSetDraggingOver.bind(this, i)}
                     onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
                     key={key}>{icon}</span>);
             }
             else if (isInWonderTrade) //Can't click on this
             {
-                icons.push(<span className={spanClassName}
+                icons.push(<span className={spanClassName} id={id}
                                 onClick={this.handleSelection.bind(this, key, pokemon)}
                                 onMouseEnter = {onHoverFunc}
                                 onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
@@ -1466,7 +1467,7 @@ export class BoxView extends Component
             }
             else
             {
-                icons.push(<span className={spanClassName}
+                icons.push(<span className={spanClassName} id={id}
                                 onClick={this.handleSelection.bind(this, key, pokemon)}
                                 onMouseDown={this.handleStartDragging.bind(this, i, key, icon, link, pokemon)}
                                 onMouseEnter = {onHoverFunc}
@@ -1592,6 +1593,7 @@ export class BoxView extends Component
         var monToView = this.printMonToView();
         var editIconSize = 28;
         var livingDexIcon = "";
+        let idSuffix = this.isHomeBox() ? "home-box" : "save-box";
 
         if (this.state.searching)
             return this.printSearchView();
@@ -1602,6 +1604,7 @@ export class BoxView extends Component
                 <OverlayTrigger placement="top" overlay={livingDexTooltip}>
                     <div>
                         <CgPokemon size={editIconSize + 10} onClick={this.changeLivingDexView.bind(this)}
+                                   id="toggle-living-dex-view-button"
                                    className="box-name-living-dex-icon"
                                    style={{color: this.getLivingDexState() === LIVING_DEX_NO_FORMS ? "violet"
                                                 : this.getLivingDexState() === LIVING_DEX_ALL ? "lightseagreen"
@@ -1622,12 +1625,14 @@ export class BoxView extends Component
                         <OverlayTrigger placement="top" overlay={cancelTooltip}>
                             <div>
                                 <AiOutlineCloseCircle size={editIconSize  + 14}
+                                        id={`cancel-edit-${idSuffix}-name-button`}
                                         onClick={this.cancelEditingTitle.bind(this)} className="box-name-cancel-icon" />
                             </div>
                         </OverlayTrigger>
 
                         {/*Text Input Field*/}
                         <input type="text" className="box-name-text box-name-input"
+                                            id={`edit-${idSuffix}-name-input`}
                                             onChange={(event) => this.updateTitleNameInput(event.target.value)}
                                             onKeyDown={(event) => event.keyCode === 13 ? this.renameTitle() : {}}
                                             value={this.state.titleInput}/>
@@ -1635,7 +1640,7 @@ export class BoxView extends Component
                         {/*Save Button*/}
                         <OverlayTrigger placement="top" overlay={saveTooltip}>
                             <div>
-                                <AiOutlineCheckCircle size={editIconSize + 14}
+                                <AiOutlineCheckCircle size={editIconSize + 14} id={`save-edit-${idSuffix}-name-button`}
                                         onClick={this.renameTitle.bind(this)} className="box-name-save-icon" />
                             </div>
                         </OverlayTrigger>
@@ -1648,7 +1653,8 @@ export class BoxView extends Component
             {
                 title =
                     <OverlayTrigger placement="top" overlay={boxListTooltip}>
-                        <h2 className="box-name-text box-name-button" onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
+                        <h2 className="box-name-text box-name-button" id={`view-${idSuffix}es-button`}
+                            onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
                     </OverlayTrigger>
                 titleContainerClass = "box-title-no-edit";
 
@@ -1657,6 +1663,7 @@ export class BoxView extends Component
                                   <OverlayTrigger placement="top" overlay={renameTooltip}>
                                       <div>
                                           <GrEdit size={editIconSize}
+                                              id={`edit-${idSuffix}-name-button`}
                                               onClick={this.startEditingTitle.bind(this)} className="box-name-edit-icon" />
                                       </div>
                                   </OverlayTrigger>
@@ -1669,7 +1676,8 @@ export class BoxView extends Component
             boxName = "Box " + (this.getCurrentBoxId() + 1);
             title =
                 <OverlayTrigger placement="top" overlay={boxListTooltip}>
-                    <h2 className="box-name-text box-name-button" onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
+                    <h2 className="box-name-text box-name-button" id={`view-${idSuffix}es-button`}
+                        onClick={this.viewBoxList.bind(this)}>{boxName}</h2>
                 </OverlayTrigger>
             titleEditIcon = "";
             titleContainerClass = "box-title-no-edit";
@@ -1682,6 +1690,7 @@ export class BoxView extends Component
                 <OverlayTrigger placement="bottom" overlay={searchTooltip}>
                     <div className="box-lower-icon-div">
                         <BiSearchAlt2 size={34} className={"box-lower-icon" + (this.shouldFilterSearchResults() ? " green-icon" : "")}
+                                      id={`search-button-${idSuffix}`}
                                       onClick={this.startSearching.bind(this)}/>
                     </div>
                 </OverlayTrigger>
@@ -1690,7 +1699,8 @@ export class BoxView extends Component
                     !this.isTrading() &&
                         <OverlayTrigger placement="bottom" overlay={this.areAnyPokemonSelectedInCurrentBox(true) ? deselectAllTooltip : selectAllTooltip}>
                             <div className="box-lower-icon-div">
-                                <GrMultiple size={28} className="box-lower-icon" onClick={this.handleSelectAll.bind(this)}/>
+                                <GrMultiple size={28} className="box-lower-icon" id={`select-all-button-${idSuffix}`}
+                                            onClick={this.handleSelectAll.bind(this)}/>
                             </div>
                         </OverlayTrigger>
                 }
@@ -1699,7 +1709,7 @@ export class BoxView extends Component
                     this.getParentState().changeWasMade[this.state.boxType] && !this.isTrading() &&
                         <OverlayTrigger placement="bottom" overlay={saveTooltip}>
                             <div className="box-lower-icon-div">
-                                <AiOutlineSave size={36} className="box-lower-icon"
+                                <AiOutlineSave size={36} className="box-lower-icon" id={`save-button-${idSuffix}`}
                                                onClick={() => this.state.parent.trySaveAndExit(this.state.parent.areOnlyHomeBoxesAccessible() ? false : true)}/>
                             </div>
                         </OverlayTrigger>
@@ -1709,7 +1719,8 @@ export class BoxView extends Component
                     this.getLivingDexState() !== LIVING_DEX_NONE && !this.state.fixingLivingDex && this.isHomeBox() && !this.isTrading() &&
                         <OverlayTrigger placement="bottom" overlay={fixLivingDexTooltip}>
                             <div className="box-lower-icon-div">
-                                <AiOutlineTool size={36} className="box-lower-icon" onClick={this.fixLivingDex.bind(this)}/>
+                                <AiOutlineTool size={36} className="box-lower-icon" id={`fix-living-dex-button`}
+                                               onClick={this.fixLivingDex.bind(this)}/>
                             </div>
                         </OverlayTrigger>
                 }
@@ -1720,7 +1731,7 @@ export class BoxView extends Component
                             this.canViewReleaseButton() &&
                                 <OverlayTrigger placement="bottom" overlay={releaseTooltip}>
                                     <div className="box-lower-icon-div">
-                                        <GrTrash size={28} className="box-lower-icon"
+                                        <GrTrash size={28} className="box-lower-icon" id={`release-button-${idSuffix}`}
                                                  onClick={this.releaseSelectedPokemon.bind(this)}/>
                                     </div>
                                 </OverlayTrigger>
@@ -1731,7 +1742,7 @@ export class BoxView extends Component
                                 //This way it doesn't cover the Showdown box
                                 <OverlayTrigger placement={isMobile ? "top" : "bottom"} overlay={showdownTooltip}>
                                     <div className="box-lower-icon-div">
-                                        <RiBoxingLine size={32} className="box-lower-icon"
+                                        <RiBoxingLine size={32} className="box-lower-icon" id={`showdown-button-${idSuffix}`}
                                                       onClick = {this.viewShowdownExport.bind(this)}/>
                                     </div>
                                 </OverlayTrigger>
@@ -1759,17 +1770,20 @@ export class BoxView extends Component
             <div className="box-view">
                 {/*Above Box*/}
                 <div className={titleContainerClass}>
-                    <AiOutlineArrowLeft size={42} aria-label="Previous Box" onClick={this.handleChangeBox.bind(this, -1)} className="box-change-arrow" />
+                    <AiOutlineArrowLeft size={42} aria-label="Previous Box" id={`previous-${idSuffix}-button`}
+                                        onClick={this.handleChangeBox.bind(this, -1)} className="box-change-arrow" />
                     <span className="box-name">
                         {livingDexIcon}
                         {title}
                         {titleEditIcon}
                     </span>
-                    <AiOutlineArrowRight size={42} aria-label="Next Box" onClick={this.handleChangeBox.bind(this, 1)} className="box-change-arrow" />
+                    <AiOutlineArrowRight size={42} aria-label="Next Box" id={`next-${idSuffix}-button`}
+                                         onClick={this.handleChangeBox.bind(this, 1)} className="box-change-arrow" />
                 </div>
 
                 {/*Box Itself*/}
-                <div className={"box " + (this.isHomeBox() ? "home-box" : "save-box")}>
+                <div className={"box " + (this.isHomeBox() ? "home-box" : "save-box")}
+                     id={idSuffix}>
                     {icons}
                 </div>
 
@@ -1779,7 +1793,9 @@ export class BoxView extends Component
                 {
                     this.getParentState().errorMessage[this.state.boxSlot] !== ""
                     ?
-                        <p className="error-message">{this.getParentState().errorMessage[this.state.boxSlot]}</p>
+                        <p className="error-message" id={`error-message-${idSuffix}`}>
+                            {this.getParentState().errorMessage[this.state.boxSlot]}
+                        </p>
                     :
                         monToView //Summary
                 }

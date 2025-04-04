@@ -95,9 +95,9 @@ export class PokemonSummary extends Component
         var dexNum = (species in gSpeciesToDexNum) ? gDexNums[gSpeciesToDexNum[species]] : 0;
         var dexNumText = String(dexNum).padStart(3, "0");
         var nicknameText = GetNickname(this.state.pokemon);
-        var nickname = <span className="summary-name">{nicknameText}</span>
+        var nickname = <span className="summary-name" id="nickname">{nicknameText}</span>
         if (!this.state.inGTS)
-            nickname = <span>#{dexNumText} {nickname}</span>
+            nickname = <span id="dex-num-nickname">#{dexNumText} {nickname}</span>
 
         if (nicknameText !== speciesName)
         {
@@ -148,11 +148,12 @@ export class PokemonSummary extends Component
     {
         var symbol = "";
         var gender = GetGender(this.state.pokemon).toUpperCase();
+        const id = "gender";
 
         if (gender === "M")
-            symbol = <span className="male-gender-symbol">♂</span>;
+            symbol = <span className="male-gender-symbol" id={id}>♂</span>;
         else if (gender === "F")
-            symbol = <span className="female-gender-symbol">♀</span>;
+            symbol = <span className="female-gender-symbol" id={id}>♀</span>;
 
         return symbol;
     }
@@ -172,7 +173,7 @@ export class PokemonSummary extends Component
 
         return (
             <OverlayTrigger placement="top" overlay={heartTooltip}>
-                <span className="summary-heart"
+                <span className="summary-heart" id="friendship"
                  style={{backgroundImage: `linear-gradient(to top, rgb(255 0 0) ${percent}%, transparent 0)`}}>
                     ♥
                 </span>
@@ -192,7 +193,8 @@ export class PokemonSummary extends Component
         {
             return (
                 <OverlayTrigger placement="top" overlay={gigantamaxTooltip}>
-                    <img src={BASE_GFX_LINK + "gigantamax.png"} alt={"Gigantamax"} aria-label="Can Gigantamax" className="summary-gigantamax"/>
+                    <img src={BASE_GFX_LINK + "gigantamax.png"} alt={"Gigantamax"} aria-label="Can Gigantamax"
+                         className="summary-gigantamax" id="gigantamax"/>
                 </OverlayTrigger>
             );
         }
@@ -228,7 +230,8 @@ export class PokemonSummary extends Component
 
         return (
             <OverlayTrigger placement="top" overlay={props => (<Tooltip {...props}>{tooltip}</Tooltip>)}>
-                <img src={iconLink} alt={alt} aria-label={tooltip} className="summary-pokerus" style={extraStyle}/>
+                <img src={iconLink} alt={alt} aria-label={tooltip}
+                     className="summary-pokerus" id="pokerus" style={extraStyle}/>
             </OverlayTrigger>
         );
     }
@@ -248,6 +251,7 @@ export class PokemonSummary extends Component
         {
             let symbol = (monMarkings[i]) ? markingsFilled[i] : markingsOutlined[i];
             displayMarkings.push(<span className="summary-marking" key={i}
+                                       id={"marking-" + i}
                                        style={this.state.inTrade ? {cursor: "default"} : {}} //No editing marking during a trade
                                        onClick={this.changeMarking.bind(this, i)}>{symbol}</span>);
         }
@@ -256,7 +260,7 @@ export class PokemonSummary extends Component
                 <span className="summary-markings">
                     {/*Tooltip goes in here because otherwise it appears when moving mouse over half the summary view*/}
                     <OverlayTrigger placement="right" overlay={props => (<Tooltip {...props}>Markings</Tooltip>)}>
-                        <span>
+                        <span id="markings">
                             {displayMarkings}
                         </span>
                     </OverlayTrigger>
@@ -271,10 +275,11 @@ export class PokemonSummary extends Component
     printOTSummary()
     {
         return (
-            <div className="summary-ot-container">
+            <div className="summary-ot-container" id="ot">
                 <span className={GetOTGender(this.state.pokemon) === "M" ? "summary-male-ot"
                                 : GetOTGender(this.state.pokemon) === "F" ? "summary-female-ot"
-                                : ""}>
+                                : ""}
+                      id="ot-name">
                     {GetOTName(this.state.pokemon)}
                 </span>
                 : {String(GetVisibleOTId(this.state.pokemon)).padStart(5, "0") /*This is a colon, not an else*/}
@@ -300,7 +305,7 @@ export class PokemonSummary extends Component
 
             loseBallWarning=
                 <OverlayTrigger placement="top" overlay={loseItemTooltip}>
-                    <div>
+                    <div id="lose-ball-warning">
                         <AiFillWarning className="summary-item-ball-warning summary-ball-warning"
                                        fill="red" size={14}
                                        aria-label="Will Lose Ball"/>
@@ -309,14 +314,15 @@ export class PokemonSummary extends Component
         }
         else
         {
-            loseBallWarning = <span className="summary-item-ball-warning summary-ball-warning"/>;
+            loseBallWarning = <span className="summary-item-ball-warning summary-ball-warning" id="ball-warning" />;
         }
 
         return (
             <div style={{position: "relative"}}>
                 {loseBallWarning}
                 <OverlayTrigger placement="top" overlay={ballNameTooltip}>
-                    <img src={POKE_BALL_GFX_LINK + baseBallName + ".png"} alt="" onMouseDown={(e) => e.preventDefault()}/>
+                    <img src={POKE_BALL_GFX_LINK + baseBallName + ".png"} alt="" id="ball"
+                         onMouseDown={(e) => e.preventDefault()}/>
                 </OverlayTrigger>
             </div>
         );
@@ -340,7 +346,7 @@ export class PokemonSummary extends Component
 
             loseItemWarning=
                 <OverlayTrigger placement="top" overlay={loseItemTooltip}>
-                    <div>
+                    <div id="lose-item-warning">
                         <AiFillWarning className="summary-item-ball-warning summary-item-warning"
                                        fill="red" size={14}
                                        aria-label="Will Lose Item"/>
@@ -349,7 +355,7 @@ export class PokemonSummary extends Component
         }
         else
         {
-            loseItemWarning = <span className="summary-item-ball-warning summary-item-warning"/>;
+            loseItemWarning = <span className="summary-item-ball-warning summary-item-warning" id="lose-item-warning" />;
         }
 
         return (
@@ -357,7 +363,8 @@ export class PokemonSummary extends Component
                 <div className={this.state.inGTS ? "summary-item-container-gts" : ""} style={{position: "relative"}}> {/*Relative allows the warning's absolute to function properly*/}
                     {loseItemWarning}
                     <OverlayTrigger placement="top" overlay={itemTooltip}>
-                        <img src={itemLink} alt="" className="summary-item" onMouseDown={(e) => e.preventDefault()}/>
+                        <img src={itemLink} alt="" className="summary-item" id="item"
+                             onMouseDown={(e) => e.preventDefault()}/>
                     </OverlayTrigger>
                 </div>
             :
@@ -372,7 +379,7 @@ export class PokemonSummary extends Component
     printBallAndItemIcon()
     {
         return (
-            <div className="summary-ball-icon-container">
+            <div className="summary-ball-icon-container" id="ball-and-item">
                 {/*Held Item*/}
                 {this.printItemIcon()}
 
@@ -402,10 +409,12 @@ export class PokemonSummary extends Component
         {
             let natureColour = "";
             let realStatId = visibleStatIdToStatId[visibleStatId];
+            let idStatName = statNames[visibleStatId].toLowerCase().replaceAll(" ", "-").replaceAll(".", "");
 
             //Add Stat Name
             titlesNature.push(
-                <span className="summary-stat-title" key={key++}>
+                <span className="summary-stat-title" key={key++}
+                      id={"stat-title-" + idStatName}>
                     {statNames[visibleStatId]}
                 </span>
             );
@@ -422,7 +431,8 @@ export class PokemonSummary extends Component
 
                 titlesNature.push(
                     <OverlayTrigger placement="left" overlay={props => (<Tooltip {...props}>{tooltip}</Tooltip>)} key={key++}>
-                        <span className="summary-stat-nature-arrow" style={{color: natureColour}}>
+                        <span className="summary-stat-nature-arrow" style={{color: natureColour}}
+                              id={"nature-arrow-" + idStatName}>
                             {symbol}
                         </span>
                     </OverlayTrigger>
@@ -442,7 +452,8 @@ export class PokemonSummary extends Component
 
                 //Add Raw Stat
                 printableStats.push(
-                    <span className={"summary-stat-value"} key={key++}>
+                    <span className={"summary-stat-value"} key={key++}
+                          id={`stat-${idStatName}`}>
                         {stats[visibleStatId]}
                     </span>
                 );
@@ -450,7 +461,8 @@ export class PokemonSummary extends Component
                 //Add IV Grading
                 printableStats.push(
                     <span className="summary-stat-iv-grading" key={key++}
-                          style={{color: ivColour}}>
+                          style={{color: ivColour}}
+                          id={"iv-grading-" + idStatName}>
                         {ivLetter}{ivSign}
                     </span>
                 );
@@ -459,14 +471,16 @@ export class PokemonSummary extends Component
             {
                 //Add EV
                 printableStats.push(
-                    <span className="summary-stat-ev" key={key++}>
+                    <span className="summary-stat-ev" key={key++}
+                          id={"ev-" + idStatName}>
                         {evs[visibleStatId]}
                     </span>
                 );
 
                 //Add IV
                 printableStats.push(
-                    <span className="summary-stat-iv" key={key++}>
+                    <span className="summary-stat-iv" key={key++}
+                          id={"iv-" + idStatName}>
                         {ivs[visibleStatId]}
                     </span>
                 );
@@ -475,7 +489,7 @@ export class PokemonSummary extends Component
 
         //Try put tooltip over EV/IV container
         var statValuesContainer =
-            <div className="summary-stat-values-container"
+            <div className="summary-stat-values-container" id="stats"
                  onClick={this.changeStatDisplay.bind(this)}>
                 {printableStats}
             </div>    
@@ -520,7 +534,7 @@ export class PokemonSummary extends Component
 
                 moves.push(
                     <OverlayTrigger placement="top" overlay={loseMoveTooltip} key={key++}>
-                        <div>
+                        <div id={`lose-move-warning-${i}`}>
                             <AiFillWarning className="summary-move-warning"
                                            fill="red"
                                            size={18}
@@ -531,7 +545,7 @@ export class PokemonSummary extends Component
             }
             else
             {
-                moves.push(<span className="summary-move-warning" key={key++}/>);
+                moves.push(<span className="summary-move-warning" id={`lose-move-warning-${i}`} key={key++}/>);
             }
 
             //Print Type
@@ -544,24 +558,25 @@ export class PokemonSummary extends Component
 
                 moves.push(
                     <OverlayTrigger placement="left" overlay={typeNameTooltip} key={key++}>
-                        <img src={TYPE_ICON_GFX_LINK + typeNames[i].toLowerCase() + ".png"} alt={alt} className="summary-move-type" />
+                        <img src={TYPE_ICON_GFX_LINK + typeNames[i].toLowerCase() + ".png"} alt={alt}
+                             className="summary-move-type" id={`move-type-${i}`} />
                     </OverlayTrigger>
                 )
             }
             else
             {
-                moves.push(<span className="summary-move-type" key={key++}/>);
+                moves.push(<span className="summary-move-type" id={`move-type-${i}`} key={key++}/>);
             }
 
             //Print Name
             var moveName = GetMoveName(move);
-            moves.push(<span className="summary-move" key={key++}>{moveName}</span>)
+            moves.push(<span className="summary-move" id={`move-${i}`} key={key++}>{moveName}</span>)
 
             if (move in gMoveData)
             {
                 //Print PP
                 var pp = GetMovePP(this.state.pokemon, move, i);
-                moves.push(<span className="summary-pp" key={key++}>{pp}</span>);
+                moves.push(<span className="summary-pp" id={`pp-${i}`} key={key++}>{pp}</span>);
 
                 //Print Move Split
                 var moveSplit = gMoveData[move]["split"];
@@ -570,14 +585,15 @@ export class PokemonSummary extends Component
 
                 moves.push(
                     <OverlayTrigger placement={this.state.areBoxViewsVertical ? "top" : "right"} overlay={splitNameTooltip} key={key++}>
-                        <img src={CATEGORY_ICON_GFX_LINK + splitNames[i].toLowerCase() + ".png"} alt={splitNames[i].slice(0, 2)} className="summary-move-split"/>
+                        <img src={CATEGORY_ICON_GFX_LINK + splitNames[i].toLowerCase() + ".png"} alt={splitNames[i].slice(0, 2)}
+                             className="summary-move-split" id={`move-split-${i}`} />
                     </OverlayTrigger>
                 );
             }
             else
             {
-                moves.push(<span className="summary-pp" key={key++}/>);
-                moves.push(<span className="summary-move-split" key={key++}/>);
+                moves.push(<span className="summary-pp" id={`pp-${i}`} key={key++}/>);
+                moves.push(<span className="summary-move-split" id={`move-split-${i}`} key={key++}/>);
             }
         }
 
@@ -602,6 +618,7 @@ export class PokemonSummary extends Component
         return (
             <div className="summary-mon-icon-item-gts">
                 <img src={GetIconSpeciesLink(this.state.pokemon)} alt={GetNickname(this.state.pokemon)}
+                    id="mon-icon-gts"
                     className="summary-mon-icon-gts" onMouseDown={(e) => e.preventDefault()}/>
                 {this.printItemIcon()}
             </div>
@@ -622,9 +639,10 @@ export class PokemonSummary extends Component
         {
             //Limited view for Eggs
             return (
-                <div className="pokemon-summary-container">
+                <div className="pokemon-summary-container"
+                     id={`mon-summary-${(this.state.isSaveBox ? "save" : "home")}-box`} >
                     <div className="summary-name-level-container">
-                        <span>Egg</span>
+                        <span id="nickname">Egg</span>
                     </div>
                     {this.printOTSummary()}
                     {this.printBallAndItemIcon()}
@@ -633,7 +651,8 @@ export class PokemonSummary extends Component
         }
 
         return (
-            <div className={"pokemon-summary-container" + (this.state.inGTS ? "-gts" : "")}>
+            <div className={"pokemon-summary-container" + (this.state.inGTS ? "-gts" : "")}
+                 id={`mon-summary-${(this.state.isSaveBox ? "save" : "home")}-box`}>
                 {/*Mon Icon in GTS*/}
                 {this.state.inGTS ? this.printGTSMonIconAndItem(): ""}
 
@@ -648,7 +667,7 @@ export class PokemonSummary extends Component
                     </span>
 
                     {/*Level*/}
-                    <span className="summary-level">
+                    <span className="summary-level" id="level">
                         Lv. {level}
                     </span>
 
@@ -672,14 +691,14 @@ export class PokemonSummary extends Component
                 {this.printOTSummary()}
 
                 {/*Ability Row*/}
-                <div className="summary-ability">
+                <div className="summary-ability" id="ability">
                     Ability: {ability}
                 </div>
 
                 {/*Nature Row*/}
                 {
                     !this.state.inGTS ?
-                        <div className="summary-nature">
+                        <div className="summary-nature" id="nature">
                             Nature: {nature} {nature !== natureMint ? `(${natureMint} Mint)` : ""}
                         </div>
                     :

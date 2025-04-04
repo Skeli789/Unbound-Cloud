@@ -232,10 +232,11 @@ export class SignUp extends Component
         const showPasswordFunc = () => this.setState({showPassword: !this.state.showPassword});
 
         return (
-            <div className="form-page">
+            <div className="form-page" id="sign-up-form">
                 <h1 className="form-title">Sign Up for Unbound Cloud {PURPLE_CLOUD}</h1>
                 {/*Redirect to Login Page Button*/}
                 <div className="already-have-account-button"
+                     id="login-button"
                      onClick={() => this.getMainPage().setState({editState: STATE_LOGIN})}>
                     I already have an account
                 </div>
@@ -338,7 +339,7 @@ export class SignUp extends Component
     
                     {/* Submit Button */}
                     <div className="submit-form-button-container mt-2">
-                        <Button size="lg" className="submit-form-button" type="submit">
+                        <Button size="lg" className="submit-form-button" id="sign-up-button" type="submit">
                             <AiOutlineCheckCircle size={42}/>
                         </Button>
                     </div>
@@ -383,7 +384,7 @@ export function ShowPasswordSymbol(shouldShowPassword, showPasswordFunc)
 
     return (
         <OverlayTrigger placement="right" overlay={shouldShowPassword ? hidePasswordTooltip : showPasswordTooltip}>    
-            <div className="show-password-symbol">
+            <div className="show-password-symbol" id="show-password-button">
                 {
                     shouldShowPassword ?
                         <AiOutlineEyeInvisible size={20} onClick={showPasswordFunc}/>
