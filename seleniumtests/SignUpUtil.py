@@ -62,6 +62,7 @@ def HandleSignUp(driver: webdriver.Chrome, tester: TestCase):
     ConfirmPasswordViewToggleWorks(signUpForm, tester)
 
     # Click the sign up button and wait for the registration to complete
+    driver.save_screenshot(f"Debug_SignUp.png")
     SubmitSignUpForm(driver, signUpForm, tester)
 
 

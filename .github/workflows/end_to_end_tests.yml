@@ -89,6 +89,13 @@ jobs:
         name: selenium-test-results
         path: selenium-report.html
 
+    - name: Upload debug pic
+      uses: actions/upload-artifact@v4
+      if: always()  # Run this step even if previous steps fail
+      with:
+        name: debug-pic
+        path: Debug_SignUp.png
+
     - name: Upload video artifact
       uses: actions/upload-artifact@v4
       if: always()  # Run this step even if previous steps fail
