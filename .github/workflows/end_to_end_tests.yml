@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Use Python
       uses: actions/setup-python@v5
@@ -28,26 +29,22 @@ jobs:
       run: |
         set -e
         mkdir /tmp/unboundcloud
-        yarn install
-        cd server && yarn install
+        mkdir debug_screenshots ||:
+        (yarn install & cd server && yarn install & wait)
 
     - name: Install Python dependencies
       run: |
         set -e
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r test-requirements.txt
+        pip install -r requirements.txt test-requirements.txt
 
-    - name: Install Chrome
+    - name: Install Chrome, and Xvfb & ffmpeg
       run: |
         set -e
         wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
         echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
         sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
-
-    - name: Install Xvfb & ffmpeg
-      run: sudo apt-get update && sudo apt-get install -y xvfb ffmpeg
+        sudo apt-get install -y google-chrome-stable xvfb ffmpeg
 
     - name: Start Website & Server
       run: |
@@ -64,12 +61,15 @@ jobs:
   
     - name: Start Xvfb & begin recording
       run: |
-        # start virtual display
+        # start a virtual display
         Xvfb :99 -screen 0 1280x1024x24 &
         export DISPLAY=:99
-        # record the virtual display at 15fps
-        ffmpeg -y -f x11grab -r 15 -s 1280x1024 -i :99 \
-               -c:v libx264 -preset ultrafast video.mp4 &
+
+        # record at 15fps, h264, movflags for faststart
+        ffmpeg -y \
+          -f x11grab -r 15 -s 1280x1024 -i :99 \
+          -c:v libx264 -preset ultrafast -movflags +faststart \
+          video.mp4 &
         echo $! > ffmpeg.pid
   
     - name: Run Selenium tests
@@ -79,26 +79,17 @@ jobs:
         DISPLAY: :99
 
     - name: Stop recording
-      if: always()  # Run this step even if previous steps fail
-      run: kill $(cat ffmpeg.pid)
+      run: |
+        # send SIGINT (equivalent to Ctrl-C) so ffmpeg writes its trailer
+        kill -SIGINT $(cat ffmpeg.pid)
+        # wait for ffmpeg to exit and finalize the file
+        wait $(cat ffmpeg.pid)
 
-    - name: Upload test results
+    - name: Upload artifacts
       uses: actions/upload-artifact@v4
-      if: always()  # Run this step even if previous steps fail
       with:
-        name: selenium-test-results
-        path: selenium-report.html
-
-    - name: Upload debug pic
-      uses: actions/upload-artifact@v4
-      if: always()  # Run this step even if previous steps fail
-      with:
-        name: debug-pic
-        path: Debug_SignUp.png
-
-    - name: Upload video artifact
-      uses: actions/upload-artifact@v4
-      if: always()  # Run this step even if previous steps fail
-      with:
-        name: selenium-video
-        path: video.mp4
+        name: artifacts
+        path: |
+          selenium-report.html
+          video.mp4
+          debug_screenshots
