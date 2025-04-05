@@ -92,7 +92,7 @@ export function ErrorPopUp(errorMsg)
     {
         icon: 'error',
         title: errorMsg,
-        cancelButtonText: `Okay`,
+        cancelButtonText: `OK`,
         showConfirmButton: false,
         showCancelButton: true,
         scrollbarPadding: false,

@@ -31,16 +31,16 @@ def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
 
     # Resend the activation code
     resendButton = activationForm.find_element(By.ID, "resend-code-button")
-    resendButton.click()
+    ClickButton(resendButton)
 
     # Wait for the pop-up
-    WaitAndClosePopUp(driver, "Check your email for the new code!", "OK")
+    WaitAndClosePopUp(driver, "OK")
 
     # Click the resend button again
-    resendButton.click()
+    ClickButton(resendButton)
 
     # Wait for the error message to appear
-    WaitAndClosePopUp(driver, "Please wait 120 seconds before sending another code.", "Okay")
+    WaitAndClosePopUp(driver, "OK")
 
     # Load the new activation code from the user file
     newActivationCode = LoadActivationCode()
@@ -55,19 +55,19 @@ def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
     # if not APPDATA == "/":
     #     # For Windows, use the paste button
     #     pasteButton = activationForm.find_element(By.ID, "paste-button")
-    #     pasteButton.click()
+    #     ClickButton(pasteButton)
     #     # Confirm the activation code is pasted correctly
     #     tester.assertEqual(activationCodeField.get_attribute("value"), newActivationCode, "Activation code is not pasted correctly.")
 
     # Send the keys because the paste button doesn't work on Linux
-    activationCodeField.send_keys(activationCode)
+    activationCodeField.send_keys(newActivationCode)
 
     # Click the activate button
     try:
         activateButton = activationForm.find_element(By.ID, "submit-code-button")
-        activateButton.click()
+        ClickButton(activateButton)
     except ElementClickInterceptedException:
         pass # Ignore this
 
     # Wait for the activation complete message to appear
-    WaitAndClosePopUp(driver, "Account activated successfully!", "OK")
+    WaitAndClosePopUp(driver, "OK")

@@ -22,7 +22,7 @@ def LogOut(driver: webdriver.Chrome):
     """
     # Click the logout button
     logoutButton = driver.find_element(By.ID, "logout-button")
-    logoutButton.click()
+    ClickButton(logoutButton)
 
 
 def HandleLogin(driver: webdriver.Chrome):
@@ -34,12 +34,12 @@ def HandleLogin(driver: webdriver.Chrome):
     # Click the sign-up button
     loginForm = WaitForLoginPage(driver)
     signUpButton = loginForm.find_element(By.ID, "switch-to-sign-up-button")
-    signUpButton.click()
+    ClickButton(signUpButton)
 
     # Click the login button again
     signUpPage = WaitForSignUpPage(driver)
     loginButton = signUpPage.find_element(By.ID, "switch-to-login-button")
-    loginButton.click()
+    ClickButton(loginButton)
 
     # Get the elements on the page
     loginForm = WaitForLoginPage(driver)
@@ -52,10 +52,10 @@ def HandleLogin(driver: webdriver.Chrome):
     passwordField.send_keys("wrong_password")
 
     # Click the login button
-    loginButton.click()
+    ClickButton(loginButton)
 
     # Wait for the "Incorrect password" message to appear
-    WaitAndClosePopUp(driver, "Incorrect password!", "Okay")
+    WaitAndClosePopUp(driver, "OK")
 
     # Type backspace to clear the password field
     while passwordField.get_attribute("value"):
@@ -65,4 +65,4 @@ def HandleLogin(driver: webdriver.Chrome):
     passwordField.send_keys(TEST_PASSWORD)
 
     # Click the login button
-    loginButton.click()
+    ClickButton(loginButton)

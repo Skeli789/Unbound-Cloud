@@ -137,7 +137,7 @@ export class WonderTrade extends Component
             PopUp.fire(
             {
                 title: "Please save everything before attempting to Wonder Trade.",
-                confirmButtonText: `Okay`,
+                confirmButtonText: `OK`,
                 icon: 'error',
                 scrollbarPadding: false,
             });
@@ -174,7 +174,7 @@ export class WonderTrade extends Component
             PopUp.fire
             ({
                 title: `Please wait ${timeRemaining} seconds before trading this Pokémon.`,
-                cancelButtonText: `Okay`,
+                cancelButtonText: `OK`,
                 showConfirmButton: false,
                 showCancelButton: true,
                 icon: 'error',
@@ -290,7 +290,7 @@ export class WonderTrade extends Component
                     PopUp.fire
                     ({
                         title: `${GetNickname(pokemon)} has been sent!\nPlease wait for your new Pokémon to arrive.`,
-                        confirmButtonText: `Okay`,
+                        confirmButtonText: `OK`,
                         imageUrl: GetIconSpeciesLink(pokemon),
                         imageAlt: "",
                         scrollbarPadding: false,

@@ -48,7 +48,7 @@ class TestE2E(TestCase):
         while attempts < 10:
             try:
                 getStartedButton = self.driver.find_element(By.ID, "get-started-button")
-                getStartedButton.click()
+                ClickButton(getStartedButton)
                 return
             except:
                 attempts += 1

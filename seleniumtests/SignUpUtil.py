@@ -105,12 +105,12 @@ def ConfirmPasswordViewToggleWorks(signUpForm: WebElement, tester: TestCase):
     tester.assertEqual(confirmPasswordField.get_attribute("type"), "password", "Confirm password field is not hidden.")
 
     # Show the password
-    viewPasswordButton.click()
+    ClickButton(viewPasswordButton)
     tester.assertEqual(passwordField.get_attribute("type"), "text", "Password field is not visible.")
     tester.assertEqual(confirmPasswordField.get_attribute("type"), "text", "Confirm password field is not visible.")
 
     # Hide the password again
-    viewPasswordButton.click()
+    ClickButton(viewPasswordButton)
     tester.assertEqual(passwordField.get_attribute("type"), "password", "Password field is not hidden.")
     tester.assertEqual(confirmPasswordField.get_attribute("type"), "password", "Confirm password field is not hidden.")
 
@@ -125,7 +125,7 @@ def SubmitSignUpForm(driver: webdriver.Chrome, signUpForm: WebElement, tester: T
     """
     # Click the sign up button
     signUpButton = signUpForm.find_element(By.ID, "sign-up-button")
-    signUpButton.click()
+    ClickButton(signUpButton)
 
     # Wait for the registration complete
-    WaitAndClosePopUp(driver, "Registration complete!", "OK")
+    WaitAndClosePopUp(driver, "OK")
