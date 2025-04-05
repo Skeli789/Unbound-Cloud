@@ -63,8 +63,13 @@ jobs:
       run: |
         # record at 15fps, h264, movflags for faststart
         ffmpeg -probesize 10M -y -f x11grab -r 15 -s ${RESOLUTION} -i ${DISPLAY} \
-          -c:v libx264 -preset ultrafast -movflags +faststart video.mp4 &
+          -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart video.mp4 &
         echo $! > ffmpeg.pid
+
+    - name: Check recording status
+      run: |
+        sleep 2
+        ps aux | grep ffmpeg
 
     - name: Run Selenium tests
       run: yarn test-selenium
@@ -74,9 +79,9 @@ jobs:
       if: always()
       run: |
         # send SIGINT (equivalent to Ctrl-C) so ffmpeg writes its trailer
-        kill -SIGINT $(cat ffmpeg.pid)
+        kill -INT $(cat ffmpeg.pid)
         # wait for ffmpeg to exit and finalize the file
-        wait $(cat ffmpeg.pid) ||:
+        sleep 2
 
     - name: Upload artifacts
       if: always()
