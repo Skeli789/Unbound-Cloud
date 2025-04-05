@@ -42,14 +42,20 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt -r test-requirements.txt
 
-    - name: Install Chrome, Xvfb & ffmpeg
+    - name: Install Xvfb & ffmpeg
       run: |
         sudo apt-get update
-        sudo apt-get install -y google-chrome-stable xvfb ffmpeg
+        sudo apt-get install -y xvfb ffmpeg
+
+    - name: Start Website & Server
+      run: |
+        yarn start &
+        yarn --cwd server start &
+        sleep 5
 
     - name: Start Xvfb
       run: |
-        Xvfb :99 -screen 0 1920x1080 &
+        Xvfb :99 -screen 0 1920x1080x24 &
         sleep 3
 
     - name: Start recording
@@ -58,12 +64,6 @@ jobs:
         ffmpeg -y -f x11grab -r 15 -s 1920x1080 -i ${DISPLAY} \
           -c:v libx264 -preset ultrafast -movflags +faststart video.mp4 &
         echo $! > ffmpeg.pid
-
-    - name: Start Website & Server
-      run: |
-        yarn start &
-        yarn --cwd server start &
-        sleep 5
 
     - name: Run Selenium tests
       run: yarn test-selenium
