@@ -11,76 +11,66 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    env:
+      DISPLAY: :99
+      APPDATA: ${{ vars.APPDATA }}
+      UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+      UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+      WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Use Python
+    - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: "3.13"
 
-    - name: Use Node.js
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: "22.x"
+        cache: 'yarn'
 
     - name: Install JS dependencies
-      run: |
-        set -e
-        mkdir /tmp/unboundcloud
-        mkdir debug_screenshots ||:
-        (yarn install & cd server && yarn install & wait)
+      run: (yarn install & yarn --cwd server install & wait)
 
     - name: Install Python dependencies
       run: |
-        set -e
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r test-requirements.txt
+        pip install -r requirements.txt -r test-requirements.txt
 
-    - name: Install Chrome, and Xvfb & ffmpeg
+    - name: Install Chrome, Xvfb & ffmpeg
       run: |
-        set -e
-        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable xvfb ffmpeg
 
+    - name: Start Xvfb
+      run: |
+        Xvfb :99 -screen 0 1920x1080 &
+        sleep 3
+
+    - name: Start recording
+      run: |
+        # record at 15fps, h264, movflags for faststart
+        ffmpeg -y -f x11grab -r 15 -s 1920x1080 -i ${DISPLAY} \
+          -c:v libx264 -preset ultrafast -movflags +faststart video.mp4 &
+        echo $! > ffmpeg.pid
+
     - name: Start Website & Server
       run: |
-        set -e
-        nohup yarn start &
-        cd server && nohup yarn start &
-        sleep 5  # Wait for the site to start
-      env:
-        APPDATA: ${{ vars.APPDATA }}
-        UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
-        UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
-        WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
-        ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-  
-    - name: Start Xvfb & begin recording
-      run: |
-        # start a virtual display
-        Xvfb :99 -screen 0 1920x1080 &
-        export DISPLAY=:99
+        yarn start &
+        yarn --cwd server start &
+        sleep 5
 
-        # record at 15fps, h264, movflags for faststart
-        ffmpeg -y \
-          -f x11grab -r 15 -s 1920x1080 -i :99 \
-          -c:v libx264 -preset ultrafast -movflags +faststart \
-          video.mp4 &
-        echo $! > ffmpeg.pid
-  
     - name: Run Selenium tests
       run: yarn test-selenium
       timeout-minutes: 1 # 1 minute timeout for tests
-      env:
-        APPDATA: ${{ vars.APPDATA }}
-        DISPLAY: :99
 
     - name: Stop recording
+      if: always()
       run: |
         # send SIGINT (equivalent to Ctrl-C) so ffmpeg writes its trailer
         kill -SIGINT $(cat ffmpeg.pid)
@@ -88,6 +78,7 @@ jobs:
         wait $(cat ffmpeg.pid)
 
     - name: Upload artifacts
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: artifacts
