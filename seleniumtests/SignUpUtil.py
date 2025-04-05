@@ -124,21 +124,8 @@ def SubmitSignUpForm(driver: webdriver.Chrome, signUpForm: WebElement, tester: T
     :param tester: The TestCase instance.
     """
     # Click the sign up button
-    try:
-        signUpButton = signUpForm.find_element(By.ID, "sign-up-button")
-        signUpButton.click()
-    except Exception as e:
-        print(f"Error clicking sign up button: {e}")
-
-        # Find the only button and click it
-        try:
-            button = signUpForm.find_element(By.TAG_NAME, "button")
-            button.click()
-        except Exception as e:
-            # Remove the driver and fail the test
-            driver.quit()
-            tester.driver = None
-            tester.fail(f"Error clicking sign up button: {e}")
+    signUpButton = signUpForm.find_element(By.ID, "sign-up-button")
+    signUpButton.click()
 
     # Wait for the registration complete
     WaitAndClosePopUp(driver, "Registration complete!", "OK")
