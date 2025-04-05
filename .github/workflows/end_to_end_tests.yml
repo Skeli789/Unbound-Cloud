@@ -13,6 +13,7 @@ jobs:
 
     env:
       DISPLAY: :99
+      RESOLUTION: 1920x1080
       APPDATA: ${{ vars.APPDATA }}
       UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
       UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
@@ -55,13 +56,13 @@ jobs:
 
     - name: Start Xvfb
       run: |
-        Xvfb :99 -screen 0 1920x1080x24 &
+        Xvfb ${DISPLAY} -screen 0 ${RESOLUTION}x24 &
         sleep 3
 
     - name: Start recording
       run: |
         # record at 15fps, h264, movflags for faststart
-        ffmpeg -y -f x11grab -r 15 -s 1920x1080 -i ${DISPLAY} \
+        ffmpeg -probesize 10M -y -f x11grab -r 15 -s ${RESOLUTION} -i ${DISPLAY} \
           -c:v libx264 -preset ultrafast -movflags +faststart video.mp4 &
         echo $! > ffmpeg.pid
 
@@ -75,7 +76,7 @@ jobs:
         # send SIGINT (equivalent to Ctrl-C) so ffmpeg writes its trailer
         kill -SIGINT $(cat ffmpeg.pid)
         # wait for ffmpeg to exit and finalize the file
-        wait $(cat ffmpeg.pid)
+        wait $(cat ffmpeg.pid) ||:
 
     - name: Upload artifacts
       if: always()

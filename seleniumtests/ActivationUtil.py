@@ -46,7 +46,7 @@ def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
     newActivationCode = LoadActivationCode()
 
     # Copy to clipboard
-    pyperclip.copy(newActivationCode)
+    # pyperclip.copy(newActivationCode)
 
     # Confirm the activation code is the same as before
     tester.assertEqual(activationCode, newActivationCode, "Activation code is not the same as before.")
