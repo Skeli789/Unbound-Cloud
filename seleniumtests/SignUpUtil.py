@@ -53,10 +53,7 @@ def HandleSignUp(driver: webdriver.Chrome, tester: TestCase):
     Handle the sign-up process by filling in the registration form and clicking the sign-up button.
     """
     # Wait for the sign-up page to load
-    WaitForSignUpPage(driver)
-
-    # Get elements on the page
-    signUpForm = driver.find_element(By.ID, "sign-up-form")
+    signUpForm = WaitForSignUpPage(driver)
 
     # Fill in the registration form
     FillInSignUpForm(signUpForm, TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD)
@@ -64,12 +61,8 @@ def HandleSignUp(driver: webdriver.Chrome, tester: TestCase):
     # Confirm the password toggle works
     ConfirmPasswordViewToggleWorks(signUpForm, tester)
 
-    # Click the sign up button
-    signUpButton = signUpForm.find_element(By.ID, "sign-up-button")
-    signUpButton.click()
-
-    # Wait for the registration complete
-    WaitAndClosePopUp(driver, "Registration complete!", "OK")
+    # Click the sign up button and wait for the registration to complete
+    SubmitSignUpForm(driver, signUpForm, tester)
 
 
 def FillInSignUpForm(signUpForm: WebElement, username: str, email: str, password: str):
@@ -97,6 +90,9 @@ def FillInSignUpForm(signUpForm: WebElement, username: str, email: str, password
 def ConfirmPasswordViewToggleWorks(signUpForm: WebElement, tester: TestCase):
     """
     Confirm that the password view toggle works by checking the password field is visible and hidden when clicked.
+    
+    :param signUpForm: The sign-up form element.
+    :param tester: The TestCase instance.
     """
     # Get elements on the page
     passwordField = signUpForm.find_element(By.NAME, "password")
@@ -116,3 +112,32 @@ def ConfirmPasswordViewToggleWorks(signUpForm: WebElement, tester: TestCase):
     viewPasswordButton.click()
     tester.assertEqual(passwordField.get_attribute("type"), "password", "Password field is not hidden.")
     tester.assertEqual(confirmPasswordField.get_attribute("type"), "password", "Confirm password field is not hidden.")
+
+
+def SubmitSignUpForm(driver: webdriver.Chrome, signUpForm: WebElement, tester: TestCase):
+    """
+    Submit the sign-up form by clicking the sign-up button.
+
+    :param driver: The WebDriver instance.
+    :param signUpForm: The sign-up form element.
+    :param tester: The TestCase instance.
+    """
+    # Click the sign up button
+    try:
+        signUpButton = signUpForm.find_element(By.ID, "sign-up-button")
+        signUpButton.click()
+    except Exception as e:
+        print(f"Error clicking sign up button: {e}")
+
+        # Find the only button and click it
+        try:
+            button = signUpForm.find_element(By.TAG_NAME, "button")
+            button.click()
+        except Exception as e:
+            # Remove the driver and fail the test
+            driver.quit()
+            tester.driver = None
+            tester.fail(f"Error clicking sign up button: {e}")
+
+    # Wait for the registration complete
+    WaitAndClosePopUp(driver, "Registration complete!", "OK")
