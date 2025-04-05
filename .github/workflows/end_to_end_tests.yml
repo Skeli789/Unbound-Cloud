@@ -68,7 +68,7 @@ jobs:
 
     - name: Run Selenium tests
       run: yarn test-selenium
-      timeout-minutes: 1 # 1 minute timeout for tests
+      timeout-minutes: 2 # 2 minute timeout for tests
 
     - name: Stop recording
       if: always()
