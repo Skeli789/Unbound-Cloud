@@ -6,6 +6,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import NoSuchElementException
 
 APPDATA = os.getenv("APPDATA")
+DEBUG_SCREENSHOT_DIR = "debug_screenshots"
 TEST_EMAIL = "test@gmail.com"
 TEST_USERNAME = "test_user"
 TEST_PASSWORD = "test_password"

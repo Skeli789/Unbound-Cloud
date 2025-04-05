@@ -54,6 +54,7 @@ def HandleSignUp(driver: webdriver.Chrome, tester: TestCase):
     """
     # Wait for the sign-up page to load
     signUpForm = WaitForSignUpPage(driver)
+    driver.save_screenshot(f"{DEBUG_SCREENSHOT_DIR}/SignUpPage.png")
 
     # Fill in the registration form
     FillInSignUpForm(signUpForm, TEST_USERNAME, TEST_EMAIL, TEST_PASSWORD)
@@ -62,7 +63,6 @@ def HandleSignUp(driver: webdriver.Chrome, tester: TestCase):
     ConfirmPasswordViewToggleWorks(signUpForm, tester)
 
     # Click the sign up button and wait for the registration to complete
-    driver.save_screenshot(f"Debug_SignUp.png")
     SubmitSignUpForm(driver, signUpForm, tester)
 
 

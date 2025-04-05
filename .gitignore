@@ -17,6 +17,7 @@ htmlcov/
 .coverage
 settings.json
 assets/
+debug_screenshots/
 selenium-report.html
 
 # production

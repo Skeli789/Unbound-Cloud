@@ -30,6 +30,7 @@ class TestE2E(TestCase):
         chromeOptions.add_argument("--disable-gpu") # Disable GPU hardware acceleration
         chromeOptions.add_argument("--disable-extensions") # Disable extensions
         chromeOptions.add_argument("--no-sandbox") # Disable sandboxing
+        chromeOptions.add_argument("--window-size=1920,1080")  # Set window size to 1920x1080 so buttons are always clickable
         cls.driver = webdriver.Chrome(options=chromeOptions)
         cls.driver.get(URL_SITE)
 
