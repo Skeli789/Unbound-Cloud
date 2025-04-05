@@ -27,6 +27,7 @@ jobs:
     - name: Install JS dependencies
       run: |
         set -e
+        mkdir /tmp/unboundcloud
         yarn install
         cd server && yarn install
 
@@ -45,6 +46,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable
 
+    - name: Install Xvfb & ffmpeg
+      run: sudo apt-get update && sudo apt-get install -y xvfb ffmpeg
+
     - name: Start Website & Server
       run: |
         set -e
@@ -57,12 +61,26 @@ jobs:
         UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
         WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
         ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-
-    - name: Run Selenium tests
+  
+    - name: Start Xvfb & begin recording
       run: |
-        yarn test-selenium
+        # start virtual display
+        Xvfb :99 -screen 0 1280x1024x24 &
+        export DISPLAY=:99
+        # record the virtual display at 15fps
+        ffmpeg -y -f x11grab -r 15 -s 1280x1024 -i :99 \
+               -c:v libx264 -preset ultrafast video.mp4 &
+        echo $! > ffmpeg.pid
+  
+    - name: Run Selenium tests
+      run: yarn test-selenium
       env:
         APPDATA: ${{ vars.APPDATA }}
+        DISPLAY: :99
+
+    - name: Stop recording
+      if: always()  # Run this step even if previous steps fail
+      run: kill $(cat ffmpeg.pid)
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -70,3 +88,10 @@ jobs:
       with:
         name: selenium-test-results
         path: selenium-report.html
+
+    - name: Upload video artifact
+      uses: actions/upload-artifact@v4
+      if: always()  # Run this step even if previous steps fail
+      with:
+        name: selenium-video
+        path: video.mp4
