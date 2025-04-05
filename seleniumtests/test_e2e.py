@@ -26,10 +26,10 @@ class TestE2E(TestCase):
         chromeOptions.add_experimental_option("prefs", {
             "profile.default_content_setting_values.clipboard": 1, # Allow clipboard access
         })
-        chromeOptions.add_argument("--headless") # Make headless
-        chromeOptions.add_argument("--disable-gpu") # Disable GPU hardware acceleration
+        chromeOptions.add_argument('--no-sandbox')
+        chromeOptions.add_argument('--disable-dev-shm-usage')
         chromeOptions.add_argument("--disable-extensions") # Disable extensions
-        chromeOptions.add_argument("--no-sandbox") # Disable sandboxing
+        chromeOptions.add_argument('--start-maximized')  # Optional, but useful
         chromeOptions.add_argument("--window-size=1920,1080")  # Set window size to 1920x1080 so buttons are always clickable
         cls.driver = webdriver.Chrome(options=chromeOptions)
         cls.driver.get(URL_SITE)
