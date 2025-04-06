@@ -22,6 +22,7 @@ jobs:
             os: ubuntu-latest
           - browser: safari
             os: macos-latest
+            REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD: true # Safari doesn't support the FileSystemHandle API
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15

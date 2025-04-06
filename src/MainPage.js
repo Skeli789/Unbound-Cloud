@@ -73,7 +73,7 @@ const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="ht
 
 const PopUp = withReactContent(Swal);
 const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
-const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
+const DEBUG_ORIGINAL_FILE_METHOD = process.env.REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD === "true"; //Using the browser upload and download functions
 const DISABLE_ON_MOBILE = false; //Prevent mobile devices from using the site without a password
 const DEMO_SITE = false; //Initial loading page is the box moving so people can see how the site would work
 const MAINTENANCE = false; //Locks the site from non beta-testers while new features are integrated

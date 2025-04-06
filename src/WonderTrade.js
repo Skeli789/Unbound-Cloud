@@ -11,7 +11,7 @@ import withReactContent from 'sweetalert2-react-content';
 import {config} from "./config";
 import {GetIconSpeciesLink, GetNickname, GetSpecies, HasDuplicateMovesInMoveset, HasHackedCharacterInNicknameOrOTName,
         IsEgg, IsHoldingBannedItem, IsValidPokemon} from "./PokemonUtil";
-import {CreateSingleBlankSelectedPos, GetSpeciesName, IsHomeBox} from './Util';
+import {CreateSingleBlankSelectedPos, GetSpeciesName} from './Util';
 
 import {CgExport, CgImport} from "react-icons/cg";
 import SfxTradeComplete from './audio/TradeComplete.mp3';
