@@ -145,6 +145,7 @@ jobs:
       - name: Run Selenium tests
         run: |
           mkdir -p debug_screenshots_${{ matrix.browser }}
+          mkdir -p server/temp
           yarn test-selenium
 
       # Cleanup
