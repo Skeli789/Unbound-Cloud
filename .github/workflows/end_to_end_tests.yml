@@ -74,7 +74,7 @@ jobs:
           if [ "${{ runner.os }}" == "Linux" ]; then
             sudo apt-get update
             sudo apt-get install -y xvfb ffmpeg
-          else if [ "${{ runner.os }}" == "macOS" ]; then
+          elif [ "${{ runner.os }}" == "macOS" ]; then
             brew install ffmpeg
           else
             echo "Unsupported OS: ${{ runner.os }}"
@@ -123,13 +123,13 @@ jobs:
             # Record the display at 15fps, h264, movflags for faststart
             ffmpeg -probesize 10M -y -f x11grab -r 15 -s ${RESOLUTION} -i ${DISPLAY} \
               -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart \
-              video-${{ matrix.browser }}.mp4 &
-          else if [ "${{ runner.os }}" == "macOS" ]; then
+              ${{ matrix.browser }}.mp4 &
+          elif [ "${{ runner.os }}" == "macOS" ]; then
             # On macOS capture main display (device 1) without audio
             ffmpeg -probesize 10M -y -f avfoundation -framerate 15 \
               -video_size ${RESOLUTION} -i "1:none" \
               -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart \
-              video-${{ matrix.browser }}.mp4 &
+              ${{ matrix.browser }}.mp4 &
           fi
           else
             echo "Unsupported OS: ${{ runner.os }}"
@@ -160,5 +160,5 @@ jobs:
           name: artifacts-${{ matrix.browser }}
           path: |
             selenium-report-${{ matrix.browser }}.html
-            video-${{ matrix.browser }}.mp4
+            ${{ matrix.browser }}.mp4
             debug_screenshots_${{ matrix.browser }}
