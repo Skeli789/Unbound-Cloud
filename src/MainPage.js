@@ -977,7 +977,7 @@ export default class MainPage extends Component
             if (isUsingFileHandles)
             {
                 if (!ACCOUNT_SYSTEM) //Cloud data would have been received already
-                { 
+                {
                     //Upload the standard name for a cloud file if it exists
                     //If it doesn't or there's an error, just use a blank new home file
                     try
@@ -1025,6 +1025,8 @@ export default class MainPage extends Component
 
                 this.setState({editState: STATE_MOVING_POKEMON});
                 this.playOrPauseMainMusicTheme();
+                if (!localStorage.visitedBefore)
+                    this.showSymbolTutorial();
             }
             else
             {
@@ -3607,9 +3609,9 @@ export default class MainPage extends Component
                         Which hacks are supported?
                     </div>
                     <div className="w-100">
-                        <label className="btn btn-success btn-lg w-100 choose-home-file-button">
+                        <label className="btn btn-success btn-lg w-100 choose-home-file-button" id="upload-save-button">
                             Upload File
-                            <input type="file" id="upload-save-button" hidden onChange={(e) => this.chooseSaveFile(e)}
+                            <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)}
                                 accept=".sav,.srm,.sa1,.fla" />
                         </label>
                         {

@@ -69,7 +69,12 @@ def ChooseSaveFileLinux(driver: webdriver.Chrome):
     time.sleep(0.5)
 
     # Accept the changes
-    pyautogui.press("tab")
+    if BROWSER == "edge":
+        # Press the left arrow key to focus the "Save" button
+        pyautogui.press("left")
+    else:
+        # Press the tab key to focus the "Save" button
+        pyautogui.press("tab")
     pyautogui.press("enter")
 
     # Close the symbol tutorial pop-up
@@ -157,6 +162,9 @@ def ChooseSaveFileWindows(driver: webdriver.Chrome):
     # Accept the changes
     pyautogui.press("tab")
     pyautogui.press("enter")
+
+    # Close the symbol tutorial pop-up
+    WaitAndClosePopUp(driver, "OK")
 
     # Save a screenshot of the boxes
     driver.save_screenshot(f"{DEBUG_SCREENSHOT_DIR}/Boxes.png")
