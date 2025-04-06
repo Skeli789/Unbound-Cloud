@@ -3,14 +3,17 @@ name: End-to-End Tests
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  test:
+  e2e:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        browser: [chrome, firefox]
+    timeout-minutes: 15
     env:
       DISPLAY: :99
       RESOLUTION: 1920x1080
@@ -21,74 +24,92 @@ jobs:
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.13"
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: "22.x"
-        cache: 'yarn'
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
-    - name: Install JS dependencies
-      run: (yarn install & yarn --cwd server install & wait)
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r test-requirements.txt
 
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt -r test-requirements.txt
+      - name: Setup Node.js & cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'yarn'
 
-    - name: Install Xvfb & ffmpeg
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y xvfb ffmpeg
+      - name: Install JS deps
+        run: |
+          yarn install
+          yarn --cwd server install
 
-    - name: Start Website & Server
-      run: |
-        yarn start &
-        yarn --cwd server start &
-        sleep 5
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb ffmpeg
 
-    - name: Start Xvfb
-      run: |
-        Xvfb ${DISPLAY} -screen 0 ${RESOLUTION}x24 &
-        sleep 3
+      - name: Setup Chrome Browser & Driver
+        if: matrix.browser == 'chrome'
+        uses: browser-actions/setup-chrome@v1
+        with:
+          install-chromedriver: true
+          install-dependencies: true
 
-    - name: Start recording
-      run: |
-        # record at 15fps, h264, movflags for faststart
-        ffmpeg -probesize 10M -y -f x11grab -r 15 -s ${RESOLUTION} -i ${DISPLAY} \
-          -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart video.mp4 &
-        echo $! > ffmpeg.pid
+      - name: Setup Firefox Browser & Driver
+        if: matrix.browser == 'firefox'
+        uses: browser-actions/setup-firefox@v1
 
-    - name: Check recording status
-      run: |
-        sleep 2
-        ps aux | grep ffmpeg
+      - name: Start website & recording
+        run: |
+          # Start virtual display
+          Xvfb ${DISPLAY} -screen 0 ${RESOLUTION}x24 &
 
-    - name: Run Selenium tests
-      run: yarn test-selenium
-      timeout-minutes: 2 # 2 minute timeout for tests
+          # Start site and server
+          yarn start &
+          yarn --cwd server start &
+          sleep 5
 
-    - name: Stop recording
-      if: always()
-      run: |
-        # send SIGINT (equivalent to Ctrl-C) so ffmpeg writes its trailer
-        kill -INT $(cat ffmpeg.pid)
-        # wait for ffmpeg to exit and finalize the file
-        sleep 2
+          # Record the display at 15fps, h264, movflags for faststart
+          ffmpeg -probesize 10M -y -f x11grab -r 15 -s ${RESOLUTION} -i ${DISPLAY} \
+            -c:v libx264 -preset ultrafast -pix_fmt yuv420p \
+            -movflags +faststart video-${{ matrix.browser }}.mp4 &
+          echo $! > ffmpeg-${{ matrix.browser }}.pid
 
-    - name: Upload artifacts
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: artifacts
-        path: |
-          selenium-report.html
-          video.mp4
-          debug_screenshots
+      - name: Run Selenium tests
+        env:
+          BROWSER: ${{ matrix.browser }}
+        run: |
+          mkdir -p debug_screenshots_${{ matrix.browser }}
+          yarn test-selenium --browser=${{ matrix.browser }}
+        timeout-minutes: 5
+
+      - name: Stop recording
+        if: always()
+        run: |
+          # Send Ctrl-C equivalent so ffmpeg writes its trailer
+          kill -INT $(cat ffmpeg-${{ matrix.browser }}.pid) || true
+          # Wait for ffmpeg to exit and finalize the file
+          sleep 2
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.browser }}
+          path: |
+            selenium-report-${{ matrix.browser }}.html
+            video-${{ matrix.browser }}.mp4
+            debug_screenshots_${{ matrix.browser }}

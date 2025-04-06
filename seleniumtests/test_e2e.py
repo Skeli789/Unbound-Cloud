@@ -16,22 +16,30 @@ from seleniumtests.SignUpUtil import HandleSignUp, RemoveExistingAccounts
 from seleniumtests.TestUtils import *
 
 URL_SITE = "http://localhost:3000"
+BROWSER = os.getenv('BROWSER', 'chrome').lower()
 
 
 # @pytest.mark.incremental
 class TestE2E(TestCase):
     @classmethod
     def setUpClass(cls):
-        chromeOptions = webdriver.ChromeOptions()
-        chromeOptions.add_experimental_option("prefs", {
+        if BROWSER == "firefox":
+            driverClass = webdriver.Firefox
+            opts = webdriver.FirefoxOptions()
+            opts.set_preference("dom.webnotifications.enabled", False)
+        else:
+            driverClass = webdriver.Chrome
+            opts = webdriver.ChromeOptions()
+            opts.add_argument('--disable-extensions')
+
+        opts.add_experimental_option("prefs", {
             "profile.default_content_setting_values.clipboard": 1, # Allow clipboard access
         })
-        chromeOptions.add_argument('--no-sandbox')
-        chromeOptions.add_argument('--disable-dev-shm-usage')
-        chromeOptions.add_argument("--disable-extensions") # Disable extensions
-        chromeOptions.add_argument('--start-maximized')  # Optional, but useful
-        chromeOptions.add_argument("--window-size=1920,1080")  # Set window size to 1920x1080 so buttons are always clickable
-        cls.driver = webdriver.Chrome(options=chromeOptions)
+        opts.add_argument('--no-sandbox')
+        opts.add_argument('--disable-dev-shm-usage')
+        opts.add_argument('--start-maximized')  # Optional, but useful
+        opts.add_argument("--window-size=1920,1080")  # Set window size to 1920x1080 so buttons are always clickable
+        cls.driver = driverClass(options=opts)
         cls.driver.get(URL_SITE)
 
     @classmethod
