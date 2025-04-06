@@ -52,6 +52,19 @@ def SetUpDriver(browser: str) -> webdriver.Chrome:
     return driver
 
 
+def QuitDriver(driver: webdriver.Chrome):
+    """
+    Quit the Selenium WebDriver instance.
+
+    :param driver: The Selenium WebDriver instance to quit.
+    """
+    driver.quit()
+    if BROWSER == "safari":
+        # Safari does not support quitting the driver in the same way as other browsers
+        # We need to quit the driver in a different way
+        driver.service.stop()
+
+
 def ToggleDemoSite():
     """
     Either enable or disable the demo site by modifying the MainPage.js file and forcing a rerender.

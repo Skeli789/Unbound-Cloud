@@ -23,7 +23,7 @@ class TestAccountSystem(TestCase):
     @classmethod
     def tearDownClass(cls):
         # Close the browser after tests are done
-        cls.driver.quit()
+        QuitDriver(cls.driver)
 
     def test_1_ConnectToSite(self):
         # Verify we connected successfully
