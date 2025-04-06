@@ -3799,9 +3799,9 @@ export default class MainPage extends Component
                     this.boxListScreen()
                 :
                     <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                        <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
-                                {homeBoxView1}
-                                {homeBoxView2}
+                        <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"} id="boxes">
+                            {homeBoxView1}
+                            {homeBoxView2}
                         </div>
                         {
                             !isMobile ?
@@ -3842,9 +3842,9 @@ export default class MainPage extends Component
                     this.boxListScreen()
                 :
                     <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                        <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
-                                {saveBoxView1}
-                                {saveBoxView2}
+                        <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"} id="boxes">
+                            {saveBoxView1}
+                            {saveBoxView2}
                         </div>
                         {
                             !isMobile ?
@@ -3885,7 +3885,7 @@ export default class MainPage extends Component
                         this.boxListScreen()
                     :
                         <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                            <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
+                            <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"} id="boxes">
                                 {homeBoxView}
                                 {saveBoxView}
                             </div>

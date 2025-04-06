@@ -34,8 +34,8 @@ def UploadSaveFile(driver: webdriver.Chrome):
     # Close the symbol tutorial pop-up
     WaitAndClosePopUp(driver, "OK")
 
-    # Save a screenshot of the boxes
-    driver.save_screenshot(f"{DEBUG_SCREENSHOT_DIR}/Boxes.png")
+    # Wait for the boxes to load
+    ConfirmBoxesLoaded(driver)
 
 
 def ChooseSaveFileLinux(driver: webdriver.Chrome):
@@ -81,8 +81,8 @@ def ChooseSaveFileLinux(driver: webdriver.Chrome):
     # Close the symbol tutorial pop-up
     WaitAndClosePopUp(driver, "OK")
 
-    # Save a screenshot of the boxes
-    driver.save_screenshot(f"{DEBUG_SCREENSHOT_DIR}/Boxes.png")
+    # Wait for the boxes to load
+    ConfirmBoxesLoaded(driver)
 
 
 def ChooseSaveFileMac(driver: webdriver.Chrome):
@@ -114,8 +114,8 @@ def ChooseSaveFileMac(driver: webdriver.Chrome):
     # Close the symbol tutorial pop-up
     WaitAndClosePopUp(driver, "OK")
 
-    # Save a screenshot of the boxes
-    driver.save_screenshot(f"{DEBUG_SCREENSHOT_DIR}/Boxes.png")
+    # Wait for the boxes to load
+    ConfirmBoxesLoaded(driver)
 
 
 def ChooseSaveFileWindows(driver: webdriver.Chrome):
@@ -167,5 +167,18 @@ def ChooseSaveFileWindows(driver: webdriver.Chrome):
     # Close the symbol tutorial pop-up
     WaitAndClosePopUp(driver, "OK")
 
+    # Wait for the boxes to load
+    ConfirmBoxesLoaded(driver)
+
+
+def ConfirmBoxesLoaded(driver: webdriver.Chrome):
+    """
+    Confirm that the boxes have loaded by checking for the presence of the "boxes" element.
+
+    :param driver: The Selenium WebDriver instance.
+    """
     # Save a screenshot of the boxes
     driver.save_screenshot(f"{DEBUG_SCREENSHOT_DIR}/Boxes.png")
+
+    # Wait for the boxes to load
+    WaitForElement(driver, By.ID, "boxes")
