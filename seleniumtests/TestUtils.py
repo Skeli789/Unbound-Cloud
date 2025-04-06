@@ -51,7 +51,8 @@ def SetUpDriver(browser: str) -> webdriver.Chrome:
     driver = driverClass(options=opts)
 
     # Maximize the window
-    driver.maximize_window()
+    if BROWSER != "chrome" and browser != "edge":
+        driver.maximize_window()
     return driver
 
 
