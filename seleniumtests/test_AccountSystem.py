@@ -78,10 +78,12 @@ class TestE2E(TestCase):
         HandleLogin(self.driver)
 
     def test_6_UploadSaveFile(self):
+        if BROWSER == "safari":
+            # Safari is a pain to automate for file uploads
+            self.skipTest("Skipping upload test for Safari due to automation limitations.")
+
         CopyTestSaveFile()
-        if False and os.name == 'posix' and sys.platform == 'darwin': # Mac
-            ChooseSaveFileMac(self.driver)
-        elif USE_UPLOAD_DOWNLOAD:  # Use the browser's original upload/download functionality
+        if USE_UPLOAD_DOWNLOAD:  # Use the browser's original upload/download functionality
             UploadSaveFile(self.driver)
         else:  # Use the FileSystemHandle API
             if os.name == 'nt':  # Locally on Windows
