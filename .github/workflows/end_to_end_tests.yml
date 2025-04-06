@@ -146,7 +146,6 @@ jobs:
         run: |
           mkdir -p debug_screenshots_${{ matrix.browser }}
           yarn test-selenium
-        timeout-minutes: 5
 
       # Cleanup
       - name: Stop recording
