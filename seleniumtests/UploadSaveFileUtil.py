@@ -28,6 +28,8 @@ def UploadSaveFile(driver: webdriver.Chrome):
     uploadInstructions = WaitForElement(driver, By.ID, "upload-instructions")
 
     # Send the file path to the file input element
+    driver.execute_script("document.getElementById('upload-save-button').style.display = 'block';")
+    time.sleep(0.5)  # Wait for the element to be visible
     uploadInput = uploadInstructions.find_element(By.ID, "upload-save-button")
     uploadInput.send_keys(SAVE_FILE_TEST)
 

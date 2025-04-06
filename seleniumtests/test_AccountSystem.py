@@ -79,7 +79,7 @@ class TestE2E(TestCase):
 
     def test_6_UploadSaveFile(self):
         CopyTestSaveFile()
-        if os.name == 'posix' and sys.platform == 'darwin': # Mac
+        if False and os.name == 'posix' and sys.platform == 'darwin': # Mac
             ChooseSaveFileMac(self.driver)
         elif USE_UPLOAD_DOWNLOAD:  # Use the browser's original upload/download functionality
             UploadSaveFile(self.driver)
