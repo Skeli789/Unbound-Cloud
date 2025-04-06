@@ -113,12 +113,14 @@ jobs:
       ## Test website ##
       - name: Start website & recording
         run: |
-          # On Linux, prep Xauthority and start Xvfb
+          # On Linux, start Xvfb and prep Xauthority
           if [ "${{ runner.os }}" == "Linux" ]; then
+            Xvfb ${DISPLAY} -screen 0 ${RESOLUTION}x24 &
+            sleep 2
+
             # Ensure Xauthority exists and has a cookie for our DISPLAY
             touch ~/.Xauthority                 # Create the file if missing :contentReference[oaicite:1]{index=1}
             xauth generate ${DISPLAY} . trusted # Generate a trusted cookie :contentReference[oaicite:2]{index=2}
-            Xvfb ${DISPLAY} -screen 0 ${RESOLUTION}x24 -auth ~/.Xauthority &
           fi
 
           # Start site and server
