@@ -49,6 +49,9 @@ def SetUpDriver(browser: str) -> webdriver.Chrome:
 
     # Instantiate & navigate
     driver = driverClass(options=opts)
+
+    # Maximize the window
+    driver.maximize_window()
     return driver
 
 
@@ -58,11 +61,8 @@ def QuitDriver(driver: webdriver.Chrome):
 
     :param driver: The Selenium WebDriver instance to quit.
     """
+    driver.close()
     driver.quit()
-    if BROWSER == "safari":
-        # Safari does not support quitting the driver in the same way as other browsers
-        # We need to quit the driver in a different way
-        driver.service.stop()
 
 
 def ToggleDemoSite():
