@@ -83,5 +83,7 @@ class TestE2E(TestCase):
         else:  # Use the FileSystemHandle API
             if os.name == 'nt':  # Locally on Windows
                 ChooseSaveFileWindows(self.driver)
+            elif os.name == 'posix' and sys.platform == 'darwin': # Mac
+                ChooseSaveFileMac(self.driver)
             else:
                 ChooseSaveFileLinux(self.driver)

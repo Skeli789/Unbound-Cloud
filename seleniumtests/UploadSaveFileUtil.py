@@ -65,6 +65,13 @@ def ChooseSaveFileLinux(driver: webdriver.Chrome):
     # Select the file
     pyautogui.press("enter")
 
+    # Wait for the Save changes message to appear
+    time.sleep(0.5)
+
+    # Accept the changes
+    pyautogui.press("tab")
+    pyautogui.press("enter")
+
     # Close the symbol tutorial pop-up
     WaitAndClosePopUp(driver, "OK")
 
