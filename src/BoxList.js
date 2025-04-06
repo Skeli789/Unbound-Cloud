@@ -170,8 +170,9 @@ export class BoxList extends Component
 
         //Create the entire box
         return (
-            <div className="mini-box-with-title" hidden={hidden} key={boxId}>
+            <div className="mini-box-with-title" id={`box-${boxId}-with-title`} hidden={hidden} key={boxId}>
                 <div className={"mini-box " + (disabledBox ? "disabled-box" : IsHomeBox(this.state.boxType) ? "home-box" : "save-box")}
+                     id={`box-${boxId}`}
                      onClick={disabledBox ? null : this.jumpToBox.bind(this, boxId)}>
                     {icons}
                 </div>
@@ -234,13 +235,14 @@ export class BoxList extends Component
                     <div className="box-list-filter-container">
                         <input type="text"
                                className="mini-box-title"
+                               id="filter"
                                placeholder="Type to filter..."
                                onChange={(e) => this.setState({boxNameFilter: e.target.value.substring(0, MAX_TITLE_LENGTH)})}
                                value={this.state.boxNameFilter}/>
                     </div>
 
                     {/*Actual Boxes*/}
-                    <div className="mini-boxes">
+                    <div className="mini-boxes" id="box-list">
                         {this.printBoxes()}
                     </div>
                 </div>

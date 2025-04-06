@@ -86,7 +86,7 @@ export class SymbolTutorial extends Component
     render()
     {
         return (
-            <Table striped bordered hover style={{textAlign: "left"}}>
+            <Table striped bordered hover style={{textAlign: "left"}} id="symbol-tutorial">
                 <tbody>
                     {this.buildTableBody()}
                 </tbody>

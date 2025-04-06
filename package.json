@@ -32,6 +32,7 @@
     "start": "react-scripts start",
     "build": "python DataCopy.py && react-scripts build",
     "test": "react-scripts test",
+    "test-selenium": "pytest seleniumtests/ -v --html=selenium-report-${BROWSER}.html --timeout=300",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

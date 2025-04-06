@@ -1,0 +1,175 @@
+name: End-to-End Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e:
+    # Run each browser/os combo in parallel, don't cancel the rest on failure
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - browser: chrome
+            os: ubuntu-latest
+            uploadDownload: false
+          - browser: firefox
+            os: ubuntu-latest
+            uploadDownload: true # Firefox doesn't support the FileSystemHandle API
+          - browser: edge
+            os: ubuntu-latest
+            uploadDownload: false
+          - browser: safari
+            os: macos-latest
+            uploadDownload: true # Safari doesn't support the FileSystemHandle API
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+
+    env:
+      DISPLAY: :99
+      RESOLUTION: 1920x1080
+      BROWSER: ${{ matrix.browser }}
+      REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD: ${{ matrix.uploadDownload }}
+      APPDATA: ${{ vars.APPDATA }}
+      UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+      UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+      WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      ## Setup dependencies ##
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r test-requirements.txt --upgrade
+
+      - name: Setup Node.js & cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'yarn'
+
+      - name: Install JS deps
+        run: |
+          yarn install
+          yarn --cwd server install
+
+      - name: Install system deps
+        run: |
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            sudo apt-get update
+            sudo apt-get install -y xvfb ffmpeg xclip xauth
+          elif [ "${{ runner.os }}" == "macOS" ]; then
+            brew install ffmpeg
+          else
+            echo "Unsupported OS: ${{ runner.os }}"
+            exit 1
+          fi
+        shell: bash
+
+      ## Browser installs ##
+      - name: Setup Chrome
+        if: matrix.browser == 'chrome'
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: latest
+          install-dependencies: true
+
+      - name: Setup Firefox
+        if: matrix.browser == 'firefox'
+        uses: browser-actions/setup-firefox@v1
+        with:
+          firefox-version: latest
+
+      - name: Setup Edge
+        if: matrix.browser == 'edge'
+        uses: browser-actions/setup-edge@v1
+
+      - name: Enable Safari WebDriver
+        if: matrix.browser == 'safari'
+        run: sudo safaridriver --enable # Safari is built into macOS runners, but WebDriver must be enabled
+        shell: bash
+
+      ## Test website ##
+      - name: Start website & recording
+        run: |
+          # On Linux, start Xvfb and prep Xauthority
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            Xvfb ${DISPLAY} -screen 0 ${RESOLUTION}x24 &
+            sleep 2
+
+            # Ensure Xauthority exists and has a cookie for our DISPLAY
+            touch ~/.Xauthority                 # Create the file if missing :contentReference[oaicite:1]{index=1}
+            xauth generate ${DISPLAY} . trusted # Generate a trusted cookie :contentReference[oaicite:2]{index=2}
+          fi
+
+          # Start site and server
+          yarn start &
+          yarn --cwd server start &
+          sleep 5
+
+          # Record the display
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            # Record the display at 15fps, h264, movflags for faststart
+            ffmpeg -probesize 10M -y -f x11grab -r 15 -s ${RESOLUTION} -i ${DISPLAY} \
+              -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart \
+              ${{ matrix.browser }}.mp4 &
+          elif [ "${{ runner.os }}" == "macOS" ]; then
+            # On macOS capture main display (device 0) without audio
+            ffmpeg -probesize 10M -y -f avfoundation -framerate 15 \
+              -video_size ${RESOLUTION} -i "0:none" \
+              -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart \
+              ${{ matrix.browser }}.mp4 &
+          else
+            echo "Unsupported OS: ${{ runner.os }}"
+            exit 1
+          fi
+          echo $! > ffmpeg-${{ matrix.browser }}.pid
+        shell: bash
+
+      - name: Run Selenium tests
+        run: |
+          mkdir -p debug_screenshots_${{ matrix.browser }}
+          mkdir -p server/temp
+          yarn test-selenium
+        timeout-minutes: 5
+
+      # Cleanup
+      - name: Stop recording
+        if: always()
+        run: |
+          # Send Ctrl-C equivalent so ffmpeg writes its trailer
+          kill -INT $(cat ffmpeg-${{ matrix.browser }}.pid) || true
+          # Wait for ffmpeg to exit and finalize the file
+          sleep 2
+        shell: bash
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.browser }}
+          path: |
+            selenium-report-${{ matrix.browser }}.html
+            ${{ matrix.browser }}.mp4
+            debug_screenshots_${{ matrix.browser }}

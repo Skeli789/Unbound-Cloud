@@ -137,7 +137,7 @@ export class WonderTrade extends Component
             PopUp.fire(
             {
                 title: "Please save everything before attempting to Wonder Trade.",
-                confirmButtonText: `Okay`,
+                confirmButtonText: `OK`,
                 icon: 'error',
                 scrollbarPadding: false,
             });
@@ -174,7 +174,7 @@ export class WonderTrade extends Component
             PopUp.fire
             ({
                 title: `Please wait ${timeRemaining} seconds before trading this Pokémon.`,
-                cancelButtonText: `Okay`,
+                cancelButtonText: `OK`,
                 showConfirmButton: false,
                 showCancelButton: true,
                 icon: 'error',
@@ -290,7 +290,7 @@ export class WonderTrade extends Component
                     PopUp.fire
                     ({
                         title: `${GetNickname(pokemon)} has been sent!\nPlease wait for your new Pokémon to arrive.`,
-                        confirmButtonText: `Okay`,
+                        confirmButtonText: `OK`,
                         imageUrl: GetIconSpeciesLink(pokemon),
                         imageAlt: "",
                         scrollbarPadding: false,
@@ -477,7 +477,7 @@ export class WonderTrade extends Component
      */
     render()
     {
-        var iconSize = 30;
+        const iconSize = 30;
 
         if (!this.state.isMonInWonderTrade)
         {
@@ -485,6 +485,7 @@ export class WonderTrade extends Component
                 <OverlayTrigger placement="bottom" overlay={wonderTradeTooltip}>
                     <div className="box-lower-icon-div">
                         <CgExport size={iconSize} className="box-lower-icon"
+                                id="start-wonder-trade-button"
                                 onClick = {this.tryStartWonderTrade.bind(this)}/>
                     </div>
                 </OverlayTrigger>
@@ -496,6 +497,7 @@ export class WonderTrade extends Component
                 <OverlayTrigger placement="bottom" overlay={cancelWonderTradeTooltip}>
                     <div className="box-lower-icon-div">
                         <CgImport size={iconSize} className="box-lower-icon cancel-wonder-trade-icon"
+                                id="cancel-wonder-trade-button"
                                 onClick = {this.tryCancelWonderTrade.bind(this)}/>
                     </div>
                 </OverlayTrigger>

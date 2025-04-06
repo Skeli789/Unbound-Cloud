@@ -16,6 +16,9 @@ __pycache__/
 htmlcov/
 .coverage
 settings.json
+assets/
+debug_screenshots*
+selenium-report*
 
 # production
 /build
@@ -34,3 +37,6 @@ yarn-debug.log*
 yarn-error.log*
 desktop.ini
 MultiArkGamingSSH.sh
+
+/jstests
+src/savefile

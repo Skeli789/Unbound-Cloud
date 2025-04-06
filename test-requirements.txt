@@ -1,0 +1,7 @@
+selenium
+pytest
+pytest-cov
+pytest-html
+pytest-timeout
+pyperclip==1.9.0
+PyAutoGUI==0.9.54

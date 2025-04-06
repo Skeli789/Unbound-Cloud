@@ -73,7 +73,7 @@ const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="ht
 
 const PopUp = withReactContent(Swal);
 const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
-const DEBUG_ORIGINAL_FILE_METHOD = false; //Using the browser upload and download functions
+const DEBUG_ORIGINAL_FILE_METHOD = process.env.REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD === "true"; //Using the browser upload and download functions
 const DISABLE_ON_MOBILE = false; //Prevent mobile devices from using the site without a password
 const DEMO_SITE = false; //Initial loading page is the box moving so people can see how the site would work
 const MAINTENANCE = false; //Locks the site from non beta-testers while new features are integrated
@@ -977,7 +977,7 @@ export default class MainPage extends Component
             if (isUsingFileHandles)
             {
                 if (!ACCOUNT_SYSTEM) //Cloud data would have been received already
-                { 
+                {
                     //Upload the standard name for a cloud file if it exists
                     //If it doesn't or there's an error, just use a blank new home file
                     try
@@ -1025,6 +1025,8 @@ export default class MainPage extends Component
 
                 this.setState({editState: STATE_MOVING_POKEMON});
                 this.playOrPauseMainMusicTheme();
+                if (!localStorage.visitedBefore)
+                    this.showSymbolTutorial();
             }
             else
             {
@@ -3061,6 +3063,7 @@ export default class MainPage extends Component
 
         return (
             <Button size="lg" className={"top-bar-button" + (buttonSelected ? " top-bar-button-selected" : "")}
+                    id="home-to-home-button"
                     style={!buttonClickable ? {cursor: "default"} : {}}
                     aria-label="Home to Home"
                     onClick={() => this.changeBoxView(STATE_EDITING_HOME_BOXES)}>
@@ -3079,6 +3082,7 @@ export default class MainPage extends Component
 
         return (
             <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_EDITING_SAVE_FILE ? " top-bar-button-selected" : "")}
+                    id="save-to-save-button"
                     aria-label="Save File to Save File"
                     onClick={() => this.changeBoxView(STATE_EDITING_SAVE_FILE)}>
                 <FaGamepad size={size} /> ↔ <FaGamepad size={size} />
@@ -3096,6 +3100,7 @@ export default class MainPage extends Component
 
         return (
             <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_MOVING_POKEMON ? " top-bar-button-selected" : "")}
+                    id="home-to-save-button"
                     aria-label="Home to Save File"
                     onClick={() => this.changeBoxView(STATE_MOVING_POKEMON)}>
                 <FaCloud size={size} /> ↔ <FaGamepad size={size} />
@@ -3114,6 +3119,7 @@ export default class MainPage extends Component
 
         return (
             <BiArrowBack size={size} className="top-bar-back-button" style={{paddingRight: paddingRight}}
+                         id="back-button"
                          aria-label="Back" onClick={this.navBackButtonPressed.bind(this)}/>
         );
     }
@@ -3466,6 +3472,7 @@ export default class MainPage extends Component
                     {title}
                     {explanation}
                     <Button className="choose-home-file-button"
+                            id="get-started-button"
                             onClick={() => this.setState({editState: nextState})} >
                         Get Started ➤
                     </Button>
@@ -3523,9 +3530,9 @@ export default class MainPage extends Component
                             </Button>
                     }
 
-                    <label className="btn btn-success btn-lg w-100 choose-home-file-button">
+                    <label className="btn btn-success btn-lg w-100 choose-home-file-button" id="upload-home-file-button-label">
                         Upload File
-                        <input type="file" hidden onChange={(e) => this.chooseHomeFile(e, error)}
+                        <input type="file" id="upload-home-file-button" hidden onChange={(e) => this.chooseHomeFile(e, error)}
                                 accept=".dat" />
                     </label>
 
@@ -3584,12 +3591,14 @@ export default class MainPage extends Component
                         <div>
                             <h1 className="form-title">Welcome back, {this.state.username}! {PURPLE_CLOUD}</h1>
                             <div className="already-have-account-button"
+                                id="logout-button"
                                 onClick={() => this.navBackButtonPressed()}>
                                 This isn't me.
                             </div>
                         </div>
                 }
-                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}
+                     id="upload-instructions">
                     <p className="choose-save-file-heading">Choose your save file.</p>
                     <p className="save-file-location-explanation">
                         If you don't know where it is, start by looking in the same folder as your ROM.
@@ -3600,15 +3609,15 @@ export default class MainPage extends Component
                         Which hacks are supported?
                     </div>
                     <div className="w-100">
-                        <label className="btn btn-success btn-lg w-100 choose-home-file-button">
+                        <label className="btn btn-success btn-lg w-100 choose-home-file-button" id="upload-save-button-label">
                             Upload File
-                            <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)}
+                            <input type="file" id="upload-save-button" hidden onChange={(e) => this.chooseSaveFile(e)}
                                 accept=".sav,.srm,.sa1,.fla" />
                         </label>
                         {
                             ACCOUNT_SYSTEM &&
                                 <Button size="lg" onClick={() => this.skipSaveFileUpload()}
-                                        variant="danger" className="choose-home-file-button">
+                                        variant="danger" className="choose-home-file-button" id="just-cloud-button">
                                     Just Cloud
                                 </Button>
                         }
@@ -3649,7 +3658,8 @@ export default class MainPage extends Component
                         <h1 className="form-title">Welcome Back to Unbound Cloud {PURPLE_CLOUD}</h1>
                 }
 
-                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}
+                     id="upload-instructions">
                     <p className="choose-save-file-heading">Choose your Cloud Data folder.</p>
                     <p className="save-file-location-explanation">
                         This is the folder on your {isMobile ? "device" : "computer"} where your Boxes {showLastUsedButton ? "are" : "will be"} stored.
@@ -3720,12 +3730,14 @@ export default class MainPage extends Component
                         <div>
                             <h1 className="form-title">Welcome back, {this.state.username}! {PURPLE_CLOUD}</h1>
                             <div className="already-have-account-button"
+                                id="logout-button"
                                 onClick={() => this.navBackButtonPressed()}>
                                 This isn't me.
                             </div>
                         </div>
                 }
-                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
+                <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}
+                     id="upload-instructions">
                     <p className="choose-save-file-heading">Choose your save file.</p>
                     <p className="save-file-location-explanation">
                         If you don't know where it is, start by looking in the same folder as your ROM.
@@ -3742,14 +3754,14 @@ export default class MainPage extends Component
                         }
 
                         <Button size="lg" onClick={() => this.chooseSaveFileHandle()}
-                                variant="success" className="choose-home-file-button">
+                                variant="success" className="choose-home-file-button" id="upload-save-button">
                             Choose File
                         </Button>
 
                         {
                             ACCOUNT_SYSTEM &&
                                 <Button size="lg" onClick={() => this.skipSaveFileUpload()}
-                                        variant="danger" className="choose-home-file-button">
+                                        variant="danger" className="choose-home-file-button" id="just-cloud-button">
                                     Just Cloud
                                 </Button>
                         }
@@ -3787,9 +3799,9 @@ export default class MainPage extends Component
                     this.boxListScreen()
                 :
                     <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                        <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
-                                {homeBoxView1}
-                                {homeBoxView2}
+                        <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"} id="boxes">
+                            {homeBoxView1}
+                            {homeBoxView2}
                         </div>
                         {
                             !isMobile ?
@@ -3830,9 +3842,9 @@ export default class MainPage extends Component
                     this.boxListScreen()
                 :
                     <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                        <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
-                                {saveBoxView1}
-                                {saveBoxView2}
+                        <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"} id="boxes">
+                            {saveBoxView1}
+                            {saveBoxView2}
                         </div>
                         {
                             !isMobile ?
@@ -3873,7 +3885,7 @@ export default class MainPage extends Component
                         this.boxListScreen()
                     :
                         <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                            <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"}>
+                            <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"} id="boxes">
                                 {homeBoxView}
                                 {saveBoxView}
                             </div>
@@ -4118,7 +4130,7 @@ export default class MainPage extends Component
 //eslint-disable-next-line
 function GetInitialPageState()
 {
-    if (ACCOUNT_SYSTEM)
+    if (ACCOUNT_SYSTEM && !DEMO_SITE)
     {
         if (localStorage.username && localStorage.accountCode)
         {
@@ -4130,11 +4142,11 @@ function GetInitialPageState()
     }
     else
     {
-        if (localStorage.visitedBefore)
-            return CanUseFileHandleAPI() ? STATE_CHOOSE_HOME_FOLDER : STATE_UPLOAD_SAVE_FILE;
-
         if (DEMO_SITE)
             return STATE_MOVING_POKEMON;
+
+        if (localStorage.visitedBefore)
+            return CanUseFileHandleAPI() ? STATE_CHOOSE_HOME_FOLDER : STATE_UPLOAD_SAVE_FILE;
     }
 
     return STATE_WELCOME;

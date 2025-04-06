@@ -177,10 +177,11 @@ export class Login extends Component
     render()
     {
         return (
-            <div className="form-page">
+            <div className="form-page" id="login-form">
                 <h1 className="form-title">Log In to Unbound Cloud {PURPLE_CLOUD}</h1>
                 {/*Redirect to Sign-Up Page Button*/}
                 <div className="already-have-account-button"
+                     id="switch-to-sign-up-button"
                      onClick={() => this.getMainPage().setState({editState: STATE_SIGN_UP})}>
                     I don't have an account
                 </div>
@@ -234,7 +235,7 @@ export class Login extends Component
 
                     {/* Submit Button */}
                     <div className="submit-form-button-container mt-2">
-                        <Button size="lg" className="submit-form-button" type="submit">
+                        <Button size="lg" className="submit-form-button" id="login-button" type="submit">
                             <AiOutlineCheckCircle size={42}/>
                         </Button>
                     </div>
