@@ -130,7 +130,6 @@ jobs:
               -video_size ${RESOLUTION} -i "1:none" \
               -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart \
               ${{ matrix.browser }}.mp4 &
-          fi
           else
             echo "Unsupported OS: ${{ runner.os }}"
             exit 1
