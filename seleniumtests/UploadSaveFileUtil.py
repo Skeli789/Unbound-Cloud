@@ -95,7 +95,7 @@ def ChooseSaveFileMac(driver: webdriver.Chrome):
     uploadInstructions = WaitForElement(driver, By.ID, "upload-instructions")
 
     # Click the upload button
-    uploadButton = uploadInstructions.find_element(By.ID, "upload-save-button")
+    uploadButton = uploadInstructions.find_element(By.ID, "upload-save-button-label")
     uploadButton.click()
 
     # After clicking the upload button, wait for the OS file picker to appear
