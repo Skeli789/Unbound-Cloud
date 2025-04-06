@@ -11,6 +11,7 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false # Don't stop other jobs if one fails
       matrix:
         browser: [chrome, firefox, edge]
     timeout-minutes: 15
@@ -35,13 +36,15 @@ jobs:
       - name: Cache pip
         uses: actions/cache@v4
         with:
-          path: ~/.cache/pip
+          path: ./.venv
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
+            ${{ runner.os }}-venv-
 
       - name: Install Python deps
         run: |
+          python -m venv .venv
+          . .venv/bin/activate  # Restore the installed cache
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r test-requirements.txt
 
@@ -65,14 +68,18 @@ jobs:
         if: matrix.browser == 'chrome'
         uses: browser-actions/setup-chrome@v1
         with:
-          install-chromedriver: true
+          chrome-version: stable # install the runner’s stable Chrome
           install-dependencies: true
       - name: Setup browser & driver
         if: matrix.browser == 'firefox'
         uses: browser-actions/setup-firefox@v1
+        with:
+          firefox-version: latest # install the runner’s latest Firefox
       - name: Setup browser & driver
         if: matrix.browser == 'edge'
         uses: browser-actions/setup-edge@v1
+        with:
+          edge-version: stable
 
       - name: Start website & recording
         run: |
