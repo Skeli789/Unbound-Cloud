@@ -26,7 +26,6 @@ jobs:
           - browser: safari
             os: macos-latest
             uploadDownload: true # Safari doesn't support the FileSystemHandle API
-
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
 
@@ -45,6 +44,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      ## Setup dependencies ##
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -87,7 +87,7 @@ jobs:
           fi
         shell: bash
 
-      # Browser installs
+      ## Browser installs ##
       - name: Setup Chrome
         if: matrix.browser == 'chrome'
         uses: browser-actions/setup-chrome@v1
@@ -105,12 +105,12 @@ jobs:
         if: matrix.browser == 'edge'
         uses: browser-actions/setup-edge@v1
 
-      # Safari is built into macOS runners, but WebDriver must be enabled
       - name: Enable Safari WebDriver
         if: matrix.browser == 'safari'
-        run: sudo safaridriver --enable # Allow safaridriver to run via WebDriver
+        run: sudo safaridriver --enable # Safari is built into macOS runners, but WebDriver must be enabled
         shell: bash
 
+      ## Test website ##
       - name: Start website & recording
         run: |
           # On Linux start a virtual display
@@ -130,7 +130,7 @@ jobs:
               -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart \
               ${{ matrix.browser }}.mp4 &
           elif [ "${{ runner.os }}" == "macOS" ]; then
-            # On macOS capture main display (device 1) without audio
+            # On macOS capture main display (device 0) without audio
             ffmpeg -probesize 10M -y -f avfoundation -framerate 15 \
               -video_size ${RESOLUTION} -i "0:none" \
               -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart \
@@ -148,6 +148,7 @@ jobs:
           yarn test-selenium
         timeout-minutes: 5
 
+      # Cleanup
       - name: Stop recording
         if: always()
         run: |
