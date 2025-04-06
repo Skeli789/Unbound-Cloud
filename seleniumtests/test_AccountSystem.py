@@ -62,19 +62,8 @@ class TestE2E(TestCase):
         self.assertIn("Unbound", self.driver.title)
 
     def test_2_ClickGetStarted(self):
-        attempts = 0
-        while attempts < 10:
-            try:
-                getStartedButton = self.driver.find_element(By.ID, "get-started-button")
-                ClickButton(getStartedButton)
-                return
-            except:
-                attempts += 1
-                time.sleep(1)
-
-        if attempts >= 10:
-            self.driver.quit()
-            self.fail("Failed to click 'Get Started' button after 10 attempts")
+        getStartedButton = WaitForElement(self.driver, By.ID, "get-started-button")
+        ClickButton(getStartedButton)
 
     def test_3_SignUp(self):
         RemoveExistingAccounts()

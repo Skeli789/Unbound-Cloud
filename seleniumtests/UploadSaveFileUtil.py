@@ -29,6 +29,7 @@ def UploadSaveFile(driver: webdriver.Chrome):
 
     # Send the file path to the file input element
     uploadInput = uploadInstructions.find_element(By.ID, "upload-save-button")
+    driver.execute_script("arguments[0].style.display = 'block';", uploadInput)
     uploadInput.send_keys(SAVE_FILE_TEST)
 
     # Close the symbol tutorial pop-up
