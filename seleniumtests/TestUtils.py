@@ -8,7 +8,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException, ElementClickInterceptedException, ElementNotInteractableException
 
 APPDATA = os.getenv("APPDATA")
-DEBUG_SCREENSHOT_DIR = "debug_screenshots"
+BROWSER = os.getenv('BROWSER', 'chrome').lower()
+DEBUG_SCREENSHOT_DIR = f"debug_screenshots_{BROWSER}"
 TEST_EMAIL = "test@gmail.com"
 TEST_USERNAME = "test_user"
 TEST_PASSWORD = "test_password"

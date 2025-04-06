@@ -16,7 +16,6 @@ from seleniumtests.SignUpUtil import HandleSignUp, RemoveExistingAccounts
 from seleniumtests.TestUtils import *
 
 URL_SITE = "http://localhost:3000"
-BROWSER = os.getenv('BROWSER', 'chrome').lower()
 
 
 # @pytest.mark.incremental

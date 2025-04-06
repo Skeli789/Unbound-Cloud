@@ -62,22 +62,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xvfb ffmpeg
 
-      - name: Setup browser & driver
+      - name: Setup Chrome browser
         if: matrix.browser == 'chrome'
         uses: browser-actions/setup-chrome@v1
         with:
-          chrome-version: latest # install the runner’s stable Chrome
+          chrome-version: latest # install the runner’s latest Chrome
           install-dependencies: true
-      - name: Setup browser & driver
+      - name: Setup Firefox browser
         if: matrix.browser == 'firefox'
         uses: browser-actions/setup-firefox@v1
         with:
           firefox-version: latest # install the runner’s latest Firefox
-      - name: Setup browser & driver
+      - name: Setup Edge browser
         if: matrix.browser == 'edge'
         uses: browser-actions/setup-edge@v1
-        with:
-          edge-version: latest
 
       - name: Start website & recording
         run: |
