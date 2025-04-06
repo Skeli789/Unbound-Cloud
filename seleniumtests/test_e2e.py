@@ -29,7 +29,12 @@ class TestE2E(TestCase):
         elif BROWSER == "edge":
             driverClass = webdriver.Edge
             opts = webdriver.EdgeOptions()
-        else:
+        elif BROWSER == "safari":
+            driverClass = webdriver.Safari
+            opts = webdriver.SafariOptions()
+            # SafariOptions is minimal; you can toggle technology preview:
+            # opts.use_technology_preview = True
+        else:  # Default to Chrome
             driverClass = webdriver.Chrome
             opts = webdriver.ChromeOptions()
             opts.add_experimental_option("prefs", {
@@ -37,10 +42,13 @@ class TestE2E(TestCase):
             })
             opts.add_argument('--disable-extensions')
 
+        # Common flags
         opts.add_argument('--no-sandbox')
         opts.add_argument('--disable-dev-shm-usage')
         opts.add_argument('--start-maximized')  # Optional, but useful
         opts.add_argument("--window-size=1920,1080")  # Set window size to 1920x1080 so buttons are always clickable
+
+        # Instantiate & navigate
         cls.driver = driverClass(options=opts)
         cls.driver.get(URL_SITE)
 

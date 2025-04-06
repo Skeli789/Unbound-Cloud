@@ -9,12 +9,23 @@ on:
 
 jobs:
   e2e:
-    runs-on: ubuntu-latest
+    # Run each browser/os combo in parallel, don't cancel the rest on failure
     strategy:
-      fail-fast: false # Don't stop other jobs if one fails
+      fail-fast: false
       matrix:
-        browser: [chrome, firefox, edge]
+        include:
+          - browser: chrome
+            os: ubuntu-latest
+          - browser: firefox
+            os: ubuntu-latest
+          - browser: edge
+            os: ubuntu-latest
+          - browser: safari
+            os: macos-latest
+
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+
     env:
       DISPLAY: :99
       RESOLUTION: 1920x1080
@@ -23,6 +34,7 @@ jobs:
       UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
       WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      BROWSER: ${{ matrix.browser }}
 
     steps:
       - name: Checkout code
@@ -57,30 +69,43 @@ jobs:
           yarn install
           yarn --cwd server install
 
-      - name: Install system deps
+      # Only on Linux runners
+      - name: Install system deps (Linux only)
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb ffmpeg
 
-      - name: Setup Chrome browser
+      # Browser installs
+      - name: Setup Chrome
         if: matrix.browser == 'chrome'
         uses: browser-actions/setup-chrome@v1
         with:
-          chrome-version: latest # install the runner’s latest Chrome
+          chrome-version: latest
           install-dependencies: true
-      - name: Setup Firefox browser
+
+      - name: Setup Firefox
         if: matrix.browser == 'firefox'
         uses: browser-actions/setup-firefox@v1
         with:
-          firefox-version: latest # install the runner’s latest Firefox
-      - name: Setup Edge browser
+          firefox-version: latest
+
+      - name: Setup Edge
         if: matrix.browser == 'edge'
         uses: browser-actions/setup-edge@v1
 
+      # Safari is built into macOS runners, but WebDriver must be enabled
+      - name: Enable Safari WebDriver
+        if: matrix.browser == 'safari'
+        run: safaridriver --enable # Allow safaridriver to run via WebDriver
+        shell: bash  # requires macOS
+
       - name: Start website & recording
         run: |
-          # Start virtual display
-          Xvfb ${DISPLAY} -screen 0 ${RESOLUTION}x24 &
+          # Start virtual display on Linux
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            Xvfb ${DISPLAY} -screen 0 ${RESOLUTION}x24 &
+          fi
 
           # Start site and server
           yarn start &
@@ -88,21 +113,22 @@ jobs:
           sleep 5
 
           # Record the display at 15fps, h264, movflags for faststart
-          ffmpeg -probesize 10M -y -f x11grab -r 15 -s ${RESOLUTION} -i ${DISPLAY} \
-            -c:v libx264 -preset ultrafast -pix_fmt yuv420p \
-            -movflags +faststart video-${{ matrix.browser }}.mp4 &
-          echo $! > ffmpeg-${{ matrix.browser }}.pid
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            ffmpeg -probesize 10M -y -f x11grab -r 15 -s ${RESOLUTION} -i ${DISPLAY} \
+              -c:v libx264 -preset ultrafast -pix_fmt yuv420p \
+              -movflags +faststart video-${{ matrix.browser }}.mp4 &
+            echo $! > ffmpeg-${{ matrix.browser }}.pid
+          fi
+        shell: bash
 
       - name: Run Selenium tests
-        env:
-          BROWSER: ${{ matrix.browser }}
         run: |
           mkdir -p debug_screenshots_${{ matrix.browser }}
           yarn test-selenium
         timeout-minutes: 5
 
       - name: Stop recording
-        if: always()
+        if: always() && runner.os == 'Linux'
         run: |
           # Send Ctrl-C equivalent so ffmpeg writes its trailer
           kill -INT $(cat ffmpeg-${{ matrix.browser }}.pid) || true
