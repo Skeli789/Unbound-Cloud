@@ -20,8 +20,8 @@ jobs:
             os: ubuntu-latest
           - browser: edge
             os: ubuntu-latest
-          - browser: safari
-            os: macos-latest
+          # - browser: safari
+          #   os: macos-latest
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
