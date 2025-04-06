@@ -21,7 +21,7 @@ def LogOut(driver: webdriver.Chrome):
     :param driver: The Selenium WebDriver instance.
     """
     # Save a debug screenshot
-    driver.save_screenshot("UploadFilePage.png")
+    driver.save_screenshot(f"{DEBUG_SCREENSHOT_DIR}/UploadFilePage.png")
 
     # Click the logout button
     logoutButton = driver.find_element(By.ID, "logout-button")

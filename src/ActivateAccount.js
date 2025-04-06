@@ -117,6 +117,8 @@ export class ActivateAccount extends Component
                 if (this.state.codeInput.length === CODE_LENGTH) //Pasted in a valid code
                     this.submitCode(); //Auto submit the code for the user for convenience
             });
+        }).catch((err) => {
+            this.errorPopUp("Failed to read clipboard contents! Please paste manually.");
         });
     }
 
@@ -168,7 +170,7 @@ export class ActivateAccount extends Component
         else
         {
             var timeRemaining = Math.ceil((RESEND_CODE_COOLDOWN - timeSince) / 1000);
-            ErrorPopUp(`Please wait ${timeRemaining} seconds before sending another code.`);
+            this.errorPopUp(`Please wait ${timeRemaining} seconds before sending another code.`);
         }
     }
 

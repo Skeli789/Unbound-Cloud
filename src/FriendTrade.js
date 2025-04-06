@@ -12,6 +12,7 @@ import TextField from '@mui/material/TextField';
 
 import {BoxView, HIGHEST_HOME_BOX_NUM} from './BoxView';
 import {config} from "./config";
+import {ErrorPopUp} from "./FormUtil";
 import {CanUseFileHandleAPI, BOX_HOME, BOX_SLOT_LEFT} from './MainPage';
 import {PokemonSummary} from './PokemonSummary';
 import {GetIconSpeciesLink, GetNickname, GetSpecies} from './PokemonUtil';
@@ -424,6 +425,8 @@ export class FriendTrade extends Component
                 if (this.state.codeInput.length === CODE_LENGTH) //Pasted in a valid code
                     this.handleSubmitCode(); //Auto submit the code for the user for convenience
             });
+        }).catch((err) => {
+            ErrorPopUp("Failed to read clipboard contents! Please paste manually.");
         });
     }
 

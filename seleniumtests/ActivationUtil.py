@@ -57,6 +57,8 @@ def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
 
     # Confirm the activation code is pasted correctly
     tester.assertEqual(activationCodeField.get_attribute("value"), newActivationCode, "Activation code is not pasted correctly.")
+    if activationCodeField.get_attribute("value") != newActivationCode:
+        tester.fail("Activation code paste failed.")
 
     # Click the activate button
     try:

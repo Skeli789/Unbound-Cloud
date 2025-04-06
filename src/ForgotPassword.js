@@ -220,6 +220,8 @@ export class ForgotPassword extends Component
         navigator.clipboard.readText().then((text) =>
         {
             this.setState({codeInput: text});
+        }).catch((err) => {
+            this.errorPopUp("Failed to read clipboard contents! Please paste manually.");
         });
     }
 
