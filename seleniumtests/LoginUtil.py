@@ -20,6 +20,9 @@ def LogOut(driver: webdriver.Chrome):
 
     :param driver: The Selenium WebDriver instance.
     """
+    # Save a debug screenshot
+    driver.save_screenshot("UploadFilePage.png")
+
     # Click the logout button
     logoutButton = driver.find_element(By.ID, "logout-button")
     ClickButton(logoutButton)
@@ -31,12 +34,12 @@ def HandleLogin(driver: webdriver.Chrome):
 
     :param driver: The Selenium WebDriver instance.
     """
-    # Click the sign-up button
+    # Click the sign-up button to switch to the sign-up page
     loginForm = WaitForLoginPage(driver)
     signUpButton = loginForm.find_element(By.ID, "switch-to-sign-up-button")
     ClickButton(signUpButton)
 
-    # Click the login button again
+    # Click the login button again to switch back to the login page
     signUpPage = WaitForSignUpPage(driver)
     loginButton = signUpPage.find_element(By.ID, "switch-to-login-button")
     ClickButton(loginButton)

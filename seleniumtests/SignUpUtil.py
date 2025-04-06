@@ -7,7 +7,10 @@ from seleniumtests.TestUtils import *
 
 
 def RemoveExistingAccounts():
-    # Remove all files and folders in the unboundcloud directory
+    """
+    Remove existing accounts by deleting the unboundcloud directory in AppData.
+    This is mainly for testing locally.
+    """
     # Check if AppData exists
     if not os.path.exists(APPDATA):
         print(f"Directory {APPDATA} does not exist.")
@@ -68,7 +71,7 @@ def HandleSignUp(driver: webdriver.Chrome, tester: TestCase):
 
 def FillInSignUpForm(signUpForm: WebElement, username: str, email: str, password: str):
     """
-    Fill in the sign-up form with the provided username, email, and password.
+    Fill in the sign-up form with the provided details.
 
     :param signUpForm: The sign-up form element.
     :param username: The username to fill in.

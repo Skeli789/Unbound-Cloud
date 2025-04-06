@@ -13,7 +13,6 @@ def LoadActivationCode() -> str:
     """
     Load the activation code from the account file.
     """
-    # Load the activation code from the user file
     accountFile = os.path.join(APPDATA, "unboundcloud", "accounts", f"user_{TEST_USERNAME}.json")
     with open(accountFile, "r") as f:
         accountData = json.load(f)
@@ -23,9 +22,12 @@ def LoadActivationCode() -> str:
 
 
 def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
+    # Get elements
     activationForm = driver.find_element(By.ID, "activation-form")
-    activationCode = LoadActivationCode()
     activationCodeField = activationForm.find_element(By.NAME, "code")
+
+    # Fill in and clear the activation code
+    activationCode = LoadActivationCode()
     activationCodeField.send_keys(activationCode)
     activationCodeField.clear()
 
@@ -42,25 +44,19 @@ def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
     # Wait for the error message to appear
     WaitAndClosePopUp(driver, "OK")
 
-    # Load the new activation code from the user file
+    # Copy the new activation code to the clipboard
     newActivationCode = LoadActivationCode()
-
-    # Copy to clipboard
-    # pyperclip.copy(newActivationCode)
+    pyperclip.copy(newActivationCode)
 
     # Confirm the activation code is the same as before
     tester.assertEqual(activationCode, newActivationCode, "Activation code is not the same as before.")
 
     # Use the paste button
-    # if not APPDATA == "/":
-    #     # For Windows, use the paste button
-    #     pasteButton = activationForm.find_element(By.ID, "paste-button")
-    #     ClickButton(pasteButton)
-    #     # Confirm the activation code is pasted correctly
-    #     tester.assertEqual(activationCodeField.get_attribute("value"), newActivationCode, "Activation code is not pasted correctly.")
+    pasteButton = activationForm.find_element(By.ID, "paste-button")
+    ClickButton(pasteButton)
 
-    # Send the keys because the paste button doesn't work on Linux
-    activationCodeField.send_keys(newActivationCode)
+    # Confirm the activation code is pasted correctly
+    tester.assertEqual(activationCodeField.get_attribute("value"), newActivationCode, "Activation code is not pasted correctly.")
 
     # Click the activate button
     try:

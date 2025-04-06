@@ -32,8 +32,6 @@ class TestE2E(TestCase):
         elif BROWSER == "safari":
             driverClass = webdriver.Safari
             opts = webdriver.SafariOptions()
-            # SafariOptions is minimal; you can toggle technology preview:
-            # opts.use_technology_preview = True
         else:  # Default to Chrome
             driverClass = webdriver.Chrome
             opts = webdriver.ChromeOptions()
