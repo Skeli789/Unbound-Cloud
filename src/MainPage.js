@@ -4130,7 +4130,7 @@ export default class MainPage extends Component
 //eslint-disable-next-line
 function GetInitialPageState()
 {
-    if (ACCOUNT_SYSTEM)
+    if (ACCOUNT_SYSTEM && !DEMO_SITE)
     {
         if (localStorage.username && localStorage.accountCode)
         {
@@ -4142,11 +4142,11 @@ function GetInitialPageState()
     }
     else
     {
-        if (localStorage.visitedBefore)
-            return CanUseFileHandleAPI() ? STATE_CHOOSE_HOME_FOLDER : STATE_UPLOAD_SAVE_FILE;
-
         if (DEMO_SITE)
             return STATE_MOVING_POKEMON;
+
+        if (localStorage.visitedBefore)
+            return CanUseFileHandleAPI() ? STATE_CHOOSE_HOME_FOLDER : STATE_UPLOAD_SAVE_FILE;
     }
 
     return STATE_WELCOME;
