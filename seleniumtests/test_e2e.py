@@ -33,11 +33,11 @@ class TestE2E(TestCase):
         else:
             driverClass = webdriver.Chrome
             opts = webdriver.ChromeOptions()
+            opts.add_experimental_option("prefs", {
+                "profile.default_content_setting_values.clipboard": 1, # Allow clipboard access
+            })
             opts.add_argument('--disable-extensions')
 
-        opts.add_experimental_option("prefs", {
-            "profile.default_content_setting_values.clipboard": 1, # Allow clipboard access
-        })
         opts.add_argument('--no-sandbox')
         opts.add_argument('--disable-dev-shm-usage')
         opts.add_argument('--start-maximized')  # Optional, but useful
