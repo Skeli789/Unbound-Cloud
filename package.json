@@ -32,7 +32,7 @@
     "start": "react-scripts start",
     "build": "python DataCopy.py && react-scripts build",
     "test": "react-scripts test",
-    "test-selenium": "pytest seleniumtests/ -v --html=selenium-report.html",
+    "test-selenium": "pytest seleniumtests/ -v --html=selenium-report-${BROWSER}.html",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

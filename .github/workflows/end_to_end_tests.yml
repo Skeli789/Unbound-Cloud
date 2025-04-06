@@ -127,7 +127,7 @@ jobs:
           elif [ "${{ runner.os }}" == "macOS" ]; then
             # On macOS capture main display (device 1) without audio
             ffmpeg -probesize 10M -y -f avfoundation -framerate 15 \
-              -video_size ${RESOLUTION} -i "1:none" \
+              -video_size ${RESOLUTION} -i "0:none" \
               -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart \
               ${{ matrix.browser }}.mp4 &
           else
