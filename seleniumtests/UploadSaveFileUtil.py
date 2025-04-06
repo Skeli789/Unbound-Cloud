@@ -1,14 +1,9 @@
-import json
 import os
-import pyperclip
-import pytest
+import pyautogui
 import shutil
 import time
-from unittest import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException, ElementClickInterceptedException
 
 from seleniumtests.TestUtils import *
 
@@ -36,16 +31,16 @@ def UploadSaveFile(driver: webdriver.Chrome):
     uploadInput = uploadInstructions.find_element(By.ID, "upload-save-button")
     uploadInput.send_keys(SAVE_FILE_TEST)
 
-    # Wait for the upload to complete
-    WaitForElement(driver, By.ID, "symbol-tutorial")
-
-    # Close pop-up
+    # Close the symbol tutorial pop-up
     WaitAndClosePopUp(driver, "OK")
 
+    # Save a screenshot of the boxes
+    driver.save_screenshot(f"{DEBUG_SCREENSHOT_DIR}/Boxes.png")
 
-def ChooseSaveFile(driver: webdriver.Chrome):
+
+def ChooseSaveFileLinux(driver: webdriver.Chrome):
     """
-    Choose the save file to edit.
+    Choose the save file to edit using the Ubuntu (GTK) file picker.
     This tests the FileSystemHandle API, which is not supported in all browsers.
 
     :param driver: The Selenium WebDriver instance.
@@ -57,8 +52,21 @@ def ChooseSaveFile(driver: webdriver.Chrome):
     uploadButton = uploadInstructions.find_element(By.ID, "upload-save-button")
     uploadButton.click()
 
-    # After clicking the upload button, wait for the OS file picker to appear
-    time.sleep(5)
+    # Wait for the OS file picker to appear
+    time.sleep(1)
 
-    # TODO
+    # Focus the location bar
+    pyautogui.hotkey("ctrl", "l")
+    time.sleep(0.1)
 
+    # Type the full path to the save file
+    pyautogui.write(SAVE_FILE_TEST)
+
+    # Select the file
+    pyautogui.press("enter")
+
+    # Close the symbol tutorial pop-up
+    WaitAndClosePopUp(driver, "OK")
+
+    # Save a screenshot of the boxes
+    driver.save_screenshot(f"{DEBUG_SCREENSHOT_DIR}/Boxes.png")

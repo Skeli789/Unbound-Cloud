@@ -367,7 +367,7 @@ export default class MainPage extends Component
         ({
             icon: "question",
             title: "Symbols",
-            html: <SymbolTutorial id="symbol-tutorial"/>,
+            html: <SymbolTutorial/>,
             scrollbarPadding: false,
         });
 

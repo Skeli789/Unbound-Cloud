@@ -14,7 +14,7 @@ from seleniumtests.ActivationUtil import ActivateAccount
 from seleniumtests.LoginUtil import HandleLogin, LogOut
 from seleniumtests.SignUpUtil import HandleSignUp, RemoveExistingAccounts
 from seleniumtests.TestUtils import *
-from seleniumtests.UploadSaveFileUtil import UploadSaveFile, ChooseSaveFile, CopyTestSaveFile
+from seleniumtests.UploadSaveFileUtil import UploadSaveFile, ChooseSaveFileLinux, CopyTestSaveFile
 
 URL_SITE = "http://localhost:3000"
 USE_UPLOAD_DOWNLOAD = os.getenv("REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD", "false").lower() == "true"
@@ -92,4 +92,4 @@ class TestE2E(TestCase):
         if USE_UPLOAD_DOWNLOAD:  # Use the browser's original upload/download functionality
             UploadSaveFile(self.driver)
         else:  # Use the FileSystemHandle API
-            ChooseSaveFile(self.driver)
+            ChooseSaveFileLinux(self.driver)
