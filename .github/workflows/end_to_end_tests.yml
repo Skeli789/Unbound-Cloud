@@ -16,13 +16,16 @@ jobs:
         include:
           - browser: chrome
             os: ubuntu-latest
+            uploadDownload: false
           - browser: firefox
             os: ubuntu-latest
+            uploadDownload: false
           - browser: edge
             os: ubuntu-latest
+            uploadDownload: false
           - browser: safari
             os: macos-latest
-            REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD: true # Safari doesn't support the FileSystemHandle API
+            uploadDownload: true # Safari doesn't support the FileSystemHandle API
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
@@ -30,12 +33,13 @@ jobs:
     env:
       DISPLAY: :99
       RESOLUTION: 1920x1080
+      BROWSER: ${{ matrix.browser }}
+      REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD: ${{ matrix.uploadDownload }}
       APPDATA: ${{ vars.APPDATA }}
       UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
       UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
       WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-      BROWSER: ${{ matrix.browser }}
 
     steps:
       - name: Checkout code
