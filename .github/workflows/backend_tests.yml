@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install -r test-requirements.txt
+          pip install -r test-requirements.txt --upgrade
 
       - name: Running tests
         run: cd server && yarn test-py
