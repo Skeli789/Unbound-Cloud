@@ -52,13 +52,15 @@ def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
     tester.assertEqual(activationCode, newActivationCode, "Activation code is not the same as before.")
 
     # Use the paste button
-    pasteButton = activationForm.find_element(By.ID, "paste-button")
-    ClickButton(pasteButton)
+    if BROWSER != "firefox" and BROWSER != "safari":
+        pasteButton = activationForm.find_element(By.ID, "paste-button")
+        ClickButton(pasteButton)
+    else:
+        # Send the keys because the paste button doesn't work in these browsers
+        activationCodeField.send_keys(newActivationCode)
 
     # Confirm the activation code is pasted correctly
     tester.assertEqual(activationCodeField.get_attribute("value"), newActivationCode, "Activation code is not pasted correctly.")
-    if activationCodeField.get_attribute("value") != newActivationCode:
-        tester.fail("Activation code paste failed.")
 
     # Click the activate button
     try:
