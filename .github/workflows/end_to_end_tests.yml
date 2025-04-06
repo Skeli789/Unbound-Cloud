@@ -20,8 +20,8 @@ jobs:
             os: ubuntu-latest
           - browser: edge
             os: ubuntu-latest
-          # - browser: safari
-          #   os: macos-latest
+          - browser: safari
+            os: macos-latest
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
@@ -69,12 +69,18 @@ jobs:
           yarn install
           yarn --cwd server install
 
-      # Only on Linux runners
-      - name: Install system deps (Linux only)
-        if: runner.os == 'Linux'
+      - name: Install system deps
         run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb ffmpeg
+          if [ "${{ runner.os }}" == "Linux" ]; then
+            sudo apt-get update
+            sudo apt-get install -y xvfb ffmpeg
+          else if [ "${{ runner.os }}" == "macOS" ]; then
+            brew install ffmpeg
+          else
+            echo "Unsupported OS: ${{ runner.os }}"
+            exit 1
+          fi
+        shell: bash
 
       # Browser installs
       - name: Setup Chrome
@@ -98,11 +104,11 @@ jobs:
       - name: Enable Safari WebDriver
         if: matrix.browser == 'safari'
         run: sudo safaridriver --enable # Allow safaridriver to run via WebDriver
-        shell: bash  # requires macOS
+        shell: bash
 
       - name: Start website & recording
         run: |
-          # Start virtual display on Linux
+          # On Linux start a virtual display
           if [ "${{ runner.os }}" == "Linux" ]; then
             Xvfb ${DISPLAY} -screen 0 ${RESOLUTION}x24 &
           fi
@@ -112,13 +118,24 @@ jobs:
           yarn --cwd server start &
           sleep 5
 
-          # Record the display at 15fps, h264, movflags for faststart
+          # Record the display
           if [ "${{ runner.os }}" == "Linux" ]; then
+            # Record the display at 15fps, h264, movflags for faststart
             ffmpeg -probesize 10M -y -f x11grab -r 15 -s ${RESOLUTION} -i ${DISPLAY} \
-              -c:v libx264 -preset ultrafast -pix_fmt yuv420p \
-              -movflags +faststart video-${{ matrix.browser }}.mp4 &
-            echo $! > ffmpeg-${{ matrix.browser }}.pid
+              -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart \
+              video-${{ matrix.browser }}.mp4 &
+          else if [ "${{ runner.os }}" == "macOS" ]; then
+            # On macOS capture main display (device 1) without audio
+            ffmpeg -probesize 10M -y -f avfoundation -framerate 15 \
+              -video_size ${RESOLUTION} -i "1:none" \
+              -c:v libx264 -preset ultrafast -pix_fmt yuv420p -movflags +faststart \
+              video-${{ matrix.browser }}.mp4 &
           fi
+          else
+            echo "Unsupported OS: ${{ runner.os }}"
+            exit 1
+          fi
+          echo $! > ffmpeg-${{ matrix.browser }}.pid
         shell: bash
 
       - name: Run Selenium tests
@@ -128,12 +145,13 @@ jobs:
         timeout-minutes: 5
 
       - name: Stop recording
-        if: always() && runner.os == 'Linux'
+        if: always()
         run: |
           # Send Ctrl-C equivalent so ffmpeg writes its trailer
           kill -INT $(cat ffmpeg-${{ matrix.browser }}.pid) || true
           # Wait for ffmpeg to exit and finalize the file
           sleep 2
+        shell: bash
 
       - name: Upload artifacts
         if: always()
