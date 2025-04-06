@@ -3532,7 +3532,7 @@ export default class MainPage extends Component
 
                     <label className="btn btn-success btn-lg w-100 choose-home-file-button">
                         Upload File
-                        <input type="file" hidden onChange={(e) => this.chooseHomeFile(e, error)}
+                        <input type="file" id="upload-home-file-button" hidden onChange={(e) => this.chooseHomeFile(e, error)}
                                 accept=".dat" />
                     </label>
 

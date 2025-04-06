@@ -71,6 +71,7 @@ def ChooseSaveFileLinux(driver: webdriver.Chrome):
     # Accept the changes
     if BROWSER == "edge":
         # Press the left arrow key to focus the "Save" button
+        time.sleep(1.5)  # A little more time for Edge 
         pyautogui.press("left")
     else:
         # Press the tab key to focus the "Save" button
