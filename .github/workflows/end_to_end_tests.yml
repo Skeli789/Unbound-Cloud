@@ -97,7 +97,7 @@ jobs:
       # Safari is built into macOS runners, but WebDriver must be enabled
       - name: Enable Safari WebDriver
         if: matrix.browser == 'safari'
-        run: safaridriver --enable # Allow safaridriver to run via WebDriver
+        run: sudo safaridriver --enable # Allow safaridriver to run via WebDriver
         shell: bash  # requires macOS
 
       - name: Start website & recording
