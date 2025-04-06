@@ -110,10 +110,11 @@ def TestSingleSelectMove(driver: webdriver.Chrome, tester: TestCase):
     monToMoveFrom.click()
     monToMoveTo.click()
 
-    # Deselect the Pokemon in the save box
+    # Deselect the Pokemon in the save box on some browsers
     time.sleep(0.5) # Wait for the movement to finish
-    deselectButton = driver.find_element(By.ID, "select-all-button-save-box")
-    deselectButton.click()
+    if BROWSER == "chrome" or BROWSER == "edge":
+        deselectButton = driver.find_element(By.ID, "select-all-button-save-box")
+        deselectButton.click()
 
     # Confirm the original Pokemon is back in the save box at the new slot
     monToMoveToImg = monToMoveTo.find_element(By.TAG_NAME, "img")
