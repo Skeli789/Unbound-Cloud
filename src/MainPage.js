@@ -367,7 +367,7 @@ export default class MainPage extends Component
         ({
             icon: "question",
             title: "Symbols",
-            html: <SymbolTutorial/>,
+            html: <SymbolTutorial id="symbol-tutorial"/>,
             scrollbarPadding: false,
         });
 
@@ -3607,9 +3607,9 @@ export default class MainPage extends Component
                         Which hacks are supported?
                     </div>
                     <div className="w-100">
-                        <label className="btn btn-success btn-lg w-100 choose-home-file-button" id="upload-save-button">
+                        <label className="btn btn-success btn-lg w-100 choose-home-file-button">
                             Upload File
-                            <input type="file" hidden onChange={(e) => this.chooseSaveFile(e)}
+                            <input type="file" id="upload-save-button" hidden onChange={(e) => this.chooseSaveFile(e)}
                                 accept=".sav,.srm,.sa1,.fla" />
                         </label>
                         {

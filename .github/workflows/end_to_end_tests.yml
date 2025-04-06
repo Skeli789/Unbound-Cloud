@@ -19,7 +19,7 @@ jobs:
             uploadDownload: false
           - browser: firefox
             os: ubuntu-latest
-            uploadDownload: false
+            uploadDownload: true # Firefox doesn't support the FileSystemHandle API
           - browser: edge
             os: ubuntu-latest
             uploadDownload: false

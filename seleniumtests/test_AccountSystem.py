@@ -14,8 +14,10 @@ from seleniumtests.ActivationUtil import ActivateAccount
 from seleniumtests.LoginUtil import HandleLogin, LogOut
 from seleniumtests.SignUpUtil import HandleSignUp, RemoveExistingAccounts
 from seleniumtests.TestUtils import *
+from seleniumtests.UploadSaveFileUtil import UploadSaveFile, ChooseSaveFile, CopyTestSaveFile
 
 URL_SITE = "http://localhost:3000"
+USE_UPLOAD_DOWNLOAD = os.getenv("REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD", "false").lower() == "true"
 
 
 @pytest.mark.incremental
@@ -84,3 +86,10 @@ class TestE2E(TestCase):
     def test_5_Login(self):
         LogOut(self.driver)
         HandleLogin(self.driver)
+
+    def test_6_UploadSaveFile(self):
+        CopyTestSaveFile()
+        if USE_UPLOAD_DOWNLOAD:  # Use the browser's original upload/download functionality
+            UploadSaveFile(self.driver)
+        else:  # Use the FileSystemHandle API
+            ChooseSaveFile(self.driver)
