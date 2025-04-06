@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        browser: [chrome, firefox]
+        browser: [chrome, firefox, edge]
     timeout-minutes: 15
     env:
       DISPLAY: :99
@@ -61,16 +61,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xvfb ffmpeg
 
-      - name: Setup Chrome Browser & Driver
+      - name: Setup browser & driver
         if: matrix.browser == 'chrome'
         uses: browser-actions/setup-chrome@v1
         with:
           install-chromedriver: true
           install-dependencies: true
-
-      - name: Setup Firefox Browser & Driver
+      - name: Setup browser & driver
         if: matrix.browser == 'firefox'
         uses: browser-actions/setup-firefox@v1
+      - name: Setup browser & driver
+        if: matrix.browser == 'edge'
+        uses: browser-actions/setup-edge@v1
 
       - name: Start website & recording
         run: |
@@ -93,7 +95,7 @@ jobs:
           BROWSER: ${{ matrix.browser }}
         run: |
           mkdir -p debug_screenshots_${{ matrix.browser }}
-          yarn test-selenium --browser=${{ matrix.browser }}
+          yarn test-selenium
         timeout-minutes: 5
 
       - name: Stop recording

@@ -27,6 +27,9 @@ class TestE2E(TestCase):
             driverClass = webdriver.Firefox
             opts = webdriver.FirefoxOptions()
             opts.set_preference("dom.webnotifications.enabled", False)
+        elif BROWSER == "edge":
+            driverClass = webdriver.Edge
+            opts = webdriver.EdgeOptions()
         else:
             driverClass = webdriver.Chrome
             opts = webdriver.ChromeOptions()
