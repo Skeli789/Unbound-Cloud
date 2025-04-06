@@ -18,7 +18,7 @@ from seleniumtests.TestUtils import *
 URL_SITE = "http://localhost:3000"
 
 
-# @pytest.mark.incremental
+@pytest.mark.incremental
 class TestE2E(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -77,24 +77,12 @@ class TestE2E(TestCase):
             self.fail("Failed to click 'Get Started' button after 10 attempts")
 
     def test_3_SignUp(self):
-        # Skip if previous test failed
-        if not self.driver:
-            self.skipTest("Skipping sign-up test because connection test failed")
-
         RemoveExistingAccounts()
         HandleSignUp(self.driver, self)
 
     def test_4_ActivateAccount(self):
-        # Skip if previous test failed
-        if not self.driver:
-            self.skipTest("Skipping activation test because sign-up test failed")
-
         ActivateAccount(self.driver, self)
 
     def test_5_Login(self):
-        # Skip if previous test failed
-        if not self.driver:
-            self.skipTest("Skipping login test because activation test failed")
-
         LogOut(self.driver)
         HandleLogin(self.driver)
