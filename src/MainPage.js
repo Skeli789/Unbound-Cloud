@@ -3609,7 +3609,7 @@ export default class MainPage extends Component
                         Which hacks are supported?
                     </div>
                     <div className="w-100">
-                        <label className="btn btn-success btn-lg w-100 choose-home-file-button" label="upload-save-button-label">
+                        <label className="btn btn-success btn-lg w-100 choose-home-file-button" id="upload-save-button-label">
                             Upload File
                             <input type="file" id="upload-save-button" hidden onChange={(e) => this.chooseSaveFile(e)}
                                 accept=".sav,.srm,.sa1,.fla" />
