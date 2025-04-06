@@ -3,6 +3,7 @@ import os
 import pyperclip
 import pytest
 import shutil
+import sys
 import time
 from unittest import TestCase
 from selenium import webdriver
