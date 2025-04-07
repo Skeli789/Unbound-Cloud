@@ -30,6 +30,7 @@ jobs:
           UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
           WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
 
   test-python:
     runs-on: ubuntu-latest

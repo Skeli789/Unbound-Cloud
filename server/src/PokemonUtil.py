@@ -1,10 +1,15 @@
 import hashlib
 import json
+import os
 import random
+from dotenv import load_dotenv
 from Defines import Defines
+
+load_dotenv()
 
 MAX_LEVEL = 100
 NUM_STATS = 6
+CHECKSUM_KEY = os.getenv("CHECKSUM_KEY", "")
 
 StatIdsToBaseAndEVs = {
     0: ("baseHP", "hpEv"),
@@ -230,7 +235,10 @@ class PokemonUtil:
         return rawStat
 
     @staticmethod
-    def CalculateChecksum(pokemon: dict):
+    def CalculateChecksum(pokemon: dict):        
+        if CHECKSUM_KEY == "":
+            raise ValueError("Checksum key is not set. Please set CHECKSUM_KEY in the .env file.")
+
         pokemon = pokemon.copy()  # Don't modify the original Pokemon
         if "markings" in pokemon:
             del pokemon["markings"]  # These can be changed on the site so shouldn't be included in the checksum
@@ -238,7 +246,8 @@ class PokemonUtil:
             del pokemon["checksum"]  # Don't include an older calculated checksum
         if "wonderTradeTimestamp" in pokemon:
             del pokemon["wonderTradeTimestamp"]  # Don't include an added-on Wonder Trade timestamp
-        return hashlib.md5((json.dumps(pokemon, sort_keys=True) + "TODO: Use env var").encode("utf-8")).hexdigest()  # Add "TODO" on so people can't create their own checksums with the original data
+
+        return hashlib.md5((json.dumps(pokemon, sort_keys=True) + CHECKSUM_KEY).encode("utf-8")).hexdigest()  # Add more text on so people can't create their own checksums with the original data
 
     @staticmethod
     def IsUpdatedDataVersion(pokemon: dict):

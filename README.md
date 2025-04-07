@@ -54,6 +54,11 @@ To run the `main` branch locally for development purposes, the client and the se
     ```
     For development purposes, this will store your Cloud Boxes locally on your machine in a directory of your choosing.
 
+1. Create a file `server/.env` and add the contents:
+    ```js
+    CHECKSUM_KEY="readme"
+    ```
+
 1. Run the client in one terminal with:
     ```bash
     yarn start

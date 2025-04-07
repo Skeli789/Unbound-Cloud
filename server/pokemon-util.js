@@ -6,6 +6,7 @@ const md5 = require('md5');
 const util = require('./util');
 const gBaseFriendship = require('./src/data/BaseFriendship.json');
 const gTradeEvolutions = require('./src/data/TradeEvolutions.json');
+require('dotenv').config({path: __dirname + '/.env'});
 
 
 /**
@@ -15,13 +16,16 @@ const gTradeEvolutions = require('./src/data/TradeEvolutions.json');
  */
 function CalculateMonChecksum(pokemon)
 {
+    if (!process.env.CHECKSUM_KEY)
+        throw new Error("CHECKSUM_KEY is not set in the environment variables.");
+
     pokemon = Object.assign({}, pokemon); //Don't modify the original Pokemon
 
     delete pokemon.markings; //These can be changed on the site so shouldn't be included in the checksum
     delete pokemon.checksum; //Don't include an older calculated checksum
     delete pokemon.wonderTradeTimestamp; //Don't include an added-on Wonder Trade timestamp
 
-    return md5(util.PythonJSONStringify(pokemon) + "TODO: Use env var"); //Add "TODO" on so people can't create their own checksums with the original data
+    return md5(util.PythonJSONStringify(pokemon) + process.env.CHECKSUM_KEY); //Add more text on so people can't create their own checksums with the original data
 }
 module.exports.CalculateMonChecksum = CalculateMonChecksum;
  
