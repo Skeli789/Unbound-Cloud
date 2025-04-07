@@ -40,6 +40,7 @@ To run the `main` branch locally for development purposes, the client and the se
 
 1. Install the server's dependencies with:
     ```bash
+    pip install -r requirements.txt
     cd server
     yarn install
     ```
