@@ -428,6 +428,14 @@ describe("Test GetNickname & SetPokemonNickname", () =>
         pokemonUtil.SetPokemonNickname(pokemon, "Blah");
         expect(Object.keys(pokemon).length).to.equal(0);
     });
+
+    it(`should get species name for Pokemon missing nickname`, () =>
+    {
+        let pokemon = Object.assign({}, gTestPokemon);
+        delete pokemon["nickname"];
+        pokemon.checksum = pokemonUtil.CalculateMonChecksum(pokemon);
+        expect(pokemonUtil.GetNickname(pokemon)).to.equal(gTestPokemon.nickname);
+    });
 });
 
 
@@ -470,6 +478,14 @@ describe("Test GetOTName & SetOTName", () =>
         pokemonUtil.SetOTName(pokemon, "Blah");
         expect(Object.keys(pokemon).length).to.equal(0);
     });
+
+    it(`should return Unknown for Pokemon missing the otName field`)
+    {
+        let pokemon = Object.assign({}, gTestPokemon);
+        delete pokemon["otName"];
+        pokemon.checksum = pokemonUtil.CalculateMonChecksum(pokemon);
+        expect(pokemonUtil.GetOTName(pokemon)).to.equal("Unknown");
+    }
 });
 
 
@@ -579,6 +595,17 @@ describe("Test TryActivateTradeEvolution", () =>
         expect(pokemonUtil.GetSpecies(pokemon)).to.equal("SPECIES_SCIZOR");
         expect(pokemonUtil.GetNickname(pokemon)).to.equal("Scizor");
         expect(pokemonUtil.GetItem(pokemon)).to.equal("ITEM_NONE");
+    });
+
+    it(`Scyther should not evolve when traded with wrong item"`, () =>
+    {
+        let pokemon = Object.assign({}, gTestTradeItemPokemon);
+        pokemon.item = "ITEM_SILVER_POWDER"; //Wrong item
+        pokemon.checksum = pokemonUtil.CalculateMonChecksum(pokemon);
+        pokemonUtil.TryActivateTradeEvolution(pokemon, "SPECIES_PINSIR");
+        expect(pokemonUtil.GetSpecies(pokemon)).to.equal("SPECIES_SCYTHER");
+        expect(pokemonUtil.GetNickname(pokemon)).to.equal("Scyther");
+        expect(pokemonUtil.GetItem(pokemon)).to.equal("ITEM_SILVER_POWDER"); //Confirm item is kept
     });
 
     it(`Shelmet should evolve when traded with Karrablast`, () =>

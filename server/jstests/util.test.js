@@ -85,6 +85,12 @@ describe("Test BadWordInText", () =>
         expect(util.BadWordInText(word)).to.be.true;
     });
 
+    it (`should be true for contained word "AFA GGOT"`, () =>
+    {
+        let word = "afa ggot";
+        expect(util.BadWordInText(word)).to.be.true;
+    });
+
     it (`should be false for contained word "fag"`, () =>
     {
         let word = "Cofagrigus";
