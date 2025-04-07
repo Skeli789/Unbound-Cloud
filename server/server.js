@@ -4,12 +4,19 @@ const app = express();
 const Mutex = require('async-mutex').Mutex;
 const axios = require('axios');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const CryptoJS = require("crypto-js");
 const {WebhookClient} = require('discord.js');
 const fs = require('fs');
-const http = require('http').Server(app);
+
+const SERVER_KEYS =
+{
+    key: fs.readFileSync('D:/unbound-certs/key.pem'),
+    cert: fs.readFileSync('D:/unbound-certs/cert.pem')
+};
+
+const http = require('https').Server(SERVER_KEYS, app);
 const _ = require('lodash');
+const path = require('path');
 const randomstring = require("randomstring");
 const {StatusCode} = require('status-code-enum');
 
@@ -20,14 +27,14 @@ require('dotenv').config({path: __dirname + '/.env'});
 
 const gSecretKey = process.env["ENCRYPTION_KEY"] || "key";
 const gWonderTradeDiscordWebhookURL = process.env["WONDER_TRADE_WEBHOOK"] || "";
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
+const buildPath = path.join(__dirname, '..', 'build');
 
 const MAX_PAYLOAD_SIZE = 10; //10 MB
-app.use(cors());
 app.use(bodyParser.json({ limit: `${MAX_PAYLOAD_SIZE}mb` })); 
 app.use(bodyParser.urlencoded({ limit: `${MAX_PAYLOAD_SIZE}mb`, extended: false }));
 
-app.use(express.static('./images'));
+app.use(express.static(buildPath)); //For the production server
 
 var io = require('socket.io')(http, 
     {cors: {origin: PORT, methods: ["GET", "POST"], credentials: true}});
