@@ -5,8 +5,8 @@
 const nodemailer = require("nodemailer");
 require('dotenv').config({path: __dirname + '/.env'});
 
-const gUnboundEmail = process.env["UNBOUND_EMAIL"];
-const gUnboundEmailPassword = process.env["UNBOUND_EMAIL_PASSWORD"];
+const gUnboundEmail = process.env["UNBOUND_EMAIL"] || "";
+const gUnboundEmailPassword = process.env["UNBOUND_EMAIL_PASSWORD"] || "";
 
 /**
  * Sends an email.
@@ -17,6 +17,12 @@ const gUnboundEmailPassword = process.env["UNBOUND_EMAIL_PASSWORD"];
  */
 async function SendEmail(email, subject, body)
 {
+    if (gUnboundEmail === "" || gUnboundEmailPassword === "")
+    {
+        console.error(`Email not sent to ${email}: no email credentials provided`);
+        return false;
+    }
+
     try
     {
         let transporter = nodemailer.createTransport
@@ -37,10 +43,10 @@ async function SendEmail(email, subject, body)
             text: body
         };
     
-        let error, info = await transporter.sendMail(mailOption);
+        let err, info = await transporter.sendMail(mailOption);
 
-        if (error)
-            throw(error);
+        if (err)
+            throw(err);
         else
         {
             if (email !== gUnboundEmail) //Don't print messages when a dev email is sent
@@ -48,10 +54,9 @@ async function SendEmail(email, subject, body)
             return true;
         }
     }
-    catch (error)
+    catch (err)
     {
-        console.log(`Error sending email to ${email}:`);
-        console.log(error);
+        console.error(`Error sending email to ${email}:\n${err}`);
         return false;
     }
 }

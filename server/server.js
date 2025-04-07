@@ -18,8 +18,8 @@ const pokemonUtil = require('./pokemon-util');
 const util = require('./util');
 require('dotenv').config({path: __dirname + '/.env'});
 
-const gSecretKey = process.env["ENCRYPTION_KEY"];
-const gWonderTradeDiscordWebhookURL = process.env["WONDER_TRADE_WEBHOOK"];
+const gSecretKey = process.env["ENCRYPTION_KEY"] || "key";
+const gWonderTradeDiscordWebhookURL = process.env["WONDER_TRADE_WEBHOOK"] || "";
 const PORT = process.env.PORT || 3001;
 
 const MAX_PAYLOAD_SIZE = 10; //10 MB
@@ -37,7 +37,7 @@ var io = require('socket.io')(http,
             Web Socket Functions            
 *******************************************/
 
-const gWonderTradeDiscordWebhook = new WebhookClient({url: gWonderTradeDiscordWebhookURL});
+const gWonderTradeDiscordWebhook = (gWonderTradeDiscordWebhookURL) ? new WebhookClient({url: gWonderTradeDiscordWebhookURL}) : null;
 const gWonderTradeClients = {};
 const gFriendTradeClients = {};
 const gCodesInUse = {};
@@ -210,6 +210,12 @@ async function SendWonderTradeDiscordMessage(title, color, messageId)
 {
     var attempts = 0;
 
+    if (!gWonderTradeDiscordWebhook)
+    {
+        console.error("Wonder Trade Discord webhook is not set up!");
+        return 0;
+    }
+
     var params =
     {
         username: "Unbound Cloud",
@@ -252,6 +258,8 @@ async function SendWonderTradeDiscordMessage(title, color, messageId)
             console.log(`An error occurred sending the Wonder Trade Discord message:\n${err}`);
         }
     }
+
+    return 0;
 }
 
 // When a connection is made, loop forever until a Wonder Trade is made

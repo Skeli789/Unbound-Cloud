@@ -483,7 +483,7 @@ async function ActivateUser(username, activationCode)
     }
     catch (e)
     {
-        console.log(`An error occurred trying to activate the user account for ${username}:\n${e}`);
+        console.log(`Failed to activate the user account for ${username}:\n${e}`);
         ret = false;
     }
 
