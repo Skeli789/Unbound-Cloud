@@ -241,14 +241,14 @@ const DRIVES_TO_TYPES =
     "ITEM_DOUSE_DRIVE": "TYPE_WATER",
     "ITEM_SHOCK_DRIVE": "TYPE_ELECTRIC",
     "ITEM_CHILL_DRIVE": "TYPE_ICE",
-}
+};
 
 const MASKS_TO_TYPES =
 {
     "ITEM_CORNERSTONE_MASK": "TYPE_ROCK",
     "ITEM_WELLSPRING_MASK": "TYPE_WATER",
     "ITEM_HEARTHFLAME_MASK": "TYPE_FIRE",
-}
+};
 
 const GAME_IDS_TO_DATA =
 {
@@ -293,8 +293,8 @@ const GAME_IDS_TO_DATA =
         "moves": GSChroniclesMoves,
         "items": GSChroniclesItems,
         "ballTypes": GSChroniclesBallTypes,
-    }
-}
+    },
+};
 
 export const MAX_LEVEL = 100;
 export const MAX_FRIENDSHIP = 255;

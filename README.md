@@ -119,6 +119,28 @@ In order to add your own hack, the following changes must be made (see how it is
     - `MoveData.json`: Add the move details for any custom moves you have in your hack.
     - `MoveNames.json`: Add the move names for any custom moves you have in your hack.
 
+1. In `src/MainPage.js`, find the `SUPPORTED_HACKS` array and add the version of your hack that's supported.
+
+1. In `src/PokemonUtil.js`, add imports for your hack at the top of the file below the data for the latest hack. E.g.
+    ```js
+    //Your Hack Data
+    import YourHackBaseStats from "./data/yourhack/BaseStats.json";
+    import YourHackMoves from "./data/yourhack/Moves.json";
+    import YourHackItems from "./data/yourhack/Items.json";
+    import YourHackBallTypes from "./data/yourhack/BallTypes.json";
+    ```
+
+    And in the `GAME_IDS_TO_DATA` object, link the imported files below the data for the latest hack. E.g.
+    ```js
+    "yourhack":
+    {
+        "baseStats": YourHackBaseStats,
+        "moves": YourHackMoves,
+        "items": YourHackItems,
+        "ballTypes": YourHackBallTypes,
+    },
+    ```
+
 1. Add a save file for your hack under `server/pytests/data/saves/yourhack.sav`. Ideally, every Box should be full.
 
 1. In `server\pytests\test_Integrated.py`, add tests for your hack. Copy the existing tests that start with the following names:
