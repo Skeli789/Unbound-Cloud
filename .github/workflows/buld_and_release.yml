@@ -92,6 +92,7 @@ jobs:
       - name: Package Windows apps
         shell: bash
         run: |
+          npm config set script-shell bash
           yarn package-win32
           yarn package-win64
           yarn package=winarm64
