@@ -350,8 +350,6 @@ export class WonderTrade extends Component
      */
     async endWonderTrade(newPokemon, receivedFrom, socket)
     {
-        const backupTitle = document.title;
-
         while (this.getGlobalState().isSaving || this.getGlobalState().inFriendTrade) //Saving or trade in progress
             await new Promise(r => setTimeout(r, 50)); //Sleep temporarily before checking again if can continue
 
@@ -361,7 +359,11 @@ export class WonderTrade extends Component
         newPokemon.wonderTradeTimestamp = Date.now(); //Prevent this Pokemon from instantly being sent back
         var wonderTradeData = this.getGlobalState().wonderTradeData;
         this.finishWonderTrade(newPokemon, wonderTradeData.boxType, wonderTradeData.boxNum, wonderTradeData.boxPos);
-        document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
+        window.electronAPI.sendNotify( //Show OS notification
+        {
+            title: "Wonder Trade Complete!",
+            body: `${GetNickname(newPokemon)} has arrived!`,
+        });
 
         if (!AreSoundsMuted()) //Play sound if not muted
             tradeCompleteSound.play();
@@ -374,9 +376,6 @@ export class WonderTrade extends Component
             imageUrl: GetIconSpeciesLink(newPokemon),
             imageAlt: "",
             scrollbarPadding: false,
-        }).then(() =>
-        {
-            document.title = backupTitle;
         });
     }
 
