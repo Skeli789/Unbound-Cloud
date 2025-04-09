@@ -79,20 +79,18 @@ jobs:
       - name: Install dependencies and build
         shell: bash
         run: |
-            yarn config set network-timeout 120000 # Set network timeout to 2 minutes
-            n=0
-            until [ $n -ge 3 ]
-            do
-              yarn install && break
-              n=$((n+1))
-              echo "Retrying yarn install ($n/3)..."
-              sleep 10
-            done
+            rm -f yarn.lock
+            yarn cache clean
+            yarn config delete proxy
+            yarn config delete https-proxy
+            yarn config delete registry
+            yarn install --network-timeout 1000000 # Set network timeout to 10 minutes
             yarn build
         env:
           CI: false # Ignore build warnings
 
       - name: Package Windows apps
+        shell: bash
         run: |
           yarn package-win32
           yarn package-win64
