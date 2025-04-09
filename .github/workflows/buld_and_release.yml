@@ -34,6 +34,8 @@ jobs:
         run: |
             yarn install
             yarn build
+        env:
+          CI: false # Ignore build warnings
 
       - name: Package Linux apps
         run: |
@@ -45,7 +47,11 @@ jobs:
 
       # Compress the resulting dist folder into an archive
       - name: Archive Linux packages
-        run: zip -r linux-packages.zip dist
+        run: |
+            # Recursively delete all app folders since they're not needed
+            rm -rf dist/*/resources/app
+            # Compress the dist folder into a zip file
+            zip -r linux-packages.zip dist
 
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
@@ -72,8 +78,18 @@ jobs:
 
       - name: Install dependencies and build
         run: |
-            yarn install
+            yarn config set network-timeout 120000 # Set network timeout to 2 minutes
+            n=0
+            until [ $n -ge 3 ]
+            do
+              yarn install && break
+              n=$((n+1))
+              echo "Retrying yarn install ($n/3)..."
+              sleep 10
+            done
             yarn build
+        env:
+          CI: false # Ignore build warnings
 
       - name: Package Windows apps
         run: |
@@ -84,7 +100,11 @@ jobs:
       # On Windows use PowerShell’s Compress-Archive
       - name: Archive Windows packages
         shell: pwsh
-        run: Compress-Archive -Path .\dist\* -DestinationPath windows-packages.zip
+        run: |
+            # Recursively delete all app folders since they're not needed
+            Remove-Item -Path dist/*/resources/app -Recurse -Force
+            # Compress the dist folder into a zip file
+            Compress-Archive -Path dist/* -DestinationPath windows-packages.zip
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
@@ -113,15 +133,21 @@ jobs:
         run: |
             yarn install
             yarn build
+        env:
+          CI: false # Ignore build warnings
 
       - name: Package Mac apps
         run: |
           yarn package-mac64
           yarn package-macarm64
-          yarn package-macuniversal
+        # yarn package-macuniversal
 
       - name: Archive Mac packages
-        run: zip -r mac-packages.zip dist
+        run: |
+            # Recursively delete all app folders since they're not needed
+            rm -rf dist/*/Contents/Resources/app
+            # Compress the dist folder into a zip file
+            zip -r mac-packages.zip dist
 
       - name: Upload Mac artifact
         uses: actions/upload-artifact@v4

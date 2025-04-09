@@ -44,7 +44,7 @@
   },
   "scripts": {
     "start": "electron Main.js",
-    "build": "python DataCopy.py && CI=false react-scripts build",
+    "build": "python DataCopy.py && react-scripts build",
     "test": "react-scripts test",
     "test-selenium": "pytest seleniumtests/ -v --html=selenium-report-${BROWSER}.html --timeout=600",
     "eject": "react-scripts eject",
