@@ -12,27 +12,33 @@ from seleniumtests.TestUtils import *
 def LoadActivationCode() -> str:
     """
     Load the activation code from the account file.
+
+    :return: The activation code.
     """
     accountFile = os.path.join(APPDATA, "unboundcloud", "accounts", f"user_{TEST_USERNAME}.json")
     with open(accountFile, "r") as f:
         accountData = json.load(f)
-        activationCode = accountData["activationCode"]
+        activationCode = accountData.get("activationCode", "")
 
     return activationCode
 
 
 def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
+    """
+    Test the account activation functionality.
+
+    :param driver: The Selenium WebDriver instance.
+    :param tester: The TestCase instance for assertions.
+    """
     # Get elements
     activationForm = driver.find_element(By.ID, "activation-form")
     activationCodeField = activationForm.find_element(By.NAME, "one-time-code")
-
-    # Fill in and clear the activation code
-    activationCode = LoadActivationCode()
-    activationCodeField.send_keys(activationCode)
-    activationCodeField.clear()
-
-    # Resend the activation code
+    pasteButton = activationForm.find_element(By.ID, "paste-button")
     resendButton = activationForm.find_element(By.ID, "resend-code-button")
+    activateButton = activationForm.find_element(By.ID, "submit-code-button")
+    activationCode = LoadActivationCode()
+
+    # Send the activation code
     ClickButton(resendButton)
 
     # Wait for the pop-up
@@ -46,25 +52,23 @@ def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
 
     # Copy the new activation code to the clipboard
     newActivationCode = LoadActivationCode()
+    tester.assertNotEqual(newActivationCode, "", "New activation code should not be empty")
     pyperclip.copy(newActivationCode)
 
     # Confirm the activation code is the same as before
     tester.assertEqual(activationCode, newActivationCode, "Activation code is not the same as before.")
 
-    # Use the paste button
-    if BROWSER != "firefox" and BROWSER != "safari":
-        pasteButton = activationForm.find_element(By.ID, "paste-button")
+    # Fill in the code (prefer paste button if available)
+    if BrowserSupportsPaste():
         ClickButton(pasteButton)
+        time.sleep(0.5) # Give it a moment to paste
+        tester.assertEqual(activationCodeField.get_attribute("value"), newActivationCode, "Activation code is not pasted correctly.")
     else:
         # Send the keys because the paste button doesn't work in these browsers
         activationCodeField.send_keys(newActivationCode)
 
-    # Confirm the activation code is pasted correctly
-    tester.assertEqual(activationCodeField.get_attribute("value"), newActivationCode, "Activation code is not pasted correctly.")
-
     # Click the activate button
     try:
-        activateButton = activationForm.find_element(By.ID, "submit-code-button")
         ClickButton(activateButton)
     except ElementClickInterceptedException:
         pass # Ignore this

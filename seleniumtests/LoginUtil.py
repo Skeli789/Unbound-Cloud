@@ -28,11 +28,12 @@ def LogOut(driver: webdriver.Chrome):
     ClickButton(logoutButton)
 
 
-def HandleLogin(driver: webdriver.Chrome):
+def HandleLogin(driver: webdriver.Chrome, password: str = TEST_PASSWORD):
     """
     Handle the login process by filling in the login form and clicking the login button.
 
     :param driver: The Selenium WebDriver instance.
+    :param password: The password to use for login.
     """
     # Click the sign-up button to switch to the sign-up page
     loginForm = WaitForLoginPage(driver)
@@ -65,7 +66,7 @@ def HandleLogin(driver: webdriver.Chrome):
         passwordField.send_keys("\ue003")
 
     # Fill in the login form correctly
-    passwordField.send_keys(TEST_PASSWORD)
+    passwordField.send_keys(password)
 
     # Click the login button
     ClickButton(loginButton)

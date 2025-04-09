@@ -294,7 +294,7 @@ export class ForgotPassword extends Component
         const sendCodeTooltip = props => (<Tooltip {...props}>Send Code</Tooltip>);
 
         return (
-            <div className="form-page">
+            <div className="form-page" id="forgot-password-form">
                 <Form onSubmit={(e) => this.sendForgotPasswordCode(e)}>
                     <h1 className="form-title">I forgot my password!</h1>
                     <p className="form-desc">Enter your email to receive a code to reset your password.</p>
@@ -338,7 +338,7 @@ export class ForgotPassword extends Component
         const showPasswordFunc = () => this.setState({showPassword: !this.state.showPassword});
 
         return (
-            <div className="form-page">
+            <div className="form-page" id="reset-password-form">
                 <h1 className="form-title">I forgot my password!</h1>
                 <p className="form-desc">Enter your new password and the code sent to your email.</p>
 

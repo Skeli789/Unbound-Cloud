@@ -4,6 +4,7 @@ from unittest import TestCase
 from selenium.webdriver.common.by import By
 
 from seleniumtests.ActivationUtil import ActivateAccount
+from seleniumtests.ForgotPasswordUtil import TestForgotPassword
 from seleniumtests.LoginUtil import HandleLogin, LogOut
 from seleniumtests.SignUpUtil import HandleSignUp, RemoveExistingAccounts
 from seleniumtests.TestUtils import *
@@ -40,11 +41,14 @@ class TestAccountSystem(TestCase):
     def test_4_ActivateAccount(self):
         ActivateAccount(self.driver, self)
 
-    def test_5_Login(self):
+    def test_5_ForgotPassword(self):
         LogOut(self.driver)
-        HandleLogin(self.driver)
+        TestForgotPassword(self.driver, self, TEST_NEW_PASSWORD)
 
-    def test_6_UploadSaveFile(self):
+    def test_6_Login(self):
+        HandleLogin(self.driver, password=TEST_NEW_PASSWORD) # Use the new password
+
+    def test_7_UploadSaveFile(self):
         if BROWSER == "safari":
             # Safari is a pain to automate for file uploads
             self.skipTest("Skipping upload test for Safari due to automation limitations.")

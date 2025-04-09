@@ -14,6 +14,7 @@ DEBUG_SCREENSHOT_DIR = f"debug_screenshots_{BROWSER}"
 TEST_EMAIL = "test@gmail.com"
 TEST_USERNAME = "test_user"
 TEST_PASSWORD = "test_password"
+TEST_NEW_PASSWORD = "new_test_password"
 
 
 def SetUpDriver(browser: str) -> webdriver.Chrome:
@@ -149,3 +150,12 @@ def WaitAndClosePopUp(driver: webdriver.Chrome, buttonText: str):
             print(f"Button not clickable: {e}.")
         
     raise Exception(f"Failed to find the button with text '{buttonText}' on the pop-up.")
+
+
+def BrowserSupportsPaste() -> bool:
+    """
+    Check if the current browser supports the paste functionality.
+
+    :return: Whether the browser supports paste functionality.
+    """
+    return BROWSER != "safari" and BROWSER != "firefox"
