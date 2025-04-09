@@ -34,13 +34,13 @@
     "sweetalert2-react-content": "^5.1.0"
   },
   "devDependencies": {
+    "@electron/packager": "^18.3.6",
     "@testing-library/dom": "^9.2.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
     "cross-env": "^7.0.3",
-    "electron": "^35.1.4",
-    "electron-packager": "^17.1.2"
+    "electron": "^35.1.4"
   },
   "scripts": {
     "start": "electron Main.js",
