@@ -22,6 +22,7 @@ selenium-report*
 
 # production
 /build
+/dist
 package-lock.json
 
 # misc

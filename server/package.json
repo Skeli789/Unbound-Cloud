@@ -1,14 +1,11 @@
 {
   "name": "unbound-cloud-server",
   "version": "1.0.0",
-  "description": "",
-  "author": "",
-  "license": "ISC",
+  "author": "Skeli789",
+  "license": "UNLICENSED",
+  "private": true,
   "main": "server.js",
   "proxy": "https://unboundcloud.net",
-  "jest": {
-    "testEnvironment": "node"
-  },
   "scripts": {
     "test-js": "npx nyc mocha jstests --timeout 5000",
     "test-py": "pytest --cov pytests -s",
@@ -44,5 +41,8 @@
     "mocha": "^11.1.0",
     "nyc": "^17.1.0",
     "rewire": "^7.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

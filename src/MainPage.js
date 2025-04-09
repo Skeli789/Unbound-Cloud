@@ -464,7 +464,7 @@ export default class MainPage extends Component
      */
     isScreenLessThanBoxWidth()
     {
-        return document.documentElement.clientWidth < 428; //px
+        return window.innerWidth < 428; //px
     }
 
     /**
@@ -3199,16 +3199,17 @@ export default class MainPage extends Component
 
     /**
      * Gets the button for viewing the explanation of the different symbols.
+     * @param {Boolean} onOwnLine - Whether or not the button should be on its own line.
      * @returns {JSX.Element} A button element.
      */
-    symbolTutorialButton()
+    symbolTutorialButton(onOwnLine)
     {
         var size = 42;
         const tooltip = props => (<Tooltip {...props}>Help</Tooltip>);
 
         return (
             <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" className={"footer-button " + (isMobile ? "help-button-mobile" : "help-button")}
+                <Button size="lg" className={"footer-button " + ((onOwnLine) ? "help-button-mobile" : "help-button")}
                         aria-label="Get Help"
                         onClick={this.showSymbolTutorial.bind(this)}>
                     <MdHelp size={size} />
@@ -3323,11 +3324,11 @@ export default class MainPage extends Component
                 {this.muteMusicButton()}
             </>
 
-        if (document.documentElement.clientWidth >= 600) //Mainly desktop devices, but also includes some mobile ones like iPads
+        if (window.innerWidth >= 600) //Mainly desktop devices, but also includes some mobile ones like iPads
         {
             return (
                 <div className={"footer-buttons"}>
-                    {this.symbolTutorialButton()}
+                    {this.symbolTutorialButton(false)}
 
                     <div style={{display: "flex", justifyContent: "center"}}>
                         {buttons}
@@ -3349,7 +3350,7 @@ export default class MainPage extends Component
                     {
                         !tradeScreen ? //Help is hidden during a trade so there's more space
                             <div style={{textAlign: "center"}}>
-                                {this.symbolTutorialButton()}
+                                {this.symbolTutorialButton(true) /* The button is placed on it's own line so there's more space */}
                             </div>
                         :
                             ""
