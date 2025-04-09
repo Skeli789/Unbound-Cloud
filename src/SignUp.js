@@ -1,14 +1,16 @@
-import React, {Component} from 'react';
-import {Button, Form, OverlayTrigger, Tooltip} from "react-bootstrap";
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import TextField from '@mui/material/TextField';
+import React, {Component} from "react";
+import {Button, Form} from "react-bootstrap";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
-import {BLANK_PROGRESS_BAR, STATE_ENTER_ACTIVATION_CODE, STATE_LOGIN, UNOFFICIAL_RELEASE, PURPLE_CLOUD} from "./MainPage";
-import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, SendFormToServer,
+import {/*BLANK_PROGRESS_BAR,*/ STATE_ENTER_ACTIVATION_CODE, STATE_LOGIN, UNOFFICIAL_RELEASE, UNBOUND_LINK, PURPLE_CLOUD} from "./MainPage";
+import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
+import {EmailField} from "./subcomponents/EmailField";
+import {PasswordField} from "./subcomponents/PasswordField";
+import {UsernameField} from "./subcomponents/UsernameField";
 
-import {AiOutlineCheckCircle, AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
+import {AiOutlineCheckCircle} from "react-icons/ai";
 
 import "./stylesheets/Form.css";
 
@@ -76,6 +78,11 @@ export class SignUp extends Component
     getGlobalState()
     {
         return this.getMainPage().state;
+    }
+
+    isShowingPassword()
+    {
+        return this.state.showPassword;
     }
  
     /**
@@ -177,6 +184,70 @@ export class SignUp extends Component
             && this.state.invalidEmail === this.state.emailInput;
     }
 
+    /**
+     * Checks if the username field should be highlighted as an error.
+     * @returns {Boolean} Whether the username field should be highlighted as an error.
+     */
+    shouldShowUsernameError()
+    {
+        return this.state.usernameInput !== ""
+            && (!this.validUsername() || this.usernameAlreadyInUse());
+    }
+
+    /**
+     * Checks if the email field should be highlighted as an error.
+     * @returns {Boolean} Whether the email field should be highlighted as an error.
+     */
+    shouldShowEmailError()
+    {
+        return this.state.emailInput !== ""
+            && (!this.validEmail() || this.emailAlreadyInUse());
+    }
+
+    /**
+     * Checks if the password field should be highlighted as an error.
+     * @returns {Boolean} Whether the password field should be highlighted as an error.
+     */
+    shouldShowPasswordError()
+    {
+        return this.state.passwordInput !== "" && !this.validPassword();
+    }
+
+    /**
+     * Checks if the confirm password field should be highlighted as an error.
+     * @returns {Boolean} Whether the confirm password field should be highlighted as an error.
+     */
+    shouldShowConfirmPasswordError()
+    {
+        return this.bothPasswordsFilled() && !this.passwordsMatch();
+    }
+
+    /**
+     * Updates the state with the set password.
+     * @param {String} password - The password to set.
+     */
+    setPassword(password)
+    {
+        this.setState({passwordInput: password});
+    }
+
+    /**
+     * Updates the state with the set confirm password.
+     * @param {String} password - The confirm password to set.
+     */
+    setConfirmPassword(password)
+    {
+        this.setState({confirmPasswordInput: password});
+    }
+
+    /**
+     * Toggles the visibility of the text in the password fields.
+     */
+    toggleShowPassword()
+    {
+        this.setState({showPassword: !this.state.showPassword});
+    }
+
 
     /**
      * Finalizes the user's registration.
@@ -189,6 +260,7 @@ export class SignUp extends Component
 
         if (errorMsg === "") //No error
         {
+            const route = "/createuser";
             const requestData =
             {
                 email: this.state.emailInput,
@@ -200,7 +272,7 @@ export class SignUp extends Component
                 cloudRandomizerTitles: this.getGlobalState().randomizedHomeTitles ? this.getGlobalState().randomizedHomeTitles : [],
             }
 
-            await SendFormToServer(requestData, this, this.mainPage, "/createuser", CompletedRegistrationPopUp);
+            await SendFormToServer(requestData, this, this.mainPage, route, CompletedRegistrationPopUp);
         }
         else
         {
@@ -225,92 +297,57 @@ export class SignUp extends Component
 
     /**
      * Prints the sign-up page.
+     * @returns {JSX.Element} The sign-up page.
      */
     render()
     {
-        const cloudFileUploadError = "Make sure it was a proper Cloud data file and is not corrupted.";
-        const showPasswordFunc = () => this.setState({showPassword: !this.state.showPassword});
+        //const cloudFileUploadError = "Make sure it was a proper Cloud data file and is not corrupted.";
 
         return (
             <div className="form-page" id="sign-up-form">
-                <h1 className="form-title">Sign Up for Unbound Cloud {PURPLE_CLOUD}</h1>
-                {/*Redirect to Login Page Button*/}
-                <div className="already-have-account-button"
-                     id="switch-to-login-button"
-                     onClick={() => this.getMainPage().setState({editState: STATE_LOGIN})}>
-                    I already have an account
-                </div>
+                <h1 className="form-title">Sign Up for {UNBOUND_LINK} Cloud {PURPLE_CLOUD}</h1>
+                <p className="form-desc">
+                    Store your Boxes and access them from anywhere!<br/>
+                </p>
 
                 <Form onSubmit={(e) => this.submitRegistration(e)}>
                     {/*Username Input*/}
-                    <Form.Group className="mb-3" controlId="formBasicUsername">
-                        <TextField
-                            required
-                            fullWidth
-                            label="Username"
-                            variant="outlined"
-                            name="username"
-                            autoComplete="username"
-                            value={this.state.usernameInput}
-                            className={`form-control ${this.state.usernameInput !== ""
-                                                   && (!this.validUsername() || this.usernameAlreadyInUse()) ? 'is-invalid' : ''}`}
-                            onChange={(e) => this.setState({usernameInput: ProcessTextInput(e, "USERNAME", true),
-                                                            isTester: this.state.isTester || ProcessTextInput(e, "USERNAME", true).toLowerCase() === "iamatester"})}
-                        />
-                        <Form.Text>Username is public. Don't enter your email here!</Form.Text>
-                    </Form.Group>
+                    <UsernameField
+                        username={this.state.usernameInput}
+                        fieldDesc="Username is public. Don't enter your email here!"
+                        setParentUsername={(username) => this.setState({usernameInput: username})}
+                        showError={this.shouldShowUsernameError.bind(this)}
+                    />
 
                     {/*Email Input*/}
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <TextField
-                            required
-                            fullWidth
-                            label="Email Address"
-                            variant="outlined"
-                            name="email"
-                            autoComplete="email"
-                            value={this.state.emailInput}
-                            className={`form-control ${this.state.emailInput !== ""
-                                                   && (!this.validEmail() || this.emailAlreadyInUse()) ? 'is-invalid' : ''}`}
-                            onChange={(e) => this.setState({emailInput: ProcessTextInput(e, "EMAIL", true)})}
-                        />
-                    </Form.Group>
+                    <EmailField
+                        email={this.state.emailInput}
+                        setParentEmail={(email) => this.setState({emailInput: email})}
+                        showError={this.shouldShowEmailError.bind(this)}
+                    />
 
                     {/*Password Input*/}
-                    <Form.Group className="mb-3 d-flex" controlId="formBasicPassword">
-                        <TextField
-                            required
-                            fullWidth
-                            label="Password"
-                            variant="outlined"
-                            name="password"
-                            autoComplete='new-password'
-                            type={this.state.showPassword ? "text" : "password"}
-                            value={this.state.passwordInput}
-                            className={`form-control ${this.state.passwordInput !== "" && !this.validPassword() ? 'is-invalid' : ''}`}
-                            onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", true)})}
-                        />
-                        {ShowPasswordSymbol(this.state.showPassword, showPasswordFunc)}
-                    </Form.Group>
+                    <PasswordField
+                        password={this.state.passwordInput}
+                        setParentPassword={this.setPassword.bind(this)}
+                        showParentPassword={this.isShowingPassword.bind(this)}
+                        toggleShowParentPassword={this.toggleShowPassword.bind(this)}
+                        showError={this.shouldShowPasswordError.bind(this)}
+                    />
 
                     {/*Confirm Password Input*/}
-                    <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
-                        <TextField
-                            required
-                            fullWidth
-                            label="Confirm Password"
-                            variant="outlined"
-                            name="confirmPassword"
-                            autoComplete='new-password'
-                            type={this.state.showPassword ? "text" : "password"}
-                            value={this.state.confirmPasswordInput}
-                            className={`form-control ${this.bothPasswordsFilled() && !this.passwordsMatch() ? 'is-invalid' : ''}`}
-                            onChange={(e) => this.setState({confirmPasswordInput: ProcessTextInput(e, "PASSWORD", true)})}
-                        />
-                    </Form.Group>
+                    <PasswordField
+                        password={this.state.passwordInput}
+                        fieldPrefix="Confirm"
+                        isConfirmPassword={true}
+                        setParentPassword={this.setConfirmPassword.bind(this)}
+                        showParentPassword={this.isShowingPassword.bind(this)}
+                        toggleShowParentPassword={this.toggleShowPassword.bind(this)}
+                        showError={this.shouldShowConfirmPasswordError.bind(this)}
+                    />
 
                     {/*Tester Cloud Data Upload Button*/}
-                    {
+                    {/*
                         this.state.isTester ?
                             this.getGlobalState().uploadProgress === BLANK_PROGRESS_BAR ?
                                 <div>
@@ -324,10 +361,10 @@ export class SignUp extends Component
                                 this.getGlobalState().uploadProgress
                         :
                             ""
-                    }
+                    */}
 
                     {/*Tester Show Cloud Data Was Uploaded*/}
-                    {
+                    {/*
                         this.state.isTester ?
                             <div>
                                 <h4>{this.getGlobalState().uploadedTesterHomeFile ? "Uploaded Cloud Data" : ""}</h4>
@@ -335,15 +372,25 @@ export class SignUp extends Component
                             </div>
                         :
                             ""
-                    }
+                    */}
     
                     {/* Submit Button */}
-                    <div className="submit-form-button-container mt-2">
+                    <div className="submit-form-button-container">
                         <Button size="lg" className="submit-form-button" id="sign-up-button" type="submit">
                             <AiOutlineCheckCircle size={42}/>
                         </Button>
                     </div>
                 </Form>
+
+                {/*Redirect to Login Page Button*/}
+                <p className="already-have-account-container">
+                    {"Already have an account? "}
+                    <span className="already-have-account-button"
+                            id="switch-to-login-button"
+                            onClick={() => this.getMainPage().setState({editState: STATE_LOGIN})} >
+                        Log in to your account.
+                    </span>
+                </p>
             </div>
         )
     }
@@ -369,29 +416,4 @@ function CompletedRegistrationPopUp(mainPageObj, response)
             accountCode: response.data.accountCode, //Used later when requesting the Cloud Boxes from the server
         });
     });
-}
-
-/**
- * Gets a button that can be clicked to either show or hide a password.
- * @param {Boolean} shouldShowPassword - Whether the password is currently shown or hidden.
- * @param {Function} showPasswordFunc - A function that changes the current state to either show or hide the password.
- * @returns {JSX} The symbol that can be clicked to show or hide the password.
- */
-export function ShowPasswordSymbol(shouldShowPassword, showPasswordFunc)
-{
-    const showPasswordTooltip = props => (<Tooltip {...props}>Show Password</Tooltip>);
-    const hidePasswordTooltip = props => (<Tooltip {...props}>Hide Password</Tooltip>);
-
-    return (
-        <OverlayTrigger placement="right" overlay={shouldShowPassword ? hidePasswordTooltip : showPasswordTooltip}>    
-            <div className="show-password-symbol" id="show-password-button">
-                {
-                    shouldShowPassword ?
-                        <AiOutlineEyeInvisible size={20} onClick={showPasswordFunc}/>
-                    :
-                        <AiOutlineEye size={20} onClick={showPasswordFunc}/>
-                }
-            </div>
-        </OverlayTrigger>
-    );
 }

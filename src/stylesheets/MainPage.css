@@ -1,3 +1,81 @@
+.main-page
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.main-page-content-footer, .main-page-content-footer-mobile
+{
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: var(--header-height);
+    height: calc(100% - var(--header-height));
+    width: 100%;
+}
+
+.main-page-content-footer-mobile
+{
+    justify-content: space-between;
+}
+
+.main-page-content, .main-page-content-mobile
+{
+    min-width: var(--min-mobile-width);
+    width: 100%;
+}
+
+.main-page-content
+{
+    height: 100%;
+}
+
+.scroll-container, .scroll-container-mobile
+{
+    overflow-y: auto; /*Allows scrolling*/
+    overflow-x: hidden; /*Prevents horizontal scrolling*/
+}
+
+.scroll-container
+{
+    scrollbar-gutter: stable both-edges; /*Prevents scrollbar from shifting everything when it appears*/
+}
+
+.welcome-container, .form-page
+{
+    min-width: var(--min-mobile-width);
+    max-width: 32rem; /*32rem = 512px*/
+    width: 100%;
+    height: fit-content;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--bs-box-shadow-lg) !important;
+    background-color: white;
+}
+
+.welcome-container
+{
+    display: flex;
+    flex-direction: column; /*Top to bottom rows*/
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: fit-content;
+    margin-bottom: 50%;
+}
+
+.centre-vertical
+{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 .main-page-title
 {
     font-weight: 600  !important; /*Semi-bold*/
@@ -6,6 +84,93 @@
     margin-bottom: 1rem;
 }
 
+/* Upload pages */
+.main-page-upload-instructions
+{
+    display: flex;
+    flex-direction: column; /*Top to bottom rows*/
+    justify-content: center;
+    align-items: center;
+}
+
+.choose-save-file-heading
+{
+    color: rgb(75 85 99);
+    margin-top: 1rem !important;
+    margin-bottom: 0;
+}
+
+.save-file-location-explanation
+{
+    color: rgb(107 114 128);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.file-handle-page-mobile
+{
+    padding-left: 2%;
+    padding-right: 2%;
+}
+
+.choose-home-file-button
+{
+    width: 100%;
+    margin-bottom: 0.75rem;
+}
+
+.confirm-save-file-upload-button
+{
+    width: fit-content !important;
+    font-size: 24px;
+}
+
+.main-page-home-storage-example-container
+{
+    display: flex;
+    justify-content: center;
+    max-width: 350px;
+    height: 255px;
+    margin-bottom: 2%;
+}
+
+.main-page-home-storage-example
+{
+    height: 100%;
+    width: 100%;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.main-page-boxes
+{
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    flex: 1 0 auto; /*Allows footer to stick at bottom*/
+    padding-left: var(--scrollbar-width); /*Offset the scrollbar*/
+    z-index: 1; /*So the MultiArkGaming logo appears underneath*/
+}
+
+.main-page-boxes-mobile
+{
+    display: inline-flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+/* Image of mon currently being dragged */
+.dragging-image
+{
+    position: absolute;
+    opacity: 0.7;
+    visibility: hidden; /*Changed when dragging*/
+    pointer-events: none; /*Allows clicking through it*/
+    z-index: 200;
+}
+
+/* Fade In Animation */
 .fade-in
 {
     animation: fadeIn linear 1s;
@@ -52,301 +217,4 @@
 {
     0% {opacity:0;}
     100% {opacity:1;}
-}
-
-.main-page-content
-{
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    min-width: var(--min-mobile-width);
-}
-
-.welcome-container
-{
-    display: flex;
-    flex-direction: column; /*Top to bottom rows*/
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    height: fit-content;
-    margin-bottom: 50%;
-}
-
-.welcome-container, .form-page
-{
-    width: 100%;
-    min-width: var(--min-mobile-width);
-    max-width: 32rem;
-    padding: 1.5rem;
-    margin-top: 1.5rem;
-    border-radius: 1rem;
-    box-shadow: var(--bs-box-shadow-lg) !important;
-    background-color: white;
-}
-
-.centre-vertical
-{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-}
-
-.main-page-upload-instructions
-{
-    display: flex;
-    flex-direction: column; /*Top to bottom rows*/
-    justify-content: center;
-    align-items: center;
-}
-
-.choose-save-file-heading
-{
-    color: rgb(75 85 99);
-    margin-top: 1rem !important;
-    margin-bottom: 0;
-}
-
-.save-file-location-explanation
-{
-    color: rgb(107 114 128);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    margin-bottom: 0.5rem;
-}
-
-.file-handle-page-mobile
-{
-    padding-left: 2%;
-    padding-right: 2%;
-}
-
-.choose-home-file-button
-{
-    width: 100%;
-    margin-bottom: 0.75rem;
-}
-
-.error-text
-{
-    color: red;
-}
-
-.upload-progress-bar
-{
-    width: 90%;
-    max-width: 500px;
-}
-
-.main-page-save-file-dropdown
-{
-    margin-top: 2%;
-}
-
-.confirm-save-file-upload-button
-{
-    width: fit-content !important;
-    font-size: 24px;
-}
-
-.main-page-home-storage-example-container
-{
-    display: flex;
-    justify-content: center;
-    max-width: 350px;
-    height: 255px;
-    margin-bottom: 2%;
-}
-
-.main-page-home-storage-example
-{
-    height: 100%;
-    width: 100%;
-    margin-left: 5%;
-    margin-right: 5%;
-}
-
-.main-page-mobile
-{
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.main-page-boxes
-{
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    flex: 1 0 auto; /*Allows footer to stick at bottom*/
-    padding-left: var(--scrollbar-width); /*Offset the scrollbar*/
-    z-index: 1; /*So the MultiArkGaming logo appears underneath*/
-}
-
-.main-page-boxes-mobile
-{
-    display: inline-flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-}
-
-.top-bar-buttons
-{
-    background-color: lightgrey;
-    display: flex;
-    justify-content: center;
-    position: sticky;
-    top: 0;
-    height: var(--header-height);
-    width: 100%;
-}
-
-.navbar-blank
-{
-    background-color: var(--purple) !important;
-    position: static;
-    margin-bottom: 0px;
-}
-
-.fixed-navbar
-{
-    z-index: 100;
-    position: fixed;
-    top: 0;
-}
-
-.sticky-navbar
-{
-    z-index: 100;
-    position: sticky;
-    top: 0;
-}
-
-.top-bar-button
-{
-    color: white !important;
-    background-color: var(--purple) !important;
-    border-color: var(--purple) !important;
-    box-shadow: unset !important;
-    width: 100%;
-    font-size: 24px !important;
-    border-radius: 0px;
-}
-
-.top-bar-button-selected
-{
-    background-color: mediumpurple !important;
-    border-color: mediumpurple !important;
-}
-
-.top-bar-back-button
-{
-    color: white;
-    background-color: var(--purple) !important;
-    border-color: var(--purple) !important;
-    box-shadow: unset !important;
-    height: 100%;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-}
-
-.footer-buttons
-{
-    background-color: var(--purple);
-    height: 56px;
-    flex-shrink: 0; /*Allows footer to stick at bottom*/
-    display: flex; /*The contents of the footer*/
-    justify-content: space-between;
-}
-
-.footer-buttons-mobile
-{
-    height: 112px;
-    flex-direction: column;
-}
-
-.footer-buttons-mobile-top-row
-{
-    display: flex;
-    justify-content: space-evenly;
-}
-
-.footer-buttons-fixed
-{
-    /*Stick to bottom of page on mobile devices*/
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    z-index: -1; /*So it appears below the search display*/
-}
-
-.footer-button
-{
-    color: white !important;
-    background-color: var(--purple) !important;
-    border-color: var(--purple) !important;
-    box-shadow: unset !important;
-    font-size: 24px !important;
-    border: none;
-    border-radius: 0px;
-    max-height: 56px;
-    padding: 0px 14px 0px 14px !important; /*Top Right Bottom Left*/
-}
-
-.friend-trade-button
-{
-    padding-left: 8px !important;
-    padding-right: 8px !important;
-}
-
-.music-button
-{
-    padding: 0px !important;
-}
-
-.help-button
-{
-    margin-right: 60px !important; /*To offset the MultiArkGaming logo*/
-}
-
-.help-button-mobile
-{
-    margin-bottom: 8px;
-}
-
-.dragging-image
-{
-    position: absolute;
-    opacity: 0.7;
-    visibility: hidden; /*Changed when dragging*/
-    pointer-events: none; /*Allows clicking through it*/
-    z-index: 200;
-}
-
-.scroll-container
-{
-    display: flex; /*Allows footer to stick at bottom*/
-    flex-direction: column;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    position: absolute;
-    top: 56px;
-    bottom: 0;
-    width: 100%;
-    min-width: var(--min-mobile-width);
-}
-
-.scroll-container-mobile
-{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-}
-
-.multi-ark-gaming-logo
-{
-    width: 120px;
 }

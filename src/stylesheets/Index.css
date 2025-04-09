@@ -13,6 +13,7 @@ body
     --save-box-color: #2196F3;
     --scrollbar-width: 12px;
     --header-height: 56px;
+    --footer-height: 56px;
     font-family: "open sans", arial, sans-serif; /* Font + fallbacks */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

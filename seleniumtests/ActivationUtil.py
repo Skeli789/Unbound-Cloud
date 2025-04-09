@@ -24,7 +24,7 @@ def LoadActivationCode() -> str:
 def ActivateAccount(driver: webdriver.Chrome, tester: TestCase):
     # Get elements
     activationForm = driver.find_element(By.ID, "activation-form")
-    activationCodeField = activationForm.find_element(By.NAME, "code")
+    activationCodeField = activationForm.find_element(By.NAME, "one-time-code")
 
     # Fill in and clear the activation code
     activationCode = LoadActivationCode()

@@ -1,0 +1,51 @@
+
+.navbar-buttons
+{
+    background-color: lightgrey;
+    display: flex;
+    justify-content: center;
+    height: var(--header-height);
+    width: 100%;
+    margin-bottom: 0px;
+}
+
+.navbar-blank
+{
+    background-color: var(--purple) !important;
+    align-items: center;
+}
+
+.navbar-fixed
+{
+    position: fixed;
+    top: 0;
+}
+
+.navbar-button
+{
+    color: white !important;
+    background-color: var(--purple) !important;
+    border-color: var(--purple) !important;
+    box-shadow: unset !important;
+    width: 100%;
+    font-size: 24px !important;
+    border-radius: 0px;
+}
+
+.navbar-button-selected
+{
+    background-color: mediumpurple !important;
+    border-color: mediumpurple !important;
+}
+
+.navbar-back-button
+{
+    color: white;
+    background-color: var(--purple) !important;
+    border-color: var(--purple) !important;
+    box-shadow: unset !important;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}

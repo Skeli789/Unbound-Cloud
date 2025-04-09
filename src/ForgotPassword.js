@@ -3,13 +3,13 @@ import React, {Component} from 'react';
 import {Button, Form, OverlayTrigger, Tooltip} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import TextField from '@mui/material/TextField';
 
-import {PasteCodeButton} from "./ActivateAccount";
 import {STATE_LOGIN} from "./MainPage";
-import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, SendFormToServer,
+import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, SendFormToServer,
         ValidateEmail, ValidatePassword} from "./FormUtil";
-import {ShowPasswordSymbol} from "./SignUp";
+import {CodeField} from './subcomponents/CodeField';
+import {EmailField} from "./subcomponents/EmailField";
+import {PasswordField} from "./subcomponents/PasswordField";
 
 import {AiOutlineCheckCircle, AiOutlineMail} from "react-icons/ai";
 
@@ -296,33 +296,35 @@ export class ForgotPassword extends Component
         return (
             <div className="form-page">
                 <Form onSubmit={(e) => this.sendForgotPasswordCode(e)}>
-                    <h1 className="form-title mb-3">I forgot my password!</h1>
+                    <h1 className="form-title">I forgot my password!</h1>
+                    <p className="form-desc">Enter your email to receive a code to reset your password.</p>
 
                     {/*Email Input*/}
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <TextField
-                            className="bg-white"
-                            required
-                            fullWidth
-                            label="Email"
-                            variant="outlined"
-                            name="email"
-                            autoComplete="email"
-                            value={this.state.emailInput}
-                            onChange={(e) => this.setState({emailInput: ProcessTextInput(e, "EMAIL", true)})}
-                        />
-                    </Form.Group>
+                    <EmailField
+                        email={this.state.emailInput}
+                        setParentEmail={(email) => this.setState({emailInput: email})}
+                    />
 
-                    <div className="friend-trade-code-input-button">
+                    {/* Send Code Button */}
+                    <div className="submit-form-button-container">
                         <OverlayTrigger placement="bottom" overlay={sendCodeTooltip}>
-                            <Button size="lg" className="friend-trade-offer-button"
-                                    aria-label="Send Code"
-                                    type="submit">
-                                <AiOutlineMail size={42}/>
+                            <Button size="lg" className="submit-form-button" id="send-code-button"
+                                    type="submit" aria-label="Send Code">
+                                    <AiOutlineMail size={42}/>
                             </Button>
                         </OverlayTrigger>
                     </div>
                 </Form>
+                
+                {/*Redirect to Login Page Button*/}
+                <p className="already-have-account-container">
+                    {"Remembered your password? "}
+                    <span className="already-have-account-button"
+                            id="switch-to-login-button"
+                            onClick={() => this.getMainPage().setState({editState: STATE_LOGIN})} >
+                        Log in to your account.
+                    </span>
+                </p>
             </div>
         );
     }
@@ -334,80 +336,50 @@ export class ForgotPassword extends Component
     renderChangePassword()
     {
         const showPasswordFunc = () => this.setState({showPassword: !this.state.showPassword});
-        const pasteButtonSize = 24;
 
         return (
             <div className="form-page">
-                <h1 className="form-title mb-3">I forgot my password!</h1>
+                <h1 className="form-title">I forgot my password!</h1>
+                <p className="form-desc">Enter your new password and the code sent to your email.</p>
 
                 <Form onSubmit={(e) => this.submitPasswordReset(e)}>
                     {/*Email Input*/}
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <TextField
-                            required
-                            fullWidth
-                            disabled={true} //Should have been set earlier
-                            label="Email"
-                            variant="outlined"
-                            name="email"
-                            value={this.state.emailInput}
-                        />
-                    </Form.Group>
+                    <EmailField
+                        email={this.state.emailInput}
+                        disabled={true} //Should have been set earlier
+                    />
 
                     {/*Code Input*/}
-                    <Form.Group className="mb-3" controlId="code">
-                        <div className="d-flex">
-                            <TextField
-                                required
-                                fullWidth
-                                label="Code"
-                                variant="outlined"
-                                name="one-time-code"
-                                autoComplete="one-time-code"
-                                value={this.state.codeInput}
-                                onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}
-                            />
-                            {PasteCodeButton(pasteButtonSize, this.pasteCode.bind(this))}
-                        </div>
-                    </Form.Group>
+                    <CodeField
+                        code={this.state.codeInput}
+                        codeLength={CODE_LENGTH}
+                        fieldPrefix="Password Reset"
+                        setParentCode={(code) => this.setState({codeInput: code})}
+                    />
 
                     {/*New Password Input*/}
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <div className="d-flex">
-                            <TextField
-                                required
-                                fullWidth
-                                label="New Password"
-                                variant="outlined"
-                                name="password"
-                                autoComplete='new-password'
-                                type={this.state.showPassword ? "text" : "password"}
-                                value={this.state.passwordInput}
-                                className={`form-control ${this.state.passwordInput !== "" && !this.validPassword() ? 'is-invalid' : ''}`}
-                                onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", true)})}
-                            />
-                            {ShowPasswordSymbol(this.state.showPassword, showPasswordFunc)}
-                        </div>
-                    </Form.Group>
+                    <PasswordField
+                        password={this.state.passwordInput}
+                        fieldPrefix="New"
+                        setParentPassword={(password) => this.setState({passwordInput: password})}
+                        showParentPassword={() => this.state.showPassword}
+                        toggleShowParentPassword={showPasswordFunc}
+                        showError={() => this.state.passwordInput !== "" && !this.validPassword()}
+                    />
 
                     {/*Confirm Password Input*/}
-                    <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
-                        <TextField
-                            required
-                            fullWidth
-                            label="Confirm Password"
-                            variant="outlined"
-                            name="confirmPassword"
-                            autoComplete='new-password'
-                            type={this.state.showPassword ? "text" : "password"}
-                            value={this.state.confirmPasswordInput}
-                            className={`form-control ${this.bothPasswordsFilled() && !this.passwordsMatch() ? 'is-invalid' : ''}`}
-                            onChange={(e) => this.setState({confirmPasswordInput: ProcessTextInput(e, "PASSWORD", true)})}
-                        />
-                    </Form.Group>
+                    <PasswordField
+                        password={this.state.confirmPasswordInput}
+                        fieldPrefix="Confirm"
+                        isConfirmPassword={true}
+                        setParentPassword={(password) => this.setState({confirmPasswordInput: password})}
+                        showParentPassword={() => this.state.showPassword}
+                        toggleShowParentPassword={showPasswordFunc}
+                        showError={() => this.bothPasswordsFilled() && !this.passwordsMatch()}
+                    />
 
                     {/* Submit Button */}
-                    <div className="submit-form-button-container mt-2">
+                    <div className="submit-form-button-container">
                         <Button size="lg" className="submit-form-button" type="submit">
                             <AiOutlineCheckCircle size={42}/>
                         </Button>
