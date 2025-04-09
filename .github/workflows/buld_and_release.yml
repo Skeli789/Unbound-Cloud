@@ -47,11 +47,7 @@ jobs:
 
       # Compress the resulting dist folder into an archive
       - name: Archive Linux packages
-        run: |
-            # Recursively delete all app folders since they're not needed
-            rm -rf dist/*/resources/app
-            # Compress the dist folder into a zip file
-            zip -r linux-packages.zip dist
+        run: zip -r linux-packages.zip dist
 
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
@@ -80,7 +76,6 @@ jobs:
         shell: bash
         run: |
             rm -f yarn.lock
-            yarn cache clean
             yarn config delete proxy
             yarn config delete https-proxy
             yarn config delete registry
@@ -100,11 +95,7 @@ jobs:
       # On Windows use PowerShell’s Compress-Archive
       - name: Archive Windows packages
         shell: pwsh
-        run: |
-            # Recursively delete all app folders since they're not needed
-            Remove-Item -Path dist/*/resources/app -Recurse -Force
-            # Compress the dist folder into a zip file
-            Compress-Archive -Path dist/* -DestinationPath windows-packages.zip
+        run: Compress-Archive -Path dist/* -DestinationPath windows-packages.zip
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
@@ -143,11 +134,7 @@ jobs:
         # yarn package-macuniversal
 
       - name: Archive Mac packages
-        run: |
-            # Recursively delete all app folders since they're not needed
-            rm -rf dist/*/Contents/Resources/app
-            # Compress the dist folder into a zip file
-            zip -r mac-packages.zip dist
+        run: zip -r mac-packages.zip dist
 
       - name: Upload Mac artifact
         uses: actions/upload-artifact@v4
@@ -191,34 +178,34 @@ jobs:
           tag: ${{ github.ref }}
 
       # Upload the Linux artifact to the release
-    #   - name: Upload Linux release asset
-    #     uses: actions/upload-release-asset@v1
-    #     env:
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     with:
-    #       upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #       asset_path: linux-packages.zip
-    #       asset_name: linux-packages.zip
-    #       asset_content_type: application/zip
+      - name: Upload Linux release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: linux-packages.zip
+          asset_name: linux-packages.zip
+          asset_content_type: application/zip
 
       # Upload the Windows artifact to the release
-    #   - name: Upload Windows release asset
-    #     uses: actions/upload-release-asset@v1
-    #     env:
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     with:
-    #       upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #       asset_path: windows-packages.zip
-    #       asset_name: windows-packages.zip
-    #       asset_content_type: application/zip
+      - name: Upload Windows release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: windows-packages.zip
+          asset_name: windows-packages.zip
+          asset_content_type: application/zip
 
       # Upload the Mac artifact to the release
-    #   - name: Upload Mac release asset
-    #     uses: actions/upload-release-asset@v1
-    #     env:
-    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     with:
-    #       upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #       asset_path: mac-packages.zip
-    #       asset_name: mac-packages.zip
-    #       asset_content_type: application/zip
+      - name: Upload Mac release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: mac-packages.zip
+          asset_name: mac-packages.zip
+          asset_content_type: application/zip
