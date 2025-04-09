@@ -1,0 +1,198 @@
+name: Build and Release Destop App
+
+# Trigger this workflow when pushing a tag (e.g. v1.0.0)
+# on:
+#   push:
+#     tags:
+#       - 'v*'
+
+# Always when pushing to electron branch
+on:
+  push:
+    branches:
+    - electron
+
+jobs:
+  # --- Linux Build Job ---
+  build-linux:
+    name: Build Linux packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies and build
+        run: |
+            yarn install
+            yarn build
+
+      - name: Package Linux apps
+        run: |
+          yarn package-linux32
+          yarn package-linux64
+          yarn package-linuxarmv7l
+          yarn package-linuxarm64
+          yarn package-linuxmips64el
+
+      # Compress the resulting dist folder into an archive
+      - name: Archive Linux packages
+        run: zip -r linux-packages.zip dist
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages
+          path: linux-packages.zip
+
+  # --- Windows Build Job ---
+  build-windows:
+    name: Build Windows packages
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies and build
+        run: |
+            yarn install
+            yarn build
+
+      - name: Package Windows apps
+        run: |
+          yarn package-win32
+          yarn package-win64
+          yarn package=winarm64
+
+      # On Windows use PowerShell’s Compress-Archive
+      - name: Archive Windows packages
+        shell: pwsh
+        run: Compress-Archive -Path .\dist\* -DestinationPath windows-packages.zip
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-packages
+          path: windows-packages.zip
+
+  # --- macOS Build Job ---
+  build-mac:
+    name: Build Mac packages
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies and build
+        run: |
+            yarn install
+            yarn build
+
+      - name: Package Mac apps
+        run: |
+          yarn package-mac64
+          yarn package-macarm64
+          yarn package-macuniversal
+
+      - name: Archive Mac packages
+        run: zip -r mac-packages.zip dist
+
+      - name: Upload Mac artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-packages
+          path: mac-packages.zip
+
+  # --- Release Job ---
+  release:
+    name: Create GitHub Release and Attach Artifacts
+    needs: [build-linux, build-windows, build-mac]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v4
+
+      # Download all the artifacts from the build jobs
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-packages
+          path: .
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-packages
+          path: .
+
+      - name: Download Mac artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mac-packages
+          path: .
+
+      # Create a release using the tag name
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref }}
+
+      # Upload the Linux artifact to the release
+    #   - name: Upload Linux release asset
+    #     uses: actions/upload-release-asset@v1
+    #     env:
+    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     with:
+    #       upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #       asset_path: linux-packages.zip
+    #       asset_name: linux-packages.zip
+    #       asset_content_type: application/zip
+
+      # Upload the Windows artifact to the release
+    #   - name: Upload Windows release asset
+    #     uses: actions/upload-release-asset@v1
+    #     env:
+    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     with:
+    #       upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #       asset_path: windows-packages.zip
+    #       asset_name: windows-packages.zip
+    #       asset_content_type: application/zip
+
+      # Upload the Mac artifact to the release
+    #   - name: Upload Mac release asset
+    #     uses: actions/upload-release-asset@v1
+    #     env:
+    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     with:
+    #       upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #       asset_path: mac-packages.zip
+    #       asset_name: mac-packages.zip
+    #       asset_content_type: application/zip

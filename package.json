@@ -5,6 +5,8 @@
   "description": "Unbound Cloud is a tool to add extra storage for ROM Hacks.",
   "license": "UNLICENSED",
   "private": true,
+  "main": "Main.js",
+  "homepage": "./",
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
@@ -35,14 +37,29 @@
     "@testing-library/dom": "^9.2.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
-    "@testing-library/user-event": "^14.4.3"
+    "@testing-library/user-event": "^14.4.3",
+    "cross-env": "^7.0.3",
+    "electron": "^35.1.4",
+    "electron-packager": "^17.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "python DataCopy.py && react-scripts build",
+    "start": "electron Main.js",
+    "build": "python DataCopy.py && CI=false react-scripts build",
     "test": "react-scripts test",
     "test-selenium": "pytest seleniumtests/ -v --html=selenium-report-${BROWSER}.html --timeout=600",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "package-win32": "cross-env PLATFORM=win32 ARCH=ia32 ICON=ico yarn package",
+    "package-win64": "cross-env PLATFORM=win32 ARCH=x64 ICON=ico yarn package",
+    "package=winarm64": "cross-env PLATFORM=win32 ARCH=arm64 ICON=ico yarn package",
+    "package-linux32": "cross-env PLATFORM=linux ARCH=ia32 ICON=png yarn package",
+    "package-linux64": "cross-env PLATFORM=linux ARCH=x64 ICON=png yarn package",
+    "package-linuxarmv7l": "cross-env PLATFORM=linux ARCH=armv7l ICON=png yarn package",
+    "package-linuxarm64": "cross-env PLATFORM=linux ARCH=arm64 ICON=png yarn package",
+    "package-linuxmips64el": "cross-env PLATFORM=linux ARCH=mips64el ICON=png yarn package",
+    "package-mac64": "cross-env PLATFORM=darwin ARCH=x64 ICON=icns yarn package",
+    "package-macarm64": "cross-env PLATFORM=darwin ARCH=arm64 ICON=icns yarn package",
+    "package-macuniversal": "cross-env PLATFORM=darwin ARCH=universal ICON=icns yarn package",
+    "package": "electron-packager . UnboundCloud --platform=$PLATFORM --arch=$ARCH --icon=public/UnboundHomeLogo.$ICON --out=dist --overwrite --extra-resource=build --extra-resource=Preload.js --ignore=\"(.*/\\..*|jstests|node.*|public|selenium|server|src|.*\\.(py|md|txt|lock|sav))\""
   },
   "eslintConfig": {
     "extends": "react-app"

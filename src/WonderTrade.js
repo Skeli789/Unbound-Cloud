@@ -349,8 +349,6 @@ export class WonderTrade extends Component
      */
     async endWonderTrade(newPokemon, receivedFrom, socket)
     {
-        const backupTitle = document.title;
-
         //Wait until the user is not saving or in a trade
         while (this.getGlobalState().isSaving || this.getGlobalState().inFriendTrade) //Saving or trade in progress
             await new Promise(r => setTimeout(r, 50)); //Sleep temporarily before checking again if can continue
@@ -380,9 +378,6 @@ export class WonderTrade extends Component
             imageUrl: imageUrl,
             imageAlt: "",
             ...GetDefaultPopUpOpts(),
-        }).then(() =>
-        {
-            document.title = backupTitle;
         });
     }
 

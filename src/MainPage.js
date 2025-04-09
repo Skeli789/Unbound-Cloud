@@ -246,8 +246,26 @@ export default class MainPage extends Component
     {
         if (this.wasAnyChangeMade()) //Some boxes aren't saved
         {
+            //Prevent the page from closing
             e.preventDefault();
-            e.returnValue = true; //Display pop-up warning
+            e.returnValue = true;
+
+            //Warn the user about unsaved changes
+            Swal.fire
+            ({
+                icon: "warning",
+                title: "You have unsaved changes!\nAre you sure you want to close Unbound Cloud?",
+                confirmButtonText: "Keep Open",
+                denyButtonText: "Close", //Deny so highlighted in red
+                showDenyButton: true,
+                scrollbarPadding: false,
+            }).then((result) =>
+            {
+                //Close the window if the user wants to
+                //TODO: This always closes the window, even if the user is trying to reload
+                if (result.isDenied)
+                    window.electronAPI.sendClose(); //Send a notification to Electron to close the window
+            });
         }
     }
 
