@@ -42,7 +42,6 @@ jobs:
           - browser: safari
             os: macos-latest
             uploadDownload: true # Safari doesn't support the FileSystemHandle API
-            if: github.event_name != 'pull_request' # Skip Safari tests on PRs
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
 
