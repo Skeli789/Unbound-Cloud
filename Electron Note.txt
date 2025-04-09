@@ -1,0 +1,2 @@
+# Run the following command in the terminal before trying to build locally on Windows:
+npm config set script-shell "C:/Program Files/git/bin/bash.exe"
