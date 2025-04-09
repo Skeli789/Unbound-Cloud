@@ -3208,7 +3208,7 @@ export default class MainPage extends Component
 
         return (
             <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" className={"footer-button" + (isMobile ? " help-button-mobile" : " help-button")}
+                <Button size="lg" className={"footer-button " + (isMobile ? "help-button-mobile" : "help-button")}
                         aria-label="Get Help"
                         onClick={this.showSymbolTutorial.bind(this)}>
                     <MdHelp size={size} />
