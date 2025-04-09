@@ -23,7 +23,6 @@ selenium-report*
 # production
 /build
 package-lock.json
-*lock
 
 # misc
 .DS_Store

@@ -479,13 +479,13 @@ describe("Test GetOTName & SetOTName", () =>
         expect(Object.keys(pokemon).length).to.equal(0);
     });
 
-    it(`should return Unknown for Pokemon missing the otName field`)
+    it(`should return Unknown for Pokemon missing the otName field`, () =>
     {
         let pokemon = Object.assign({}, gTestPokemon);
         delete pokemon["otName"];
         pokemon.checksum = pokemonUtil.CalculateMonChecksum(pokemon);
         expect(pokemonUtil.GetOTName(pokemon)).to.equal("Unknown");
-    }
+    });
 });
 
 
