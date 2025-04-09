@@ -158,4 +158,4 @@ def BrowserSupportsPaste() -> bool:
 
     :return: Whether the browser supports paste functionality.
     """
-    return BROWSER != "safari" and BROWSER != "firefox"
+    return BROWSER == "chrome"
