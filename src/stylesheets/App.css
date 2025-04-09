@@ -43,6 +43,10 @@ button, input, optgroup, select, textarea
     z-index: 1050 !important; /*Just lower than the swal pop-up (normally 1060px)*/
 }
 
+.error-text
+{
+    color: red;
+}
 
 /* make buttons look more modern */
 .btn
@@ -51,7 +55,7 @@ button, input, optgroup, select, textarea
     background-color: #fff;
 }
 
-.btn:not(.top-bar-button) /* Add CSS to .btn as long as it's not also .top-bar-button */
+.btn:not(.navbar-button) /* Add CSS to .btn as long as it's not also .navbar-button */
 {
     font-size: 1em;
     font-weight: bold;
@@ -115,4 +119,16 @@ button, input, optgroup, select, textarea
 {
     color: #fff;
     background: #bd2130;
+}
+
+/* CSS to prevent text selection when clicking on it */
+.no-select
+{
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
 }

@@ -8,5 +8,5 @@
     position: fixed;
     top: 10px;
     right: 2%;
-    z-index: 101; /*1 or 2 above priority of header bar*/
+    z-index: 1; /*1 above priority of navbar*/
 }

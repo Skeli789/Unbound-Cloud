@@ -1,0 +1,62 @@
+
+.footer-buttons
+{
+    background-color: var(--purple);
+    height: var(--footer-height);
+    width: 100%;
+    flex-shrink: 0; /*Allows footer to stick at bottom*/
+    display: flex; /*The contents of the footer*/
+    justify-content: space-between;
+}
+
+.footer-buttons-mobile
+{
+    height: 112px;
+    flex-direction: column;
+}
+
+.footer-buttons-mobile-top-row
+{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.footer-button
+{
+    color: white !important;
+    background-color: var(--purple) !important;
+    border-color: var(--purple) !important;
+    box-shadow: unset !important;
+    font-size: 24px !important;
+    border: none;
+    border-radius: 0px;
+    max-height: 56px;
+    padding: 0px 14px 0px 14px !important; /*Top Right Bottom Left*/
+}
+
+/* Buttons on footer */
+.friend-trade-button
+{
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+}
+
+.music-button
+{
+    padding: 0px !important;
+}
+
+.help-button
+{
+    margin-right: 60px !important; /*To offset the MultiArkGaming logo*/
+}
+
+.help-button-mobile
+{
+    margin-bottom: 8px;
+}
+
+.multi-ark-gaming-logo
+{
+    width: 120px;
+}

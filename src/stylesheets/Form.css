@@ -1,65 +1,3 @@
-.form-title
-{
-    text-align: center;
-    font-weight: 600  !important; /*Semi-bold*/
-    font-size: 1.5rem !important;
-    line-height: 2rem  !important;
-}
-
-.already-have-account-button
-{
-    color: rgb(59 130 246);
-    cursor: pointer;
-    width: fit-content;
-    margin: auto;
-    margin-bottom: 5% !important;
-}
-
-.forgot-password-button
-{
-    margin: 0;
-}
-
-.show-password-symbol
-{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    cursor: pointer;
-    margin-left: 0.5rem;
-}
-
-.submit-form-button-container
-{
-    display: flex;
-    justify-content: center;
-}
-
-.submit-form-button
-{
-    margin-bottom: 2%;
-}
-
-.activate-account-buttons
-{
-    display: flex;
-    justify-content: space-evenly;
-    margin-top: 10px;
-}
-
-.form-error-msg
-{
-    color: red;
-    min-height: 1.5rem;
-    font-size: 1.25rem;
-    font-weight: bold;
-    text-align: center;
-}
-
-.form-control
-{
-    min-height: 2.71428571em;
-}
 
 .form-label
 {
@@ -71,9 +9,71 @@
     color: black !important;    
 }
 
-::placeholder
+.MuiFormLabel-asterisk
 {
-    color: rgba(191,191,191,.87) !important;
+    /* Colour of the required asterisk in the material UI form labels */
+    color: red;
+}
+
+.form-title
+{
+    text-align: center;
+    font-weight: 600  !important; /*Semi-bold*/
+    font-size: 1.5rem !important;
+    line-height: 2rem  !important;
+}
+
+.form-sub-title
+{
+    text-align: center;
+    font-size: 1.25rem !important;
+    line-height: 1.75rem  !important;
+}
+
+.form-desc
+{
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-field
+{
+    display: flex !important;
+    margin-bottom: 1rem !important;
+}
+
+.submit-form-button-container
+{
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+}
+
+.submit-form-button
+{
+    width: 100%;
+    margin-bottom: 2%;
+}
+
+
+.already-have-account-container
+{
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.already-have-account-button, .forgot-password-button
+{
+    color: rgb(59 130 246);
+    cursor: pointer;
+}
+
+.activate-account-buttons
+{
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 10px;
 }
 
 .tester-upload-button

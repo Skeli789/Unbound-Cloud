@@ -8,19 +8,17 @@ import {isMobile} from 'react-device-detect';
 import io from 'socket.io-client';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import TextField from '@mui/material/TextField';
 
 import {BoxView, HIGHEST_HOME_BOX_NUM} from './BoxView';
 import {config} from "./config";
-import {ErrorPopUp} from "./FormUtil";
 import {CanUseFileHandleAPI, BOX_HOME, BOX_SLOT_LEFT} from './MainPage';
 import {PokemonSummary} from './PokemonSummary';
 import {GetIconSpeciesLink, GetNickname, GetSpecies} from './PokemonUtil';
 import {Timer} from './Timer';
 import {GetSpeciesName} from './Util';
+import {CodeField} from './subcomponents/CodeField';
 
 import {AiOutlineCloseCircle, AiOutlineCheckCircle} from "react-icons/ai";
-import {ImPaste} from "react-icons/im";
 import {GoPerson} from "react-icons/go";
 
 import SfxTradeComplete from './audio/TradeComplete.mp3';
@@ -409,24 +407,6 @@ export class FriendTrade extends Component
             await new Promise(r => setTimeout(r, 100)); //Allows the tooltip to rerender
             navigator.clipboard.writeText(this.state.codeInput); //Copy to clipboard
             this.setState({codeCopied: true});
-        });
-    }
-
-    /**
-     * Pastes the text on the clipboard into the submission field and automatically
-     * submits it if it could be a valid code.
-     */
-    pasteCode()
-    {
-        navigator.clipboard.readText().then((text) =>
-        {
-            this.setState({codeInput: text}, () =>
-            {
-                if (this.state.codeInput.length === CODE_LENGTH) //Pasted in a valid code
-                    this.handleSubmitCode(); //Auto submit the code for the user for convenience
-            });
-        }).catch((err) => {
-            ErrorPopUp("Failed to read clipboard contents! Please paste manually.");
         });
     }
 
@@ -850,26 +830,28 @@ export class FriendTrade extends Component
         var iconSize = 33;
 
         return (
-            <div className="friend-trade-code-choice-page">
-                <div className="friend-trade-code-choice-instructions">
-                    <div className="friend-trade-code-choice-title-container">
-                        <GoPerson size={iconSize}/>
-                        <h1 className="friend-trade-code-choice-title">Friend Trade</h1>
-                        <GoPerson size={iconSize}/>
+            <div className={"friend-trade-code-page" + (isMobile ? "-mobile" : "")}>
+                <div className="welcome-container">
+                    <div className="friend-trade-code-choice-instructions">
+                        <div className="friend-trade-code-choice-title-container">
+                            <GoPerson size={iconSize}/>
+                            <h1 className="friend-trade-code-choice-title">Friend Trade</h1>
+                            <GoPerson size={iconSize}/>
+                        </div>
+                        <h2>One friend creates a code.</h2>
+                        <h2>The other enters the code created.</h2>
                     </div>
-                    <h2>One friend creates a code.</h2>
-                    <h2>The other enters the code created.</h2>
-                </div>
-                <div className="friend-trade-code-choice-buttons">
-                    <Button className="friend-trade-offer-button"
-                            onClick={this.createCode.bind(this)}>
-                        Create Code
-                    </Button>
+                    <div className="friend-trade-code-choice-buttons">
+                        <Button className="friend-trade-offer-button"
+                                onClick={this.createCode.bind(this)}>
+                            Create Code
+                        </Button>
 
-                    <Button className="friend-trade-offer-button"
-                            onClick={() => this.setFriendTradeState(FRIEND_TRADE_INPUT_CODE)}>
-                        Enter Code
-                    </Button>
+                        <Button className="friend-trade-offer-button"
+                                onClick={() => this.setFriendTradeState(FRIEND_TRADE_INPUT_CODE)}>
+                            Enter Code
+                        </Button>
+                    </div>
                 </div>
             </div>
         );
@@ -884,20 +866,22 @@ export class FriendTrade extends Component
         var isCodeCopied = this.state.codeCopied;
 
         return (
-            <div className="friend-trade-code-display-page">
-                <h2>Have your friend enter this code!</h2>
-                <div className="friend-trade-code-display-container">
-                    <div className="friend-trade-code-display-code" translate="no"
-                            style={isCodeCopied ? {backgroundColor: "rgba(100,100,100,.4)"} : {}}
-                            onClick={this.copyCreatedCode.bind(this)}>
-                        {this.state.codeInput}
+            <div className={"friend-trade-code-page" + (isMobile ? "-mobile" : "")}>
+                <div className="welcome-container">
+                    <h2>Have your friend enter this code!</h2>
+                    <div className="friend-trade-code-display-container">
+                        <div className="friend-trade-code-display-code" translate="no"
+                                style={isCodeCopied ? {backgroundColor: "rgba(100,100,100,.4)"} : {}}
+                                onClick={this.copyCreatedCode.bind(this)}>
+                            {this.state.codeInput}
+                        </div>
                     </div>
+                    {
+                        <div className="friend-trade-code-copied fade-in-fast" style={{visibility: isCodeCopied ? "visible" : "hidden"}}>
+                            Code Copied!
+                        </div>
+                    }
                 </div>
-                {
-                    <div className="friend-trade-code-copied fade-in-fast" style={{visibility: isCodeCopied ? "visible" : "hidden"}}>
-                        Code Copied!
-                    </div>
-                }
             </div>
         );
     }
@@ -909,43 +893,32 @@ export class FriendTrade extends Component
     inputCodePage()
     {
         const submitTooltip = props => (<Tooltip {...props}>Submit</Tooltip>);
-        const pasteTooltip = props => (<Tooltip {...props}>Paste</Tooltip>);
-        var pasteButtonSize = 30;
-        var confirmButtonSize = 42;
+        const confirmButtonSize = 42;
 
         return (
-            <div className="friend-trade-code-input-page">
-                <Form onSubmit={(e) => this.submitCode(e)}>
-                    <Form.Label><h2>Enter the code your friend created!</h2></Form.Label>
-                    <Form.Group controlId="code" className="friend-trade-code-input-container">
-                        <TextField
-                            className="form-control"
-                            label="Trade Code"
-                            variant="outlined"
-                            name="code"
-                            autoComplete="one-time-code"
-                            value={this.state.codeInput}
-                            onChange={(e) => this.setState({codeInput: e.target.value.substring(0, CODE_LENGTH)})}
+            <div className={"friend-trade-code-page" + (isMobile ? "-mobile" : "")}>
+                <div className="welcome-container">
+                    <Form onSubmit={(e) => this.submitCode(e)}>
+                        <Form.Label><h2>Enter the code your friend created!</h2></Form.Label>
+                        <CodeField
+                            code={this.state.codeInput}
+                            codeLength={CODE_LENGTH}
+                            fieldPrefix="Trade"
+                            setParentCode={(code) => this.setState({codeInput: code})}
+                            postPasteFunc={this.handleSubmitCode.bind(this)}
                         />
-                        <OverlayTrigger placement="bottom" overlay={pasteTooltip}>
-                            <Button size="sm" className="friend-trade-offer-button"
-                                    aria-label="Paste Code"
-                                    onClick={this.pasteCode.bind(this)}>
-                                <ImPaste size={pasteButtonSize}/>
-                            </Button>
-                        </OverlayTrigger>
-                    </Form.Group>
 
-                    <div className="friend-trade-code-input-button">
-                        <OverlayTrigger placement="bottom" overlay={submitTooltip}>
-                            <Button size="lg" className="friend-trade-offer-button"
-                                    aria-label="Submit Code"
-                                    type="submit">
-                                <AiOutlineCheckCircle size={confirmButtonSize}/>
-                            </Button>
-                        </OverlayTrigger>
-                    </div>
-                </Form>
+                        <div className="friend-trade-code-input-button">
+                            <OverlayTrigger placement="bottom" overlay={submitTooltip}>
+                                <Button size="lg" className="submit-form-button"
+                                        aria-label="Submit Code"
+                                        type="submit">
+                                    <AiOutlineCheckCircle size={confirmButtonSize}/>
+                                </Button>
+                            </OverlayTrigger>
+                        </div>
+                    </Form>
+                </div>
             </div>
         );
     }
@@ -958,7 +931,7 @@ export class FriendTrade extends Component
     {
         var selectedMonForTrade = this.getPokemonToTrade();
         var friendPokemon = this.state.friendPokemon;
-        var size = 42;
+        const buttonSize = 42;
 
         if (selectedMonForTrade == null) //Haven't picked a Pokemon yet
         {
@@ -968,7 +941,11 @@ export class FriendTrade extends Component
                         isSameBoxBothSides={false} key={BOX_HOME}
                         inTrade={true} tradeParent={this}/>;
 
-            return boxView;
+            return (
+                <div className="friend-trade-page">
+                    {boxView}
+                </div>
+            );
         }
         else //Picked a Pokemon
         {
@@ -981,7 +958,7 @@ export class FriendTrade extends Component
                             variant="danger"
                             aria-label="Cancel Trade"
                             onClick={this.cancelTradeOffer.bind(this)}>
-                        <AiOutlineCloseCircle size={size}/>
+                        <AiOutlineCloseCircle size={buttonSize}/>
                     </Button>
                 </OverlayTrigger>;
 
@@ -991,7 +968,7 @@ export class FriendTrade extends Component
                             variant="success"
                             aria-label="Confirm Trade"
                             onClick={this.confirmTradeOffer.bind(this)}>
-                        <AiOutlineCheckCircle size={size}/>
+                        <AiOutlineCheckCircle size={buttonSize}/>
                     </Button>
                 </OverlayTrigger>;
 
@@ -1016,13 +993,10 @@ export class FriendTrade extends Component
     render()
     {
         var pageContents;
-        var timer = this.getGlobalState().tradeData != null && !this.state.timerHidden
-            ?
+        var timer = this.getGlobalState().tradeData != null && !this.state.timerHidden &&
                 <Timer key={"timer" + this.state.timerKey.toString()} seconds={TIMER_AMOUNT}
                        onCompletionFunc={this.timedOut.bind(this)}
                        mainPage={this.state.globalState} parent={this}/>
-            :
-                ""
 
         switch (this.getFriendTradeState())
         {
@@ -1056,11 +1030,10 @@ export class FriendTrade extends Component
         else
         {
             return (
-                <div className="friend-trade-page"
-                     style={!isMobile ? {paddingLeft: "var(--scrollbar-width)"} : {}}>
+                <>
                     {pageContents}
                     {timer}
-                </div>
+                </>
             );
         }
     }

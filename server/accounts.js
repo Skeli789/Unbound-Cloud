@@ -472,7 +472,7 @@ async function ActivateUser(username, activationCode)
         var data = GetUserData(username);
 
         if (data.activationCode !== activationCode)
-            throw(`"Confirmation code for ${username} is incorrect"`);
+            throw(`"Activation code for ${username} is incorrect"`);
 
         data.activated = true;
         delete data.activationCode; //No longer needed in the object

@@ -41,6 +41,8 @@ import {MdSwapVert, MdMusicNote, MdMusicOff, MdHelp} from "react-icons/md"
 import UnboundCloudTheme from './audio/UnboundCloudTheme.mp3';
 
 import "./stylesheets/MainPage.css";
+import "./stylesheets/Navbar.css";
+import "./stylesheets/Footer.css";
 
 export const BOX_HOME = 0;
 export const BOX_SAVE = 1;
@@ -67,8 +69,9 @@ export const STATE_FORGOT_PASSWORD = 14;
 
 const HOME_FILE_NAME = "cloud.dat";
 const HOME_FILE_RANDOMIZER_NAME = "cloud_randomizer.dat"
-export const BLANK_PROGRESS_BAR = <ProgressBar className="upload-progress-bar" now={0} label={"0%"} />;
+export const BLANK_PROGRESS_BAR = <ProgressBar now={0} label={"0%"} />;
 export const PURPLE_CLOUD = <span style={{color: "var(--purple)"}}>☁︎</span>;
+export const UNBOUND_LINK = <a href="https://www.pokecommunity.com/threads/pok%C3%A9mon-unbound-completed.382178/" target="_blank" rel="noopener noreferrer">Unbound</a>;
 const GTS_ICON = <svg width="56px" height="56px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path fill="white" d="M254.777 93.275c-58.482 0-105.695 47.21-105.695 105.696 0 58.487 47.213 105.698 105.695 105.698 58.482 0 105.696-47.21 105.696-105.697 0-58.48-47.214-105.695-105.696-105.695zm-140.714 63.59C-40.9 155.67-21.26 276.118 227.043 357.748c225.954 74.28 319.04 10.624 239.48-69.973-.413-.55-.84-1.097-1.277-1.64-4.755 3.954-9.71 7.915-14.95 11.88 4.487 5.513 7.138 11.084 7.704 16.01.713 6.2-.9 11.8-6.986 17.977-5.84 5.927-16.25 11.98-32.307 16.49-24.074 5.698-58.427 5.6-102.287-2.656l.105-.04c-2.153-.38-4.3-.787-6.445-1.198-21.875-4.418-46.004-10.805-72.318-19.455-69.962-23-118.054-49.706-146.063-74.936.246-.19.48-.38.728-.568-.27.166-.532.333-.8.5-53.315-48.08-33.682-90.78 46.558-92.2-8.46-.665-16.502-1.016-24.124-1.075zm281.425 0c-7.62.06-15.663.41-24.123 1.076 80.24 1.42 99.86 44.115 46.537 92.193-.264-.165-.513-.33-.78-.494.244.184.472.368.712.553-26.017 23.434-69.357 48.144-131.455 69.973 21.19 5.413 42.82 9.363 64.815 11.64 34.83-15.125 63.025-30.916 84.91-46.554.01.007.02.014.032.02.522-.386 1.03-.773 1.547-1.16 90.502-65.565 69.686-128.11-42.196-127.247zM44.54 286.27c-74.364 73.55-5.467 133.668 176.683 89.125-22.844-7.563-44.89-15.83-65.84-24.194-25.396 2.316-46.41 1.29-62.842-2.346-16.802-4.544-27.613-10.765-33.61-16.852-6.086-6.176-7.697-11.776-6.985-17.977.56-4.88 3.17-10.395 7.582-15.86-5.253-3.968-10.22-7.935-14.986-11.894z"/></svg>;
 
 const PopUp = withReactContent(Swal);
@@ -3053,7 +3056,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the button for viewing the Home boxes in both box slots.
-     * @returns {JSX} A button element.
+     * @returns {JSX.Element} A button element.
      */
     homeToHomeButton()
     {
@@ -3062,7 +3065,7 @@ export default class MainPage extends Component
         var buttonClickable = !this.areOnlyHomeBoxesAccessible();
 
         return (
-            <Button size="lg" className={"top-bar-button" + (buttonSelected ? " top-bar-button-selected" : "")}
+            <Button size="lg" className={"navbar-button" + (buttonSelected ? " navbar-button-selected" : "")}
                     id="home-to-home-button"
                     style={!buttonClickable ? {cursor: "default"} : {}}
                     aria-label="Home to Home"
@@ -3074,14 +3077,14 @@ export default class MainPage extends Component
 
     /**
      * Gets the button for viewing the Save boxes in both box slots.
-     * @returns {JSX} A button element.
+     * @returns {JSX.Element} A button element.
      */
     saveToSaveButton()
     {
         var size = window.innerWidth < 500 ? 28 : 42;
 
         return (
-            <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_EDITING_SAVE_FILE ? " top-bar-button-selected" : "")}
+            <Button size="lg" className={"navbar-button" + (this.state.editState === STATE_EDITING_SAVE_FILE ? " navbar-button-selected" : "")}
                     id="save-to-save-button"
                     aria-label="Save File to Save File"
                     onClick={() => this.changeBoxView(STATE_EDITING_SAVE_FILE)}>
@@ -3092,14 +3095,14 @@ export default class MainPage extends Component
 
     /**
      * Gets the button for viewing both the Home boxes and the save boxes in the box slots.
-     * @returns {JSX} A button element.
+     * @returns {JSX.Element} A button element.
      */
     homeToSaveButton()
     {
         var size = window.innerWidth < 500 ? 28 : 42;
 
         return (
-            <Button size="lg" className={"top-bar-button" + (this.state.editState === STATE_MOVING_POKEMON ? " top-bar-button-selected" : "")}
+            <Button size="lg" className={"navbar-button" + (this.state.editState === STATE_MOVING_POKEMON ? " navbar-button-selected" : "")}
                     id="home-to-save-button"
                     aria-label="Home to Save File"
                     onClick={() => this.changeBoxView(STATE_MOVING_POKEMON)}>
@@ -3110,7 +3113,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the button for returning to the box view from the box list page.
-     * @returns {JSX} A arrow meant to be pressed as a button.
+     * @returns {JSX.Element} A arrow meant to be pressed as a button.
      */
     handlePressBackButton()
     {
@@ -3118,7 +3121,7 @@ export default class MainPage extends Component
         var paddingRight = window.innerWidth < 500 ? "0%" : "90%";
 
         return (
-            <BiArrowBack size={size} className="top-bar-back-button" style={{paddingRight: paddingRight}}
+            <BiArrowBack size={size} className="navbar-back-button" style={{paddingRight: paddingRight}}
                          id="back-button"
                          aria-label="Back" onClick={this.navBackButtonPressed.bind(this)}/>
         );
@@ -3126,12 +3129,12 @@ export default class MainPage extends Component
 
     /**
      * Prints the back arrow at the top of the page.
-     * @returns {JSX} The back button navbar.
+     * @returns {JSX.Element} The back button navbar.
      */
     printBackButton()
     {
         return (
-            <div className={"top-bar-buttons " + (this.state.viewingBoxList >= 0 ? "fixed-navbar" : "sticky-navbar")}>
+            <div className="navbar-buttons navbar-fixed">
                 {this.handlePressBackButton()}
             </div>
         );
@@ -3139,22 +3142,17 @@ export default class MainPage extends Component
 
     /**
      * Gets the navbar displayed at the top of the page.
-     * @returns {JSX} The navbar.
+     * @returns {JSX.Element} The navbar.
      */
     navBarButtons()
     {
-        //Appear above everything when boxes are side by side
-        //Otherwise scroll with everything else if possible
-
         var viewingNonBoxView = this.state.viewingBoxList >= 0 || this.state.inFriendTrade || this.state.inGTS;
-        var sticky = viewingNonBoxView || !this.areBoxViewsVertical();
 
         if (viewingNonBoxView)
             return this.printBackButton();
 
         return (
-            <div className="top-bar-buttons" style={{zIndex: 100,
-                                                     position: !sticky ? "unset" : "sticky"}}>
+            <div className="navbar-buttons navbar-fixed">
                 {this.homeToHomeButton()}
                 {!this.areOnlyHomeBoxesAccessible() ? this.homeToSaveButton() : ""}
                 {!this.areOnlyHomeBoxesAccessible() ? this.saveToSaveButton() : ""}
@@ -3164,7 +3162,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the blank navbar displayed at the top of the page.
-     * @returns {JSX} The navbar.
+     * @returns {JSX.Element} The navbar.
      */
     navBarNoButtons()
     {
@@ -3189,12 +3187,19 @@ export default class MainPage extends Component
         if (printBackButton)
             return this.printBackButton();
 
-        return <div className="top-bar-buttons navbar-blank" />;
+        return (
+            <div className="navbar-buttons navbar-blank navbar-fixed" >
+                {/* Maybe one day I'll add a title to the navar */}
+                {/* <h1 className="text-light">
+                    {UNBOUND_LINK} Cloud
+                </h1> */}
+            </div>
+        );
     }
 
     /**
      * Gets the button for viewing the explanation of the different symbols.
-     * @returns {JSX} A button element.
+     * @returns {JSX.Element} A button element.
      */
     symbolTutorialButton()
     {
@@ -3214,7 +3219,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the button for starting a peer-to-peer trade.
-     * @returns {JSX} A button element.
+     * @returns {JSX.Element} A button element.
      */
     startTradeButton()
     {
@@ -3237,7 +3242,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the button for accessing the Global Trade Station.
-     * @returns {JSX} A button element.
+     * @returns {JSX.Element} A button element.
      */
     openGTSButton()
     {
@@ -3261,7 +3266,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the button for turning on and off sounds.
-     * @returns {JSX} A button element.
+     * @returns {JSX.Element} A button element.
      */
     muteSoundsButton()
     {
@@ -3283,7 +3288,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the button for turning on and off music.
-     * @returns {JSX} A button element.
+     * @returns {JSX.Element} A button element.
      */
     muteMusicButton()
     {
@@ -3305,24 +3310,27 @@ export default class MainPage extends Component
 
     /**
      * Gets the footer displayed at the bottom of the page.
-     * @returns {JSX} The footer and its buttons.
+     * @returns {JSX.Element} The footer and its buttons.
      */
     footerButtons()
     {
         var tradeScreen = this.state.inFriendTrade || this.state.inGTS;
+        const buttons =
+            <>
+                {this.startTradeButton()}
+                {this.openGTSButton()}
+                {this.muteSoundsButton()}
+                {this.muteMusicButton()}
+            </>
 
         if (document.documentElement.clientWidth >= 600) //Mainly desktop devices, but also includes some mobile ones like iPads
         {
             return (
-                <div className={"footer-buttons"
-                              + (tradeScreen && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}>
+                <div className={"footer-buttons"}>
                     {this.symbolTutorialButton()}
 
                     <div style={{display: "flex", justifyContent: "center"}}>
-                        {this.startTradeButton()}
-                        {this.openGTSButton()}
-                        {this.muteSoundsButton()}
-                        {this.muteMusicButton()}
+                        {buttons}
                     </div>
                     
                     {this.multiArkGamingLogo()}
@@ -3333,14 +3341,10 @@ export default class MainPage extends Component
         {
             //The footer bar here is twice the height to allow the help button to be on it's own row
             return (
-                <div className={"footer-buttons footer-buttons-mobile"
-                              + (tradeScreen && this.isScreenLessThanBoxWidth() ? " footer-buttons-fixed" : "")}
+                <div className={"footer-buttons footer-buttons-mobile"}
                      style={tradeScreen ? {height: "56px"} : {}}>
                     <div className="footer-buttons-mobile-top-row">
-                        {this.startTradeButton()}
-                        {this.openGTSButton()}
-                        {this.muteSoundsButton()}
-                        {this.muteMusicButton()}
+                        {buttons}
                     </div>
                     {
                         !tradeScreen ? //Help is hidden during a trade so there's more space
@@ -3356,13 +3360,32 @@ export default class MainPage extends Component
     }
 
     /**
+     * Displays a footer that only says Skeli Games and hosted by MultiArkGaming.
+     * @returns {JSX.Element} A container with the text and Multiark logo.
+     */
+    printBlankFooter()
+    {
+        let currentYear = new Date().getFullYear();
+
+        return (
+            <div className="footer-buttons" style={{justifyContent: "space-between"}}>
+                <div className="centre-vertical ms-2 text-light">
+                    2022-{currentYear} Skeli Games
+                </div>
+                {this.multiArkGamingLogo()}
+            </div>
+        )
+    }
+
+    /**
      * Displays the logo for the server the site is hosted on.
-     * @returns {JSX} An image of the logo fixed on the bottom right hand corner of the page.
+     * @returns {JSX.Element} An image of the logo fixed on the bottom right hand corner of the page.
      */
     multiArkGamingLogo()
     {
         return (
-            <a href="https://discord.gg/C6pH7wpS7m" target="_blank" rel="noopener noreferrer">
+            <a className="me-2" //Margin right
+                href="https://discord.gg/C6pH7wpS7m" target="_blank" rel="noopener noreferrer">
                 <img src={BASE_GFX_LINK + "MultiArkBanner.png"}
                         alt="Hosted By MultiArkGaming"
                         className="multi-ark-gaming-logo"/>
@@ -3372,7 +3395,7 @@ export default class MainPage extends Component
 
     /**
      * Prints the ads on the sides of the desktop view.
-     * @returns {JSX} The ads to display on the sides.
+     * @returns {JSX.Element} The ads to display on the sides.
      */
     printSideAds()
     {
@@ -3386,7 +3409,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the screen shown when quick jumping between boxes.
-     * @returns {JSX} The box list page.
+     * @returns {JSX.Element} The box list page.
      */
     boxListScreen()
     {
@@ -3405,47 +3428,41 @@ export default class MainPage extends Component
 
     /**
      * Gets the screen shown when trying to trade directly with a friend.
-     * @returns {JSX} The friend trade page.
+     * @returns {JSX.Element} The friend trade page.
      */
     friendTradeScreen()
     {
         return (
-            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                <FriendTrade globalState={this}
-                            setGlobalState={this.setState.bind(this)}
-                            homeBoxes={this.state.homeBoxes}
-                            homeTitles={this.state.homeTitles}
-                            finishFriendTrade={this.finishWonderTrade.bind(this)}/>
-                {this.state.viewingBoxList < 0 ? this.footerButtons() : ""}
-            </div>
+            <FriendTrade globalState={this}
+                         setGlobalState={this.setState.bind(this)}
+                         homeBoxes={this.state.homeBoxes}
+                         homeTitles={this.state.homeTitles}
+                         finishFriendTrade={this.finishWonderTrade.bind(this)}/>
         );
     }
 
     /**
      * Gets the screen shown when trying to trade in the Global Trade Station.
-     * @returns {JSX} The GTS page.
+     * @returns {JSX.Element} The GTS page.
      */
     gtsScreen()
     {
         return (
-            <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
-                <GlobalTradeStation globalState={this}
-                     setGlobalState={this.setState.bind(this)}
-                     homeBoxes={this.state.homeBoxes}
-                     homeTitles={this.state.homeTitles}/>
-                {this.state.viewingBoxList < 0 ? this.footerButtons() : ""}
-            </div>
+            <GlobalTradeStation globalState={this}
+                                setGlobalState={this.setState.bind(this)}
+                                homeBoxes={this.state.homeBoxes}
+                                homeTitles={this.state.homeTitles}/>
         );
     }
 
     /**
      * Displays an error message that the server could not be connected to.
-     * @returns {JSX} A container with the error message.
+     * @returns {JSX.Element} A container with the error message.
      */
     printServerConnectionError()
     {
         return (
-            <div className="error-text" style={{visibility: this.state.serverConnectionError ? "visible" : "hidden"}}>
+            <div className="error-text" hidden={!this.state.serverConnectionError}>
                 <p>{NO_SERVER_CONNECTION_ERROR}</p>
             </div>
         );
@@ -3453,13 +3470,15 @@ export default class MainPage extends Component
  
     /**
      * Gets the screen shown the first time the user accesses the site (based on the local storage).
-     * @returns {JSX} The welcome page.
+     * @returns {JSX.Element} The welcome page.
      */
     printWelcome()
     {
         var nextState;
-        var title = <h1 className="main-page-title">Welcome to Unbound Cloud {PURPLE_CLOUD}</h1>;
-        var explanation = <p>This is a tool for ROM Hacks to connect with each other and store Boxes outside of save files.</p>
+        const title = <h1 className="main-page-title">Welcome to {UNBOUND_LINK} Cloud {PURPLE_CLOUD}</h1>;
+        const romHacksLink = <a href="https://www.pokecommunity.com/forums/rom-hacks-showcase.184/" target="_blank" rel="noopener noreferrer">ROM Hacks</a>;
+        const boxesLink = <a href="https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Bank" target="_blank" rel="noopener noreferrer">Boxes</a>;
+        const explanation = <p>This is a tool for {romHacksLink} to connect with each other and store {boxesLink} outside of save files.</p>
 
         if (ACCOUNT_SYSTEM)
             nextState = localStorage.visitedBefore ? STATE_LOGIN : STATE_SIGN_UP;
@@ -3483,7 +3502,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the page that asks the user if it's their first time on the site.
-     * @returns {JSX} The ask first time page.
+     * @returns {JSX.Element} The ask first time page.
      */
     printAskFirstTime()
     {
@@ -3511,7 +3530,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the page that asks the user to create a new Home file or upload an existing one.
-     * @returns {JSX} The choose Home file page.
+     * @returns {JSX.Element} The choose Home file page.
      */
     printUploadHomeFile()
     {
@@ -3556,7 +3575,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the page that displays the upload progress to the user.
-     * @returns {JSX} The upload progress page.
+     * @returns {JSX.Element} The upload progress page.
      */
     printUploadingFile()
     {
@@ -3580,7 +3599,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the page that asks the user to upload their save file.
-     * @returns {JSX} The choose save file page.
+     * @returns {JSX.Element} The choose save file page.
      */
     printUploadSaveFile()
     {
@@ -3589,7 +3608,8 @@ export default class MainPage extends Component
                 {
                     ACCOUNT_SYSTEM && this.state.username !== "" &&
                         <div>
-                            <h1 className="form-title">Welcome back, {this.state.username}! {PURPLE_CLOUD}</h1>
+                            <h1 className="form-title">Welcome back to {UNBOUND_LINK} Cloud {PURPLE_CLOUD}</h1>
+                            <h2 className="form-sub-title">Great to see you, <b>{this.state.username}</b>!</h2>
                             <div className="already-have-account-button"
                                 id="logout-button"
                                 onClick={() => this.navBackButtonPressed()}>
@@ -3604,7 +3624,7 @@ export default class MainPage extends Component
                         If you don't know where it is, start by looking in the same folder as your ROM.
                         The save file is a 128 kB <span className="font-monospace">.sav</span>, <span className="font-monospace">.srm</span>, <span className="font-monospace">.sa1</span>, <span className="font-monospace">.fla</span> file that has your ROM's name.
                     </p>
-                    <div className="already-have-account-button mb-1"
+                    <div className="already-have-account-button mb-3"
                         onClick={() => this.printSupportedHacks()}>
                         Which hacks are supported?
                     </div>
@@ -3630,7 +3650,7 @@ export default class MainPage extends Component
     /**
      * Gets the page that asks the user to choose the directory where their Home file is located.
      * This uses the modern FileSystem API in order to function.
-     * @returns {JSX} The choose save folder page.
+     * @returns {JSX.Element} The choose save folder page.
      */
     printChooseHomeFolder()
     {
@@ -3655,7 +3675,7 @@ export default class MainPage extends Component
             <div className={"welcome-container fade-in" + (isMobile ? " file-handle-page-mobile" : "")}>
                 {
                     showLastUsedButton &&
-                        <h1 className="form-title">Welcome Back to Unbound Cloud {PURPLE_CLOUD}</h1>
+                        <h1 className="form-title">Welcome Back to {UNBOUND_LINK} Cloud {PURPLE_CLOUD}</h1>
                 }
 
                 <div className={"main-page-upload-instructions fade-in" + (isMobile ? " file-handle-page-mobile" : "")}
@@ -3665,9 +3685,9 @@ export default class MainPage extends Component
                         This is the folder on your {isMobile ? "device" : "computer"} where your Boxes {showLastUsedButton ? "are" : "will be"} stored.
                         {
                             showLastUsedButton ?
-                                <>Since you've made one before, pick <b>Last Used</b>.</>
+                                <><br/>Since you've made one before, pick <b>Last Used</b>.</>
                             :
-                                <>It's best to <b>create</b> a folder called <b>Unbound Cloud</b> in your <b>Documents</b> and save it there.</>
+                                <><br/>It's best to <b>create</b> a folder called <b>Unbound Cloud</b> in your <b>Documents</b> and save it there.</>
                         }
                     </p>
                     <div className="w-100 mt-3">
@@ -3702,7 +3722,7 @@ export default class MainPage extends Component
     /**
      * Gets the page that asks the user to choose the directory where their save file is located.
      * This uses the modern FileSystem API in order to function.
-     * @returns {JSX} The choose save folder page.
+     * @returns {JSX.Element} The choose save folder page.
      */
     printChooseSaveFile()
     {
@@ -3728,7 +3748,8 @@ export default class MainPage extends Component
                 {
                     ACCOUNT_SYSTEM && this.state.username !== "" &&
                         <div>
-                            <h1 className="form-title">Welcome back, {this.state.username}! {PURPLE_CLOUD}</h1>
+                            <h1 className="form-title">Welcome back to {UNBOUND_LINK} Cloud {PURPLE_CLOUD}</h1>
+                            <h2 className="form-sub-title">Great to see you, <b>{this.state.username}</b>!</h2>
                             <div className="already-have-account-button"
                                 id="logout-button"
                                 onClick={() => this.navBackButtonPressed()}>
@@ -3743,7 +3764,7 @@ export default class MainPage extends Component
                         If you don't know where it is, start by looking in the same folder as your ROM.
                         The save file is a 128 kB <span className="font-monospace">.sav</span>, <span className="font-monospace">.srm</span>, <span className="font-monospace">.sa1</span>, <span className="font-monospace">.fla</span> file that has your ROM's name.
                     </p>
-                    <div className="already-have-account-button mb-1"
+                    <div className="already-have-account-button mb-3"
                         onClick={() => this.printSupportedHacks()}>
                         Which hacks are supported?
                     </div>
@@ -3775,7 +3796,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the page with a Home box in both box slots.
-     * @returns {JSX} The Home <-> Home page.
+     * @returns {JSX.Element} The Home <-> Home page.
      */
     printEditingHomeBoxes()
     {
@@ -3798,19 +3819,16 @@ export default class MainPage extends Component
                 this.state.viewingBoxList >= 0 ?
                     this.boxListScreen()
                 :
-                    <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
+                    <>
                         <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"} id="boxes">
                             {homeBoxView1}
                             {homeBoxView2}
                         </div>
                         {
-                            !isMobile ?
+                            !isMobile &&
                                 this.printSideAds()
-                            :
-                                ""
                         }
-                        {this.footerButtons()}
-                    </div>
+                    </>
             }
             </>
         );
@@ -3818,7 +3836,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the page with a Save box in both box slots.
-     * @returns {JSX} The Save <-> Save page.
+     * @returns {JSX.Element} The Save <-> Save page.
      */
     printEditingSaveBoxes()
     {
@@ -3841,19 +3859,16 @@ export default class MainPage extends Component
                 this.state.viewingBoxList >= 0 ?
                     this.boxListScreen()
                 :
-                    <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
+                    <>
                         <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"} id="boxes">
                             {saveBoxView1}
                             {saveBoxView2}
                         </div>
                         {
-                            !isMobile ?
+                            !isMobile &&
                                 this.printSideAds()
-                            :
-                                ""
                         }
-                        {this.footerButtons()}
-                    </div>
+                    </>
             }
             </>
         );
@@ -3861,7 +3876,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the page with a Home box in one slot, and the save box in the other.
-     * @returns {JSX} The Home <-> Save page.
+     * @returns {JSX.Element} The Home <-> Save page.
      */
     printMovingPokemon()
     {
@@ -3884,19 +3899,16 @@ export default class MainPage extends Component
                     this.state.viewingBoxList >= 0 ?
                         this.boxListScreen()
                     :
-                        <div className={!isMobile ? "scroll-container" : "scroll-container-mobile"}>
+                        <>
                             <div className={this.areBoxViewsVertical() ? "main-page-boxes-mobile" : "main-page-boxes"} id="boxes">
                                 {homeBoxView}
                                 {saveBoxView}
                             </div>
                             {
-                                !isMobile ?
+                                !isMobile &&
                                    this.printSideAds()
-                                :
-                                    ""
                             }
-                            {this.footerButtons()}
-                        </div>
+                        </>
                 }
             </>
         );
@@ -3904,17 +3916,16 @@ export default class MainPage extends Component
 
     /**
      * Gets the page where a user can create an account.
-     * @returns {JSX} The sign-up page.
+     * @returns {JSX.Element} The sign-up page.
      */
     printSignUpPage()
     {
-        
         return <SignUp mainPage={this}/>;
     }
 
     /**
      * Gets the page where a user can log in to their account.
-     * @returns {JSX} The login page.
+     * @returns {JSX.Element} The login page.
      */
     printLoginPage()
     {
@@ -3923,7 +3934,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the page where a user can submit a code to activate their account.
-     * @returns {JSX} The account activation page.
+     * @returns {JSX.Element} The account activation page.
      */
     printAccountActivationPage()
     {
@@ -3932,7 +3943,7 @@ export default class MainPage extends Component
 
     /**
      * Gets the page where a user can reset their forgotten password.
-     * @returns {JSX} The forgot password page.
+     * @returns {JSX.Element} The forgot password page.
      */
     printForgotPasswordPage()
     {
@@ -3941,62 +3952,73 @@ export default class MainPage extends Component
 
     /**
      * Gets the page that says the current browser is incompatible with the site.
-     * @returns {JSX} The not supported in browser page.
+     * @returns {JSX.Element} The not supported in browser page.
      */
     printNotSupportedInBrowser()
     {
         return (
-            <div className="welcome-container fade-in">
-                <h2>😞 <b>Unbound Cloud is not supported in this browser. 😞</b></h2>
-                <h3>Please use an updated Google Chrome, Microsoft Edge, or Opera.</h3>
-                <h3>Why? See <a href="https://caniuse.com/?search=showOpenFilePicker">here</a>.</h3>
+            
+            <div className="centre-vertical fade-in">
+                <div className="welcome-container">
+                    <h2>😞 <b>{UNBOUND_LINK} Cloud is not supported in this browser. 😞</b></h2>
+                    <h3>Please use an updated Google Chrome, Microsoft Edge, or Opera.</h3>
+                    <h3>Why? See <a href="https://caniuse.com/?search=showOpenFilePicker">here</a>.</h3>
+                </div>
             </div>
         )
     }
 
     /**
      * Gets the page that says the site currently can't be used due to maintenance.
-     * @returns {JSX} The not maintenance.
+     * @returns {JSX.Element} The not maintenance.
      */
     printUndergoingMaintence()
     {
         return (
-            <div className="welcome-container fade-in">
-                <h2><b>Unbound Cloud is currently undergoing maintenece. 🛠️</b></h2>
-                <h3>Hopefully, this won't last too long.</h3>
-                <input style={{marginTop: "5%"}}
-                       onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
+            
+            <div className="centre-vertical fade-in">
+                <div className="welcome-container">
+                    <h2><b>{UNBOUND_LINK} Cloud is currently undergoing maintenance. 🛠️</b></h2>
+                    <h3>Hopefully, this won't last too long.</h3>
+                    <input style={{marginTop: "5%"}}
+                        onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
+                </div>
             </div>
         )
     }
 
     /**
      * Gets the page that says the site currently can't be used on mobile devices.
-     * @returns {JSX} The not supported on mobile page.
+     * @returns {JSX.Element} The not supported on mobile page.
      */
     printNotSupportedOnMobile()
     {
         return (
-            <div className="welcome-container fade-in">
-                <h2><b>Unbound Cloud is currently not supported on mobile. 😞</b></h2>
-                <h3>Hopefully, this won't last too long.</h3>
-                <input style={{marginTop: "5%"}}
-                       onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
+            
+            <div className="centre-vertical fade-in">
+                <div className="welcome-container">
+                    <h2><b>{UNBOUND_LINK} Cloud is currently not supported on mobile. 😞</b></h2>
+                    <h3>Hopefully, this won't last too long.</h3>
+                    <input style={{marginTop: "5%"}}
+                        onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
+                </div>
             </div>
         )
     }
 
     /**
      * Gets the page that says the site currently can't be used by non-testers.
-     * @returns {JSX} The not officially released page.
+     * @returns {JSX.Element} The not officially released page.
      */
     printNotOfficiallyReleased()
     {
         return (
-            <div className="welcome-container fade-in">
-                <h2><b>Unbound Cloud is not officially released.</b></h2>
-                <input style={{marginTop: "5%"}}
-                       onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
+            <div className="centre-vertical fade-in">
+                <div className="welcome-container">
+                    <h2><b>{UNBOUND_LINK} Cloud is not officially released.</b></h2>
+                    <input style={{marginTop: "5%"}}
+                        onChange={(e) => this.setState({unlockedMobile: e.target.value === "opensesame"})}/>
+                </div>
             </div>
         )
     }
@@ -4006,33 +4028,29 @@ export default class MainPage extends Component
      */
     render()
     {
-        var page, draggingImg;
-        var navBar = false;
-        var center = true;
-        var noScroll = true;
+        let page, draggingImg;
+        let navBar = false;
+        let blankFooter = true;
+        let centerHorizontal = true;
+        let fullHeight = false;
 
         switch (this.state.editState)
         {
             case STATE_WELCOME:
                 page = this.printWelcome();
+                fullHeight = true;
                 break;
             case STATE_SIGN_UP:
                 page = this.printSignUpPage();
-                noScroll = false;
                 break;
             case STATE_LOGIN:
                 page = this.printLoginPage();
-                noScroll = false;
                 break;
             case STATE_ENTER_ACTIVATION_CODE:
                 page = this.printAccountActivationPage();
-                if (!isMobile) //So the page is centered on mobile
-                    noScroll = false;
                 break;
             case STATE_FORGOT_PASSWORD:
                 page = this.printForgotPasswordPage();
-                if (!isMobile) //So the page is centered on mobile
-                    noScroll = false;
                 break;
             case STATE_ASK_FIRST_TIME:
                 page = this.printAskFirstTime();
@@ -4058,20 +4076,20 @@ export default class MainPage extends Component
             case STATE_EDITING_HOME_BOXES:
                 page = this.printEditingHomeBoxes(); //Don't display title
                 navBar = true;
-                noScroll = false;
-                center = false;
+                blankFooter = false;
+                centerHorizontal = false;
                 break;
             case STATE_EDITING_SAVE_FILE:
                 page = this.printEditingSaveBoxes(); //Don't display title
                 navBar = true;
-                noScroll = false;
-                center = false;
+                blankFooter = false;
+                centerHorizontal = false;
                 break;
             case STATE_MOVING_POKEMON:
                 page = this.printMovingPokemon(); //Don't display title
                 navBar = true;
-                noScroll = false;
-                center = false;
+                blankFooter = false;
+                centerHorizontal = false;
                 break;
             default:
                 page = "";
@@ -4081,27 +4099,23 @@ export default class MainPage extends Component
         if (!DEBUG_ORIGINAL_FILE_METHOD && !IsMobileBrowser() && !CanUseFileHandleAPI())
         {
             page = this.printNotSupportedInBrowser();
-            navBar = false;
-            noScroll = true;
+            fullHeight = true;
         }
         else if (MAINTENANCE && !this.state.unlockedMobile)
         {
             page = this.printUndergoingMaintence();
-            navBar = false;
-            noScroll = true;
+            fullHeight = true;
         }
         else if (DISABLE_ON_MOBILE && IsMobileBrowser() && !this.state.unlockedMobile)
         {
             page = this.printNotSupportedOnMobile();
-            navBar = false;
-            noScroll = true;
+            fullHeight = true;
         }
         else if (UNOFFICIAL_RELEASE && (!DISABLE_ON_MOBILE || !IsMobileBrowser())
         && this.state.editState === STATE_WELCOME && !this.state.unlockedMobile && !localStorage.visitedBefore)
         {
             page = this.printNotOfficiallyReleased();
-            navBar = false;
-            noScroll = true;
+            fullHeight = true;
         }
 
         draggingImg = ""
@@ -4110,13 +4124,29 @@ export default class MainPage extends Component
                                onMouseDown={(e) => e.preventDefault()} id="moving-icon" className="dragging-image"/>;
 
         let cursorStyle = draggingImg !== "" ? {cursor: "grabbing"} : {};
-        let scrollStyle = noScroll ? {height: "100vh"} : {};
+        fullHeight = (fullHeight) ? {height: "100%"} : {};
         return (
-            <div className={isMobile && navBar ? "main-page-mobile" : ""}
-                 style={{...cursorStyle, ...scrollStyle}}
-                 onMouseMove={(e) => this.moveDraggingMonIcon(e)}>
+            <div className="main-page"
+                 id="main-page" style={{...cursorStyle}}
+                 onMouseMove={(e) => this.moveDraggingMonIcon(e)} >
+                {/* Navbar at the top */}
                 {navBar ? this.navBarButtons() : this.navBarNoButtons()}
-                {center ? <div className="main-page-content">{page}</div> : page}
+
+                <div className={"main-page-content-footer" + ((isMobile) ? "-mobile scroll-container-mobile" : "")}>
+                    {/* Main content */}
+                    <div className={(!isMobile) ? "main-page-content scroll-container" : "main-page-content-mobile"}
+                         style={(centerHorizontal) ? {display: "flex", justifyContent: "center", ...fullHeight} : {}} >
+                        {page}
+                    </div>
+
+                    {/* Footer at the bottom */}
+                    {
+                        (blankFooter) ? this.printBlankFooter() :
+                        (this.state.viewingBoxList < 0) ? this.footerButtons() : "" //Don't show footer buttons when viewing a box list
+                    }
+                </div>
+
+                {/* Allow dragging of Pokémon */}
                 {draggingImg}
             </div>
         );

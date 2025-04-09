@@ -13,7 +13,7 @@ body.swal2-height-auto /*Undoes pop up ruining mobile view*/
 
 /*Code Choice Page*/
 
-.friend-trade-code-choice-page
+.friend-trade-code-page, .friend-trade-code-page-mobile
 {
     display: flex;
     flex-direction: column;
@@ -21,6 +21,13 @@ body.swal2-height-auto /*Undoes pop up ruining mobile view*/
     align-items: center;
     text-align: center;
     width: 100%;
+    height: 100%;
+}
+
+.friend-trade-code-page-mobile
+{
+    height: calc(100vh - var(--header-height) - var(--footer-height)); /*So the centring works on mobile*/
+    overflow-y: auto; /*Allows scrolling*/
 }
 
 .friend-trade-code-choice-instructions
@@ -52,14 +59,6 @@ body.swal2-height-auto /*Undoes pop up ruining mobile view*/
 
 /*Created Code Display Page*/
 
-.friend-trade-code-display-page
-{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-}
-
 .friend-trade-code-display-container
 {
     display: flex;
@@ -89,18 +88,6 @@ body.swal2-height-auto /*Undoes pop up ruining mobile view*/
 }
 
 /*Code Input Page*/
-
-.friend-trade-code-input-page
-{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.friend-trade-code-input-container
-{
-    display: flex;
-}
 
 .friend-trade-code-input-button
 {

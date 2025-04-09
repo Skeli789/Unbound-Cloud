@@ -3,12 +3,14 @@ import React, {Component} from 'react';
 import {Button, Form} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import TextField from '@mui/material/TextField';
 
-import {STATE_SIGN_UP, STATE_FORGOT_PASSWORD, STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE,
-        STATE_ENTER_ACTIVATION_CODE, CanUseFileHandleAPI, PURPLE_CLOUD} from "./MainPage";
-import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, ProcessTextInput, SendFormToServer,
+import {CanUseFileHandleAPI, UNBOUND_LINK, PURPLE_CLOUD,
+        STATE_SIGN_UP, STATE_FORGOT_PASSWORD, STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE,
+        STATE_ENTER_ACTIVATION_CODE} from "./MainPage";
+import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
+import {PasswordField, HandleRememberMe} from "./subcomponents/PasswordField";
+import {UsernameEmailField} from "./subcomponents/UsernameEmailField";
 
 import {AiOutlineCheckCircle} from "react-icons/ai";
 
@@ -17,7 +19,7 @@ import "./stylesheets/Form.css";
 const ERROR_MESSAGES =
 {
     "": "",
-    INVALID_USER: "No account for that username or email was found!",
+    INVALID_USERNAME: "No account for that username or email was found!",
     INVALID_PASSWORD: "Incorrect password!",
     NO_ACCOUNT_FOUND: "No account for that username or email was found!",
     NULL_ACCOUNT: "The details were wiped before reaching the server!",
@@ -32,6 +34,9 @@ export class Login extends Component
 {
    /**
     * Sets up the login page.
+    * @constructor
+    * @param {Object} props - The props object containing the component's properties.
+    * @param {Object} props.mainPage - The main page component.
     */
     constructor(props)
     {
@@ -98,7 +103,7 @@ export class Login extends Component
         if (!this.allRequiredFieldsFilled())
             errorMsg = "BLANK_INPUT";
         else if (!this.validUsername())
-            errorMsg = "INVALID_USER";
+            errorMsg = "INVALID_USERNAME";
         else if (!this.validPassword())
             errorMsg = "INVALID_PASSWORD";
 
@@ -153,12 +158,7 @@ export class Login extends Component
         });
 
         //Set cookies so the user stays logged in
-        if (this.state.rememberUser)
-        {
-            localStorage.username = response.data.username;
-            localStorage.accountCode = response.data.accountCode;
-            localStorage.activated = !accountNotActivated;
-        }
+        HandleRememberMe(this.state.rememberUser, response.data.username, response.data.accountCode, response.data.activated);
     }
 
    /**
@@ -172,74 +172,51 @@ export class Login extends Component
     }
 
    /**
-    * Prints the login page. 
+    * Prints the login page.
+    * @returns {JSX.Element} The login page.
     */
     render()
     {
         return (
             <div className="form-page" id="login-form">
-                <h1 className="form-title">Log In to Unbound Cloud {PURPLE_CLOUD}</h1>
-                {/*Redirect to Sign-Up Page Button*/}
-                <div className="already-have-account-button"
-                     id="switch-to-sign-up-button"
-                     onClick={() => this.getMainPage().setState({editState: STATE_SIGN_UP})}>
-                    I don't have an account
-                </div>
-    
+                <h1 className="form-title">Log In to {UNBOUND_LINK} Cloud {PURPLE_CLOUD}</h1>
+                <p className="form-desc">Welcome back! Please sign in to your account.</p>
+
                 <Form onSubmit={(e) => this.submitLogin(e)}>
-                    {/*Username or Email Input*/}
-                    <Form.Group className="mb-3" controlId="formBasicUsername">
-                        <TextField
-                            required
-                            fullWidth
-                            label="Username or Email"
-                            variant="outlined"
-                            name="username"
-                            autoComplete='username'
-                            value={this.state.usernameInput}
-                            onChange={(e) => this.setState({usernameInput: ProcessTextInput(e, "EMAIL", true)})}
-                        />
-                    </Form.Group>
+                    {/* Username or Email Input */}
+                    <UsernameEmailField
+                        input={this.state.usernameInput}
+                        setParentUsernameEmail={(username) => this.setState({usernameInput: username})}
+                    />
 
-                    {/*Password Input*/}
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <TextField
-                            required
-                            fullWidth
-                            label="Password"
-                            variant="outlined"
-                            name="password"
-                            autoComplete="current-password"
-                            type="password"
-                            value={this.state.passwordInput}
-                            onChange={(e) => this.setState({passwordInput: ProcessTextInput(e, "PASSWORD", true)})}
-                        />
-                        <div className="already-have-account-button forgot-password-button"
-                            onClick={() => this.getMainPage().setState({editState: STATE_FORGOT_PASSWORD})}>
-                            I forgot my password
-                        </div>
-                    </Form.Group>
-
-                    {/* Remember User Input Input */}
-                    <Form.Group>
-                        <Form.Check
-                            inline
-                            type="checkbox"
-                            label="Keep Me Logged In"
-                            size="lg"
-                            id="keep-me-logged-in-checkmark"
-                            onChange={e => this.setState({rememberUser: e.target.checked})}
-                            checked={this.state.rememberUser}
-                        />
-                    </Form.Group>
+                    {/* Password Input */}
+                    <PasswordField
+                        password={this.state.passwordInput}
+                        showForgotPasswordLink={true}
+                        showRememberMe={true}
+                        rememberMe={this.state.rememberUser}
+                        setParentPassword={(password) => this.setState({passwordInput: password})}
+                        setParentRememberMe={(remember) => this.setState({rememberUser: remember})}
+                        forgotPasswordFunc={() => this.getMainPage().setState({editState: STATE_FORGOT_PASSWORD})}
+                    />
 
                     {/* Submit Button */}
-                    <div className="submit-form-button-container mt-2">
+                    <div className="submit-form-button-container">
                         <Button size="lg" className="submit-form-button" id="login-button" type="submit">
                             <AiOutlineCheckCircle size={42}/>
                         </Button>
                     </div>
                 </Form>
+
+                {/*Redirect to Sign-Up Page Button*/}
+                <p className="already-have-account-container">
+                    {"Don't have an account? "}
+                    <span className="already-have-account-button"
+                          id="switch-to-sign-up-button"
+                          onClick={() => this.getMainPage().setState({editState: STATE_SIGN_UP})} >
+                        Create an account.
+                    </span>
+                </p>
             </div>
         )
     }

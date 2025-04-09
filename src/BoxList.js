@@ -229,8 +229,8 @@ export class BoxList extends Component
         }
         else
         {
-            return(
-                <div className={"scroll-container-box-list" + (isMobile ? "-mobile" : "")}>
+            return (
+                <div>
                     {/*Box Filter*/}
                     <div className="box-list-filter-container">
                         <input type="text"

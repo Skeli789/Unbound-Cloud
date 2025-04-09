@@ -136,19 +136,3 @@
     filter: unset !important;
     cursor: not-allowed !important;
 }
-
-.scroll-container-box-list
-{
-    position: fixed;
-    top: 56px;
-    bottom: 0;
-    width: 100%;
-    overflow-y: scroll;
-    min-width: var(--min-mobile-width);
-}
-
-.scroll-container-box-list-mobile
-{
-    position: relative;
-    top: 56px;
-}

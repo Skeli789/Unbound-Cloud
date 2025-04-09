@@ -72,6 +72,9 @@ export function GetMaxTextLength(symbol)
     if (symbol in MAX_LENGTHS)
         return MAX_LENGTHS[symbol];
 
+    if (symbol.startsWith("CODE_"))
+        return parseInt(symbol.split("_")[1]);
+
     return Number.MAX_SAFE_INTEGER;
 }
 
