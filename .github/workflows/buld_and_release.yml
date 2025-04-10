@@ -30,6 +30,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
   
+      - name: Enable Yarn global cache on Windows
+        if: ${{ matrix.os.name == 'win32' }}
+        shell: bash
+        run: yarn config set enableGlobalCache true
+
       - name: Setup Environment
         uses: ./.github/actions/build_and_release_setup_env
 
