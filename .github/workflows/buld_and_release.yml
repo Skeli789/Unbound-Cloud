@@ -44,31 +44,31 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux32
-          path: dist/linux*32*
+          path: dist/UnboundCloud-linux-ia32
 
       - name: Upload linux64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux64
-          path: dist/linux*64*
+          path: dist/UnboundCloud-linux-x64
 
       - name: Upload linuxarmv7l artifact
         uses: actions/upload-artifact@v4
         with:
           name: linuxarmv7l
-          path: dist/linux*armv7l*
+          path: dist/UnboundCloud-linux-armv7l
 
       - name: Upload linuxarm64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: linuxarm64
-          path: dist/linux*arm64*
+          path: dist/UnboundCloud-linux-arm64
 
       # - name: Upload linuxmips64el artifact
       #   uses: actions/upload-artifact@v4
       #   with:
       #     name: 
-      #     path: dist/linux*mips64el*
+      #     path: dist/UnboundCloud-linux-mips64el
 
   # --- Windows Build Job ---
   build-windows:
@@ -98,25 +98,25 @@ jobs:
           npm config set script-shell bash
           yarn package-win32
           yarn package-win64
-          yarn package=winarm64
+          yarn package-winarm64
 
       - name: Upload win32 artifact
         uses: actions/upload-artifact@v4
         with:
           name: win32
-          path: dist/win*32*
+          path: dist/UnboundCloud-win32-ia32
 
       - name: Upload win64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: win64
-          path: dist/win*64*
+          path: dist/UnboundCloud-win32-x64
 
       - name: Upload winarm64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: winarm64
-          path: dist/win*arm64*
+          path: dist/UnboundCloud-win32-arm64
   
   # --- macOS Build Job ---
   build-mac:
@@ -145,19 +145,19 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mac64
-          path: dist/mac*64*
+          path: dist/UnboundCloud-darwin-x64
 
       - name: Upload macarm64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: macarm64
-          path: dist/mac*arm64*
+          path: dist/UnboundCloud-darwin-arm64
 
       # - name: Upload macuniversal artifact
       #   uses: actions/upload-artifact@v4
       #   with:
       #     name: macuniversal
-      #     path: dist/mac*universal*
+      #     path: dist/UnboundCloud-darwin-universal
 
   # --- Release Job ---
   release:
