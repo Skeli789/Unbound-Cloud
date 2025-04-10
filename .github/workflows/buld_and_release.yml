@@ -58,10 +58,10 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.os.name }}" == "linux" ]; then
-            yarn package-linux32
             yarn package-linux64
-            yarn package-linuxarmv7l
             yarn package-linuxarm64
+            yarn package-linuxarmv7l
+            # yarn package-linuxmips64el
           elif [ "${{ matrix.os.name }}" == "darwin" ]; then
             yarn package-mac64
             yarn package-macarm64
@@ -77,20 +77,19 @@ jobs:
         uses: actions/cache@v4
         with:
           path: dist
-          key: ${{ runner.os }}-dist-${{ github.sha }}
+          key: ${{ runner.os.name }}-dist-${{ github.sha }}
 
 # -- Upload Artifacts Job --
   upload-artifacts:
-    name: Upload artifacts
+    name: Upload artifacts (${{ matrix.os.name }}-${{ matrix.os.arch }})
     needs: build
     strategy:
       fail-fast: false # Don't cancel the rest on failure
       matrix:
         os:
-        - { name: "linux", arch: "ia32", runner: "ubuntu-latest" }
         - { name: "linux", arch: "x64", runner: "ubuntu-latest" }
-        - { name: "linux", arch: "armv7l", runner: "ubuntu-latest" }
         - { name: "linux", arch: "arm64", runner: "ubuntu-latest" }
+        - { name: "linux", arch: "armv7l", runner: "ubuntu-latest" }
         # - { name: "linux", arch: "mips64el", runner: "ubuntu-latest" } # linux-mips64el
         - { name: "win32", arch: "ia32", runner: "windows-latest" }
         - { name: "win32", arch: "x64", runner: "windows-latest" }
@@ -105,9 +104,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: dist
-          key: ${{ runner.os }}-dist-${{ github.sha }}
+          key: ${{ runner.os.name }}-dist-${{ github.sha }}
 
-      - name: Upload ${{ matrix.os }}-${{ matrix.os.arch }} artifact
+      - name: Upload ${{ matrix.os.name }}-${{ matrix.os.arch }} artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os.name }}-${{ matrix.os.arch }}
@@ -115,14 +114,14 @@ jobs:
 
   # --- Release Job ---
   release:
-    name: Create Release
+    name: Create Release (${{ matrix.artifact }})
     needs: upload-artifacts
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     strategy:
       matrix:
         artifact: [
-          "linux-ia32", "linux-x64", "linux-armv7l", "linux-arm64", # , "linux-mips64el"
+          "linux-x64", "linux-arm64", "linux-armv7l", # , "linux-mips64el"
           "win32-ia32", "win32-x64", "win32-arm64",
           "darwin-x64", "darwin-arm64" # , "darwin-universal"
         ]
