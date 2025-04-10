@@ -44,31 +44,31 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux32
-          path: dist/linux32*
+          path: dist/linux*32*
 
       - name: Upload linux64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux64
-          path: dist/linux64*
+          path: dist/linux*64*
 
       - name: Upload linuxarmv7l artifact
         uses: actions/upload-artifact@v4
         with:
           name: linuxarmv7l
-          path: dist/linuxarmv7l*
+          path: dist/linux*armv7l*
 
       - name: Upload linuxarm64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: linuxarm64
-          path: dist/linuxarm64*
+          path: dist/linux*arm64*
 
       # - name: Upload linuxmips64el artifact
       #   uses: actions/upload-artifact@v4
       #   with:
       #     name: 
-      #     path: dist/linuxmips64el*
+      #     path: dist/linux*mips64el*
 
   # --- Windows Build Job ---
   build-windows:
@@ -78,7 +78,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Environment
-        uses: ./.github/actions/build_and_release_setup_env.yml
+        uses: ./.github/actions/build_and_release_setup_env
 
       - name: Install dependencies and build
         shell: bash
@@ -104,19 +104,19 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: win32
-          path: dist/win32*
+          path: dist/win*32*
 
       - name: Upload win64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: win64
-          path: dist/win64*
+          path: dist/win*64*
 
       - name: Upload winarm64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: winarm64
-          path: dist/winarm64*
+          path: dist/win*arm64*
   
   # --- macOS Build Job ---
   build-mac:
@@ -126,7 +126,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Environment
-        uses: ./.github/actions/build_and_release_setup_env.yml
+        uses: ./.github/actions/build_and_release_setup_env
 
       - name: Install dependencies and build
         run: |
@@ -145,19 +145,19 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mac64
-          path: dist/mac64*
+          path: dist/mac*64*
 
       - name: Upload macarm64 artifact
         uses: actions/upload-artifact@v4
         with:
           name: macarm64
-          path: dist/macarm64*
+          path: dist/mac*arm64*
 
       # - name: Upload macuniversal artifact
       #   uses: actions/upload-artifact@v4
       #   with:
       #     name: macuniversal
-      #     path: dist/macuniversal*
+      #     path: dist/mac*universal*
 
   # --- Release Job ---
   release:
