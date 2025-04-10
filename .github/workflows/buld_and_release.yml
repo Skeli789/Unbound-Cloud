@@ -35,8 +35,9 @@ jobs:
         uses: ./.github/actions/build_and_release_setup_env
 
       - name: Install dependencies
+        shell: bash
         run: |
-          if [ "${{ matrix.os.name }}" == "windows" ]; then
+          if [ "${{ matrix.os.name }}" == "win32" ]; then
             rm -f yarn.lock
             yarn config delete proxy
             yarn config delete https-proxy
@@ -45,7 +46,6 @@ jobs:
           yarn install --network-timeout 1000000
 
       - name: Build
-        shell: bash
         run: yarn build
         env:
           CI: false # Ignore build warnings
@@ -58,11 +58,11 @@ jobs:
             yarn package-linux64
             yarn package-linuxarmv7l
             yarn package-linuxarm64
-          elif [ "${{ matrix.os.name }}" == "mac" ]; then
+          elif [ "${{ matrix.os.name }}" == "darwin" ]; then
             yarn package-mac64
             yarn package-macarm64
             # yarn package-macuniversal
-          elif [ "${{ matrix.os.name }}" == "windows" ]; then
+          elif [ "${{ matrix.os.name }}" == "win32" ]; then
             npm config set script-shell bash
             yarn package-win32
             yarn package-win64
@@ -93,7 +93,7 @@ jobs:
         - { name: "win32", arch: "arm64", runner: "windows-latest" }
         - { name: "darwin", arch: "x64", runner: "macos-latest" } # macOS
         - { name: "darwin", arch: "arm64", runner: "macos-latest" } # macOS
-        # - { name: "mac", arch: "universal", runner: "macos-latest" } # mac-universal
+        # - { name: "darwin", arch: "universal", runner: "macos-latest" } # mac-universal
     runs-on: ${{ matrix.os.runner }}
 
     steps:
@@ -119,9 +119,9 @@ jobs:
       fail-fast: true # Cancel release if any upload fails
       matrix:
         artifact: [
-          "linux-ia32", "linux-x64", "linux-armv7l", "linux-arm64", # , "linuxmips64el"
+          "linux-ia32", "linux-x64", "linux-armv7l", "linux-arm64", # , "linux-mips64el"
           "win32-ia32", "win32-x64", "win32-arm64",
-          "darwin-x64", "darwin-arm64" # , "macuniversal"
+          "darwin-x64", "darwin-arm64" # , "darwin-universal"
         ]
 
     steps:
