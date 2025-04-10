@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Environment
-        uses: ./.github/actions/build_and_release_setup_env.yml
+        uses: ./.github/actions/build_and_release_setup_env
 
       - name: Install dependencies and build
         run: |
