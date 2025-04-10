@@ -77,7 +77,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: dist
-          key: ${{ runner.os.name }}-dist-${{ github.sha }}
+          key: ${{ matrix.os.name }}-dist-${{ github.sha }}
 
 # -- Upload Artifacts Job --
   upload-artifacts:
@@ -104,7 +104,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: dist
-          key: ${{ runner.os.name }}-dist-${{ github.sha }}
+          key: ${{ matrix.os.name }}-dist-${{ github.sha }}
 
       - name: Upload ${{ matrix.os.name }}-${{ matrix.os.arch }} artifact
         uses: actions/upload-artifact@v4
