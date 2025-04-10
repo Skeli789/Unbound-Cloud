@@ -3,11 +3,11 @@
  * It requires `yarn build` to be run first to create the production build.
  */
 
-import {app, BrowserWindow, ipcMain, Notification} from "electron";
+import {app, BrowserWindow, ipcMain, Notification, session} from "electron";
 import path from "path"; //Module for file paths
 
 const IS_PROD = app.isPackaged;
-
+const SERVER = "https://unboundcloud.net"; //Where the server is hosted
 
 /**
  * Creates the main window of the application.
@@ -40,11 +40,25 @@ function CreateWindow()
     window.loadFile(indexPath); //Load the file into the window
 }
 
+/**
+ * Modifies the request origin to match the server.
+ * This is required for CORS to work properly.
+ */
+function ModifyRequestOrigin()
+{
+    session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) =>
+    {
+        details.requestHeaders["Origin"] = SERVER; //Pretend the request came from the actual site
+        callback({requestHeaders: details.requestHeaders});
+    });
+}
+
 //Once app is running, create the window
 app.whenReady().then(() =>
 {
     app.setAppUserModelId('Unbound Cloud'); //Set the app user model ID for Windows notifications
-    CreateWindow()
+    ModifyRequestOrigin(); //Modify the request origin to match the server
+    CreateWindow(); //Create the main window
 });
 
 //Callback for when all windows are closed
