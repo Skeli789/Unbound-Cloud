@@ -15,175 +15,114 @@ on:
     - electron
 
 jobs:
-  # --- Linux Build Job ---
-  build-linux:
-    name: Build Linux packages
-    runs-on: ubuntu-latest
+# -- Build Job ---
+  build:
+    name: Build on ${{ matrix.os.name }}
+    # Run each OS in parallel, don't cancel the rest on failure
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - { name: "linux", runner: "ubuntu-latest" } # Linux
+          - { name: "darwin", runner: "macos-latest" } # macOS
+          - { name: "win32", runner: "windows-latest" } # Windows
+    runs-on: ${{ matrix.os.runner }}
+
     steps:
       - uses: actions/checkout@v4
-
+  
       - name: Setup Environment
         uses: ./.github/actions/build_and_release_setup_env
 
-      - name: Install dependencies and build
+      - name: Install dependencies
         run: |
-            yarn install
-            yarn build
-        env:
-          CI: false # Ignore build warnings
-
-      - name: Package Linux apps
-        run: |
-          yarn package-linux32
-          yarn package-linux64
-          yarn package-linuxarmv7l
-          yarn package-linuxarm64
-        # yarn package-linuxmips64el
-
-      - name: Upload linux32 artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux32
-          path: dist/UnboundCloud-linux-ia32
-
-      - name: Upload linux64 artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux64
-          path: dist/UnboundCloud-linux-x64
-
-      - name: Upload linuxarmv7l artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: linuxarmv7l
-          path: dist/UnboundCloud-linux-armv7l
-
-      - name: Upload linuxarm64 artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: linuxarm64
-          path: dist/UnboundCloud-linux-arm64
-
-      # - name: Upload linuxmips64el artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: 
-      #     path: dist/UnboundCloud-linux-mips64el
-
-  # --- Windows Build Job ---
-  build-windows:
-    name: Build Windows packages
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Environment
-        uses: ./.github/actions/build_and_release_setup_env
-
-      - name: Install dependencies and build
-        shell: bash
-        run: |
+          if [ "${{ matrix.os.name }}" == "windows" ]; then
             rm -f yarn.lock
             yarn config delete proxy
             yarn config delete https-proxy
             yarn config delete registry
-            yarn install --network-timeout 1000000 # Set network timeout to 10 minutes
-            yarn build
+          fi
+          yarn install --network-timeout 1000000
+
+      - name: Build
+        shell: bash
+        run: yarn build
         env:
           CI: false # Ignore build warnings
 
-      - name: Package Windows apps
+      - name: Package apps
         shell: bash
         run: |
-          npm config set script-shell bash
-          yarn package-win32
-          yarn package-win64
-          yarn package-winarm64
+          if [ "${{ matrix.os.name }}" == "linux" ]; then
+            yarn package-linux32
+            yarn package-linux64
+            yarn package-linuxarmv7l
+            yarn package-linuxarm64
+          elif [ "${{ matrix.os.name }}" == "mac" ]; then
+            yarn package-mac64
+            yarn package-macarm64
+            # yarn package-macuniversal
+          elif [ "${{ matrix.os.name }}" == "windows" ]; then
+            npm config set script-shell bash
+            yarn package-win32
+            yarn package-win64
+            yarn package-winarm64
+          fi
 
-      - name: Upload win32 artifact
-        uses: actions/upload-artifact@v4
+      - name: Cache packaged apps
+        uses: actions/cache@v4
         with:
-          name: win32
-          path: dist/UnboundCloud-win32-ia32
+          path: dist
+          key: ${{ runner.os }}-dist-${{ github.sha }}
 
-      - name: Upload win64 artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: win64
-          path: dist/UnboundCloud-win32-x64
+# -- Upload Artifacts Job --
+  upload-artifacts:
+    name: Upload artifacts
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+        - { name: "linux", arch: "ia32", runner: "ubuntu-latest" }
+        - { name: "linux", arch: "x64", runner: "ubuntu-latest" }
+        - { name: "linux", arch: "armv7l", runner: "ubuntu-latest" }
+        - { name: "linux", arch: "arm64", runner: "ubuntu-latest" }
+        # - { name: "linux", arch: "mips64el", runner: "ubuntu-latest" } # linux-mips64el
+        - { name: "win32", arch: "ia32", runner: "windows-latest" }
+        - { name: "win32", arch: "x64", runner: "windows-latest" }
+        - { name: "win32", arch: "arm64", runner: "windows-latest" }
+        - { name: "darwin", arch: "x64", runner: "macos-latest" } # macOS
+        - { name: "darwin", arch: "arm64", runner: "macos-latest" } # macOS
+        # - { name: "mac", arch: "universal", runner: "macos-latest" } # mac-universal
+    runs-on: ${{ matrix.os.runner }}
 
-      - name: Upload winarm64 artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: winarm64
-          path: dist/UnboundCloud-win32-arm64
-  
-  # --- macOS Build Job ---
-  build-mac:
-    name: Build Mac packages
-    runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Load cached packages
+        uses: actions/cache@v4
+        with:
+          path: dist
+          key: ${{ runner.os }}-dist-${{ github.sha }}
 
-      - name: Setup Environment
-        uses: ./.github/actions/build_and_release_setup_env
-
-      - name: Install dependencies and build
-        run: |
-            yarn install
-            yarn build
-        env:
-          CI: false # Ignore build warnings
-
-      - name: Package Mac apps
-        run: |
-          yarn package-mac64
-          yarn package-macarm64
-        # yarn package-macuniversal
-
-      - name: Upload mac64 artifact
+      - name: Upload ${{ matrix.os }}-${{ matrix.os.arch }} artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mac64
-          path: dist/UnboundCloud-darwin-x64
-
-      - name: Upload macarm64 artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: macarm64
-          path: dist/UnboundCloud-darwin-arm64
-
-      # - name: Upload macuniversal artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: macuniversal
-      #     path: dist/UnboundCloud-darwin-universal
+          name: ${{ matrix.os.name }}-${{ matrix.os.arch }}
+          path: dist/UnboundCloud-${{ matrix.os.name }}-${{ matrix.os.arch }}
 
   # --- Release Job ---
   release:
-    name: Create GitHub Release and Attach Artifacts
-    needs: [build-linux, build-windows, build-mac]
+    name: Create Release
+    needs: upload-artifacts
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     strategy:
+      fail-fast: true # Cancel release if any upload fails
       matrix:
-        include:
-          # For Linux
-          - artifact: "linux3"
-          - artifact: "linux64"
-          - artifact: "linuxarmv7l"
-          - artifact: "linuxarm64"
-          # - artifact: "linuxmips64el"
-
-          # For Windows
-          - artifact: "win32"
-          - artifact: "win64"
-          - artifact: "winarm64"
-
-          # For macOS
-          - artifact: "mac64"
-          - artifact: "macarm64"
-          # - artifact: "macuniversal"
+        artifact: [
+          "linux-ia32", "linux-x64", "linux-armv7l", "linux-arm64", # , "linuxmips64el"
+          "win32-ia32", "win32-x64", "win32-arm64",
+          "darwin-x64", "darwin-arm64" # , "macuniversal"
+        ]
 
     steps:
       - uses: actions/checkout@v4
