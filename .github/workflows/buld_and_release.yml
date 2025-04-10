@@ -1,5 +1,7 @@
 name: Build and Release Destop App
 
+# TODO: Set a publisher during packaging
+
 # Trigger this workflow when pushing a tag (e.g. v1.0.0)
 # on:
 #   push:
@@ -20,15 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.x'
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.13'
+      - name: Setup Environment
+        uses: ./.github/actions/build_and_release_setup_env.yml
 
       - name: Install dependencies and build
         run: |
@@ -43,17 +38,37 @@ jobs:
           yarn package-linux64
           yarn package-linuxarmv7l
           yarn package-linuxarm64
-          yarn package-linuxmips64el
+        # yarn package-linuxmips64el
 
-      # Compress the resulting dist folder into an archive
-      - name: Archive Linux packages
-        run: zip -r linux-packages.zip dist
-
-      - name: Upload Linux artifact
+      - name: Upload linux32 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: linux-packages
-          path: linux-packages.zip
+          name: linux32
+          path: dist/linux32*
+
+      - name: Upload linux64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux64
+          path: dist/linux64*
+
+      - name: Upload linuxarmv7l artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linuxarmv7l
+          path: dist/linuxarmv7l*
+
+      - name: Upload linuxarm64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linuxarm64
+          path: dist/linuxarm64*
+
+      # - name: Upload linuxmips64el artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: 
+      #     path: dist/linuxmips64el*
 
   # --- Windows Build Job ---
   build-windows:
@@ -62,15 +77,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.x'
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.13'
+      - name: Setup Environment
+        uses: ./.github/actions/build_and_release_setup_env.yml
 
       - name: Install dependencies and build
         shell: bash
@@ -92,17 +100,24 @@ jobs:
           yarn package-win64
           yarn package=winarm64
 
-      # On Windows use PowerShell’s Compress-Archive
-      - name: Archive Windows packages
-        shell: pwsh
-        run: Compress-Archive -Path dist/* -DestinationPath windows-packages.zip
-
-      - name: Upload Windows artifact
+      - name: Upload win32 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-packages
-          path: windows-packages.zip
+          name: win32
+          path: dist/win32*
 
+      - name: Upload win64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: win64
+          path: dist/win64*
+
+      - name: Upload winarm64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: winarm64
+          path: dist/winarm64*
+  
   # --- macOS Build Job ---
   build-mac:
     name: Build Mac packages
@@ -110,15 +125,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.x'
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.13'
+      - name: Setup Environment
+        uses: ./.github/actions/build_and_release_setup_env.yml
 
       - name: Install dependencies and build
         run: |
@@ -133,14 +141,23 @@ jobs:
           yarn package-macarm64
         # yarn package-macuniversal
 
-      - name: Archive Mac packages
-        run: zip -r mac-packages.zip dist
-
-      - name: Upload Mac artifact
+      - name: Upload mac64 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mac-packages
-          path: mac-packages.zip
+          name: mac64
+          path: dist/mac64*
+
+      - name: Upload macarm64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macarm64
+          path: dist/macarm64*
+
+      # - name: Upload macuniversal artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: macuniversal
+      #     path: dist/macuniversal*
 
   # --- Release Job ---
   release:
@@ -148,26 +165,34 @@ jobs:
     needs: [build-linux, build-windows, build-mac]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
+    strategy:
+      matrix:
+        include:
+          # For Linux
+          - artifact: "linux3"
+          - artifact: "linux64"
+          - artifact: "linuxarmv7l"
+          - artifact: "linuxarm64"
+          # - artifact: "linuxmips64el"
+
+          # For Windows
+          - artifact: "win32"
+          - artifact: "win64"
+          - artifact: "winarm64"
+
+          # For macOS
+          - artifact: "mac64"
+          - artifact: "macarm64"
+          # - artifact: "macuniversal"
+
     steps:
       - uses: actions/checkout@v4
 
-      # Download all the artifacts from the build jobs
-      - name: Download Linux artifact
+      # Download the artifact
+      - name: Download ${{ matrix.artifact }} artifact
         uses: actions/download-artifact@v4
         with:
-          name: linux-packages
-          path: .
-
-      - name: Download Windows artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-packages
-          path: .
-
-      - name: Download Mac artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: mac-packages
+          name: ${{ matrix.artifact }}
           path: .
 
       # Create a release using the tag name
@@ -177,35 +202,13 @@ jobs:
         with:
           tag: ${{ github.ref }}
 
-      # Upload the Linux artifact to the release
-      - name: Upload Linux release asset
+      # Release each artifact
+      - name: Upload ${{ matrix.artifact }} release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: linux-packages.zip
-          asset_name: linux-packages.zip
-          asset_content_type: application/zip
-
-      # Upload the Windows artifact to the release
-      - name: Upload Windows release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: windows-packages.zip
-          asset_name: windows-packages.zip
-          asset_content_type: application/zip
-
-      # Upload the Mac artifact to the release
-      - name: Upload Mac release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: mac-packages.zip
-          asset_name: mac-packages.zip
-          asset_content_type: application/zip
+          asset_path: ${{ matrix.artifact }}.zip
+          asset_name: $${{ matrix.artifact }}.zip
+          asset_content_type: $application/zip
