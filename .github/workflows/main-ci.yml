@@ -65,7 +65,7 @@ jobs:
       # TODO: One day decide how to handle proper version updates
       - name: Update patch version
         run: |
-          yarn version patch
+          yarn version --patch
 
       - name: Push updated version
         run: git push --follow-tags
