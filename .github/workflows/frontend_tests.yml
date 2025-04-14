@@ -1,0 +1,36 @@
+name: Front-End Tests
+
+# Run when pushing to a side branch or manually triggered/called
+on:
+  push:
+    paths:
+      - ".github/workflows/frontend_tests.yml"
+      - "src/**"
+      - "package.json"
+      - "yarn.lock"
+    branches-ignore:
+      - "main"
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  test-react:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ## Setup dependencies ##
+      - name: Setup Node.js with Yarn caching
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: yarn
+          cache-dependency-path: package.json
+
+      - name: Install dependencies
+        run: yarn install
+
+      ## Tests ##
+      - name: Run tests
+        run: yarn test

@@ -14,14 +14,8 @@ env:
 jobs:
   # Run front-end tests
   run_frontend_tests:
-    # Always pass until frontend tests are implemented
     name: Run Front-End Tests
-    # uses: ./.github/workflows/frontend_tests.yml
-    # TEMP from here down for the rest of this job, remove when frontend tests are implemented
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    uses: ./.github/workflows/frontend_tests.yml
 
   # Run back-end tests
   run_backend_tests:
@@ -60,8 +54,8 @@ jobs:
         with :
           fetch-depth: 0
 
-      # TODO
-        
+      # TODO: use yarn version?
+
   # Update the test site branch
   update_test_branch:
     name: Update Test Site Branch
@@ -76,16 +70,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Rebase ${TEST_BRANCH} onto main
+      - name: Rebase ${{ env.TEST_BRANCH }} onto main
         run: |
           git fetch origin
           git checkout ${TEST_BRANCH}
           git rebase origin/main
 
       - name: Push updated branch
-        run: |
-          git checkout ${TEST_BRANCH}
-          git push origin ${TEST_BRANCH} --force
+        run: git push origin ${TEST_BRANCH} --force
 
   # Rebase the release branches
   rebase_release_branches:
