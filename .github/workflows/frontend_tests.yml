@@ -12,9 +12,9 @@ on:
   workflow_dispatch:
   workflow_call:
 
-# Only allow one job to run at a time per branch
+# Only allow one job to run at a time per branch for direct triggers (PRs, manual), not for workflow calls
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ (github.event_name == 'workflow_call' && format('{0}-{1}-{2}', github.workflow, github.ref, github.run_id)) || format('{0}-{1}', github.workflow, github.ref) }}
   cancel-in-progress: true
 
 jobs:
