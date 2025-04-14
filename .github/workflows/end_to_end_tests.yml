@@ -12,7 +12,7 @@ on:
       - "*requirements.txt"
       - "package.json"
       - "*.lock"
-    branches-ignore:
+    branches:
       - "main"
   workflow_dispatch:
   workflow_call:
