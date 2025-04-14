@@ -38,8 +38,9 @@
     "@testing-library/user-event": "^14.4.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "python DataCopy.py && react-scripts build",
+    "start-client": "react-scripts start",
+    "start": "cd server && yarn start",
+    "build": "react-scripts build && (cd server && yarn install)",
     "test": "react-scripts test",
     "test-selenium": "pytest seleniumtests/ -v --html=selenium-report-${BROWSER}.html --timeout=600",
     "eject": "react-scripts eject"
