@@ -2,10 +2,26 @@ name: Back-End Tests
 
 on:
   workflow_call:
+    inputs:
+      APPDATA:
+        required: true
+        type: string
+      UNBOUND_EMAIL:
+        required: true
+        type: string
+    secrets:
+      UNBOUND_EMAIL_PASSWORD:
+        required: true
+      WONDER_TRADE_WEBHOOK:
+        required: true
+      ENCRYPTION_KEY:
+        required: true
+      CHECKSUM_KEY:
+        required: true
 
 env:
-  APPDATA: ${{ vars.APPDATA }}
-  UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+  APPDATA: ${{ inputs.APPDATA }}
+  UNBOUND_EMAIL: ${{ inputs.UNBOUND_EMAIL }}
   UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
   WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
   ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
@@ -18,15 +34,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js
+      ## Setup dependencies ##
+      - name: Setup Node.js with Yarn caching
         uses: actions/setup-node@v4
         with:
           node-version: "22.x"
+          cache: 'yarn'
+          cache-dependency-path: server/package.json
 
       - name: Install dependencies
         run: cd server && yarn install
 
-      - name: Running tests
+      ## Tests ##
+      - name: Run tests
         run: cd server && yarn test-js
 
   test-python:
@@ -35,15 +55,20 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Use Python
-        uses: actions/setup-python@v2
+      ## Setup dependencies ##
+      - name: Setup Python with pip caching
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+          cache: 'pip'
+          cache-dependency-path: |
+            requirements.txt
+            test-requirements.txt
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
-          pip install -r test-requirements.txt --upgrade
+          pip install -r requirements.txt -r test-requirements.txt --upgrade
 
-      - name: Running tests
+      ## Tests ##
+      - name: Run tests
         run: cd server && yarn test-py

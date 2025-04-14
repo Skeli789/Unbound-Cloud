@@ -2,10 +2,26 @@ name: End-to-End Tests
 
 on:
   workflow_call:
+    inputs:
+      APPDATA:
+        required: true
+        type: string
+      UNBOUND_EMAIL:
+        required: true
+        type: string
+    secrets:
+      UNBOUND_EMAIL_PASSWORD:
+        required: true
+      WONDER_TRADE_WEBHOOK:
+        required: true
+      ENCRYPTION_KEY:
+        required: true
+      CHECKSUM_KEY:
+        required: true
 
 env:
-  APPDATA: ${{ vars.APPDATA }}
-  UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+  APPDATA: ${{ inputs.APPDATA }}
+  UNBOUND_EMAIL: ${{ inputs.UNBOUND_EMAIL }}
   UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
   WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
   ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}

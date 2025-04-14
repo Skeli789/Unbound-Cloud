@@ -4,14 +4,6 @@ on:
   push:
   workflow_dispatch:
 
-env:
-  APPDATA: ${{ vars.APPDATA }}
-  UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
-  UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
-  WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
-  ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-  CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
-
 jobs:
   # Filter changes based on file patterns.
   filter:
@@ -64,6 +56,14 @@ jobs:
     uses: ./.github/workflows/backend_tests.yml
     needs: filter
     if: ${{ needs.filter.outputs.backend == 'true' }}
+    with:
+      APPDATA: ${{ vars.APPDATA }}
+      UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+    secrets:
+      UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+      WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
 
   # Run end-to-end tests
   run_e2e_tests:
@@ -71,6 +71,14 @@ jobs:
     uses: ./.github/workflows/end_to_end_tests.yml
     needs: filter
     if: ${{ needs.filter.outputs.e2e == 'true' && github.ref == 'refs/heads/main' }}
+    with:
+      APPDATA: ${{ vars.APPDATA }}
+      UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+    secrets:
+      UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+      WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
 
   # Update the heroku branch
   update_heroku_branch:
