@@ -66,11 +66,21 @@ jobs:
 
       - name: Configure Git
         uses: ./.github/actions/configure_bot_git
-  
-      # TODO: One day decide how to handle proper version updates
-      - name: Update patch version
-        run: |
-          yarn version --patch
+
+      - name: Bump major version
+        # When the commit message starts with "BREAKING:"
+        if: startsWith(github.event.head_commit.message, 'BREAKING:')
+        run: yarn version --major
+
+      - name: Bump minor version
+        # When the commit message contains a pull request number (e.g. "(#1234)")
+        if: ${{ contains(github.event.head_commit.message, '(#') && !startsWith(github.event.head_commit.message, 'BREAKING:') }}
+        run: yarn version --minor
+
+      - name: Bump patch version
+        # All other cases
+        if: ${{ !contains(github.event.head_commit.message, '(#') && !startsWith(github.event.head_commit.message, 'BREAKING:') }}
+        run: yarn version --patch
 
       - name: Push updated version
         run: git push --follow-tags
