@@ -52,7 +52,7 @@ jobs:
   # Update the test site branch
   update_test_branch:
     name: Update Test Site Branch
-    needs: [run_backend_tests, run_e2e_tests]  # run_frontend_tests
+    needs: [run_frontend_tests, run_backend_tests, run_e2e_tests]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -61,6 +61,7 @@ jobs:
   # Rebase the release branches
   rebase_release_branches:
     name: Rebase ${{ matrix.branch }} Branch
+    needs: [run_frontend_tests, run_backend_tests, run_e2e_tests]
     runs-on: ubuntu-latest
     strategy:
       matrix:
