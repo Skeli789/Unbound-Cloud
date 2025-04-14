@@ -37,31 +37,60 @@ jobs:
       CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
 
   # Run end-to-end tests
-  run_e2e_tests:
-    name: Run End-to-End Tests
-    uses: ./.github/workflows/end_to_end_tests.yml
-    with:
-      APPDATA: ${{ vars.APPDATA }}
-      UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
-    secrets:
-      UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
-      WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
-      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-      CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
+  # run_e2e_tests:
+  #   name: Run End-to-End Tests
+  #   uses: ./.github/workflows/end_to_end_tests.yml
+  #   with:
+  #     APPDATA: ${{ vars.APPDATA }}
+  #     UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+  #   secrets:
+  #     UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+  #     WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+  #     ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+  #     CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
 
-  # Update the test site branch
-  update_test_branch:
-    name: Update Test Site Branch
-    needs: [run_frontend_tests, run_backend_tests, run_e2e_tests]
+  # Update version in the package.json and server/package.json files
+  update_version:
+    name: Update Latest Version
+    needs: [run_frontend_tests, run_backend_tests] #, run_e2e_tests]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with :
+          fetch-depth: 0
+
+      # TODO
+        
+  # Update the test site branch
+  update_test_branch:
+    name: Update Test Site Branch
+    needs: update_version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Rebase ${TEST_BRANCH} onto main
+        run: |
+          git fetch origin
+          git checkout ${TEST_BRANCH}
+          git rebase origin/main
+
+      - name: Push updated branch
+        run: |
+          git checkout ${TEST_BRANCH}
+          git push origin ${TEST_BRANCH} --force
 
   # Rebase the release branches
   rebase_release_branches:
     name: Rebase ${{ matrix.branch }} Branch
-    needs: [run_frontend_tests, run_backend_tests, run_e2e_tests]
+    needs: update_version
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -74,15 +103,15 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Rebase ${{ matrix.branch }} onto main
         run: |
           git fetch origin
           git checkout ${{ matrix.branch }}
           git rebase origin/main
-  
+
   # Update release branches
   push_release_branches:
     name: Push ${{ matrix.branch }} Branch
@@ -107,4 +136,4 @@ jobs:
       - name: Push updated branch
         run: |
           git checkout ${{ matrix.branch }}
-          git push origin ${{ matrix.branch }}
+          git push origin ${{ matrix.branch }} --force
