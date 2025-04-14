@@ -3,6 +3,14 @@ name: End-to-End Tests
 on:
   workflow_call:
 
+env:
+  APPDATA: ${{ vars.APPDATA }}
+  UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+  UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+  WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+  ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+  CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
+
 jobs:
   e2e:
     # Run each browser/os combo in parallel, don't cancel the rest on failure
@@ -30,7 +38,6 @@ jobs:
       RESOLUTION: 1920x1080
       BROWSER: ${{ matrix.browser }}
       REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD: ${{ matrix.uploadDownload }}
-
 
     steps:
       - name: Checkout code

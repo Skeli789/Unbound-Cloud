@@ -36,7 +36,7 @@ jobs:
               - "seleniumtests/**"
               - "src/**"
               - "package.json"
-              - ".lock"
+              - "yarn.lock"
             backend:
               - ".github/workflows/backend_tests.yml"
               - "server/**"
@@ -54,32 +54,23 @@ jobs:
   # Run front-end tests
   # run_frontend_tests:
   #   name: Run Front-End Tests
+  #   uses: ./.github/workflows/frontend_tests.yml
   #   needs: filter
   #   if: ${{ needs.filter.outputs.frontend == 'true' }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Run Front-End Tests Workflow
-  #       uses: ./.github/workflows/frontend_tests.yml
 
   # Run back-end tests
   run_backend_tests:
     name: Run Back-End Tests
+    uses: ./.github/workflows/backend_tests.yml
     needs: filter
     if: ${{ needs.filter.outputs.backend == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run Back-End Tests Workflow
-        uses: ./.github/workflows/backend_tests.yml
 
   # Run end-to-end tests
   run_e2e_tests:
     name: Run End-to-End Tests
+    uses: ./.github/workflows/end_to_end_tests.yml
     needs: filter
     if: ${{ needs.filter.outputs.e2e == 'true' && github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run End-to-End Tests Workflow
-        uses: ./.github/workflows/end_to_end_tests.yml
 
   # Update the heroku branch
   update_heroku_branch:
