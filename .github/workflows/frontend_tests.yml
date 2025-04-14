@@ -13,7 +13,7 @@ on:
   workflow_call:
 
 concurrency:
-  group: ${{ (github.event_name == 'workflow_call' && format('{0}-{1}-{2}', github.workflow, github.ref, github.run_id)) || format('{0}-{1}', github.workflow, github.ref) }}
+  group: ${{ github.event_name == 'workflow_call' && format('frontend-tests-{0}-{1}', github.workflow, github.run_id) || format('frontend-tests-{0}-{1}', github.workflow, github.ref) }}
   cancel-in-progress: true
 
 jobs:
