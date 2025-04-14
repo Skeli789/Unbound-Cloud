@@ -4127,8 +4127,8 @@ export default class MainPage extends Component
         let cursorStyle = draggingImg !== "" ? {cursor: "grabbing"} : {};
         fullHeight = (fullHeight) ? {height: "100%"} : {};
         return (
-            <div className="main-page"
-                 id="main-page" style={{...cursorStyle}}
+            <div className="main-page" style={{...cursorStyle}}
+                 id="main-page" data-testid="main-page"
                  onMouseMove={(e) => this.moveDraggingMonIcon(e)} >
                 {/* Navbar at the top */}
                 {navBar ? this.navBarButtons() : this.navBarNoButtons()}

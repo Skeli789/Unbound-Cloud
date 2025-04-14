@@ -1,0 +1,40 @@
+name: Front-End Tests
+
+# Run when pushing to a side branch or manually triggered/called
+on:
+  push:
+    branches-ignore: ["main"] # On main it's run as part of the release pipeline
+    paths:
+      - ".github/workflows/frontend_tests.yml"
+      - "src/**"
+      - "package.json"
+      - "yarn.lock"
+  workflow_dispatch:
+  workflow_call:
+
+# Only allow one job to run at a time per branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-react:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      ## Setup dependencies ##
+      - name: Setup Node.js with Yarn caching
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: yarn
+          cache-dependency-path: package.json
+
+      - name: Install dependencies
+        run: yarn install
+
+      ## Tests ##
+      - name: Run tests
+        run: yarn test

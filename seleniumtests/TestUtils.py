@@ -12,9 +12,9 @@ BROWSER = os.getenv('BROWSER', 'chrome').lower()
 URL_SITE = "http://localhost:3000"
 DEBUG_SCREENSHOT_DIR = f"debug_screenshots_{BROWSER}"
 TEST_EMAIL = "test@gmail.com"
-TEST_USERNAME = "test_user"
-TEST_PASSWORD = "test_password"
-TEST_NEW_PASSWORD = "new_test_password"
+TEST_USERNAME = "test_clouduser"
+TEST_PASSWORD = "test_cloudpassword"
+TEST_NEW_PASSWORD = "new_test_cloudpassword"
 
 
 def SetUpDriver(browser: str) -> webdriver.Chrome:

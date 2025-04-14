@@ -1,0 +1,141 @@
+name: Main Release Pipeline
+
+# Run when pushing to main or manually triggered
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+# Only allow one job to run at a time per branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TEST_BRANCH: heroku
+
+jobs:
+  # Run front-end tests
+  run_frontend_tests:
+    name: Run Front-End Tests
+    uses: ./.github/workflows/frontend_tests.yml
+
+  # Run back-end tests
+  run_backend_tests:
+    name: Run Back-End Tests
+    uses: ./.github/workflows/backend_tests.yml
+    # Pass environment variables and secrets to called workflow
+    with:
+      APPDATA: ${{ vars.APPDATA }}
+      UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+    secrets:
+      UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+      WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
+
+  # Run end-to-end tests
+  run_e2e_tests:
+    name: Run End-to-End Tests
+    uses: ./.github/workflows/end_to_end_tests.yml
+    # Pass environment variables and secrets to called workflow
+    with:
+      APPDATA: ${{ vars.APPDATA }}
+      UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+    secrets:
+      UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+      WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+      CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
+
+  # Update version
+  update_version:
+    name: Update Latest Version
+    needs: [run_frontend_tests, run_backend_tests, run_e2e_tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with :
+          fetch-depth: 0
+
+      - name: Configure Git
+        uses: ./.github/actions/configure_bot_git
+  
+      # TODO: One day decide how to handle proper version updates
+      - name: Update patch version
+        run: |
+          yarn version patch
+
+      - name: Push updated version
+        run: git push --follow-tags
+
+  # Update the test site branch
+  update_test_branch:
+    name: Update Test Site Branch
+    needs: update_version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with :
+          fetch-depth: 0
+
+      - name: Configure Git
+        uses: ./.github/actions/configure_bot_git
+
+      - name: Rebase ${{ env.TEST_BRANCH }} onto main
+        run: |
+          git fetch origin
+          git checkout ${{ env.TEST_BRANCH }}
+          git rebase origin/main
+
+      - name: Push updated branch
+        run: git push origin ${{ env.TEST_BRANCH }} --force
+
+  # Rebase the release branches
+  rebase_release_branches:
+    name: Rebase ${{ matrix.branch }} Branch
+    needs: update_version
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: [multiark, electron]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        uses: ./.github/actions/configure_bot_git
+
+      - name: Rebase ${{ matrix.branch }} onto main
+        run: |
+          git fetch origin
+          git checkout ${{ matrix.branch }}
+          git rebase origin/main
+
+  # Push release branches
+  push_release_branches:
+    name: Push ${{ matrix.branch }} Branch
+    needs: rebase_release_branches
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: [multiark, electron]
+    environment:
+      name: release-approval # Require manual approval for this job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        uses: ./.github/actions/configure_bot_git
+
+      - name: Push updated branch
+        run: |
+          git checkout ${{ matrix.branch }}
+          git push origin ${{ matrix.branch }} --force

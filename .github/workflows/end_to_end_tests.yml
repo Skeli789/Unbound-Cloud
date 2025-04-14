@@ -1,19 +1,9 @@
 name: End-to-End Tests
 
+# Run when opening a PR to main or manually triggered/called
 on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/end_to_end_tests.yml"
-      - "public/**"
-      - "seleniumtests/**"
-      - "server/**"
-      - "src/**"
-      - "*requirements.txt"
-      - "*.lock"
   pull_request:
-    branches: [main]
+    branches: ["main"] # Too many jobs to run on every commit for every branch
     paths:
       - ".github/workflows/end_to_end_tests.yml"
       - "public/**"
@@ -21,11 +11,45 @@ on:
       - "server/**"
       - "src/**"
       - "*requirements.txt"
+      - "package.json"
       - "*.lock"
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      APPDATA:
+        required: true
+        type: string
+      UNBOUND_EMAIL:
+        required: true
+        type: string
+    secrets:
+      UNBOUND_EMAIL_PASSWORD:
+        required: true
+      WONDER_TRADE_WEBHOOK:
+        required: true
+      ENCRYPTION_KEY:
+        required: true
+      CHECKSUM_KEY:
+        required: true
+
+# Only allow one job to run at a time per branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Use inputs when available, otherwise fall back to repository variables/secrets
+  APPDATA: ${{ inputs.APPDATA || vars.APPDATA }}
+  UNBOUND_EMAIL: ${{ inputs.UNBOUND_EMAIL || vars.UNBOUND_EMAIL }}
+  UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+  WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+  ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+  CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
 
 jobs:
   e2e:
     # Run each browser/os combo in parallel, don't cancel the rest on failure
+    name: Test ${{ matrix.browser }} on ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -50,30 +74,20 @@ jobs:
       RESOLUTION: 1920x1080
       BROWSER: ${{ matrix.browser }}
       REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD: ${{ matrix.uploadDownload }}
-      APPDATA: ${{ vars.APPDATA }}
-      UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
-      UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
-      WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
-      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-      CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       ## Setup dependencies ##
-      - name: Setup Python
+      - name: Setup Python with pip caching
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
-
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements*.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            test-requirements.txt
 
       - name: Install Python deps
         run: |
