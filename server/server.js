@@ -685,6 +685,8 @@ app.post('/uploadSaveFile', async (req, res) =>
                     retData["cloudTitles"] = await accounts.GetUserCloudTitles(username, randomizer);
                     console.log(`Cloud data for ${username} loaded in ${Date.now() - startTime}ms.`);
                 }
+                else
+                    throw(`The account code is not valid for ${username}!`);
             }
 
             //Send the data back
