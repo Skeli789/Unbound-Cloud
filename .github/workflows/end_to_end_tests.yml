@@ -76,18 +76,14 @@ jobs:
         uses: actions/checkout@v4
 
       ## Setup dependencies ##
-      - name: Setup Python
+      - name: Setup Python with pip caching
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
-
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements*.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            test-requirements.txt
 
       - name: Install Python deps
         run: |
