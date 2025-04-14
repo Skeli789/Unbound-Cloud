@@ -1,0 +1,8 @@
+name: 'Configure Git'
+description: 'Sets up Git so the GitHub Actions bot can push changes.'
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"

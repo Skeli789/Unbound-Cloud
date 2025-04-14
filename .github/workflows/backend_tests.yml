@@ -28,6 +28,11 @@ on:
       CHECKSUM_KEY:
         required: true
 
+# Only allow one job to run at a time per branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   # Use inputs when available, otherwise fall back to repository variables/secrets
   APPDATA: ${{ inputs.APPDATA || vars.APPDATA }}

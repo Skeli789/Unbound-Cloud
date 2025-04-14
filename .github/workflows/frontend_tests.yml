@@ -13,6 +13,11 @@ on:
   workflow_dispatch:
   workflow_call:
 
+# Only allow one job to run at a time per branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test-react:
     runs-on: ubuntu-latest
