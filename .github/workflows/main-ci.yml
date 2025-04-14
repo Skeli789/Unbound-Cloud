@@ -3,8 +3,7 @@ name: Release Pipeline
 # Run when pushing to main or manually triggered
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
   workflow_dispatch:
 
 # Only allow one job to run at a time per branch
@@ -79,6 +78,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with :
+          fetch-depth: 0
 
       - name: Configure Git
         uses: ./.github/actions/configure_bot_git
