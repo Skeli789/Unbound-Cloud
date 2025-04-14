@@ -11,6 +11,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Allow this workflow to trigger actions on other branches
+permissions:
+  contents: write
+  actions: write
+
 env:
   TEST_BRANCH: heroku
 
@@ -93,7 +98,7 @@ jobs:
       - name: Push updated branch
         run: git push origin ${{ env.TEST_BRANCH }} --force
 
-  # Rebase the release branches
+  # Rebase the release branches to make sure they can be merged cleanly
   rebase_release_branches:
     name: Rebase ${{ matrix.branch }} Branch
     needs: update_version
@@ -129,13 +134,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Configure Git
         uses: ./.github/actions/configure_bot_git
 
-      - name: Push updated branch
+      # Rebase again here because the rebase doesn't persist across jobs
+      - name: Rebase ${{ matrix.branch }} onto main and push
         run: |
+          git fetch origin
           git checkout ${{ matrix.branch }}
+          git rebase origin/main
           git push origin ${{ matrix.branch }} --force
