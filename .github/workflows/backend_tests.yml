@@ -1,6 +1,15 @@
 name: Back-End Tests
 
+# Run when pushing to a side branch or manually triggered/called
 on:
+  push:
+    paths:
+      - ".github/workflows/backend_tests.yml"
+      - "server/**"
+      - "*requirements.txt"
+    branches-ignore:
+      - "main"
+  workflow_dispatch:
   workflow_call:
     inputs:
       APPDATA:
@@ -20,8 +29,9 @@ on:
         required: true
 
 env:
-  APPDATA: ${{ inputs.APPDATA }}
-  UNBOUND_EMAIL: ${{ inputs.UNBOUND_EMAIL }}
+  # Use inputs when available, otherwise fall back to repository variables/secrets
+  APPDATA: ${{ inputs.APPDATA || vars.APPDATA }}
+  UNBOUND_EMAIL: ${{ inputs.UNBOUND_EMAIL || vars.UNBOUND_EMAIL }}
   UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
   WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
   ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
@@ -39,7 +49,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22.x"
-          cache: 'yarn'
+          cache: yarn
           cache-dependency-path: server/package.json
 
       - name: Install dependencies
@@ -60,7 +70,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-          cache: 'pip'
+          cache: pip
           cache-dependency-path: |
             requirements.txt
             test-requirements.txt

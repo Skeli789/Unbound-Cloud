@@ -1,6 +1,20 @@
 name: End-to-End Tests
 
+# Run when opening a PR to main or manually triggered/called
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/end_to_end_tests.yml"
+      - "public/**"
+      - "seleniumtests/**"
+      - "server/**"
+      - "src/**"
+      - "*requirements.txt"
+      - "package.json"
+      - "*.lock"
+    branches-ignore:
+      - "main"
+  workflow_dispatch:
   workflow_call:
     inputs:
       APPDATA:
@@ -20,8 +34,9 @@ on:
         required: true
 
 env:
-  APPDATA: ${{ inputs.APPDATA }}
-  UNBOUND_EMAIL: ${{ inputs.UNBOUND_EMAIL }}
+  # Use inputs when available, otherwise fall back to repository variables/secrets
+  APPDATA: ${{ inputs.APPDATA || vars.APPDATA }}
+  UNBOUND_EMAIL: ${{ inputs.UNBOUND_EMAIL || vars.UNBOUND_EMAIL }}
   UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
   WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
   ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
@@ -30,6 +45,7 @@ env:
 jobs:
   e2e:
     # Run each browser/os combo in parallel, don't cancel the rest on failure
+    name: Test ${{ matrix.browser }} on ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
