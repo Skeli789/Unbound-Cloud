@@ -76,7 +76,7 @@ export const PURPLE_CLOUD = <span style={{color: "var(--purple)"}}>☁︎</span>
 export const UNBOUND_LINK = <a href="https://www.pokecommunity.com/threads/pok%C3%A9mon-unbound-completed.382178/" target="_blank" rel="noopener noreferrer">Unbound</a>;
 
 const PopUp = withReactContent(Swal);
-const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
+const ACCOUNT_SYSTEM = false; //Use an account system to login instead of saving the Cloud data locally
 const DEBUG_ORIGINAL_FILE_METHOD = process.env.REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD === "true"; //Using the browser upload and download functions
 const DISABLE_ON_MOBILE = false; //Prevent mobile devices from using the site without a password
 const DEMO_SITE = false; //Initial loading page is the box moving so people can see how the site would work
