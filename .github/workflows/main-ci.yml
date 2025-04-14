@@ -5,9 +5,7 @@ on:
   push:
     branches:
       - main
-  pull_request: # TEMP!
-    branches:
-      - main
+      - pipeline-revamp # TEMP
   workflow_dispatch:
 
 env:
@@ -19,7 +17,11 @@ jobs:
     # Always pass until frontend tests are implemented
     name: Run Front-End Tests
     # uses: ./.github/workflows/frontend_tests.yml
+    # TEMP from here down for the rest of this job, remove when frontend tests are implemented
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
   # Run back-end tests
   run_backend_tests:
