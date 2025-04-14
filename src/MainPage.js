@@ -36,7 +36,7 @@ import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 import {BiArrowBack} from "react-icons/bi";
 import {FaCloud, FaGamepad} from "react-icons/fa";
 import {RiVolumeUpFill, RiVolumeMuteFill} from "react-icons/ri"
-import {MdSwapVert, MdMusicNote, MdMusicOff, MdHelp} from "react-icons/md"
+import {MdSwapVert, MdMusicNote, MdMusicOff, MdHelp, MdLogout} from "react-icons/md"
 
 import UnboundCloudTheme from './audio/UnboundCloudTheme.mp3';
 
@@ -224,12 +224,21 @@ export default class MainPage extends Component
     }
 
     /**
+     * Checks if any changes were made to the boxes that need to be saved.
+     * @returns {Boolean} - Whether there are unsaved changes.
+     */
+    wasAnyChangeMade()
+    {
+        return this.state.changeWasMade.some((x) => x); //Some boxes aren't saved
+    }
+
+    /**
      * Prevents the player from leaving the page if they have unsaved data.
      * @param {Object} e - The unload page event.
      */
     tryPreventLeavingPage(e)
     {
-        if (this.state.changeWasMade.some((x) => x)) //Some boxes aren't saved
+        if (this.wasAnyChangeMade()) //Some boxes aren't saved
         {
             e.preventDefault();
             e.returnValue = true; //Display pop-up warning
@@ -390,7 +399,38 @@ export default class MainPage extends Component
             mainTheme.play();
         }
     }
- 
+
+    /**
+     * Returns to the choose save file screen.
+     */
+    switchSaveFile()
+    {
+        //If a change was made, ask the user if they want to save it before switching
+        if (this.wasAnyChangeMade())
+        {
+            PopUp.fire
+            ({
+                icon: 'warning',
+                title: "You have unsaved changes. Would you like to save before leaving?",
+                confirmButtonText: "OK, Save It",
+                cancelButtonText: "I'll Do It Myself",
+                denyButtonText: "No, Don't Save",
+                showCancelButton: true,
+                showDenyButton: true,
+                scrollbarPadding: false,
+            }).then(async (result) =>
+            {
+                if (result.isConfirmed)
+                    await this.trySaveAndExit(false);
+
+                if (result.isConfirmed || result.isDenied)
+                    this.setState({editState: GetInitialPageState(), changeWasMade: [false, false]}); //Clear changeWasMade in case user decided to not save changes
+            });
+        }
+        else //Switch to the new file without prompting the user to save changes
+            this.setState({editState: GetInitialPageState()});
+    }
+
     /**
      * Handles the functionality of pressing the navbar's back button.
      */
@@ -2281,7 +2321,7 @@ export default class MainPage extends Component
         {
             this.tryResetFriendTradeState();
         }
-        else if (CanUseFileHandleAPI() && this.state.changeWasMade.some((x) => x)) //Some boxes aren't saved
+        else if (CanUseFileHandleAPI() && this.wasAnyChangeMade()) //Some boxes aren't saved
         {
             //Force a save
             PopUp.fire
@@ -2377,7 +2417,7 @@ export default class MainPage extends Component
         {
             this.tryResetGTSState();
         }
-        else if (CanUseFileHandleAPI() && this.state.changeWasMade.some((x) => x)) //Some boxes aren't saved
+        else if (CanUseFileHandleAPI() && this.wasAnyChangeMade()) //Some boxes aren't saved
         {
             //Force a save
             PopUp.fire
@@ -3199,17 +3239,17 @@ export default class MainPage extends Component
 
     /**
      * Gets the button for viewing the explanation of the different symbols.
-     * @param {Boolean} onOwnLine - Whether or not the button should be on its own line.
+     * @param {Boolean} onSecondLine - Whether the button should be on the second line of footer buttons.
      * @returns {JSX.Element} A button element.
      */
-    symbolTutorialButton(onOwnLine)
+    symbolTutorialButton(onSecondLine)
     {
         var size = 42;
         const tooltip = props => (<Tooltip {...props}>Help</Tooltip>);
 
         return (
             <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" className={"footer-button " + ((onOwnLine) ? "help-button-mobile" : "help-button")}
+                <Button size="lg" className={"footer-button " + ((onSecondLine) ? "help-button-mobile" : "help-button")}
                         aria-label="Get Help"
                         onClick={this.showSymbolTutorial.bind(this)}>
                     <MdHelp size={size} />
@@ -3310,6 +3350,27 @@ export default class MainPage extends Component
     }
 
     /**
+     * Gets the button for switching the save file.
+     * @param {Boolean} onSecondLine - Whether the button should be on the second line of footer buttons.
+     * @returns {JSX.Element} A button element.
+     */
+    switchSaveButton(onSecondLine)
+    {
+        var size = 42;
+        const tooltip = props => (<Tooltip {...props}>Change Save File</Tooltip>);
+
+        return (
+            <OverlayTrigger placement="top" overlay={tooltip}>
+                <Button size="lg" className={"footer-button " + ((onSecondLine) ? "switch-save-button-mobile" : "switch-save-button")}
+                        aria-label="Change Save File"
+                        onClick={this.switchSaveFile.bind(this)}>
+                    <MdLogout size={size} />
+                </Button>
+            </OverlayTrigger>
+        );
+    }
+
+    /**
      * Gets the footer displayed at the bottom of the page.
      * @returns {JSX.Element} The footer and its buttons.
      */
@@ -3334,7 +3395,7 @@ export default class MainPage extends Component
                         {buttons}
                     </div>
                     
-                    {this.multiArkGamingLogo()}
+                    {this.switchSaveButton(false)}
                 </div>
             );
         }
@@ -3344,13 +3405,14 @@ export default class MainPage extends Component
             return (
                 <div className={"footer-buttons footer-buttons-mobile"}
                      style={tradeScreen ? {height: "56px"} : {}}>
-                    <div className="footer-buttons-mobile-top-row">
+                    <div className="footer-buttons-mobile-row">
                         {buttons}
                     </div>
                     {
                         !tradeScreen ? //Help is hidden during a trade so there's more space
-                            <div style={{textAlign: "center"}}>
+                            <div className="footer-buttons-mobile-row">
                                 {this.symbolTutorialButton(true) /* The button is placed on it's own line so there's more space */}
+                                {this.switchSaveButton(true)}
                             </div>
                         :
                             ""
