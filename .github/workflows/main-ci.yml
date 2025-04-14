@@ -80,6 +80,9 @@ jobs:
     name: Update Test Site Branch
     needs: update_version
     runs-on: ubuntu-latest
+    env:
+      # Use personal access token so the workflows run on the test branch after the push
+      GITHUB_PAT: ${{ secrets.ACTIONS_PAT }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -131,6 +134,9 @@ jobs:
         branch: [multiark, electron]
     environment:
       name: release-approval # Require manual approval for this job
+    env:
+      # Use personal access token so the workflows run on the release branches after the push
+      GITHUB_PAT: ${{ secrets.ACTIONS_PAT }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
