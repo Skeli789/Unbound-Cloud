@@ -3,13 +3,12 @@ name: Front-End Tests
 # Run when pushing to a side branch or manually triggered/called
 on:
   push:
+    branches-ignore: ["main"] # On main it's run as part of the release pipeline
     paths:
       - ".github/workflows/frontend_tests.yml"
       - "src/**"
       - "package.json"
       - "yarn.lock"
-    branches-ignore:
-      - "main"
   workflow_dispatch:
   workflow_call:
 

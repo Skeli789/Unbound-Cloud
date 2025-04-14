@@ -3,12 +3,11 @@ name: Back-End Tests
 # Run when pushing to a side branch or manually triggered/called
 on:
   push:
+    branches-ignore: ["main"] # On main it's run as part of the release pipeline
     paths:
       - ".github/workflows/backend_tests.yml"
       - "server/**"
       - "*requirements.txt"
-    branches-ignore:
-      - "main"
   workflow_dispatch:
   workflow_call:
     inputs:

@@ -3,6 +3,7 @@ name: End-to-End Tests
 # Run when opening a PR to main or manually triggered/called
 on:
   pull_request:
+    branches: ["main"] # Too many jobs to run on every commit for every branch
     paths:
       - ".github/workflows/end_to_end_tests.yml"
       - "public/**"
@@ -12,8 +13,6 @@ on:
       - "*requirements.txt"
       - "package.json"
       - "*.lock"
-    branches:
-      - "main"
   workflow_dispatch:
   workflow_call:
     inputs:
