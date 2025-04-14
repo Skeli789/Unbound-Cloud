@@ -1,0 +1,134 @@
+name: CI Pipeline
+
+on:
+  push:
+  workflow_dispatch:
+
+env:
+  APPDATA: ${{ vars.APPDATA }}
+  UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
+  UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
+  WONDER_TRADE_WEBHOOK: ${{ secrets.WONDER_TRADE_WEBHOOK }}
+  ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+  CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
+
+jobs:
+  # Filter changes based on file patterns.
+  filter:
+    name: Determine Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+      e2e: ${{ steps.filter.outputs.e2e }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Filter Changed Files
+        id: filter
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            frontend:
+              - ".github/workflows/frontend_tests.yml"
+              - "public/**"
+              - "seleniumtests/**"
+              - "src/**"
+              - "package.json"
+              - ".lock"
+            backend:
+              - ".github/workflows/backend_tests.yml"
+              - "server/**"
+              - "*requirements.txt"
+            e2e:
+              - ".github/workflows/end_to_end_tests.yml"
+              - "public/**"
+              - "seleniumtests/**"
+              - "server/**"
+              - "src/**"
+              - "*requirements.txt"
+              - "package.json"
+              - "*.lock"
+
+  # Run front-end tests
+  # run_frontend_tests:
+  #   name: Run Front-End Tests
+  #   needs: filter
+  #   if: ${{ needs.filter.outputs.frontend == 'true' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Run Front-End Tests Workflow
+  #       uses: ./.github/workflows/frontend_tests.yml
+
+  # Run back-end tests
+  run_backend_tests:
+    name: Run Back-End Tests
+    needs: filter
+    if: ${{ needs.filter.outputs.backend == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Back-End Tests Workflow
+        uses: ./.github/workflows/backend_tests.yml
+
+  # Run end-to-end tests
+  run_e2e_tests:
+    name: Run End-to-End Tests
+    needs: filter
+    if: ${{ needs.filter.outputs.e2e == 'true' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run End-to-End Tests Workflow
+        uses: ./.github/workflows/end_to_end_tests.yml
+
+  # Update the heroku branch
+  update_heroku_branch:
+    name: Update Test Branch
+    needs: [run_backend_tests, run_e2e_tests]
+    if: >
+      ${{
+        (needs.run_backend_tests.result == 'success' || needs.run_e2e_tests.result == 'success') &&
+        github.ref == 'refs/heads/main' &&
+        github.event_name != 'pull_request'
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update branch
+        run: |
+            git checkout heroku
+            git rebase main
+            git push origin heroku --force
+
+  # Update release branches – a manual job that runs only when triggered.
+  update_release_branches:
+    needs: update_heroku_branch
+    runs-on: ubuntu-latest
+    if: >
+      ${{
+        github.event_name == 'workflow_dispatch' &&
+        github.ref == 'refs/heads/main' &&
+        github.event_name != 'pull_request'
+      }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Rebase electron branch
+        run: |
+            git checkout electron
+            git rebase electron
+
+      - name: Rebase multiark branch
+        run: |
+            git checkout multiark
+            git rebase main
+
+      # Only will run if both branches are updated successfully
+      - name: Push updated branches
+        run: |
+            git push origin electron --force
+            git push origin multiark --force
+
