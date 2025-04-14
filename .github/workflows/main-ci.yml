@@ -1,4 +1,4 @@
-name: Release Pipeline
+name: Main Release Pipeline
 
 # Run when pushing to main or manually triggered
 on:
