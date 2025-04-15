@@ -7,32 +7,31 @@ import Table from 'react-bootstrap/Table';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-import {AiFillWarning, AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCheckCircle,
-        AiOutlineCloseCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
+import {AiFillWarning, AiOutlineCheckCircle, AiOutlineCloseCircle,
+        AiOutlineSave, AiOutlineTool} from "react-icons/ai";
 import {BiSearchAlt2} from "react-icons/bi";
 import {CgExport, CgPokemon} from "react-icons/cg";
 import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
+import {MdArrowBack, MdArrowForward, MdCloud, MdLogout, MdModeNight, MdMusicNote, MdMusicOff,
+        MdSunny, MdSwapVert, MdVideogameAsset, MdVolumeOff, MdVolumeUp} from "react-icons/md";
 import {RiBoxingLine} from "react-icons/ri";
-import {FaCloud, FaGamepad} from "react-icons/fa";
-import {RiVolumeUpFill, RiVolumeMuteFill} from "react-icons/ri"
-import {MdSwapVert, MdMusicNote, MdMusicOff, MdLogout, MdSunny, MdModeNight} from "react-icons/md"
 
 const SVG_SIZE = 28;
 
 const TABLE_DETAILS =
 [
-    [<FaCloud size={SVG_SIZE}/>, "This Box is a Cloud Box."],
-    [<FaGamepad size={SVG_SIZE}/>, "This Box is a save file Box."],
+    [<MdCloud size={SVG_SIZE}/>, "This Box is a Cloud Box."],
+    [<MdVideogameAsset size={SVG_SIZE}/>, "This Box is a save file Box."],
     [<MdModeNight size={SVG_SIZE}/>, "Turn dark mode on."],
     [<MdSunny size={SVG_SIZE}/>, "Turn dark mode off."],
     [<MdSwapVert size={SVG_SIZE}/>, "Start a trade with your friend."],
-    [<RiVolumeUpFill size={SVG_SIZE}/>, "Sound effects are on."],
-    [<RiVolumeMuteFill size={SVG_SIZE}/>, "Sound effects are off."],
+    [<MdVolumeUp size={SVG_SIZE}/>, "Sound effects are on."],
+    [<MdVolumeOff size={SVG_SIZE}/>, "Sound effects are off."],
     [<MdMusicNote size={SVG_SIZE}/>, "Background music is on."],
     [<MdMusicOff size={SVG_SIZE}/>, "Background music is off."],
     [<MdLogout size={SVG_SIZE}/>, "Choose another save file."],
-    [<AiOutlineArrowLeft size={SVG_SIZE}/>, "Go to the previous Box."],
-    [<AiOutlineArrowRight size={SVG_SIZE}/>, "Go to the next Box."],
+    [<MdArrowBack size={SVG_SIZE}/>, "Go to the previous Box."],
+    [<MdArrowForward size={SVG_SIZE}/>, "Go to the next Box."],
     [<p className="box-name-button">Box</p>, "View all Boxes."],
     [<GrEdit size={SVG_SIZE}/>, "Start editing a Box name."],
     [<AiOutlineCheckCircle size={SVG_SIZE}/>, "Save changes to a Box name."],

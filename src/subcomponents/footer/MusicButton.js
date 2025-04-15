@@ -8,7 +8,7 @@ import {Button, OverlayTrigger, Tooltip} from "react-bootstrap";
 
 import {MdMusicNote, MdMusicOff} from "react-icons/md"
 
-import UnboundCloudTheme from '../audio/UnboundCloudTheme.mp3';
+import UnboundCloudTheme from '../../audio/UnboundCloudTheme.mp3';
 
 const mainTheme = new Audio(UnboundCloudTheme);
 

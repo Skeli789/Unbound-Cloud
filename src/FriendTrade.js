@@ -17,7 +17,7 @@ import {GetIconSpeciesLink, GetNickname, GetSpecies} from './PokemonUtil';
 import {Timer} from './Timer';
 import {GetSpeciesName} from './Util';
 import {CodeField} from './subcomponents/CodeField';
-import {AreSoundsMuted} from './subcomponents/SoundsButton';
+import {AreSoundsMuted} from './subcomponents/footer/SoundsButton';
 
 import {AiOutlineCloseCircle, AiOutlineCheckCircle} from "react-icons/ai";
 import {GoPerson} from "react-icons/go";

@@ -6,7 +6,7 @@
 import React, {Component} from 'react';
 import {Button, OverlayTrigger, Tooltip} from "react-bootstrap";
 
-import {ShowSymbolTutorial} from "./SymbolTutorial";
+import {ShowSymbolTutorial} from "../SymbolTutorial";
 
 import {MdHelp} from 'react-icons/md';
 

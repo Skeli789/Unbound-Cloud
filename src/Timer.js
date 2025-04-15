@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import {AreSoundsMuted} from "./subcomponents/SoundsButton";
+import {AreSoundsMuted} from "./subcomponents/footer/SoundsButton";
 
 import SfxCountdown from './audio/Countdown.mp3';
 import SfxTimerDone from './audio/TimerDone.mp3';

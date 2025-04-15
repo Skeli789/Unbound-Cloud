@@ -29,20 +29,18 @@ import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname,
 import {SignUp} from "./SignUp";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
-import {DarkModeButton} from "./subcomponents/DarkModeButton";
-import {MusicButton, PlayOrPauseMainMusicTheme, StopPlayingMusic} from "./subcomponents/MusicButton";
-import {OpenTradeScreenButton} from "./subcomponents/OpenTradeScreenButton";
-import {SoundsButton} from "./subcomponents/SoundsButton";
-import {SwitchSaveButton} from "./subcomponents/SwitchSaveButton";
+import {DarkModeButton} from "./subcomponents/footer/DarkModeButton";
+import {MusicButton, PlayOrPauseMainMusicTheme, StopPlayingMusic} from "./subcomponents/footer/MusicButton";
+import {OpenTradeScreenButton} from "./subcomponents/footer/OpenTradeScreenButton";
+import {SoundsButton} from "./subcomponents/footer/SoundsButton";
+import {SwitchSaveButton} from "./subcomponents/footer/SwitchSaveButton";
 import {ShowSymbolTutorial} from "./subcomponents/SymbolTutorial";
-import {SymbolTutorialButton} from "./subcomponents/SymbolTutorialButton";
+import {SymbolTutorialButton} from "./subcomponents/footer/SymbolTutorialButton";
 
 import SaveData from "./data/Test Output.json";
 import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 
-import {BiArrowBack} from "react-icons/bi";
-import {FaCloud, FaGamepad} from "react-icons/fa";
-import {MdSwapVert} from "react-icons/md"
+import {MdCloud, MdVideogameAsset, MdArrowBack} from "react-icons/md";
 
 import "./stylesheets/MainPage.css";
 import "./stylesheets/Navbar.css";
@@ -2992,7 +2990,7 @@ export default class MainPage extends Component
                     style={!buttonClickable ? {cursor: "default"} : {}}
                     aria-label="Home to Home"
                     onClick={() => this.changeBoxView(STATE_EDITING_HOME_BOXES)}>
-                <FaCloud size={size} /> ↔ <FaCloud size={size} />
+                <MdCloud size={size} /> ↔ <MdCloud size={size} />
             </Button>
         );
     }
@@ -3010,7 +3008,7 @@ export default class MainPage extends Component
                     id="save-to-save-button"
                     aria-label="Save File to Save File"
                     onClick={() => this.changeBoxView(STATE_EDITING_SAVE_FILE)}>
-                <FaGamepad size={size} /> ↔ <FaGamepad size={size} />
+                <MdVideogameAsset size={size} /> ↔ <MdVideogameAsset size={size} />
             </Button>
         );
     }
@@ -3028,7 +3026,7 @@ export default class MainPage extends Component
                     id="home-to-save-button"
                     aria-label="Home to Save File"
                     onClick={() => this.changeBoxView(STATE_MOVING_POKEMON)}>
-                <FaCloud size={size} /> ↔ <FaGamepad size={size} />
+                <MdCloud size={size} /> ↔ <MdVideogameAsset size={size} />
             </Button>
         );
     }
@@ -3043,7 +3041,7 @@ export default class MainPage extends Component
         var paddingRight = window.innerWidth < 500 ? "0%" : "90%";
 
         return (
-            <BiArrowBack size={size} className="navbar-back-button" style={{paddingRight: paddingRight}}
+            <MdArrowBack size={size} className="navbar-back-button" style={{paddingRight: paddingRight}}
                          id="back-button"
                          aria-label="Back" onClick={this.navBackButtonPressed.bind(this)}/>
         );

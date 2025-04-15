@@ -12,7 +12,7 @@ import {config} from "./config";
 import {GetIconSpeciesLink, GetNickname, GetSpecies, HasDuplicateMovesInMoveset, HasHackedCharacterInNicknameOrOTName,
         IsEgg, IsHoldingBannedItem, IsValidPokemon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos, GetSpeciesName} from './Util';
-import {AreSoundsMuted} from "./subcomponents/SoundsButton";
+import {AreSoundsMuted} from "./subcomponents/footer/SoundsButton";
 
 import {CgExport, CgImport} from "react-icons/cg";
 import SfxTradeComplete from './audio/TradeComplete.mp3';
