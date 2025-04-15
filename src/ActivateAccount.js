@@ -165,7 +165,7 @@ export class ActivateAccount extends Component
         PopUp.fire(
         {
             icon: "success",
-            title: "Check your email for the new code!",
+            title: "Check your inbox or spam for the new code!",
         });
     }
 
@@ -192,6 +192,7 @@ export class ActivateAccount extends Component
             <div className="form-page" id="activation-form">
                 <Form onSubmit={(e) => this.submitCode(e)}>
                     <h1 className="form-title mb-3">Enter the code sent to your email!</h1>
+                    <p className="form-desc">Make sure to check your spam folder if you can't find it.</p>
                     <CodeField
                         code={this.state.codeInput}
                         codeLength={CODE_LENGTH}

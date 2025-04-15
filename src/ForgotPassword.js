@@ -202,7 +202,7 @@ export class ForgotPassword extends Component
         PopUp.fire
         ({
             icon: "success",
-            title: "Check your email for the code needed to reset your password!",
+            title: "Check your inbox or spam for the code needed to reset your password!",
             confirmButtonText: "Continue",
             scrollbarPadding: false,
         }).then(() =>
