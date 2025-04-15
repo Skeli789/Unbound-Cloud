@@ -276,6 +276,10 @@ export class PokemonSummary extends Component
     {
         return (
             <div className="summary-ot-container" id="ot">
+                {
+                    IsEgg(this.state.pokemon) &&
+                        "Bred by "
+                }
                 <span className={GetOTGender(this.state.pokemon) === "M" ? "summary-male-ot"
                                 : GetOTGender(this.state.pokemon) === "F" ? "summary-female-ot"
                                 : ""}

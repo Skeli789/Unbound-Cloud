@@ -580,15 +580,19 @@ function ModifyStatByNature(nature, rawStat, statId)
 /**
  * @param {Pokemon} pokemon - The Pokemon to process.
  * @param {Boolean} adjustUnown - Whether or not to convert an Unown to it's proper letter species.
+ * @param {Boolean} canReturnEgg - Whether or not to return SPECIES_EGG if the Pokemon is an Egg.
  * @returns {String} The Pokemon's species id.
  */
-export function GetSpecies(pokemon, adjustUnown=false)
+export function GetSpecies(pokemon, adjustUnown=false, canReturnEgg=false)
 {
     let dataMember = "species";
     let species = "SPECIES_NONE";
 
     if (IsValidPokemon(pokemon) && dataMember in pokemon)
     {
+        if (canReturnEgg && IsEgg(pokemon))
+            return "SPECIES_EGG";
+
         species = pokemon[dataMember]
         if (adjustUnown && species === "SPECIES_UNOWN")
         {

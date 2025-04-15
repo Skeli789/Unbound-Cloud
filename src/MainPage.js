@@ -2483,7 +2483,7 @@ export default class MainPage extends Component
         for (i = 0; i < speciesList.length; ++i)
         {
             let pokemon = homeBoxes[i]
-            let species = GetSpecies(pokemon, true);
+            let species = GetSpecies(pokemon, true, true);
 
             if (!compareDexNums)
             {
@@ -2524,7 +2524,7 @@ export default class MainPage extends Component
         for (i = speciesList.length; i < newBoxes.length; ++i)
         {
             let pokemon = newBoxes[i];
-            let species = GetSpecies(pokemon);
+            let species = GetSpecies(pokemon, true, true);
             let inDict = (compareDexNums) ? species in gSpeciesToDexNum && gSpeciesToDexNum[species] in speciesIndexDict : species in speciesIndexDict;
     
             if (inDict)
@@ -4167,7 +4167,7 @@ export default class MainPage extends Component
 
         draggingImg = ""
         if (this.shouldViewDraggingImg())
-            draggingImg = <img src={this.state.draggingImg} alt={GetSpeciesName(GetSpecies(this.getMonAtBoxPos(this.state.draggingFromBox, this.state.draggingMon)), true)}
+            draggingImg = <img src={this.state.draggingImg} alt={GetSpeciesName(GetSpecies(this.getMonAtBoxPos(this.state.draggingFromBox, this.state.draggingMon)), true, true)}
                                onMouseDown={(e) => e.preventDefault()} id="moving-icon" className="dragging-image"/>;
 
         let cursorStyle = draggingImg !== "" ? {cursor: "grabbing"} : {};

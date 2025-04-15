@@ -575,7 +575,7 @@ export class FriendTrade extends Component
         if (pokemon == null)
             console.log(`Friend has cancelled trade offer.`);
         else
-            console.log(`Friend is offering to trade ${GetSpecies(pokemon)}.`);
+            console.log(`Friend is offering to trade ${GetSpecies(pokemon, false, true)}.`);
 
         //If the user previously confirmed, cancel the confirmation since the Pokemon has changed
         socket.emit("cancelledTradeAcceptance");
@@ -692,7 +692,7 @@ export class FriendTrade extends Component
         if (!this.getGlobalState().muted)
             tradeCompleteSound.play();
 
-        let newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon, true)); //Use full names so to always show alt forms
+        let newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon, true, true)); //Use full names so to always show alt forms
         PopUp.fire
         ({
             title: `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} was received!`,

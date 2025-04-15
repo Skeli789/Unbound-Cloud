@@ -1420,7 +1420,7 @@ export class BoxView extends Component
 
             if (addLivingDexIcon)
             {
-                let iconSpecies = GetSpecies(pokemon, true);
+                let iconSpecies = GetSpecies(pokemon, true, true);
                 iconSpecies = UpdateSpeciesBasedOnMonGender(iconSpecies, pokemon);
                 iconSpecies = UpdateSpeciesBasedOnIdenticalRegionalForm(iconSpecies);
 
