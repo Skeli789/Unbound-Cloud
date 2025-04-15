@@ -251,20 +251,28 @@ export default class MainPage extends Component
             e.returnValue = true;
 
             //Warn the user about unsaved changes
-            Swal.fire
+            PopUp.fire
             ({
-                icon: "warning",
-                title: "You have unsaved changes!\nAre you sure you want to close Unbound Cloud?",
-                confirmButtonText: "Keep Open",
-                denyButtonText: "Close", //Deny so highlighted in red
+                icon: 'warning',
+                title: "Unsaved Changes",
+                text: "Would you like to save your changes before leaving?",
+                confirmButtonText: "OK, Save It",
+                cancelButtonText: "I'll Do It Myself",
+                denyButtonText: "No, Don't Save",
+                showCancelButton: true,
                 showDenyButton: true,
                 scrollbarPadding: false,
-            }).then((result) =>
+            }).then(async (result) =>
             {
-                //Close the window if the user wants to
+                let saved = false;
+                if (result.isConfirmed)
+                    saved = await this.trySaveAndExit(false);
+
+                if (!saved && !result.isDenied)
+                    return;
+
                 //TODO: This always closes the window, even if the user is trying to reload
-                if (result.isDenied)
-                    window.electronAPI.sendClose(); //Send a notification to Electron to close the window
+                window.electronAPI.sendClose(); //Send a notification to Electron to close the window
             });
         }
     }
