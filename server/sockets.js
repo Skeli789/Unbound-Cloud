@@ -8,7 +8,7 @@ const pokemonUtil = require('./pokemon-util');
 
 //General data
 const ENFORCE_USERNAMES = (process.env["ACCOUNT_SYSTEM"] === "true") ? true : false; //Whether to enforce usernames for trading to not be blank
-const INVALID_CLOUD_DATA_SYNC_KEY_ERROR = "The Cloud data has already been opened in another tab!\nPlease reload the page to avoid data corruption.";
+const INVALID_CLOUD_DATA_SYNC_KEY_ERROR = "The Cloud data has already been opened elsewhere!\nPlease reload the application to avoid data corruption.";
 
 //Friend Trade data
 const gFriendTradeClients = {};
