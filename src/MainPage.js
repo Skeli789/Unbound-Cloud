@@ -30,13 +30,15 @@ import {SymbolTutorial} from "./SymbolTutorial";
 import {SignUp} from "./SignUp";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
+import {SwitchSaveButton} from "./subcomponents/SwitchSaveButton";
+
 import SaveData from "./data/Test Output.json";
 import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 
 import {BiArrowBack} from "react-icons/bi";
 import {FaCloud, FaGamepad} from "react-icons/fa";
 import {RiVolumeUpFill, RiVolumeMuteFill} from "react-icons/ri"
-import {MdSwapVert, MdMusicNote, MdMusicOff, MdHelp, MdLogout} from "react-icons/md"
+import {MdSwapVert, MdMusicNote, MdMusicOff, MdHelp} from "react-icons/md"
 
 import UnboundCloudTheme from './audio/UnboundCloudTheme.mp3';
 
@@ -401,35 +403,11 @@ export default class MainPage extends Component
     }
 
     /**
-     * Returns to the choose save file screen.
-     * @returns {Promise} A promise that resolves when the function is done executing.
+     * Leaves the box view and returns to the choose save file screen.
+     * If cookies were cleared this will log the user out.
      */
-    async switchSaveFile()
+    async leaveBoxView()
     {
-        //If a change was made, ask the user if they want to save it before switching
-        if (this.wasAnyChangeMade())
-        {
-            let result = await PopUp.fire
-            ({
-                icon: 'warning',
-                title: "You have unsaved changes. Would you like to save before leaving?",
-                confirmButtonText: "OK, Save It",
-                cancelButtonText: "I'll Do It Myself",
-                denyButtonText: "No, Don't Save",
-                showCancelButton: true,
-                showDenyButton: true,
-                scrollbarPadding: false,
-            });
-
-            let saved = false;
-            if (result.isConfirmed)
-                saved = await this.trySaveAndExit(false);
-
-            if (!saved && !result.isDenied)
-                return;
-        }
-
-        //Switch to the new file without prompting the user to save changes
         this.setState({editState: GetInitialPageState(), changeWasMade: [false, false]}); //Clear changeWasMade in case user decided to not save changes
     }
 
@@ -3360,33 +3338,13 @@ export default class MainPage extends Component
     }
 
     /**
-     * Gets the button for switching the save file.
-     * @param {Boolean} onSecondLine - Whether the button should be on the second line of footer buttons.
-     * @returns {JSX.Element} A button element.
-     */
-    switchSaveButton(onSecondLine)
-    {
-        var size = 42;
-        const tooltip = props => (<Tooltip {...props}>Change Save File</Tooltip>);
-
-        return (
-            <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" className={"footer-button " + ((onSecondLine) ? "switch-save-button-mobile" : "switch-save-button")}
-                        aria-label="Change Save File"
-                        onClick={this.switchSaveFile.bind(this)}>
-                    <MdLogout size={size} />
-                </Button>
-            </OverlayTrigger>
-        );
-    }
-
-    /**
      * Gets the footer displayed at the bottom of the page.
      * @returns {JSX.Element} The footer and its buttons.
      */
     footerButtons()
     {
         var tradeScreen = this.state.inFriendTrade || this.state.inGTS;
+        let oneLineFooter = window.innerWidth >= 600;
         const buttons =
             <>
                 {this.startTradeButton()}
@@ -3395,17 +3353,25 @@ export default class MainPage extends Component
                 {this.muteMusicButton()}
             </>
 
-        if (window.innerWidth >= 600) //Mainly desktop devices, but also includes some mobile ones like iPads
+        //On smaller screens, these two buttons are placed on their own line
+        const symbolTutorialButton = this.symbolTutorialButton(!oneLineFooter);
+        let switchSaveButton = <SwitchSaveButton onSecondLine={!oneLineFooter}
+                                                 invisible={DEMO_SITE}
+                                                 wasAnyChangeMade={this.wasAnyChangeMade.bind(this)}
+                                                 trySaveAndExit={this.trySaveAndExit.bind(this)}
+                                                 leaveBoxView={this.leaveBoxView.bind(this)} />
+
+        if (oneLineFooter) //Mainly desktop devices, but also includes some mobile ones like iPads
         {
             return (
                 <div className={"footer-buttons"}>
-                    {this.symbolTutorialButton(false)}
+                    {symbolTutorialButton}
 
                     <div style={{display: "flex", justifyContent: "center"}}>
                         {buttons}
                     </div>
-                    
-                    {this.switchSaveButton(false)}
+
+                    {switchSaveButton}
                 </div>
             );
         }
@@ -3419,13 +3385,11 @@ export default class MainPage extends Component
                         {buttons}
                     </div>
                     {
-                        !tradeScreen ? //Help is hidden during a trade so there's more space
+                        !tradeScreen && //Help is hidden during a trade so there's more space
                             <div className="footer-buttons-mobile-row">
-                                {this.symbolTutorialButton(true) /* The button is placed on it's own line so there's more space */}
-                                {this.switchSaveButton(true)}
+                                {symbolTutorialButton}
+                                {switchSaveButton}
                             </div>
-                        :
-                            ""
                     }
                 </div>
             );
