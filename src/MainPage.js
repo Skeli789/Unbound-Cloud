@@ -2197,13 +2197,13 @@ export default class MainPage extends Component
     **********************************/
 
     /**
-     * Saves the Pokemon received via Wonder Trade.
-     * @param {Pokemon} newPokemon - The Pokemon received from the Wonder Trade.
+     * Saves the Pokemon received via a trade.
+     * @param {Pokemon} newPokemon - The Pokemon received from the trade.
      * @param {Number} boxType - The box type to deposit the new Pokemon in.
      * @param {Number} boxNum - The box number to deposit the new Pokemon in.
      * @param {Number} boxPos - The box position to deposit the new Pokemon in.
      */
-    finishWonderTrade(newPokemon, boxType, boxNum, boxPos)
+    finishTrade(newPokemon, boxType, boxNum, boxPos)
     {
         var boxSlot = -1;
         var boxes = this.getBoxesByBoxType(boxType);
@@ -2230,9 +2230,33 @@ export default class MainPage extends Component
                 selectedMonBox: [0, 0],
                 selectedMonPos: this.generateBlankSelectedPos(),
                 changeWasMade: changeWasMade,
-                wonderTradeData: null,
             });
         });
+    }
+
+    /**
+     * Saves the Pokemon received via Wonder Trade.
+     * @param {Pokemon} newPokemon - The Pokemon received from the Wonder Trade.
+     * @param {Number} boxType - The box type to deposit the new Pokemon in.
+     * @param {Number} boxNum - The box number to deposit the new Pokemon in.
+     * @param {Number} boxPos - The box position to deposit the new Pokemon in.
+     */
+    finishWonderTrade(newPokemon, boxType, boxNum, boxPos)
+    {
+        this.finishTrade(newPokemon, boxType, boxNum, boxPos);
+        this.setState({wonderTradeData: null});
+    }
+
+    /**
+     * Saves the Pokemon received via a Friend Trade.
+     * @param {Pokemon} newPokemon - The Pokemon received from the Friend Trade.
+     * @param {Number} boxType - The box type to deposit the new Pokemon in.
+     * @param {Number} boxNum - The box number to deposit the new Pokemon in.
+     * @param {Number} boxPos - The box position to deposit the new Pokemon in.
+     */
+    finishFriendTrade(newPokemon, boxType, boxNum, boxPos)
+    {
+        this.finishTrade(newPokemon, boxType, boxNum, boxPos);
     }
 
     /**
@@ -3287,7 +3311,7 @@ export default class MainPage extends Component
                          setGlobalState={this.setState.bind(this)}
                          homeBoxes={this.state.homeBoxes}
                          homeTitles={this.state.homeTitles}
-                         finishFriendTrade={this.finishWonderTrade.bind(this)}/>
+                         finishFriendTrade={this.finishFriendTrade.bind(this)}/>
         );
     }
 
