@@ -1450,31 +1450,43 @@ export class BoxView extends Component
             if ((addLivingDexIcon && livingDexIcon !== "") //Can't click on this
             || species === "unknown") //Unknown species - can still click on "none" species, just not unknown one
             {
-                icons.push(<span className={spanClassName} id={id}
-                    onMouseEnter = {this.handleSetDraggingOver.bind(this, i)}
-                    onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
-                    key={key}>{icon}</span>);
+                icons.push(
+                    <span className={spanClassName} id={id}
+                          //Only allow clicking on a living dex placeholder icon if dropping a mon in
+                          onClick={(this.otherBoxHasSelection()) ? this.handleSelection.bind(this, key, pokemon) : null}
+                          onMouseEnter={this.handleSetDraggingOver.bind(this, i)}
+                          onMouseLeave={this.handleSetDraggingOver.bind(this, -1)}
+                          key={key}>
+                        {icon}
+                    </span>
+                );
             }
             else if (isInWonderTrade) //Can't click on this
             {
-                icons.push(<span className={spanClassName} id={id}
-                                onClick={this.handleSelection.bind(this, key, pokemon)}
-                                onMouseEnter = {onHoverFunc}
-                                onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
-                                onContextMenu={(e) => this.handleSelectMonForViewing(e, key, pokemon)}
-                                key={key}>{shinyIcon} {icon} {heldItemIcon} {warningIcon}
-                            </span>);
+                icons.push(
+                    <span className={spanClassName} id={id}
+                          onClick={this.handleSelection.bind(this, key, pokemon)}
+                          onMouseEnter={onHoverFunc}
+                          onMouseLeave={this.handleSetDraggingOver.bind(this, -1)}
+                          onContextMenu={(e) => this.handleSelectMonForViewing(e, key, pokemon)}
+                          key={key}>
+                        {shinyIcon} {icon} {heldItemIcon} {warningIcon}
+                    </span>
+                );
             }
             else
             {
-                icons.push(<span className={spanClassName} id={id}
-                                onClick={this.handleSelection.bind(this, key, pokemon)}
-                                onMouseDown={this.handleStartDragging.bind(this, i, key, icon, link, pokemon)}
-                                onMouseEnter = {onHoverFunc}
-                                onMouseLeave = {this.handleSetDraggingOver.bind(this, -1)}
-                                onContextMenu={(e) => this.handleSelectMonForViewing(e, key, pokemon)}
-                                key={key}>{shinyIcon} {icon} {heldItemIcon} {warningIcon}
-                            </span>);
+                icons.push(
+                    <span className={spanClassName} id={id}
+                          onClick={this.handleSelection.bind(this, key, pokemon)}
+                          onMouseDown={this.handleStartDragging.bind(this, i, key, icon, link, pokemon)}
+                          onMouseEnter={onHoverFunc}
+                          onMouseLeave={this.handleSetDraggingOver.bind(this, -1)}
+                          onContextMenu={(e) => this.handleSelectMonForViewing(e, key, pokemon)}
+                          key={key}>
+                        {shinyIcon} {icon} {heldItemIcon} {warningIcon}
+                    </span>
+                );
             }
         }
 
