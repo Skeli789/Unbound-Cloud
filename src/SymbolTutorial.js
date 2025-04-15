@@ -13,7 +13,7 @@ import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
 import {RiBoxingLine} from "react-icons/ri";
 import {FaCloud, FaGamepad} from "react-icons/fa";
 import {RiVolumeUpFill, RiVolumeMuteFill} from "react-icons/ri"
-import {MdSwapVert, MdMusicNote, MdMusicOff} from "react-icons/md"
+import {MdSwapVert, MdMusicNote, MdMusicOff, MdLogout} from "react-icons/md"
 
 const SVG_SIZE = 28;
 
@@ -26,6 +26,7 @@ const TABLE_DETAILS =
     [<RiVolumeMuteFill size={SVG_SIZE}/>, "Sound effects are off."],
     [<MdMusicNote size={SVG_SIZE}/>, "Background music is on."],
     [<MdMusicOff size={SVG_SIZE}/>, "Background music is off."],
+    [<MdLogout size={SVG_SIZE}/>, "Choose another save file."],
     [<AiOutlineArrowLeft size={SVG_SIZE}/>, "Go to the previous Box."],
     [<AiOutlineArrowRight size={SVG_SIZE}/>, "Go to the next Box."],
     [<p className="box-name-button">Box</p>, "View all Boxes."],

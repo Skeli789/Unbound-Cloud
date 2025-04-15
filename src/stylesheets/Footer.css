@@ -15,7 +15,7 @@
     flex-direction: column;
 }
 
-.footer-buttons-mobile-top-row
+.footer-buttons-mobile-row
 {
     display: flex;
     justify-content: space-evenly;
@@ -46,12 +46,12 @@
     padding: 0px !important;
 }
 
-.help-button
+.help-button-mobile
 {
-    margin-right: 60px !important; /*To offset the MultiArkGaming logo*/
+    margin-bottom: 8px;
 }
 
-.help-button-mobile
+.switch-save-button-mobile
 {
     margin-bottom: 8px;
 }
