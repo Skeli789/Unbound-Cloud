@@ -52,7 +52,8 @@ export class SwitchSaveButton extends Component
             let result = await PopUp.fire
             ({
                 icon: 'warning',
-                title: "You have unsaved changes. Would you like to save before leaving?",
+                title: "Unsaved Changes",
+                text: "Would you like to save your changes before leaving?",
                 confirmButtonText: "OK, Save It",
                 cancelButtonText: "I'll Do It Myself",
                 denyButtonText: "No, Don't Save",
@@ -80,21 +81,23 @@ export class SwitchSaveButton extends Component
     render()
     {
         const size = 42;
-        const buttonClass = "footer-button switch-save-button";
+        const iconClass = "switch-save-button";
         const hiddenStyle = {visibility: this.state.invisible ? "hidden" : "visible"}; //Hide but still take up space
         const tooltip = props => (<Tooltip {...props}>Change Save File</Tooltip>);
 
         return (
-            <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" style={hiddenStyle}
-                        id="switch-save-button"
-                        className={buttonClass + ((this.state.onSecondLine) ? "-mobile" : "")}
-                        aria-label="Change Save File"
-                        hidden={this.state.onSecondLine && this.state.invisible} //Hide entirely when in the second row
-                        onClick={this.switchSaveFile.bind(this)}>
-                    <MdLogout size={size} />
-                </Button>
-            </OverlayTrigger>
+            <Button size="lg" style={hiddenStyle}
+                    id="switch-save-button"
+                    className="footer-button"
+                    aria-label="Change Save File"
+                    hidden={this.state.onSecondLine && this.state.invisible} //Hide entirely when in the second row
+                    onClick={this.switchSaveFile.bind(this)}>
+                <OverlayTrigger placement="top" overlay={tooltip}>
+                    <div className={`footer-button-icon ${iconClass}`}>
+                        <MdLogout size={size} />
+                    </div>
+                </OverlayTrigger>
+            </Button>
         );
     }
 }

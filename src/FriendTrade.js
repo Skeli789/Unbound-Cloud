@@ -17,6 +17,7 @@ import {GetIconSpeciesLink, GetNickname, GetSpecies} from './PokemonUtil';
 import {Timer} from './Timer';
 import {GetSpeciesName} from './Util';
 import {CodeField} from './subcomponents/CodeField';
+import {AreSoundsMuted} from './subcomponents/SoundsButton';
 
 import {AiOutlineCloseCircle, AiOutlineCheckCircle} from "react-icons/ai";
 import {GoPerson} from "react-icons/go";
@@ -31,7 +32,7 @@ const FRIEND_TRADE_INPUT_CODE = 2;
 const FRIEND_TRADE_CHOOSE_POKEMON = 3;
 
 const CODE_LENGTH = 8; //The friend code's length
-const TIMER_AMOUNT = 60 * 10 //10 minutes once a socket is opened
+const TIMER_AMOUNT = 60 * 10; //10 minutes once a socket is opened
 
 const PopUp = withReactContent(Swal);
 const tradeCompleteSound = new Audio(SfxTradeComplete);
@@ -689,7 +690,7 @@ export class FriendTrade extends Component
                     this.getGlobalState().tradeData.boxNum,
                     this.getGlobalState().tradeData.boxPos);
 
-        if (!this.getGlobalState().muted)
+        if (!AreSoundsMuted())
             tradeCompleteSound.play();
 
         let newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon, true, true)); //Use full names so to always show alt forms
@@ -996,7 +997,7 @@ export class FriendTrade extends Component
         var timer = this.getGlobalState().tradeData != null && !this.state.timerHidden &&
                 <Timer key={"timer" + this.state.timerKey.toString()} seconds={TIMER_AMOUNT}
                        onCompletionFunc={this.timedOut.bind(this)}
-                       mainPage={this.state.globalState} parent={this}/>
+                       parent={this}/>
 
         switch (this.getFriendTradeState())
         {

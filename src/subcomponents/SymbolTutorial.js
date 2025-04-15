@@ -4,6 +4,8 @@
 
 import React, {Component} from 'react';
 import Table from 'react-bootstrap/Table';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 import {AiFillWarning, AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCheckCircle,
         AiOutlineCloseCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
@@ -45,6 +47,8 @@ const TABLE_DETAILS =
     [<CgExport size={SVG_SIZE}/>, "Start a Wonder Trade. Send a Pokémon and receive a random Pokémon in exchange."],
     [<AiFillWarning size={SVG_SIZE}/>, "This Pokémon will lose data when saved in the game."],
 ];
+
+const PopUp = withReactContent(Swal);
 
 
 export class SymbolTutorial extends Component
@@ -97,3 +101,21 @@ export class SymbolTutorial extends Component
         );
     }
 }
+
+/**
+ * Shows a pop-up explaining the different symbols on the page.
+ */
+export function ShowSymbolTutorial()
+{
+    PopUp.fire
+    ({
+        icon: "question",
+        title: "Symbols",
+        html: <SymbolTutorial/>,
+        scrollbarPadding: false,
+    });
+
+    localStorage.visitedBefore = true; //Set cookie only once user has seen this pop-up
+}
+
+export default SymbolTutorial;

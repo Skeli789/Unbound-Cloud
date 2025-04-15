@@ -12,7 +12,6 @@ h1, h2, h3, h4, h5
 body
 {
     font-family: "open sans", arial, sans-serif !important; /* Font + fallbacks */
-    background: var(--main-background-color) !important;
 }
 
 body, html 
@@ -20,6 +19,11 @@ body, html
     --min-mobile-width: 428px;
     height: 100% !important;
     min-width: var(--min-mobile-width);
+}
+
+[data-darkreader-scheme="dark"] body
+{
+    background-color: var(--main-background-color-dark) !important;
 }
 
 input[type=email], input[type=password], input[type=search], input[type=text]
