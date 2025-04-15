@@ -402,13 +402,14 @@ export default class MainPage extends Component
 
     /**
      * Returns to the choose save file screen.
+     * @returns {Promise} A promise that resolves when the function is done executing.
      */
-    switchSaveFile()
+    async switchSaveFile()
     {
         //If a change was made, ask the user if they want to save it before switching
         if (this.wasAnyChangeMade())
         {
-            PopUp.fire
+            let result = await PopUp.fire
             ({
                 icon: 'warning',
                 title: "You have unsaved changes. Would you like to save before leaving?",
@@ -418,17 +419,18 @@ export default class MainPage extends Component
                 showCancelButton: true,
                 showDenyButton: true,
                 scrollbarPadding: false,
-            }).then(async (result) =>
-            {
-                if (result.isConfirmed)
-                    await this.trySaveAndExit(false);
-
-                if (result.isConfirmed || result.isDenied)
-                    this.setState({editState: GetInitialPageState(), changeWasMade: [false, false]}); //Clear changeWasMade in case user decided to not save changes
             });
+
+            let saved = false;
+            if (result.isConfirmed)
+                saved = await this.trySaveAndExit(false);
+
+            if (!saved && !result.isDenied)
+                return;
         }
-        else //Switch to the new file without prompting the user to save changes
-            this.setState({editState: GetInitialPageState()});
+
+        //Switch to the new file without prompting the user to save changes
+        this.setState({editState: GetInitialPageState(), changeWasMade: [false, false]}); //Clear changeWasMade in case user decided to not save changes
     }
 
     /**
@@ -2314,36 +2316,39 @@ export default class MainPage extends Component
 
     /**
      * Either opens or closes the Friend Trade screen.
+     * @returns {Promise} A promise that resolves when the function is done executing.
      */
-    startFriendTrade()
+    async startFriendTrade()
     {
         if (this.state.inFriendTrade)
         {
             this.tryResetFriendTradeState();
+            return; //Just return to the box view
         }
         else if (CanUseFileHandleAPI() && this.wasAnyChangeMade()) //Some boxes aren't saved
         {
             //Force a save
-            PopUp.fire
+            let result = await PopUp.fire
             ({
-                icon: 'warning',
+                icon: "warning",
                 title: "Your data must be saved before starting a trade.",
                 confirmButtonText: "OK, Save It",
                 cancelButtonText: "I'll Do It Myself",
                 showCancelButton: true,
                 scrollbarPadding: false,
-            }).then((result) =>
-            {
-                if (result.isConfirmed)
-                    this.trySaveAndExit(false);
             });
+
+            if (!result.isConfirmed)
+                return; //User cancelled
+
+            let saved = await this.trySaveAndExit(false);
+            if (!saved)
+                return; //Save didn't succeed
         }
-        else
-        {
-            this.setState({inFriendTrade: !this.state.inFriendTrade});
-            this.resetStateForStartingFriendTrade(false);
-            this.wipeErrorMessage();
-        }
+
+        this.setState({inFriendTrade: !this.state.inFriendTrade});
+        this.resetStateForStartingFriendTrade(false);
+        this.wipeErrorMessage();
     }
 
     /**
@@ -2625,6 +2630,7 @@ export default class MainPage extends Component
      * Downloads any updated data.
      * @returns {Boolean} True if the save completed successfully. False if it did not.
      * @param {Boolean} askDoneWithSite - Whether or not the player should be prompted to close the site after the save.
+     * @returns {Promise<Boolean>} - Whether the save was successful.
      */
     async downloadSaveFileAndHomeData(askDoneWithSite)
     {
@@ -2726,7 +2732,7 @@ export default class MainPage extends Component
     /**
      * Gets the encrypted version of the Home boxes from the server.
      * @param {String} serverConnectionErrorMsg - The message to display if the server couldn't be connected to.
-     * @returns {String} The encrypted Home data text.
+     * @returns {Promise<String>} The encrypted Home data text.
      */
     async getEncryptedHomeFile(serverConnectionErrorMsg)
     {
@@ -2757,7 +2763,7 @@ export default class MainPage extends Component
     /**
      * Sends the Cloud boxes to the server and saves it there.
      * @param {String} serverConnectionErrorMsg - The message to display if the server couldn't be connected to.
-     * @returns {Boolean} true if the data was saved successfully, false if not.
+     * @returns {Promise<Boolean>} true if the data was saved successfully, false if not.
      */
     async saveAccountCloudData(serverConnectionErrorMsg)
     {
@@ -2804,7 +2810,7 @@ export default class MainPage extends Component
     /**
      * Gets the updated save file data after processing on the server.
      * @param {String} serverConnectionErrorMsg - The message to display if the server couldn't be connected to.
-     * @returns {Buffer} The data buffer for the updated save file.
+     * @returns {Promise<Buffer>} The data buffer for the updated save file.
      */
     async getUpdatedSaveFile(serverConnectionErrorMsg)
     {
@@ -2869,7 +2875,7 @@ export default class MainPage extends Component
     /**
      * Downloads the updated save file.
      * @param {Buffer} dataBuffer - The data buffer for the updated save file.
-     * @returns {Boolean} True if the download completed successfully. False if not.
+     * @returns {Promise<Boolean>} True if the download completed successfully. False if not.
      */
     async downloadSaveFile(dataBuffer)
     {
@@ -2951,7 +2957,7 @@ export default class MainPage extends Component
     /**
      * Downloads the updated Home data file.
      * @param {String} encryptedHomeData - The encrypted Home data text.
-     * @returns {Boolean} True if the download completed successfully. False if not.
+     * @returns {Promise<Boolean>} True if the download completed successfully. False if not.
      */
     async downloadHomeData(encryptedHomeData)
     {
@@ -3024,14 +3030,15 @@ export default class MainPage extends Component
     /**
      * Handles trying to download the updated data.
      * @param {Boolean} askDoneWithSite - Whether or not the player should be prompted to close the site after the save.
+     * @returns {Promise<Boolean>} True if the save completed successfully. False if it did not.
      */
     async trySaveAndExit(askDoneWithSite)
     {
         if (WillAtLeastOneMonLoseDataInSave(this.state.saveBoxes, this.state.saveGameId))
         {
-            PopUp.fire
+            let result = await PopUp.fire
             ({
-                icon: 'warning',
+                icon: "warning",
                 title: "At least one Pokemon will lose data when the game is saved!",
                 denyButtonText: "Save Anyway",
                 cancelButtonText: "Cancel",
@@ -3039,29 +3046,28 @@ export default class MainPage extends Component
                 showDenyButton: true,
                 showCancelButton: true,
                 scrollbarPadding: false,
-            }).then(async (result) =>
-            {
-                if (result.isDenied) //Save Anyway - uses red colour
-                {
-                    await this.saveAndExit(askDoneWithSite);
-                }
-                else
-                {
-                    PopUp.fire
-                    ({
-                        title: 'Choose <b>Only</b> for the search option:\n<b>Will Lose Data When Saved</b>\nto find these Pokemon.',
-                        scrollbarPadding: false,
-                    });
-                }
             });
+
+            if (!result.isDenied) //isDenied means save anyway (uses red colour)
+            {
+                //User cancelled the save so display instructions
+                PopUp.fire
+                ({
+                    title: 'Choose <b>Only</b> for the search option:\n<b>Will Lose Data When Saved</b>\nto find these Pokemon.',
+                    scrollbarPadding: false,
+                });
+
+                return false;
+            }
         }
-        else
-            await this.saveAndExit(askDoneWithSite);
+
+        return await this.saveAndExit(askDoneWithSite);
     }
 
     /**
      * Handles downloading the updated data.
      * @param {Boolean} askDoneWithSite - Whether or not the player should be prompted to close the site after the save.
+     * @returns {Promise<Boolean>} True if the save completed successfully. False if it did not.
      */
     async saveAndExit(askDoneWithSite)
     {
@@ -3069,7 +3075,7 @@ export default class MainPage extends Component
         {
             PopUp.fire
             ({
-                icon: 'error',
+                icon: "error",
                 title: "Error saving data!",
                 html: this.state.savingMessage,
                 confirmButtonText: "Awww",
@@ -3084,9 +3090,13 @@ export default class MainPage extends Component
                 this.wipeErrorMessage();
                 this.setState({savingMessage: "", isSaving: false});
             });
+
+            return false;
         }
         else if (!askDoneWithSite) //Otherwise it would close the pop-up asking the user if they're done
             PopUp.close();
+
+        return true;
     }
 
 
