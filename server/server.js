@@ -55,7 +55,7 @@ const FRIEND_TRADE_NOTIFIED_CONNECTION = 2;
 const FRIEND_TRADE_ACCEPTED_TRADE = 3;
 const FRIEND_TRADE_ENDING_TRADE = 4;
 
-const INVALID_CLOUD_DATA_SYNC_KEY_ERROR = "The Cloud data has already been opened in another tab!\nPlease reload the page to avoid data corruption.";
+const INVALID_CLOUD_DATA_SYNC_KEY_ERROR = "The Cloud data has already been opened elsewhere!\nPlease reload the application to avoid data corruption.";
 const WONDER_TRADE_SPECIES_COOLDOWN = 5 * 60 * 1000; //5 Minutes
 
 /**
