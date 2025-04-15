@@ -38,6 +38,13 @@
     border-color: mediumpurple !important;
 }
 
+[data-darkreader-scheme="dark"] .navbar-button-selected /* Dark mode */
+{
+    filter: invert(1) hue-rotate(180deg) brightness(0.8); /* Make icon bright */
+    background-color: rebeccapurple !important;
+    border-color: rebeccapurple !important;
+}
+
 .navbar-back-button
 {
     color: white;

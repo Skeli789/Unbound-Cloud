@@ -41,12 +41,17 @@
     padding-right: 8px !important;
 }
 
+[data-darkreader-scheme="dark"] .gts-svg /* Dark mode */
+{
+    filter: invert(1) hue-rotate(180deg); /* Make icon white */
+}
+
 .music-button
 {
     padding: 0px !important;
 }
 
-.help-button-mobile
+.help-button-mobile, .dark-mode-button-mobile
 {
     margin-bottom: 8px;
 }

@@ -55,6 +55,11 @@ button, input, optgroup, select, textarea
     background-color: #fff;
 }
 
+[data-darkreader-scheme="dark"] .btn
+{
+    background-color: #2c2c2c
+}
+
 .btn:not(.navbar-button) /* Add CSS to .btn as long as it's not also .navbar-button */
 {
     font-size: 1em;
@@ -119,6 +124,17 @@ button, input, optgroup, select, textarea
 {
     color: #fff;
     background: #bd2130;
+}
+
+[data-darkreader-scheme="dark"] .btn-info
+{
+    color: var(--bs-btn-bg) !important;
+}
+
+[data-darkreader-scheme="dark"] .btn-info:hover
+{
+    color: #fff !important;
+    background: var(--bs-btn-active-bg) !important;
 }
 
 /* CSS to prevent text selection when clicking on it */

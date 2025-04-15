@@ -127,6 +127,18 @@
     font-size: 8px; /*For the image alts*/
 }
 
+[data-darkreader-scheme="dark"] .home-box .box-icon, .home-box .mini-box-cell /* Dark mode */
+{
+    border-color: var(--home-box-color);
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
+[data-darkreader-scheme="dark"] .save-box .box-icon, .save-box .mini-box-cell /* Dark mode */
+{
+    border-color: var(--save-box-color);
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
 .box-icon-hoverable
 {
     cursor: pointer;
