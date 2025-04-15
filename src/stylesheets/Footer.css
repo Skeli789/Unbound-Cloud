@@ -21,8 +21,14 @@
     justify-content: space-evenly;
 }
 
+.footer-buttons-mobile-row-2
+{
+    margin-bottom: 8px;
+}
+
 .footer-button
 {
+    display: contents; /* So dark mode button transitions correctly */
     color: white !important;
     background-color: var(--purple) !important;
     border-color: var(--purple) !important;
@@ -31,15 +37,18 @@
     border: none;
     border-radius: 0px;
     max-height: 56px;
-    padding: 0px 14px 0px 14px !important; /*Top Right Bottom Left*/
+}
+
+.footer-button-icon
+{
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 /* Buttons on footer */
-.friend-trade-button
-{
-    padding-left: 8px !important;
-    padding-right: 8px !important;
-}
 
 [data-darkreader-scheme="dark"] .gts-svg /* Dark mode */
 {
@@ -51,14 +60,9 @@
     padding: 0px !important;
 }
 
-.help-button-mobile, .dark-mode-button-mobile
+.friend-trade-button
 {
-    margin-bottom: 8px;
-}
-
-.switch-save-button-mobile
-{
-    margin-bottom: 8px;
+    padding-right: 5px !important;
 }
 
 .multi-ark-gaming-logo

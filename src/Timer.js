@@ -5,6 +5,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import {AreSoundsMuted} from "./subcomponents/footer/SoundsButton";
+
 import SfxCountdown from './audio/Countdown.mp3';
 import SfxTimerDone from './audio/TimerDone.mp3';
 
@@ -30,7 +32,6 @@ export class Timer extends Component
             secondDisplay: "00",
             seconds: props.parent.state.timerSeconds,
             timerStarted: false,
-            mainPage: props.mainPage,
         };
 
         this.timer = null;
@@ -115,7 +116,7 @@ export class Timer extends Component
 
         if (seconds <= 10 && seconds > 0)
         {
-            if (!this.state.mainPage.state.muted)
+            if (!AreSoundsMuted())
                 countdownSound.play();
         }
 
@@ -124,7 +125,7 @@ export class Timer extends Component
         {
             clearInterval(this.timer);
 
-            if (!this.state.mainPage.state.muted)
+            if (!AreSoundsMuted())
                 timerDoneSound.play();
 
             if (this.onCompletionFunc != null)

@@ -12,6 +12,7 @@ import {config} from "./config";
 import {GetIconSpeciesLink, GetNickname, GetSpecies, HasDuplicateMovesInMoveset, HasHackedCharacterInNicknameOrOTName,
         IsEgg, IsHoldingBannedItem, IsValidPokemon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos, GetSpeciesName} from './Util';
+import {AreSoundsMuted} from "./subcomponents/footer/SoundsButton";
 
 import {CgExport, CgImport} from "react-icons/cg";
 import SfxTradeComplete from './audio/TradeComplete.mp3';
@@ -362,7 +363,7 @@ export class WonderTrade extends Component
         this.finishWonderTrade(newPokemon, wonderTradeData.boxType, wonderTradeData.boxNum, wonderTradeData.boxPos);
         document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
 
-        if (!this.getGlobalState().muted)
+        if (!AreSoundsMuted()) //Play sound if not muted
             tradeCompleteSound.play();
 
         var newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon), true, true);

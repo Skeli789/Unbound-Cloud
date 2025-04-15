@@ -8,9 +8,10 @@
 body
 {
     --main-background-color: rgb(248, 248, 248);
+    --main-background-color-dark: rgb(30, 30, 30);
     --purple: rgb(147 51 234);
-    --home-box-color: #21f391;
-    --save-box-color: #2196F3;
+    --home-box-color: rgb(33, 243, 145);
+    --save-box-color: rgb(33, 150, 243);
     --scrollbar-width: 12px;
     --header-height: 56px;
     --footer-height: 56px;

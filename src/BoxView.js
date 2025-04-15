@@ -20,11 +20,12 @@ import {WonderTrade} from "./WonderTrade";
 import gLivingDexOrder from "./data/LivingDexOrder.json";
 import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 
-import {AiFillWarning, AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCheckCircle,
-        AiOutlineCloseCircle, AiOutlineSave, AiOutlineTool} from "react-icons/ai";
+import {AiFillWarning, AiOutlineCheckCircle, AiOutlineCloseCircle,
+        AiOutlineSave, AiOutlineTool} from "react-icons/ai";
 import {BiSearchAlt2} from "react-icons/bi";
 import {CgExport, CgPokemon} from "react-icons/cg";
 import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
+import {MdArrowBack, MdArrowForward} from "react-icons/md";
 import {RiBoxingLine} from "react-icons/ri";
 
 import "./stylesheets/BoxView.css";
@@ -1792,15 +1793,15 @@ export class BoxView extends Component
             <div className="box-view">
                 {/*Above Box*/}
                 <div className={titleContainerClass}>
-                    <AiOutlineArrowLeft size={42} aria-label="Previous Box" id={`previous-${idSuffix}-button`}
-                                        onClick={this.handleChangeBox.bind(this, -1)} className="box-change-arrow" />
+                    <MdArrowBack size={42} aria-label="Previous Box" id={`previous-${idSuffix}-button`}
+                                 onClick={this.handleChangeBox.bind(this, -1)} className="box-change-arrow" />
                     <span className="box-name">
                         {livingDexIcon}
                         {title}
                         {titleEditIcon}
                     </span>
-                    <AiOutlineArrowRight size={42} aria-label="Next Box" id={`next-${idSuffix}-button`}
-                                         onClick={this.handleChangeBox.bind(this, 1)} className="box-change-arrow" />
+                    <MdArrowForward size={42} aria-label="Next Box" id={`next-${idSuffix}-button`}
+                                    onClick={this.handleChangeBox.bind(this, 1)} className="box-change-arrow" />
                 </div>
 
                 {/*Box Itself*/}

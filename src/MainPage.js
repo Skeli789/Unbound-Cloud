@@ -26,22 +26,21 @@ import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname,
         HasIllegalEVs, HasEggLockeOT, IsBlankMon, IsEgg, IsHoldingBannedItem, IsShiny,
         UpdateSpeciesBasedOnIdenticalRegionalForm, UpdateSpeciesBasedOnMonGender,
         /*PokemonAreDuplicates,*/ WillAtLeastOneMonLoseDataInSave} from "./PokemonUtil";
-import {SymbolTutorial} from "./SymbolTutorial";
 import {SignUp} from "./SignUp";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
-import {DarkModeButton} from "./subcomponents/DarkModeButton";
-import {SwitchSaveButton} from "./subcomponents/SwitchSaveButton";
+import {DarkModeButton} from "./subcomponents/footer/DarkModeButton";
+import {MusicButton, PlayOrPauseMainMusicTheme, StopPlayingMusic} from "./subcomponents/footer/MusicButton";
+import {OpenTradeScreenButton} from "./subcomponents/footer/OpenTradeScreenButton";
+import {SoundsButton} from "./subcomponents/footer/SoundsButton";
+import {SwitchSaveButton} from "./subcomponents/footer/SwitchSaveButton";
+import {ShowSymbolTutorial} from "./subcomponents/SymbolTutorial";
+import {SymbolTutorialButton} from "./subcomponents/footer/SymbolTutorialButton";
 
 import SaveData from "./data/Test Output.json";
 import gSpeciesToDexNum from "./data/SpeciesToDexNum.json";
 
-import {BiArrowBack} from "react-icons/bi";
-import {FaCloud, FaGamepad} from "react-icons/fa";
-import {RiVolumeUpFill, RiVolumeMuteFill} from "react-icons/ri"
-import {MdSwapVert, MdMusicNote, MdMusicOff, MdHelp} from "react-icons/md"
-
-import UnboundCloudTheme from './audio/UnboundCloudTheme.mp3';
+import {MdCloud, MdVideogameAsset, MdArrowBack} from "react-icons/md";
 
 import "./stylesheets/MainPage.css";
 import "./stylesheets/Navbar.css";
@@ -75,7 +74,6 @@ const HOME_FILE_RANDOMIZER_NAME = "cloud_randomizer.dat"
 export const BLANK_PROGRESS_BAR = <ProgressBar now={0} label={"0%"} />;
 export const PURPLE_CLOUD = <span style={{color: "var(--purple)"}}>☁︎</span>;
 export const UNBOUND_LINK = <a href="https://www.pokecommunity.com/threads/pok%C3%A9mon-unbound-completed.382178/" target="_blank" rel="noopener noreferrer">Unbound</a>;
-const GTS_ICON = <svg className="gts-svg" width="56px" height="56px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path fill="white" d="M254.777 93.275c-58.482 0-105.695 47.21-105.695 105.696 0 58.487 47.213 105.698 105.695 105.698 58.482 0 105.696-47.21 105.696-105.697 0-58.48-47.214-105.695-105.696-105.695zm-140.714 63.59C-40.9 155.67-21.26 276.118 227.043 357.748c225.954 74.28 319.04 10.624 239.48-69.973-.413-.55-.84-1.097-1.277-1.64-4.755 3.954-9.71 7.915-14.95 11.88 4.487 5.513 7.138 11.084 7.704 16.01.713 6.2-.9 11.8-6.986 17.977-5.84 5.927-16.25 11.98-32.307 16.49-24.074 5.698-58.427 5.6-102.287-2.656l.105-.04c-2.153-.38-4.3-.787-6.445-1.198-21.875-4.418-46.004-10.805-72.318-19.455-69.962-23-118.054-49.706-146.063-74.936.246-.19.48-.38.728-.568-.27.166-.532.333-.8.5-53.315-48.08-33.682-90.78 46.558-92.2-8.46-.665-16.502-1.016-24.124-1.075zm281.425 0c-7.62.06-15.663.41-24.123 1.076 80.24 1.42 99.86 44.115 46.537 92.193-.264-.165-.513-.33-.78-.494.244.184.472.368.712.553-26.017 23.434-69.357 48.144-131.455 69.973 21.19 5.413 42.82 9.363 64.815 11.64 34.83-15.125 63.025-30.916 84.91-46.554.01.007.02.014.032.02.522-.386 1.03-.773 1.547-1.16 90.502-65.565 69.686-128.11-42.196-127.247zM44.54 286.27c-74.364 73.55-5.467 133.668 176.683 89.125-22.844-7.563-44.89-15.83-65.84-24.194-25.396 2.316-46.41 1.29-62.842-2.346-16.802-4.544-27.613-10.765-33.61-16.852-6.086-6.176-7.697-11.776-6.985-17.977.56-4.88 3.17-10.395 7.582-15.86-5.253-3.968-10.22-7.935-14.986-11.894z"/></svg>;
 
 const PopUp = withReactContent(Swal);
 const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
@@ -84,8 +82,6 @@ const DISABLE_ON_MOBILE = false; //Prevent mobile devices from using the site wi
 const DEMO_SITE = false; //Initial loading page is the box moving so people can see how the site would work
 const MAINTENANCE = false; //Locks the site from non beta-testers while new features are integrated
 export const UNOFFICIAL_RELEASE = false; //Only allow testers with a password to access the site
-
-const mainTheme = new Audio(UnboundCloudTheme);
 
 const SUPPORTED_HACKS = ["Unbound >= v2.1.0",
                          "Unbound Battle Frontier Demo >= v2.0.0",
@@ -166,8 +162,6 @@ export default class MainPage extends Component
             uploadedTesterRandomizedHomeFile: false,
 
             //Other
-            muted: ("muted" in localStorage && localStorage.muted === "true") ? true : false,
-            songMuted: ("songOff" in localStorage && localStorage.songOff === "true") ? true : false,
             inFriendTrade: false,
             inGTS: false,
             tradeData: null,
@@ -351,65 +345,13 @@ export default class MainPage extends Component
     }
 
     /**
-     * Alternates between sounds muted and unmuted.
-     */
-    changeMuteState()
-    {
-        this.setState({muted: !this.state.muted}, () =>
-        {
-            localStorage.muted = this.state.muted; //Save cookie for future visits to the site
-        });
-    }
-
-    /**
-     * Alternates between music muted and unmuted.
-     */
-    changeMusicMuteState()
-    {
-        this.setState({songMuted: !this.state.songMuted}, () =>
-        {
-            this.playOrPauseMainMusicTheme();
-            localStorage.songOff = this.state.songMuted; //Save cookie for future visits to the site (not songMuted because of way cookie works)
-        });
-    }
-
-    /**
-     * Shows a pop-up explaining the different symbols on the page.
-     */
-    showSymbolTutorial()
-    {
-        PopUp.fire
-        ({
-            icon: "question",
-            title: "Symbols",
-            html: <SymbolTutorial/>,
-            scrollbarPadding: false,
-        });
-
-        localStorage.visitedBefore = true; //Set cookie only once user has seen this pop-up
-    }
-
-    /**
-     * Plays or pauses the main music theme that plays in the background.
-     */
-    playOrPauseMainMusicTheme()
-    {
-        if (this.state.songMuted)
-            mainTheme.pause();
-        else
-        {
-            mainTheme.loop = true;
-            mainTheme.play();
-        }
-    }
-
-    /**
      * Leaves the box view and returns to the choose save file screen.
      * If cookies were cleared this will log the user out.
      */
     async leaveBoxView()
     {
         this.setState({editState: GetInitialPageState(), changeWasMade: [false, false]}); //Clear changeWasMade in case user decided to not save changes
+        StopPlayingMusic();
     }
 
     /**
@@ -905,7 +847,7 @@ export default class MainPage extends Component
                 homeTitles: res.data.titles,
             });
 
-            this.playOrPauseMainMusicTheme();
+            PlayOrPauseMainMusicTheme();
             this.wipeErrorMessage();
         }
         else
@@ -1026,7 +968,7 @@ export default class MainPage extends Component
                         else
                         {
                             this.setState({homeTitles: this.generateBlankHomeTitles()}); //In case they need updating for a randomizer
-                            this.showSymbolTutorial(); //Since it's probably the first time using the site
+                            ShowSymbolTutorial(); //Since it's probably the first time using the site
                         }
                     }
                     catch (e)
@@ -1048,9 +990,9 @@ export default class MainPage extends Component
                 }
 
                 this.setState({editState: STATE_MOVING_POKEMON});
-                this.playOrPauseMainMusicTheme();
+                PlayOrPauseMainMusicTheme();
                 if (!localStorage.visitedBefore)
-                    this.showSymbolTutorial();
+                    ShowSymbolTutorial();
             }
             else
             {
@@ -1058,9 +1000,9 @@ export default class MainPage extends Component
                 {
                     this.setState({editState: STATE_MOVING_POKEMON}, () =>
                     {
-                        this.playOrPauseMainMusicTheme();
+                        PlayOrPauseMainMusicTheme();
                         if (!localStorage.visitedBefore)
-                            this.showSymbolTutorial();
+                            ShowSymbolTutorial();
                     });
                 }
                 else
@@ -1107,7 +1049,7 @@ export default class MainPage extends Component
                 });
 
                 if (!isUsingFileHandles)
-                    this.setState({editState: STATE_MOVING_POKEMON}, () => {this.playOrPauseMainMusicTheme()});
+                    this.setState({editState: STATE_MOVING_POKEMON}, () => {PlayOrPauseMainMusicTheme()});
                 else
                     this.setState({editState: this.state.editState}); //Uploading a home file handle doesn't change the edit state (updated above in the call stack)
 
@@ -1385,9 +1327,9 @@ export default class MainPage extends Component
                         PopUp.fire({showConfirmButton: false});
                         PopUp.close(); //Close loading pop-up
 
-                        this.playOrPauseMainMusicTheme();
+                        PlayOrPauseMainMusicTheme();
                         if (!localStorage.visitedBefore)
-                            this.showSymbolTutorial();
+                            ShowSymbolTutorial();
                     }
                     catch (error)
                     {
@@ -2295,36 +2237,9 @@ export default class MainPage extends Component
 
     /**
      * Either opens or closes the Friend Trade screen.
-     * @returns {Promise} A promise that resolves when the function is done executing.
      */
-    async startFriendTrade()
+    startFriendTrade()
     {
-        if (this.state.inFriendTrade)
-        {
-            this.tryResetFriendTradeState();
-            return; //Just return to the box view
-        }
-        else if (CanUseFileHandleAPI() && this.wasAnyChangeMade()) //Some boxes aren't saved
-        {
-            //Force a save
-            let result = await PopUp.fire
-            ({
-                icon: "warning",
-                title: "Your data must be saved before starting a trade.",
-                confirmButtonText: "OK, Save It",
-                cancelButtonText: "I'll Do It Myself",
-                showCancelButton: true,
-                scrollbarPadding: false,
-            });
-
-            if (!result.isConfirmed)
-                return; //User cancelled
-
-            let saved = await this.trySaveAndExit(false);
-            if (!saved)
-                return; //Save didn't succeed
-        }
-
         this.setState({inFriendTrade: !this.state.inFriendTrade});
         this.resetStateForStartingFriendTrade(false);
         this.wipeErrorMessage();
@@ -2397,43 +2312,19 @@ export default class MainPage extends Component
      */
     openGTS()
     {
-        if (this.state.inGTS)
-        {
-            this.tryResetGTSState();
-        }
-        else if (CanUseFileHandleAPI() && this.wasAnyChangeMade()) //Some boxes aren't saved
-        {
-            //Force a save
-            PopUp.fire
-            ({
-                icon: 'warning',
-                title: "Your data must be saved before starting a trade.",
-                confirmButtonText: "OK, Save It",
-                cancelButtonText: "I'll Do It Myself",
-                showCancelButton: true,
-                scrollbarPadding: false,
-            }).then((result) =>
-            {
-                if (result.isConfirmed)
-                    this.trySaveAndExit(false);
-            });
-        }
-        else
-        {
-            PopUp.fire
-            ({
-                icon: "error",
-                title: "The GTS is still incomplete.\nPlease use the #cloud-trades channel in the Unbound Discord server to find trades in the meantime.",
-                cancelButtonText: "Awww",
-                showConfirmButton: false,
-                showCancelButton: true,
-                scrollbarPadding: false,
-                inGTS: false,
-            });
+        PopUp.fire
+        ({
+            icon: "error",
+            title: "The GTS is still incomplete.\nPlease use the #cloud-trades channel in the Unbound Discord server to find trades in the meantime.",
+            cancelButtonText: "Awww",
+            showConfirmButton: false,
+            showCancelButton: true,
+            scrollbarPadding: false,
+            inGTS: false,
+        });
 
-            // this.setState({inGTS: !this.state.inGTS});
-            // this.wipeErrorMessage();
-        }
+        // this.setState({inGTS: !this.state.inGTS});
+        // this.wipeErrorMessage();
     }
 
     tryResetGTSState()
@@ -3099,7 +2990,7 @@ export default class MainPage extends Component
                     style={!buttonClickable ? {cursor: "default"} : {}}
                     aria-label="Home to Home"
                     onClick={() => this.changeBoxView(STATE_EDITING_HOME_BOXES)}>
-                <FaCloud size={size} /> ↔ <FaCloud size={size} />
+                <MdCloud size={size} /> ↔ <MdCloud size={size} />
             </Button>
         );
     }
@@ -3117,7 +3008,7 @@ export default class MainPage extends Component
                     id="save-to-save-button"
                     aria-label="Save File to Save File"
                     onClick={() => this.changeBoxView(STATE_EDITING_SAVE_FILE)}>
-                <FaGamepad size={size} /> ↔ <FaGamepad size={size} />
+                <MdVideogameAsset size={size} /> ↔ <MdVideogameAsset size={size} />
             </Button>
         );
     }
@@ -3135,7 +3026,7 @@ export default class MainPage extends Component
                     id="home-to-save-button"
                     aria-label="Home to Save File"
                     onClick={() => this.changeBoxView(STATE_MOVING_POKEMON)}>
-                <FaCloud size={size} /> ↔ <FaGamepad size={size} />
+                <MdCloud size={size} /> ↔ <MdVideogameAsset size={size} />
             </Button>
         );
     }
@@ -3150,7 +3041,7 @@ export default class MainPage extends Component
         var paddingRight = window.innerWidth < 500 ? "0%" : "90%";
 
         return (
-            <BiArrowBack size={size} className="navbar-back-button" style={{paddingRight: paddingRight}}
+            <MdArrowBack size={size} className="navbar-back-button" style={{paddingRight: paddingRight}}
                          id="back-button"
                          aria-label="Back" onClick={this.navBackButtonPressed.bind(this)}/>
         );
@@ -3227,118 +3118,6 @@ export default class MainPage extends Component
     }
 
     /**
-     * Gets the button for viewing the explanation of the different symbols.
-     * @param {Boolean} onSecondLine - Whether the button should be on the second line of footer buttons.
-     * @returns {JSX.Element} A button element.
-     */
-    symbolTutorialButton(onSecondLine)
-    {
-        var size = 42;
-        const tooltip = props => (<Tooltip {...props}>Help</Tooltip>);
-
-        return (
-            <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" className={"footer-button " + ((onSecondLine) ? "help-button-mobile" : "help-button")}
-                        aria-label="Get Help"
-                        onClick={this.showSymbolTutorial.bind(this)}>
-                    <MdHelp size={size} />
-                </Button>
-            </OverlayTrigger>
-        );
-    }
-
-    /**
-     * Gets the button for starting a peer-to-peer trade.
-     * @returns {JSX.Element} A button element.
-     */
-    startTradeButton()
-    {
-        var size = 42;
-        const tooltip = props => (<Tooltip {...props}>Friend Trade</Tooltip>);
-
-        // if (this.state.isSaving)
-        //     return ""; //Can't use while saving
-
-        return (
-            <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" className={"footer-button friend-trade-button"}
-                        aria-label="Start Trade With a Friend"
-                        onClick={this.startFriendTrade.bind(this)}>
-                    <MdSwapVert size={size} />
-                </Button>
-            </OverlayTrigger>
-        );
-    }
-
-    /**
-     * Gets the button for accessing the Global Trade Station.
-     * @returns {JSX.Element} A button element.
-     */
-    openGTSButton()
-    {
-        const tooltip = props => (<Tooltip {...props}>Global Trade Station</Tooltip>);
-
-        // if (this.state.isSaving)
-        //     return ""; //Can't use while saving
-
-        return (
-            <Button size="lg" className="footer-button" style={{display: "contents"}} //Style needed to properly position svg
-                    aria-label="Go To Global Trade Station">
-                    <OverlayTrigger placement="top" overlay={tooltip}>
-                        <div style={{width: "fit-content", paddingLeft: "14px", paddingRight: "14px"}}
-                             onClick={this.openGTS.bind(this)}>
-                            {GTS_ICON}
-                        </div>
-                    </OverlayTrigger>
-            </Button>
-        );
-    }
-
-    /**
-     * Gets the button for turning on and off sounds.
-     * @returns {JSX.Element} A button element.
-     */
-    muteSoundsButton()
-    {
-        var size = 42;
-        var icon = (this.state.muted) ? <RiVolumeMuteFill size={size} /> : <RiVolumeUpFill size={size} />;
-        var tooltipText = (this.state.muted) ? "Sounds Are Off" : "Sounds Are On";
-        const tooltip = props => (<Tooltip {...props}>{tooltipText}</Tooltip>);
-
-        return (
-            <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" className="footer-button"
-                        aria-label={tooltipText}
-                        onClick={this.changeMuteState.bind(this)}>
-                    {icon}
-                </Button>
-            </OverlayTrigger>
-        );
-    }
-
-    /**
-     * Gets the button for turning on and off music.
-     * @returns {JSX.Element} A button element.
-     */
-    muteMusicButton()
-    {
-        var size = 42;
-        var icon = (this.state.songMuted) ? <MdMusicOff size={size} /> : <MdMusicNote size={size} />;
-        var tooltipText = (this.state.songMuted) ? "Music Is Off" : "Music Is On";
-        const tooltip = props => (<Tooltip {...props}>{tooltipText}</Tooltip>);
-
-        return (
-            <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" className="footer-button music-button"
-                        aria-label={tooltipText}
-                        onClick={this.changeMusicMuteState.bind(this)}>
-                    {icon}
-                </Button>
-            </OverlayTrigger>
-        );
-    }
-
-    /**
      * Gets the footer displayed at the bottom of the page.
      * @returns {JSX.Element} The footer and its buttons.
      */
@@ -3348,14 +3127,38 @@ export default class MainPage extends Component
         let oneLineFooter = window.innerWidth >= 600;
         const buttons =
             <>
-                {this.startTradeButton()}
-                {this.openGTSButton()}
-                {this.muteSoundsButton()}
-                {this.muteMusicButton()}
+                {
+                    //Friend Trade button
+                    <OpenTradeScreenButton
+                        key={`friend-trade-button-${this.state.inFriendTrade}`}
+                        onScreenAlready={this.state.inFriendTrade}
+                        idPrefix="friend"
+                        tooltipText="Friend Trade"
+                        ariaLabel="Start trade with a friend"
+                        tryResetTradeState={this.tryResetFriendTradeState.bind(this)}
+                        wasAnyChangeMade={this.wasAnyChangeMade.bind(this)}
+                        trySaveAndExit={this.trySaveAndExit.bind(this)}
+                        openTradeScreen={this.startFriendTrade.bind(this)} />
+                }
+                {
+                    //GTS button
+                    <OpenTradeScreenButton
+                        key={`gts-button-${this.state.inFriendTrade}`}
+                        onScreenAlready={this.state.inGTS}
+                        idPrefix="gts"
+                        tooltipText="Global Trade Station"
+                        ariaLabel="Go to Global Trade Station"
+                        tryResetTradeState={this.tryResetGTSState.bind(this)}
+                        wasAnyChangeMade={this.wasAnyChangeMade.bind(this)}
+                        trySaveAndExit={this.trySaveAndExit.bind(this)}
+                        openTradeScreen={this.openGTS.bind(this)} />
+                }
+                {<SoundsButton />}
+                {<MusicButton />}
             </>
 
-        //On smaller screens, these two buttons are placed on their own line
-        const symbolTutorialButton = this.symbolTutorialButton(!oneLineFooter);
+        //On smaller screens, these three buttons are placed on their own line
+        const symbolTutorialButton = <SymbolTutorialButton onSecondLine={!oneLineFooter} />
         const darkModeButton = <DarkModeButton onSecondLine={!oneLineFooter} />
         const switchSaveButton = <SwitchSaveButton onSecondLine={!oneLineFooter}
                                                    invisible={DEMO_SITE}
@@ -3394,7 +3197,7 @@ export default class MainPage extends Component
                     </div>
                     {
                         !tradeScreen && //Help is hidden during a trade so there's more space
-                            <div className="footer-buttons-mobile-row">
+                            <div className="footer-buttons-mobile-row footer-buttons-mobile-row-2">
                                 {symbolTutorialButton}
                                 {darkModeButton}
                                 {switchSaveButton}
@@ -3609,8 +3412,8 @@ export default class MainPage extends Component
                             serverConnectionError: false
                         }, () =>
                         {
-                            this.playOrPauseMainMusicTheme();
-                            this.showSymbolTutorial();
+                            PlayOrPauseMainMusicTheme();
+                            ShowSymbolTutorial();
                         })}
                             className="choose-home-file-button">
                         Create New

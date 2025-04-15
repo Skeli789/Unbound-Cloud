@@ -55,21 +55,23 @@ export class DarkModeButton extends Component
     render()
     {
         const size = 42;
-        const buttonClass = "footer-button dark-mode-button";
+        const iconClass = "dark-mode-button";
         const hiddenStyle = {visibility: this.state.invisible ? "hidden" : "visible"}; //Hide but still take up space
         const tooltipText = (this.state.darkMode) ? "Light Mode" : "Dark Mode";
         const tooltip = props => (<Tooltip {...props}>{tooltipText}</Tooltip>);
 
         return (
-            <OverlayTrigger placement="top" overlay={tooltip}>
-                <Button size="lg" style={hiddenStyle}
-                        id="dark-mode-button"
-                        className={buttonClass + ((this.state.onSecondLine) ? "-mobile" : "")}
-                        aria-label="Toggle Dark Mode"
-                        onClick={this.toggleDarkMode.bind(this)}>
-                    {this.state.darkMode ? <MdSunny size={size} /> : <MdModeNight size={size} />}
-                </Button>
-            </OverlayTrigger>
+            <Button size="lg"style={hiddenStyle}
+                    id="dark-mode-button"
+                    className="footer-button"
+                    aria-label="Toggle Dark Mode"
+                    onClick={this.toggleDarkMode.bind(this)}>
+                <OverlayTrigger placement="top" overlay={tooltip}>
+                    <div className={`footer-button-icon ${iconClass}`}>
+                        {this.state.darkMode ? <MdSunny size={size} /> : <MdModeNight size={size} />}
+                    </div>
+                </OverlayTrigger>
+            </Button>
         );
     }
 }
