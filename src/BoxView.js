@@ -200,6 +200,16 @@ export class BoxView extends Component
     }
 
     /**
+     * Determines if the dragging functionality is allowed.
+     * @returns {Boolean} Whether a Pokemon can be dragged between slots.
+     */
+    canDragMon()
+    {
+        //Always allow on desktop, allow on mobile only if the boxes are side by side
+        return !isMobile || !this.state.parent.areBoxViewsVertical();
+    }
+
+    /**
      * Gets whether or not the mon at a specific box position is selected.
      * @param {Number} boxPos - The box position the mon is at.
      * @returns {Boolean} True if the mon has been selected, False otherwise.
@@ -877,7 +887,7 @@ export class BoxView extends Component
      */
     handleStartDragging(allBoxesPos, boxPos, icon, imgUrl, pokemon)
     {
-        if (isMobile || this.isSaving() || this.isTrading())
+        if (!this.canDragMon() || this.isSaving() || this.isTrading())
             return; //No dragging on a touch screen, while prepping a save, or selecting a Pokemon to trade
 
         if (icon === "")
@@ -906,7 +916,7 @@ export class BoxView extends Component
      */
     handleSetDraggingOver(allBoxesPos)
     {
-        if (!isMobile) //No dragging on mobile devices
+        if (this.canDragMon())
         {
             this.state.parent.setState({
                 draggingOver: allBoxesPos,
@@ -1432,8 +1442,8 @@ export class BoxView extends Component
             let selectedBoxClassName = this.isHomeBox() ? "selected-home-box-icon" : "selected-save-box-icon";
             let hoverClassName = this.isHomeBox() ? "hover-home-box-icon" : "hover-save-box-icon";
             let spanClassName = "box-icon"
-                              + (!isMobile && !this.state.parent.shouldViewDraggingImg() ? " box-icon-hoverable" : "") //Just changes cursor
-                              + (!isMobile && this.shouldDisplayHoverOverPos(key) ? ` ${hoverClassName}` : "")
+                              + (this.canDragMon() && !this.state.parent.shouldViewDraggingImg() ? " box-icon-hoverable" : "") //Just changes cursor
+                              + (this.canDragMon() && this.shouldDisplayHoverOverPos(key) ? ` ${hoverClassName}` : "")
                               + (this.isMonAtPosSelected(key) ? ` ${selectedBoxClassName}` : "")
                               + (isInWonderTrade ? " wonder-trade-box-icon" : "")
                               + (this.shouldShowIconImpossibleMoveWarning(key) ? " error-box-icon" : "");
@@ -1442,7 +1452,7 @@ export class BoxView extends Component
             var onHoverFunc = () =>
             {
                 this.handleSetDraggingOver(i);
-                if (!isMobile && !this.areAnyPokemonSelectedInCurrentBox()
+                if (this.canDragMon() && !this.areAnyPokemonSelectedInCurrentBox()
                 && !this.state.viewingWonderTradeSummary) //Pokemon in Wonder Trade can't be selected, so this is a special check to account for that
                     this.handleSelectMonForViewing(null, key, pokemon); //Show the summary as the mouse moves over the mon, show it's summary
             };
