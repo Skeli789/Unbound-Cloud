@@ -13,7 +13,7 @@ import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
 import {RiBoxingLine} from "react-icons/ri";
 import {FaCloud, FaGamepad} from "react-icons/fa";
 import {RiVolumeUpFill, RiVolumeMuteFill} from "react-icons/ri"
-import {MdSwapVert, MdMusicNote, MdMusicOff, MdLogout} from "react-icons/md"
+import {MdSwapVert, MdMusicNote, MdMusicOff, MdLogout, MdSunny, MdModeNight} from "react-icons/md"
 
 const SVG_SIZE = 28;
 
@@ -21,6 +21,8 @@ const TABLE_DETAILS =
 [
     [<FaCloud size={SVG_SIZE}/>, "This Box is a Cloud Box."],
     [<FaGamepad size={SVG_SIZE}/>, "This Box is a save file Box."],
+    [<MdModeNight size={SVG_SIZE}/>, "Turn dark mode on."],
+    [<MdSunny size={SVG_SIZE}/>, "Turn dark mode off."],
     [<MdSwapVert size={SVG_SIZE}/>, "Start a trade with your friend."],
     [<RiVolumeUpFill size={SVG_SIZE}/>, "Sound effects are on."],
     [<RiVolumeMuteFill size={SVG_SIZE}/>, "Sound effects are off."],

@@ -136,3 +136,15 @@
     filter: unset !important;
     cursor: not-allowed !important;
 }
+
+[data-darkreader-scheme="dark"] .home-box .poke-ball-icon
+{
+    filter: brightness(0.75) !important; /* Make icon slightly darker */
+    fill: var(--home-box-color) !important
+}
+
+[data-darkreader-scheme="dark"] .save-box .poke-ball-icon
+{
+    filter: brightness(0.75) !important; /* Make icon slightly darker */
+    fill: var(--save-box-color) !important
+}

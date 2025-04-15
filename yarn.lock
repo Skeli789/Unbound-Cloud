@@ -1897,6 +1897,16 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
+"@rollup/rollup-linux-x64-gnu@4.34.8":
+  version "4.34.8"
+  resolved "https://registry.yarnpkg.com/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.34.8.tgz#5783fc0adcab7dc069692056e8ca8d83709855ce"
+  integrity sha512-8y7ED8gjxITUltTUEJLQdgpbPh1sUQ0kMTmufRF/Ns5tI9TNMNlhWtmPKKHCU0SilX+3MJkZ0zERYYGIVBYHIA==
+
+"@rollup/rollup-win32-x64-msvc@4.34.8":
+  version "4.34.8"
+  resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.34.8.tgz#4cdb2cfae69cdb7b1a3cc58778e820408075e928"
+  integrity sha512-U0FaE5O1BCpZSeE6gBl3c5ObhePQSfk9vDRToMmTkbhCOgW4jqvtS5LGyQ76L1fH8sM0keRp4uDTsbjiUyjk0g==
+
 "@rtsao/scc@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@rtsao/scc/-/scc-1.1.0.tgz#927dd2fae9bc3361403ac2c7a00c32ddce9ad7e8"
@@ -3967,6 +3977,16 @@ damerau-levenshtein@^1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.8.tgz#b43d286ccbd36bc5b2f7ed41caf2d0aba1f8a6e7"
   integrity sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==
+
+darkreader@^4.9.105:
+  version "4.9.105"
+  resolved "https://registry.yarnpkg.com/darkreader/-/darkreader-4.9.105.tgz#e4df850c5b81e560e23c89ace03fcdf8ff5d8f57"
+  integrity sha512-DtOikawKNWNQcDy/vPi27lbmNMrd3S/jj+S6/DV12y82offMqXxlTjfh1bo61NqGJTmwovqBkJdiNyeDCsSzCg==
+  dependencies:
+    malevic "0.20.2"
+  optionalDependencies:
+    "@rollup/rollup-linux-x64-gnu" "4.34.8"
+    "@rollup/rollup-win32-x64-msvc" "4.34.8"
 
 data-urls@^2.0.0:
   version "2.0.0"
@@ -7004,6 +7024,11 @@ makeerror@1.0.12:
   integrity sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==
   dependencies:
     tmpl "1.0.5"
+
+malevic@0.20.2:
+  version "0.20.2"
+  resolved "https://registry.yarnpkg.com/malevic/-/malevic-0.20.2.tgz#2d8ab54a5d9f4bebc21fc1cc0c6eec1e77d13530"
+  integrity sha512-s44yEUyfDaONt7nPT7NDQ+Z2oAswErG70ok2Q95bJFh1Bdcn4dZQVMrLE02ZIjTtYfQ/LFOVxF+yB3bdGw/GtQ==
 
 math-intrinsics@^1.1.0:
   version "1.1.0"
