@@ -69,7 +69,7 @@
     cursor: pointer;
 }
 
-[data-darkreader-scheme="dark"] .already-have-account-button, .forgot-password-button, a /* Dark mode */
+[data-darkreader-scheme="dark"] .already-have-account-button, [data-darkreader-scheme="dark"] .forgot-password-button, a /* Dark mode */
 {
     color: #4ea0ff !important;
 }
