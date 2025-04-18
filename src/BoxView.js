@@ -721,7 +721,7 @@ export class BoxView extends Component
     ******************************/
 
     /**
-     * Jumps to a specific box. If modified, also modify "jumpToBox" in BoxList.js.
+     * Jumps to a specific box. If modified, also modify "jumpToBoxAtSpot" in BoxList.js.
      * @param {Number} boxId - The id number of the box to jump to.
      */
     setCurrentBox(boxId)
@@ -736,7 +736,8 @@ export class BoxView extends Component
 
         this.setState({editingTitle: false, viewingShowdown: false});
 
-        this.state.parent.setState({
+        this.state.parent.setState
+        ({
             currentBox: currentBoxes,
             selectedMonPos: selectedMonPos,
             summaryMon: summaryMon,
