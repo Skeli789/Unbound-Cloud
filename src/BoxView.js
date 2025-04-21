@@ -45,6 +45,8 @@ const PopUp = withReactContent(Swal);
 
 //Tooltips
 const boxListTooltip = props => (<Tooltip {...props}>See Other Boxes</Tooltip>);
+const nextBoxTooltip = props => (<Tooltip {...props}>Next Box</Tooltip>);
+const prevBoxTooltip = props => (<Tooltip {...props}>Previous Box</Tooltip>);
 const renameTooltip = props => (<Tooltip {...props}>Rename</Tooltip>);
 const saveTooltip = props => (<Tooltip {...props}>Save</Tooltip>);
 const cancelTooltip = props => (<Tooltip {...props}>Cancel</Tooltip>);
@@ -1794,15 +1796,23 @@ export class BoxView extends Component
             <div className="box-view">
                 {/*Above Box*/}
                 <div className={titleContainerClass}>
-                    <MdArrowBack size={42} aria-label="Previous Box" id={`previous-${idSuffix}-button`}
-                                 onClick={this.handleChangeBox.bind(this, -1)} className="box-change-arrow" />
+                    <OverlayTrigger placement="top" overlay={prevBoxTooltip}>
+                        <div>
+                            <MdArrowBack size={42} aria-label="Previous Box" id={`previous-${idSuffix}-button`}
+                                        onClick={this.handleChangeBox.bind(this, -1)} className="box-change-arrow" />
+                        </div>
+                    </OverlayTrigger>
                     <span className="box-name">
                         {livingDexIcon}
                         {title}
                         {titleEditIcon}
                     </span>
-                    <MdArrowForward size={42} aria-label="Next Box" id={`next-${idSuffix}-button`}
-                                    onClick={this.handleChangeBox.bind(this, 1)} className="box-change-arrow" />
+                    <OverlayTrigger placement="top" overlay={nextBoxTooltip}>
+                        <div>
+                            <MdArrowForward size={42} aria-label="Next Box" id={`next-${idSuffix}-button`}
+                                            onClick={this.handleChangeBox.bind(this, 1)} className="box-change-arrow" />
+                        </div>
+                    </OverlayTrigger>
                 </div>
 
                 {/*Box Itself*/}

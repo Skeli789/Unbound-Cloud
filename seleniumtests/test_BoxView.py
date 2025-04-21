@@ -1,16 +1,16 @@
 import pytest
 from unittest import TestCase
 
-from seleniumtests.MovementUtil import *
+from seleniumtests.BoxViewUtils import *
 from seleniumtests.TestUtils import *
 
 
 @pytest.mark.incremental
-class TestFunctionality(TestCase):
+class TestBoxView(TestCase):
     @classmethod
     def setUpClass(cls):
         # Remove the account system for these tests
-        ToggleDemoSite()
+        EnableDemoSite()
 
         # Instantiate the driver and navigate to the site
         cls.driver = SetUpDriver(BROWSER)
@@ -19,7 +19,7 @@ class TestFunctionality(TestCase):
     @classmethod
     def tearDownClass(cls):
         # Re-enable the account system after tests are done
-        ToggleDemoSite()
+        DisableDemoSite()
 
         # Close the browser after tests are done
         QuitDriver(cls.driver)
@@ -38,6 +38,3 @@ class TestFunctionality(TestCase):
     def test_4_MultiSelectMove(self):
         GoToPreviousHomeBox(self.driver)
         TestMultiSelectMove(self.driver, self)
-
-    def test_5_BoxListView(self):
-        TestBoxListView(self.driver, self)

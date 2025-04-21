@@ -19,13 +19,10 @@ import {PlayErrorSound} from "./subcomponents/footer/SoundsButton";
 
 import {MdArrowDropDownCircle} from "react-icons/md";
 
-import {ReactComponent as PokeBallIcon} from './images/PokeBallIcon.svg';
-
 import "./stylesheets/BoxList.css";
 import "./stylesheets/PokeBallIcon.css";
 
 const MAX_DRAGGING_BOXES_AT_ONCE = 9; //Max number of boxes that can be dragged at once
-const POKE_BALL_ICON_STYLE = {position: "absolute", top: "0", left: "0", height: "100%", width: "100%"};
 
 
 export class BoxList extends Component
@@ -82,7 +79,14 @@ export class BoxList extends Component
     async componentDidMount()
     {
         await new Promise(r => setTimeout(r, 50)); //Allows the loading screen to render
-        this.setState({loaded: true});
+        this.setState({loaded: true}, () =>
+        {
+            //Scroll to the current box
+            let currentBox = this.state.currentBoxes[this.props.boxSlot];
+            let boxElement = document.getElementById(`box-${this.spotToBoxId(currentBox)}-with-title`);
+            if (boxElement)
+                boxElement.scrollIntoView({block: "end", inline: "end"}); //Scroll to bottom of the box element
+        });
 
         //Override back button
         window.history.pushState(null, document.title, window.location.href);
@@ -478,8 +482,10 @@ export class BoxList extends Component
             boxClasses += " multi-selected-box"; //Box selected for multi dragging
 
         //Make the box's title
+        let boxId = this.spotToBoxId(spot); //Get the index of the box in the current list
         title =
-            <h4 className={"mini-box-title" +
+            <h4 id={`box-${boxId}-title`}
+                className={"mini-box-title" +
                 (this.state.currentBoxes[this.props.boxSlot] === spot ? " mini-box-current-box-title" : "")}>
                 {this.state.titles[spot]}
             </h4>;
@@ -489,7 +495,6 @@ export class BoxList extends Component
             disabledBox = true; //Prevent jumping to this box since the other box is already showing it
 
         //Create the entire box
-        let boxId = this.spotToBoxId(spot); //Get the index of the box in the current list
         return (
             <div className="mini-box-with-title" id={`box-${boxId}-with-title`} key={boxId}>
             {
@@ -506,7 +511,7 @@ export class BoxList extends Component
                 </>
                 :
                     //Show an arrow to point to where the box is being dragged to
-                    <div id={`place-box-${boxId}`}>
+                    <div className="place-box-indicator" id={`place-box-${boxId}`}>
                         <MdArrowDropDownCircle size={42} />
                     </div>
             }
