@@ -1,4 +1,4 @@
-name: Build and Release Destop App
+name: Build and Release Desktop App
 
 # TODO: Set a publisher during packaging
 
@@ -10,6 +10,7 @@ name: Build and Release Destop App
 
 # Always when pushing to electron branch
 on:
+  workflow_dispatch:
   push:
     branches:
     - electron
