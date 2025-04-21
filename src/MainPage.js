@@ -350,8 +350,12 @@ export default class MainPage extends Component
      */
     async leaveBoxView()
     {
-        this.setState({editState: GetInitialPageState(), changeWasMade: [false, false]}); //Clear changeWasMade in case user decided to not save changes
-        StopPlayingMusic();
+        this.setState({changeWasMade: [false, false]}, () => //Clear changeWasMade in case user decided to not save changes
+        {
+            //Reload the page to reset state and close sockets like Wonder Trade
+            StopPlayingMusic();
+            window.location.reload();
+        }); 
     }
 
     /**
