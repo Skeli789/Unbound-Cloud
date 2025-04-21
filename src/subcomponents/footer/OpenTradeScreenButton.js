@@ -67,7 +67,6 @@ export class OpenTradeScreenButton extends Component
                 title: "Unsaved Changes",
                 text: "Your data must be saved before starting a trade.",
                 confirmButtonText: "OK, Save It",
-                cancelButtonText: "I'll Do It Myself",
                 showCancelButton: true,
                 scrollbarPadding: false,
             });

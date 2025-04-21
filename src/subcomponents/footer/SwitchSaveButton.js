@@ -55,7 +55,6 @@ export class SwitchSaveButton extends Component
                 title: "Unsaved Changes",
                 text: "Would you like to save your changes before leaving?",
                 confirmButtonText: "OK, Save It",
-                cancelButtonText: "I'll Do It Myself",
                 denyButtonText: "No, Don't Save",
                 showCancelButton: true,
                 showDenyButton: true,
