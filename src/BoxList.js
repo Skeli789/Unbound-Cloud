@@ -40,9 +40,9 @@ export class BoxList extends Component
      * @param {Array} props.currentBoxes - The currently selected boxes.
      * @param {Array} props.selectedMonPos - The currently selected Pokemon positions.
      * @param {Array} props.summaryMon - The currently selected Pokemon summary.
+     * @param {Array} props.changeWasMade - Whether the box types have unsaved changes.
      * @param {Object} props.searchCriteria - The search criteria for filtering Pokemon in boxes.
      * @param {boolean} props.isSameBoxBothSides - True if the same box is displayed on both sides.
-     * @param {Object} props.globalState - The global state of the application.
      * @param {string} props.gameId - The ID of the game.
      * @param {Function} props.navBackButtonPressed - The function to call when the back button is pressed.
      * @param {Function} props.updateParentState - The function to update the parent state.
@@ -429,6 +429,10 @@ export class BoxList extends Component
             newCurrentBoxes[boxSlot] = currentSelectedSpot; //Update the currentBoxes array with the new selection
         }
 
+        //Mark the boxes as changed
+        let changeWasMade = this.props.changeWasMade.slice(); //Copy to avoid mutating state directly
+        changeWasMade[this.props.boxType] = true; 
+
         //Update the state with the new data
         this.setState
         ({
@@ -445,7 +449,8 @@ export class BoxList extends Component
         ({
             [IsHomeBox(this.props.boxType) ? "homeTitles" : "saveTitles"]: newTitles,
             [(IsHomeBox(this.props.boxType) ? "homeBoxes" : "saveBoxes")]: newBoxes,
-            currentBox: newCurrentBoxes
+            currentBox: newCurrentBoxes,
+            changeWasMade: changeWasMade,
         });
     }
 
@@ -509,7 +514,7 @@ export class BoxList extends Component
             </h4>;
 
         //Try disable jumping to a box already active (in a Home -> Home or Box -> Box view)
-        if (this.isBoxAtSpotDisabled(spot)) //Other box has this
+        if (this.isBoxAtSpotDisabled(spot) && !this.state.draggingMode) //Other box has this and not dragging currently
             disabledBox = true; //Prevent jumping to this box since the other box is already showing it
 
         //Create the entire box

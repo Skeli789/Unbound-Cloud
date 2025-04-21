@@ -3293,7 +3293,8 @@ export default class MainPage extends Component
                      boxCount={this.getBoxAmountByBoxSlot(this.state.viewingBoxList)}
                      boxType={this.getBoxTypeByBoxSlot(this.state.viewingBoxList)} boxSlot={this.state.viewingBoxList}
                      currentBoxes={this.state.currentBox} selectedMonPos={this.state.selectedMonPos}
-                     summaryMon={this.state.summaryMon} searchCriteria={this.state.searchCriteria[this.state.viewingBoxList]}
+                     summaryMon={this.state.summaryMon} changeWasMade={this.state.changeWasMade}
+                     searchCriteria={this.state.searchCriteria[this.state.viewingBoxList]}
                      isSameBoxBothSides={this.state.editState === STATE_EDITING_SAVE_FILE || this.state.editState === STATE_EDITING_HOME_BOXES}
                      gameId={this.state.saveGameId}
                      navBackButtonPressed={this.navBackButtonPressed.bind(this)}
