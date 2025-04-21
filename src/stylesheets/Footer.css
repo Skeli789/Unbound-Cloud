@@ -50,11 +50,6 @@
 
 /* Buttons on footer */
 
-[data-darkreader-scheme="dark"] .gts-svg /* Dark mode */
-{
-    filter: invert(1) hue-rotate(180deg); /* Make icon white */
-}
-
 .music-button
 {
     padding: 0px !important;
