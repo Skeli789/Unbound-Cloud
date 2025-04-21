@@ -36,5 +36,15 @@ class TestBoxView(TestCase):
         TestSingleSelectMove(self.driver, self)
 
     def test_4_MultiSelectMove(self):
+        ReloadPage(self.driver)
         GoToPreviousHomeBox(self.driver)
         TestMultiSelectMove(self.driver, self)
+
+
+def ReloadPage(driver: webdriver.Chrome):
+    """Reloads the page and closes the pop-up if it appears.
+    
+    :param driver: The Selenium WebDriver instance
+    """
+    driver.refresh()
+    WaitAndClosePopUp(driver, "I am not a Tester")

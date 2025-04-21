@@ -38,7 +38,7 @@ def GoToPreviousBox(driver: webdriver.Chrome, boxType: str):
     ClickButton(backButton)
 
 
-def GoToNextHomeBox(driver):
+def GoToNextHomeBox(driver: webdriver.Chrome):
     """
     Go to the next home box.
 
@@ -47,7 +47,7 @@ def GoToNextHomeBox(driver):
     GoToNextBox(driver, "home")
 
 
-def GoToNextSaveBox(driver):
+def GoToNextSaveBox(driver: webdriver.Chrome):
     """
     Go to the next save box.
 
@@ -56,7 +56,7 @@ def GoToNextSaveBox(driver):
     GoToNextBox(driver, "save")
 
 
-def GoToPreviousSaveBox(driver):
+def GoToPreviousSaveBox(driver: webdriver.Chrome):
     """
     Go to the previous save box.
 
@@ -65,7 +65,7 @@ def GoToPreviousSaveBox(driver):
     GoToPreviousBox(driver, "save")
 
 
-def GoToPreviousHomeBox(driver):
+def GoToPreviousHomeBox(driver: webdriver.Chrome):
     """
     Go to the previous home box.
 
@@ -120,7 +120,7 @@ def LoadCorrectBoxMons() -> dict:
             boxStartIndex = i * 30
             boxEndIndex = boxStartIndex + 29
             boxName = f"Box {i + 1}" if i < SAVE_BOX_COUNT - 1 else "Preset"
-            boxMons[boxName] = {0: allBoxes[boxStartIndex]["nickname"], 
+            boxMons[boxName] = {0: allBoxes[boxStartIndex]["nickname"],
                                 29: allBoxes[boxEndIndex]["nickname"]} # Only check the first and last slot
     return boxMons
 
@@ -259,12 +259,6 @@ def TestSingleSelectMove(driver: webdriver.Chrome, tester: TestCase):
     monToMoveFrom.click()
     monToMoveTo.click()
 
-    # Deselect the Pokemon in the save box on some browsers
-    time.sleep(0.5) # Wait for the movement to finish
-    if BROWSER != "firefox":
-        deselectButton = driver.find_element(By.ID, "select-all-button-save-box")
-        ClickButton(deselectButton)
-
     # Confirm the original Pokemon is back in the save box at the new slot
     ConfirmMonInBoxSlot(driver, tester, "save", 24, selectedSpecies1)
 
@@ -272,7 +266,7 @@ def TestSingleSelectMove(driver: webdriver.Chrome, tester: TestCase):
     ConfirmMonInBoxSlot(driver, tester, "home", 29, replacementSpecies)
 
 
-def TestMultiSelectMove(driver, tester: TestCase):
+def TestMultiSelectMove(driver: webdriver.Chrome, tester: TestCase):
     """
     Test moving multiple Pokemon by clicking on them and then clicking on the destination box.
 

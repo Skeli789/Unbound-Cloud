@@ -7,7 +7,7 @@ from seleniumtests.TestUtils import *
 
 
 @pytest.mark.incremental
-class TestFunctionality(TestCase):
+class TestBoxList(TestCase):
     @classmethod
     def setUpClass(cls):
         # Remove the account system for these tests
@@ -86,7 +86,7 @@ class TestFunctionality(TestCase):
                            [1, 4, 5, 6, 10, 11, 14, 16, 17], 9, 14, "Box 1", SAVE_BOX_COUNT)
 
 
-def ReloadPage(driver):
+def ReloadPage(driver: webdriver.Chrome):
     """Reloads the page and closes the pop-up if it appears.
     
     :param driver: The Selenium WebDriver instance
