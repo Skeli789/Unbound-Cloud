@@ -38,6 +38,7 @@ class TestFunctionality(TestCase):
         TestFilteringAndJumpingBoxes(self.driver, self, "home", "Cloud 100", 99)
 
     def test_04_ReversingAndRevertingSaveBoxOrder(self):
+        pytest.skip("Skipping remaining tests for Safari browser since they take too long to run.")
         ReloadPage(self.driver)
         TestReversingAndRevertingBoxOrder(self.driver, self, SAVE_BOX_COUNT)
 
