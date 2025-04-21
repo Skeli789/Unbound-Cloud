@@ -261,7 +261,7 @@ def TestSingleSelectMove(driver: webdriver.Chrome, tester: TestCase):
 
     # Deselect the Pokemon in the save box on some browsers
     time.sleep(0.5) # Wait for the movement to finish
-    if BROWSER == "chrome" or BROWSER == "edge":
+    if BROWSER != "firefox":
         deselectButton = driver.find_element(By.ID, "select-all-button-save-box")
         ClickButton(deselectButton)
 
