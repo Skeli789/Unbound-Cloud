@@ -12,7 +12,7 @@ import {AiFillWarning, AiOutlineCheckCircle, AiOutlineCloseCircle,
 import {BiSearchAlt2} from "react-icons/bi";
 import {CgExport, CgPokemon} from "react-icons/cg";
 import {GrEdit, GrMultiple, GrTrash} from "react-icons/gr";
-import {MdArrowBack, MdArrowForward, MdCloud, MdLogout, MdModeNight, MdMusicNote, MdMusicOff,
+import {MdArrowBack, MdArrowForward, MdCloud, MdGridView, MdLogout, MdModeNight, MdMusicNote, MdMusicOff,
         MdSunny, MdSwapVert, MdVideogameAsset, MdVolumeOff, MdVolumeUp} from "react-icons/md";
 import {RiBoxingLine} from "react-icons/ri";
 
@@ -33,6 +33,7 @@ const TABLE_DETAILS =
     [<MdArrowBack size={SVG_SIZE}/>, "Go to the previous Box."],
     [<MdArrowForward size={SVG_SIZE}/>, "Go to the next Box."],
     [<p className="box-name-button">Box</p>, "View all Boxes."],
+    [<MdGridView size={SVG_SIZE}/>, "Rearrange Box order."],
     [<GrEdit size={SVG_SIZE}/>, "Start editing a Box name."],
     [<AiOutlineCheckCircle size={SVG_SIZE}/>, "Save changes to a Box name."],
     [<AiOutlineCloseCircle size={SVG_SIZE}/>, "Cancel editing a Box name."],

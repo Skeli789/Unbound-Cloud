@@ -56,6 +56,17 @@ def HitBackButton(driver: webdriver.Chrome):
     ClickButton(backButton)
 
 
+def HitReorderButton(driver: webdriver.Chrome):
+    """
+    Hit the reorder button on the box list view.
+
+    :param driver: The Selenium WebDriver instance.
+    """
+    # Click the reorder button
+    reorderButton = WaitForElement(driver, By.ID, "reorder-button")
+    ClickButton(reorderButton)
+
+
 def GetBox(driver: webdriver.Chrome, boxId: int) -> WebElement:
     """
     Get a box element by its ID.
@@ -103,8 +114,7 @@ def MultiDragBoxes(driver: webdriver.Chrome, boxIds: list):
     """
     for boxId in boxIds:
         box = driver.find_element(By.ID, f"box-{boxId}")
-        actionChains = webdriver.ActionChains(driver)
-        actionChains.context_click(box).perform()  # Right click on the box
+        box.click() # Click the box to select it
 
 
 def DragMultiDragedBoxes(driver: webdriver.Chrome, boxToDragFrom: int, boxToDragTo: int):
@@ -230,6 +240,9 @@ def TestReversingAndRevertingBoxOrder(driver: webdriver.Chrome, tester: TestCase
     # Open the save box list
     OpenSaveBoxList(driver)
 
+    # Allow reordering boxes
+    HitReorderButton(driver)
+
     # Reverse the box order
     ReverseBoxOrder(driver, boxCount)
 
@@ -250,6 +263,9 @@ def TestReversingAndRevertingBoxOrder(driver: webdriver.Chrome, tester: TestCase
 
     # Open the save box list again
     OpenSaveBoxList(driver)
+
+    # Allow reordering boxes
+    HitReorderButton(driver)
 
     # Reverse the box order again to revert it back to the original order
     ReverseBoxOrder(driver, boxCount)
@@ -280,6 +296,9 @@ def TestMultiDragBoxes(driver: webdriver.Chrome, tester: TestCase, boxIdsToSelec
     """
     # Open the save box list
     OpenSaveBoxList(driver)
+
+    # Allow reordering boxes
+    HitReorderButton(driver)
 
     # Multi-select boxes 7-9, 12-14, and 17-19
     idOffset = 1 # The number of ids off the boxes will be

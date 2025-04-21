@@ -3,6 +3,7 @@
  */
 
 import React, {Component} from 'react';
+import {Button, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {isMobile} from "react-device-detect";
 import {closestCenter, DndContext, DragOverlay, KeyboardSensor, PointerSensor,
         useSensor, useSensors} from '@dnd-kit/core';
@@ -17,7 +18,7 @@ import {MatchesSearchCriteria} from "./Search";
 import {CreateSingleBlankSelectedPos, GetBoxStartIndex, IsHomeBox} from "./Util";
 import {PlayErrorSound} from "./subcomponents/footer/SoundsButton";
 
-import {MdArrowDropDownCircle} from "react-icons/md";
+import {MdGridView} from "react-icons/md";
 
 import "./stylesheets/BoxList.css";
 import "./stylesheets/PokeBallIcon.css";
@@ -59,6 +60,7 @@ export class BoxList extends Component
             currentBoxes: props.currentBoxes,
 
             //Dragging state
+            draggingMode: false, //Whether the user is dragging boxes or selecting one to jump to
             multiSelectedSpots: [], //The spots of the boxes selected for multi dragging
             draggingSpot: -1, //The spot the box was being dragged from
             draggingBoxId: -1, //The id of the box being dragged corresponding to the id it had when the page loaded
@@ -243,6 +245,9 @@ export class BoxList extends Component
      */
     handleKeyDown()
     {
+        if (this.state.draggingMode) //If the user is dragging boxes, don't focus on the input field
+            return;
+
         let inputFields = document.getElementsByTagName("input");
         if (inputFields.length > 0)
             inputFields[0].focus();
@@ -275,15 +280,26 @@ export class BoxList extends Component
     }
 
     /**
+     * Toggles the dragging mode on or off.
+     */
+    toggleDraggingMode()
+    {
+        this.setState
+        ({
+            draggingMode: !this.state.draggingMode,
+            multiSelectedSpots: [], //Reset multi-selected boxes
+            boxNameFilter: "", //Reset the filter
+        });
+        this.resetDraggingBoxIds(); //Reset the dragging box ids
+    }
+
+    /**
      * Handle selecting a box to be dragged with multiple boxes.
      * @param {Event} e - The event triggered by the click.
      * @param {Number} spot - The spot of the box being clicked.
      */
-    handleMultiSelectBoxClick(e, spot)
+    handleMultiSelectBoxClick(spot)
     {
-        //Prevent default context menu from appearing
-        e.preventDefault();
-
         //Prevent selecting more than four boxes at once
         let multi = this.state.multiSelectedSpots.slice(); //Copy the current multi-selected spots
         if (multi.length >= MAX_DRAGGING_BOXES_AT_ONCE && !this.isSelectedForMultiDragging(spot))
@@ -478,6 +494,8 @@ export class BoxList extends Component
 
         //Make the box's class name
         boxClasses = "mini-box " + (IsHomeBox(this.props.boxType) ? "home-box" : "save-box");
+        if (!this.state.draggingMode)
+            boxClasses += " selectable-mini-box"; //Selectable mode
         if (this.isSelectedForMultiDragging(spot))
             boxClasses += " multi-selected-box"; //Box selected for multi dragging
 
@@ -496,24 +514,24 @@ export class BoxList extends Component
 
         //Create the entire box
         return (
-            <div className="mini-box-with-title" id={`box-${boxId}-with-title`} key={boxId}>
+            <div className={"mini-box-with-title" + ((this.state.draggingMode) ? " draggable-mini-box" : "")}
+                 id={`box-${boxId}-with-title`} key={boxId}>
             {
                 !hidden ?
                 <>
                     <div className={boxClasses + (disabledBox ? " disabled-box" : "")}
                         id={`box-${boxId}`}
-                        onClick={disabledBox ? null : this.jumpToBoxAtSpot.bind(this, spot)}
-                        onContextMenu={(e) => {this.handleMultiSelectBoxClick(e, spot)}} //Right-click to select for multi dragging
+                        onClick={disabledBox ? null
+                                 : this.state.draggingMode ? this.handleMultiSelectBoxClick.bind(this, spot) //Select for multi dragging
+                                 : this.jumpToBoxAtSpot.bind(this, spot)}
                     >
                         {icons}
                     </div>
                     {title}
                 </>
                 :
-                    //Show an arrow to point to where the box is being dragged to
-                    <div className="place-box-indicator" id={`place-box-${boxId}`}>
-                        <MdArrowDropDownCircle size={42} />
-                    </div>
+                    //Show a placeholder to point to where the box is being dragged to
+                    <div className="mini-box-with-title place-box-indicator" id={`place-box-${boxId}`} />
             }
             </div>
         );
@@ -542,8 +560,13 @@ export class BoxList extends Component
             let boxId = this.spotToBoxId(spot); //Get the id the box had when the page loaded
             const boxView = this.createBoxView(spot, this.state.draggingBoxId === boxId); //Create the box view
 
-            if (!this.draggingAllowed())
-                return boxView; //No dragging at all, so just return the box view
+            if (!this.draggingAllowed() || !this.state.draggingMode)
+                //No dragging at all, so just return the box view
+                return (
+                    <div> {/* Use div to maintain the same structure as the draggable box */}
+                        {boxView}
+                    </div>
+                );
             else
             {
                 return (
@@ -553,6 +576,33 @@ export class BoxList extends Component
                 );
             }
         });
+    }
+
+    /**
+     * Renders the reorder button to toggle dragging mode.
+     * @param {Boolean} visible - Whether the button should be visible or not and just take up space.
+     * @returns {JSX.Element|null} The reorder button element or null if dragging is not allowed.
+     */
+    printReorderButton(visible)
+    {
+        let tooltipText = this.state.draggingMode ? "Stop Reordering" : "Reorder Boxes";
+        let iconSize = 24;
+        let iconFill = (this.state.draggingMode ? "#f33d21" : "currentColor"); //Red when dragging mode is active
+        const tooltip = props => (<Tooltip {...props}>{tooltipText}</Tooltip>);
+
+        if (!this.draggingAllowed())
+            return null;
+
+        return (
+            <OverlayTrigger placement="top" overlay={tooltip}>
+                <Button size="lg" id="reorder-button"
+                        aria-label="Reorder Boxes"
+                        style={{visibility: visible ? "visible" : "hidden"}}
+                        onClick={this.toggleDraggingMode.bind(this)} >
+                        <MdGridView size={iconSize} fill={iconFill} />
+                </Button>
+            </OverlayTrigger>
+        );
     }
 
     /**
@@ -583,24 +633,27 @@ export class BoxList extends Component
             <div className="box-list-container">
                 {/* Box Filter */}
                 <div className="box-list-filter-container">
-                    {/* Input */}
-                    <TextField
-                        id="filter"
-                        className="box-list-filter"
-                        variant="outlined"
-                        label="Type to filter..."
-                        size="small"
-                        onChange={this.updateFilter.bind(this)}
-                        defaultValue={this.state.boxNameFilter}
-                    />
+                    {this.printReorderButton(false)} {/* Placeholder for margin */}
 
-                    {/* Dragging Instructions */}
                     {
-                        this.draggingAllowed() &&
-                            <p className="dragging-instructions">
-                                Drag boxes to reorder them. Right-click to select up to {MAX_DRAGGING_BOXES_AT_ONCE} boxes at once!
-                            </p>
+                        //Filter input
+                        !this.state.draggingMode ?
+                            <TextField
+                                id="filter"
+                                className="box-list-filter"
+                                variant="outlined"
+                                label="Type to filter..."
+                                size="small"
+                                onChange={this.updateFilter.bind(this)}
+                                defaultValue={this.state.boxNameFilter}
+                            />
+                        : //Dragging Instructions
+                            <span className="dragging-instructions">
+                                Drag boxes to reorder them.<br/>Click to select up to {MAX_DRAGGING_BOXES_AT_ONCE} boxes at once!
+                            </span>
                     }
+
+                    {this.printReorderButton(true)}
                 </div>
 
                 {/* Actual Boxes */}

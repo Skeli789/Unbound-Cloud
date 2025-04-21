@@ -28,12 +28,15 @@
 {
     text-align: center;
     margin-top: 15px;
+    display: flex;
+    justify-content: center;
 }
 
-.box-list-filter
+.box-list-filter, .dragging-instructions
 {
     width: 100%;
     max-width: 400px;
+    margin: auto 1rem auto 1rem !important; /* Top, Right, Bottom, Left */
 }
 
 .box-list-empty-filter
@@ -49,8 +52,8 @@
 
 .dragging-instructions
 {
-    margin-top: 0.5rem;
     font-style: italic;
+    font-weight: bold;
 }
 
 .mini-boxes
@@ -116,7 +119,6 @@
     grid-template-columns: auto auto auto auto auto auto;
     padding: 2px;
     width: fit-content;
-    cursor: pointer;
     border-radius: 5%;
 }
 
@@ -130,7 +132,12 @@
     border: 3px solid var(--home-box-color);
 }
 
-.mini-box:hover
+.selectable-mini-box
+{
+    cursor: pointer;
+}
+
+.selectable-mini-box:hover
 {
     filter: brightness(150%);
     --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -139,6 +146,11 @@
     transition-property: box-shadow;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
+}
+
+.draggable-mini-box
+{
+    cursor: grab;
 }
 
 .mini-box-cell
@@ -186,6 +198,14 @@
 .multi-selected-box
 {
     border: 3px solid red !important;
+}
+
+.place-box-indicator
+{
+    border: 3px solid red;
+    border-radius: 5%;
+    width: 99px;
+    height: 83px;
 }
 
 /* Styling for the drag overlay */
