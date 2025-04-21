@@ -127,7 +127,7 @@ export class PokemonSummary extends Component
             let alt = typeName.slice(0, 2);
             let typeNameTooltip = props => (<Tooltip {...props}>{typeName}</Tooltip>);
 
-            if (typeNum == "2" && baseStats["type1"] == baseStats["type2"])
+            if (typeNum === "2" && baseStats["type1"] === baseStats["type2"])
                 return ""; //Don't print duplicate types
 
             return (
@@ -605,8 +605,8 @@ export class PokemonSummary extends Component
             <div className="summary-moves-container">
                 <span className="summary-moves-col-1-filler"/>
                 <span className="summary-moves-col-2-filler"/>
-                <span className="summary-moves-col-3-filler"/>
-                <span className="summary-moves-pp-title summary-pp">PP</span>
+                <span className="summary-moves-moves-title">Moves</span>
+                <span className="summary-moves-pp-title">PP</span>
                 <span className="summary-moves-split-title">Split</span>
                 {moves}
             </div>
@@ -662,6 +662,12 @@ export class PokemonSummary extends Component
 
                 {/*Nickname, Gender, Level, Friendship, & Gigantamax Row*/}
                 <div className="summary-name-level-container">
+                    {/*Types*/}
+                    {/* <span className="summary-types" id="types">
+                        {this.printSpeciesType("1")}
+                        {this.printSpeciesType("2")}
+                    </span> */}
+
                     {/*Nickname*/}
                     {this.printNickname()}
 
@@ -683,12 +689,6 @@ export class PokemonSummary extends Component
 
                     {/*Pokerus*/}
                     {!this.state.inGTS ? this.printPokerusSymbol() : ""}
-
-                    {/*Types*/}
-                    {/*<span>
-                        {this.printSpeciesType("1")}
-                        {this.printSpeciesType("2")}
-                    </span>*/}
                 </div>
 
                 {/*OT Summary Row*/}
