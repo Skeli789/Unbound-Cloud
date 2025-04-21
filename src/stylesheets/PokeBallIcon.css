@@ -1,0 +1,80 @@
+.poke-ball-icon
+{
+    /* Outer container: responsive square with black border simulated via padding */
+    width: 90%;
+    aspect-ratio: 1; /* Leep square shape */
+    background-color: black;
+    border: 0.25px solid black;
+    border-radius: 50%; /* Circle shape */
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+
+    --darkreader-background-ffffff: lightgrey;
+    --darkreader-border-000000: white;
+}
+
+/* Central white band */
+.poke-ball-icon .band
+{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 10%; /* 10% of container height */
+    background-color: white;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+/* Connectors from band to button */
+.poke-ball-icon .connector
+{
+    position: absolute;
+    top: 50%;
+    height: 10%; /* Same as band height */
+    background-color: white;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.poke-ball-icon .connector.left
+{
+    left: 5%; /* Start at inside of border padding */
+    width: calc(50% - 10% - 2.5%); /* Half width minus half band minus half padding */
+}
+
+.poke-ball-icon .connector.right
+{
+    right: 5%; /* Mirror on right side */
+    width: calc(50% - 10% - 2.5%);
+}
+
+/* Central button */
+.poke-ball-icon .button
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40%; /* Relative to container */
+    height: 40%; /* Maintain square */
+    background-color: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+/* Inner ring of button */
+.poke-ball-icon .button::after
+{
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 25%; /* half of outer button size */
+    height: 25%;
+    background-color: transparent;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}

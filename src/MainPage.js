@@ -3295,7 +3295,8 @@ export default class MainPage extends Component
                      currentBoxes={this.state.currentBox} selectedMonPos={this.state.selectedMonPos}
                      summaryMon={this.state.summaryMon} searchCriteria={this.state.searchCriteria[this.state.viewingBoxList]}
                      isSameBoxBothSides={this.state.editState === STATE_EDITING_SAVE_FILE || this.state.editState === STATE_EDITING_HOME_BOXES}
-                     gameId={this.state.saveGameId} globalState={this}
+                     gameId={this.state.saveGameId}
+                     navBackButtonPressed={this.navBackButtonPressed.bind(this)}
                      updateParentState={this.updateState}/>
         );
     }

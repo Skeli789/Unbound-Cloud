@@ -8,6 +8,10 @@ import {Button, OverlayTrigger, Tooltip} from "react-bootstrap";
 
 import {MdVolumeUp, MdVolumeOff} from "react-icons/md"
 
+import Error from '../../audio/Error.mp3';
+
+const errorSound = new Audio(Error);
+
 
 export class SoundsButton extends Component
 {
@@ -71,6 +75,15 @@ export class SoundsButton extends Component
 export function AreSoundsMuted()
 {
     return ("muted" in localStorage && localStorage.muted === "true") ? true : false;
+}
+
+/**
+ * Play an error sound effect.
+ */
+export function PlayErrorSound()
+{
+    if (!AreSoundsMuted())
+        errorSound.play();
 }
 
 export default SoundsButton;
