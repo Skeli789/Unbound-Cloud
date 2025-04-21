@@ -67,7 +67,7 @@ def QuitDriver(driver: webdriver.Chrome):
     driver.quit()
 
 
-def ToggleDemoSite():
+def ToggleDemoSite(on: bool):
     """
     Either enable or disable the demo site by modifying the MainPage.js file and forcing a rerender.
     """
@@ -76,18 +76,31 @@ def ToggleDemoSite():
     with open(filePath, "r+", encoding="utf-8") as file:
         lines = file.readlines()
         for i, line in enumerate(lines):
-            if line.startswith("const DEMO_SITE = true;"):
-                print("Toggled demo site off")
-                lines[i] = lines[i].replace("const DEMO_SITE = true;", "const DEMO_SITE = false;")
-                break
-            elif line.startswith("const DEMO_SITE = false;"):
-                print("Toggled demo site on")
-                lines[i] = lines[i].replace("const DEMO_SITE = false;", "const DEMO_SITE = true;")
+            if line.startswith("const DEMO_SITE ="):
+                if not on and line.startswith("const DEMO_SITE = true;"):
+                    print("Toggled demo site off")
+                    lines[i] = lines[i].replace("const DEMO_SITE = true;", "const DEMO_SITE = false;")
+                elif on and line.startswith("const DEMO_SITE = false;"):
+                    print("Toggled demo site on")
+                    lines[i] = lines[i].replace("const DEMO_SITE = false;", "const DEMO_SITE = true;")
                 break
         file.seek(0)
         file.writelines(lines)
         file.truncate()
 
+
+def EnableDemoSite():
+    """
+    Enable the demo site.
+    """
+    ToggleDemoSite(True)
+
+
+def DisableDemoSite():
+    """
+    Disable the demo site.
+    """
+    ToggleDemoSite(False)
 
 
 def WaitForElement(driver: webdriver.Chrome, byType: str, byValue: str) -> WebElement:

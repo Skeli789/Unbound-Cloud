@@ -28,12 +28,21 @@
 {
     text-align: center;
     margin-top: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.box-list-filter, .dragging-instructions
+{
+    width: 100%;
+    max-width: 400px;
+    margin: auto 1rem auto 1rem !important; /* Top, Right, Bottom, Left */
 }
 
 .box-list-empty-filter
 {
     text-align: center;
-    margin-top: 25px;
+    margin: 25px auto auto auto; /* Top, Right, Bottom, Left */
 }
 
 .box-list-empty-filter-text
@@ -41,21 +50,36 @@
     font-size: 3rem;
 }
 
+.dragging-instructions
+{
+    font-style: italic;
+    font-weight: bold;
+}
+
 .mini-boxes
 {
     display: flex;
     flex-wrap: wrap;
     padding-top: 15px;
-    height: 90%;
+    justify-content: flex-start;
+    /* No fixed height to avoid sticky ending row issues */
+
+    /* Center the container properly */
+    margin-left: auto;
+    margin-right: auto;
+    width: 95%;
+    max-width: 1200px;
 }
 
+/* Make the boxes themselves have a consistent width */
 .mini-boxes > div
 {
-    flex: 1 0 20%; /*5 boxes per row*/
+    flex: 0 0 20%; /* Fixed width without growing */
+    box-sizing: border-box; /* Include padding in width calculation */
 }
 
-
-@media (max-width: 1130px) /*Below and including this screen size*/
+/* Responsive design for smaller screens */
+@media (max-width: 900px) /*Below and including this screen size*/
 {
     .mini-boxes > div
     {
@@ -63,19 +87,11 @@
     }
 }
 
-@media (max-width: 900px)
-{
-    .mini-boxes > div
-    {
-        flex-basis: 26%; /*3 boxes per row*/
-    }
-}
-
 @media (max-width: 690px)
 {
     .mini-boxes > div
     {
-        flex-basis: 34%; /*2 boxes per row*/
+        flex-basis: 33%; /*3 boxes per row*/
     }
 }
   
@@ -83,7 +99,7 @@
 {
     .mini-boxes > div
     {
-        flex-basis: 51%; /*1 box per row*/
+        flex-basis: 50%; /*2 boxes per row*/
     }
 }
 
@@ -91,8 +107,10 @@
 {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 1%;
+    height: 100%;
+    margin-bottom: 1rem;
 }
 
 .mini-box
@@ -101,23 +119,52 @@
     grid-template-columns: auto auto auto auto auto auto;
     padding: 2px;
     width: fit-content;
+    border-radius: 5%;
+}
+
+.mini-box-with-title .save-box /* Save box within a mini-box */
+{
+    border: 3px solid var(--save-box-color);
+}
+
+.mini-box-with-title .home-box /* Home box within a mini-box */
+{
+    border: 3px solid var(--home-box-color);
+}
+
+.selectable-mini-box
+{
     cursor: pointer;
 }
 
-.mini-box:hover
+.selectable-mini-box:hover
 {
     filter: brightness(150%);
+    --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+    transition-property: box-shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.draggable-mini-box
+{
+    cursor: grab;
 }
 
 .mini-box-cell
 {
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid rgb(0, 0, 0);
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     -webkit-user-select: none;
     user-select: none;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .mini-box-title
@@ -131,20 +178,57 @@
 }
 
 .disabled-box
-{    
-    background-color: grey;
+{ 
+    background-color: grey !important;
+    border: 3px solid grey !important;
     filter: unset !important;
     cursor: not-allowed !important;
 }
 
-[data-darkreader-scheme="dark"] .home-box .poke-ball-icon
+.mini-box-with-title .disabled-box .mini-box-cell .poke-ball-icon /* Be as specific as possible to make sure the CSS overrides */
 {
-    filter: brightness(0.75) !important; /* Make icon slightly darker */
-    fill: var(--home-box-color) !important
+    fill: grey !important;
 }
 
-[data-darkreader-scheme="dark"] .save-box .poke-ball-icon
+.mini-box-with-title .disabled-box .mini-box-cell
 {
-    filter: brightness(0.75) !important; /* Make icon slightly darker */
-    fill: var(--save-box-color) !important
+    border-color: grey !important;
+}
+
+.multi-selected-box
+{
+    border: 3px solid red !important;
+}
+
+.place-box-indicator
+{
+    border: 3px solid red;
+    border-radius: 5%;
+    width: 99px;
+    height: 83px;
+}
+
+/* Styling for the drag overlay */
+.drag-overlay-group
+{
+    display: flex;
+    flex-wrap: wrap;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 360px;
+    cursor: move;
+}
+
+.mini-box-overlay .mini-box
+{
+    transform: scale(0.5); /* Shrink the mini-boxes in the multi-select drag overlay */
+    cursor: move !important; /* Change cursor to indicate dragging */
+}
+
+.drag-overlay-item
+{
+    /* Prevent layout shifting due to scaling */
+    margin: 4px;
 }
