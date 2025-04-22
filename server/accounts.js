@@ -553,6 +553,9 @@ async function SendPasswordResetCode(email)
     }
 
     var resetCode = await CreatePasswordResetCode(username);
+    if (!resetCode)
+        return false;
+
     return await messages.SendPasswordResetEmail(email, username, resetCode);
 }
 module.exports.SendPasswordResetCode = SendPasswordResetCode;
