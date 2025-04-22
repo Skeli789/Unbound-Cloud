@@ -402,6 +402,20 @@ export default class MainPage extends Component
             this.tryResetGTSState();
     }
 
+    /**
+     * Displays the box view when the user is ready to start moving Pokemon around.
+     */
+    openBoxView()
+    {
+        this.wipeErrorMessage();
+        this.setState({editState: STATE_MOVING_POKEMON}, () =>
+        {
+            PlayOrPauseMainMusicTheme();
+            if (!localStorage.visitedBefore)
+                ShowSymbolTutorial();
+        });
+    }
+
 
     /**********************************
            Box Utility Functions       
@@ -846,13 +860,10 @@ export default class MainPage extends Component
             console.log("Last home file upload successful.");
 
             this.setState({
-                editState: STATE_MOVING_POKEMON,
                 homeBoxes: res.data.boxes,
                 homeTitles: res.data.titles,
             });
-
-            PlayOrPauseMainMusicTheme();
-            this.wipeErrorMessage();
+            this.openBoxView(); //Ready to start moving Pokemon
         }
         else
         {
@@ -993,22 +1004,12 @@ export default class MainPage extends Component
                     }
                 }
 
-                this.setState({editState: STATE_MOVING_POKEMON});
-                PlayOrPauseMainMusicTheme();
-                if (!localStorage.visitedBefore)
-                    ShowSymbolTutorial();
+                this.openBoxView(); //Ready to start moving Pokemon
             }
             else
             {
                 if (ACCOUNT_SYSTEM || this.state.isFirstTime)
-                {
-                    this.setState({editState: STATE_MOVING_POKEMON}, () =>
-                    {
-                        PlayOrPauseMainMusicTheme();
-                        if (!localStorage.visitedBefore)
-                            ShowSymbolTutorial();
-                    });
-                }
+                    this.openBoxView(); //Ready to start moving Pokemon
                 else
                     this.setState({editState: STATE_UPLOAD_HOME_FILE});
             }
@@ -1053,7 +1054,7 @@ export default class MainPage extends Component
                 });
 
                 if (!isUsingFileHandles)
-                    this.setState({editState: STATE_MOVING_POKEMON}, () => {PlayOrPauseMainMusicTheme()});
+                    this.openBoxView(); //Ready to start moving Pokemon
                 else
                     this.setState({editState: this.state.editState}); //Uploading a home file handle doesn't change the edit state (updated above in the call stack)
 
@@ -3435,16 +3436,7 @@ export default class MainPage extends Component
                                 accept=".dat" />
                     </label>
 
-                    <Button size="lg" onClick={() => this.setState
-                        ({
-                            editState: STATE_MOVING_POKEMON,
-                            fileUploadError: false,
-                            serverConnectionError: false
-                        }, () =>
-                        {
-                            PlayOrPauseMainMusicTheme();
-                            ShowSymbolTutorial();
-                        })}
+                    <Button size="lg" onClick={this.openBoxView.bind(this)}
                             className="choose-home-file-button">
                         Create New
                     </Button>
