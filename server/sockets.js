@@ -6,6 +6,10 @@ require('dotenv').config({path: __dirname + '/.env'});
 const accounts = require('./accounts');
 const pokemonUtil = require('./pokemon-util');
 
+//General data
+const ENFORCE_USERNAMES = (process.env["ACCOUNT_SYSTEM"] === "true") ? true : false; //Whether to enforce usernames for trading to not be blank
+const INVALID_CLOUD_DATA_SYNC_KEY_ERROR = "The Cloud data has already been opened in another tab!\nPlease reload the page to avoid data corruption.";
+
 //Friend Trade data
 const gFriendTradeClients = {};
 const gCodesInUse = {};
@@ -29,8 +33,6 @@ const WONDER_TRADE_TRADED = 2;
 
 const WONDER_TRADE_SPECIES_COOLDOWN = 5 * 60 * 1000; //5 Minutes
 
-//General data
-const INVALID_CLOUD_DATA_SYNC_KEY_ERROR = "The Cloud data has already been opened in another tab!\nPlease reload the page to avoid data corruption.";
 
 
 /**
@@ -69,30 +71,39 @@ function UnlockWonderTrade()
 /**
  * Validates that the client trying to trade didn't already open the Cloud data in a new tab.
  * @param {String} username - The user who's trying to trade.
+ * @param {String} clientId - The client id of the user trying to trade.
  * @param {String} cloudDataSyncKey - The cloud data sync key sent from the client to verify.
  * @param {Boolean} randomizer - Whether or not the Cloud Boxes are for a randomized save.
  * @param {WebSocket} socket - The web socket used to connect to the client.
  * @param {String} clientType - Either "FT" for "Friend Trade", or "WT" for "Wonder Trade".
  * @returns {Promise<Boolean>} Whether the trade is allowed to happen. False if the user already opened their Cloud Boxes in a new tab.
  */
-async function CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, randomizer, socket, clientType)
+async function CloudDataSyncKeyIsValidForTrade(username, clientId, cloudDataSyncKey, randomizer, socket, clientType)
 {
-    if (username !== "")
+    const routeWhenInvalid = "invalidCloudDataSyncKey";
+
+    if (username)
     {
         let userKey = await accounts.GetCloudDataSyncKey(username, randomizer);
-        
-        if (userKey === "")
+
+        if (!cloudDataSyncKey)
         {
-            console.log(`${clientType}-Client ${username} sent no cloud data sync key`);
-            socket.emit("invalidCloudDataSyncKey", "The cloud data sync key was missing!");
+            console.log(`[${clientType}] ${username} sent no cloud data sync key`);
+            socket.emit(routeWhenInvalid, "The cloud data sync key was missing!");
             return false;
         }
         else if (cloudDataSyncKey !== userKey)
         {
-            console.log(`${clientType}-Client ${username} sent an old cloud data sync key`);
-            socket.emit("invalidCloudDataSyncKey", INVALID_CLOUD_DATA_SYNC_KEY_ERROR);
+            console.log(`[${clientType}] ${username} sent an old cloud data sync key`);
+            socket.emit(routeWhenInvalid, INVALID_CLOUD_DATA_SYNC_KEY_ERROR);
             return false;
         }
+    }
+    else if (ENFORCE_USERNAMES) //Account system is enabled, but no username was sent
+    {
+        console.log(`[${clientType}] ${clientId} sent no username`);
+        socket.emit(routeWhenInvalid, "A username must be provided to trade!");
+        return false;
     }
 
     return true;
@@ -108,7 +119,8 @@ async function TryPreventUserFromWonderTradingTwice(username, socket)
 {
     for (let client of Object.values(gWonderTradeClients))
     {
-        if (client.username === username && client.tradedWith === 0) //User is already in a Wonder Trade and hasn't traded yet
+        if (username && client.username //Account system is enabled
+        && client.username === username && client.tradedWith === 0) //User is already in a Wonder Trade and hasn't traded yet
         {
             console.log(`[WT] ${username} has active Wonder Trade elsewhere so cancelling this trade`);
             socket.emit("invalidCloudDataSyncKey", "Your account already has a Wonder Trade in progress!");
@@ -276,17 +288,21 @@ function InitSockets(io)
     io.on("connection", async function(socket)
     {
         const clientId = socket.id;
-        console.log(`Client ${clientId} connected`);
+        let clientName = clientId; //Use the client id as the name by default
+        console.log(`Client ${clientName} connected`);
 
-        socket.on("tradeType", async (tradeType, username) =>
+        socket.on("tradeType", async (tradeType, username, cloudDataSyncKey) =>
         {
+            if (username)
+                clientName = username; //Set the client name to the username if it was sent
+
             if (tradeType === "WONDER_TRADE")
             {
                 console.log(`[WT] ${clientId} (${username}) wants a Wonder Trade`);
 
-                socket.on("message", async (pokemonToSend, randomizer, username, cloudDataSyncKey) =>
+                socket.on("message", async (pokemonToSend, randomizer) =>
                 {
-                    if (!(await CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, randomizer, socket, "WT")))
+                    if (!(await CloudDataSyncKeyIsValidForTrade(username, clientId, cloudDataSyncKey, randomizer, socket, "WT")))
                         return;
 
                     await LockWonderTrade(); //So no other threads can access it right now
@@ -302,7 +318,7 @@ function InitSockets(io)
 
                     if (!pokemonUtil.ValidatePokemon(pokemonToSend, false))
                     {
-                        console.log(`[WT] ${username} sent an invalid Pokemon for a Wonder Trade`);
+                        console.log(`[WT] ${clientName} sent an invalid Pokemon for a Wonder Trade`);
                         socket.emit("invalidPokemon");
                     }
                     else
@@ -323,6 +339,7 @@ function InitSockets(io)
                         {
                             if (!(clientId in gWonderTradeClients)) //Don't overwrite previously requested mon
                             {
+                                console.log(`[WT] ${clientName} is offering ${pokemonUtil.GetSpecies(pokemonToSend)}`);
                                 let messageId = await SendWonderTradeDiscordMessage("Someone is waiting for a Wonder Trade!", 0x00FF00, 0); //Green
                                 gWonderTradeClients[clientId] = {username: username, pokemon: pokemonToSend, tradedWith: 0, randomizer: randomizer, discordMessageId: messageId};
                             }
@@ -335,7 +352,7 @@ function InitSockets(io)
                 socket.on('disconnect', async () =>
                 {
                     await LockWonderTrade();
-                    console.log(`[WT] ${username} disconnected`);
+                    console.log(`[WT] ${clientName} disconnected`);
 
                     if (clientId in gWonderTradeClients && gWonderTradeClients[clientId].tradedWith === 0)
                         await SendWonderTradeDiscordMessage("The Wonder Trade was cancelled...", 0xFF0000, gWonderTradeClients[clientId].discordMessageId); //Red
@@ -348,24 +365,24 @@ function InitSockets(io)
             {
                 console.log(`[FT] ${clientId} (${username}) wants a Friend Trade`);
 
-                socket.on("createCode", async (randomizer, username, cloudDataSyncKey) =>
+                socket.on("createCode", async (randomizer) =>
                 {                
-                    if (!(await CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, randomizer, socket, "FT")))
+                    if (!(await CloudDataSyncKeyIsValidForTrade(username, clientId, cloudDataSyncKey, randomizer, socket, "FT")))
                         return;
 
                     let code = CreateFriendCode();
                     socket.emit("createCode", code);
-                    console.log(`[FT] ${username} has created code "${code}"`);
+                    console.log(`[FT] ${clientName} has created code "${code}"`);
                     gFriendTradeClients[clientId] = {username: username, code: code, friend: "", randomizer: randomizer, state: FRIEND_TRADE_INITIAL};
                     gCodesInUse[code] = true;
                 });
 
-                socket.on("checkCode", async (code, randomizer, username, cloudDataSyncKey) =>
+                socket.on("checkCode", async (code, randomizer) =>
                 {
                     let partnerFound = false;
-                    console.log(`[FT] ${username} is looking for code "${code}"`);
+                    console.log(`[FT] ${clientName} is looking for code "${code}"`);
 
-                    if (!(await CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, randomizer, socket, "FT")))
+                    if (!(await CloudDataSyncKeyIsValidForTrade(username, clientId, cloudDataSyncKey, randomizer, socket, "FT")))
                         return;
 
                     for (let otherClientId of Object.keys(gFriendTradeClients))
@@ -375,15 +392,16 @@ function InitSockets(io)
                         if (gFriendTradeClients[otherClientId].friend === "" //Hasn't found a partner yet
                         && gFriendTradeClients[otherClientId].code === code) //Code matches so this will be the partner
                         {
-                            if (username === otherUserName || clientId === otherClientId) //Can't trade with yourself
+                            if ((username && otherUserName && username === otherUserName) //Account system is enabled
+                            || clientId === otherClientId) //Can't trade with yourself
                             {
-                                console.log(`[FT] ${username} tried to trade with themself`);
+                                console.log(`[FT] ${clientName} tried to trade with themself`);
                                 socket.emit("tradeWithSelf");
                                 return;
                             }
 
                             partnerFound = true;
-                            console.log(`[FT] ${username} has matched with ${otherUserName}`);
+                            console.log(`[FT] ${clientName} has matched with ${otherUserName}`);
 
                             if ((!randomizer && !gFriendTradeClients[otherClientId].randomizer)
                             || (randomizer && gFriendTradeClients[otherClientId].randomizer)) //Randomizer status matches
@@ -394,7 +412,7 @@ function InitSockets(io)
                             }
                             else
                             {
-                                console.log(`But [FT]s ${username} and ${otherUserName} don't match randomizer statuses`);
+                                console.log(`[FT] But ${clientName} and ${otherUserName} don't match randomizer statuses`);
                                 socket.emit("mismatchedRandomizer");
                             }
                         }
@@ -402,7 +420,7 @@ function InitSockets(io)
 
                     if (!partnerFound)
                     {
-                        console.log(`[FT] ${username} could not find partner`);
+                        console.log(`[FT] ${clientName} could not find partner`);
                         socket.emit("friendNotFound");
                     }
                 });
@@ -411,15 +429,15 @@ function InitSockets(io)
                 {
                     if (!pokemonUtil.ValidatePokemon(pokemon, true))
                     {
-                        console.log(`[FT] ${username} sent an invalid Pokemon for a Friend Trade`);
+                        console.log(`[FT] ${clientName} sent an invalid Pokemon for a Friend Trade`);
                         socket.emit("invalidPokemon");
                     }
                     else if (clientId in gFriendTradeClients)
                     {
                         if (pokemon != null && "species" in pokemon)
-                            console.log(`[FT] ${username} is offering ${pokemonUtil.GetSpecies(pokemon)}`);
+                            console.log(`[FT] ${clientName} is offering ${pokemonUtil.GetSpecies(pokemon)}`);
                         else
-                            console.log(`[FT] ${username} cancelled the trade offer`);
+                            console.log(`[FT] ${clientName} cancelled the trade offer`);
 
                         gFriendTradeClients[clientId].offeringPokemon = pokemon;
                         gFriendTradeClients[clientId].notifiedFriendOfOffer = false;
@@ -438,7 +456,7 @@ function InitSockets(io)
 
                 socket.on('tradeAgain', () =>
                 {
-                    console.log(`[FT] ${username} wants to trade again`);
+                    console.log(`[FT] ${clientName} wants to trade again`);
                     gFriendTradeClients[clientId].state = FRIEND_TRADE_NOTIFIED_CONNECTION;
                     gFriendTradeClients[clientId].offeringPokemon = null;
                     gFriendTradeClients[clientId].notifiedFriendOfOffer = false;
@@ -450,7 +468,7 @@ function InitSockets(io)
                     if (clientId in gFriendTradeClients)
                         delete gCodesInUse[gFriendTradeClients[clientId].code];
                     delete gFriendTradeClients[clientId]; //Remove data so no one trades with it
-                    console.log(`[FT] ${username} disconnected`);
+                    console.log(`[FT] ${clientName} disconnected`);
                 });
             }
         });
@@ -483,11 +501,12 @@ function InitSockets(io)
             && gFriendTradeClients[clientId].friend !== "")
             {
                 let username = gFriendTradeClients[clientId].username;
+                let clientName = (username) ? username : clientId; //Set the client name to the username if it was sent
 
                 switch (gFriendTradeClients[clientId].state)
                 {
                     case FRIEND_TRADE_CONNECTED:
-                        console.log(`[FT] ${username} has been notified of the friend connection`);
+                        console.log(`[FT] ${clientName} has been notified of the friend connection`);
                         gFriendTradeClients[clientId].state = FRIEND_TRADE_NOTIFIED_CONNECTION;
                         socket.emit("friendFound");
                         break;
@@ -507,9 +526,9 @@ function InitSockets(io)
                                     friendPokemon = gFriendTradeClients[friend].offeringPokemon;
 
                                     if (friendPokemon == null || !("species" in friendPokemon))
-                                        console.log(`[FT] ${username} has been notified of the the trade offer cancellation`);
+                                        console.log(`[FT] ${clientName} has been notified of the the trade offer cancellation`);
                                     else
-                                        console.log(`[FT] ${username} received offer for ${pokemonUtil.GetSpecies(friendPokemon)}`);
+                                        console.log(`[FT] ${clientName} received offer for ${pokemonUtil.GetSpecies(friendPokemon)}`);
 
                                     socket.emit("tradeOffer", friendPokemon); //Can be sent null (means partner cancelled offer)
                                     gFriendTradeClients[friend].notifiedFriendOfOffer = true;
@@ -536,7 +555,7 @@ function InitSockets(io)
                         pokemonUtil.UpdatePokemonAfterFriendTrade(friendPokemon, gFriendTradeClients[clientId].offeringPokemon);
                         socket.emit("acceptedTrade", friendPokemon);
                         gFriendTradeClients[clientId].state = FRIEND_TRADE_ENDING_TRADE;
-                        console.log(`[FT] ${username} received ${pokemonUtil.GetSpecies(friendPokemon)} from ${gFriendTradeClients[clientId].friendUsername}`);
+                        console.log(`[FT] ${clientName} received ${pokemonUtil.GetSpecies(friendPokemon)} from ${gFriendTradeClients[clientId].friendUsername}`);
                         break;
                     default:
                         break;

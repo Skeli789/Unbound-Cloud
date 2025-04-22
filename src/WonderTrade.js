@@ -280,11 +280,10 @@ export class WonderTrade extends Component
                     });
 
                     //Send Pokemon for trade
-                    socket.emit("tradeType", "WONDER_TRADE", thisObject.getGlobalState().username);
+                    socket.emit("tradeType", "WONDER_TRADE", thisObject.getGlobalState().username, thisObject.getGlobalState().cloudDataSyncKey);
                     console.log("Connection established.");
                     console.log("Sending pokemon...");
-                    socket.send(pokemon, thisObject.getGlobalState().isRandomizedSave,
-                                thisObject.getGlobalState().username, thisObject.getGlobalState().cloudDataSyncKey);
+                    socket.send(pokemon, thisObject.getGlobalState().isRandomizedSave);
                     console.log("Pokemon sent!");
                     //thisObject.setState({isMonInWonderTrade: true}); //Not needed because state changes in BoxView
 

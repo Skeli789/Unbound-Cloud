@@ -391,11 +391,10 @@ export class FriendTrade extends Component
      */
     getCreatedCode(socket, unusedArg)
     {
-        socket.emit("tradeType", "FRIEND_TRADE", this.getGlobalState().username); //As opposed to WONDER_TRADE
+        socket.emit("tradeType", "FRIEND_TRADE", this.getGlobalState().username, this.getGlobalState().cloudDataSyncKey); //As opposed to WONDER_TRADE
         console.log("Connection established.");
         console.log("Requesting code...");
-        socket.emit("createCode", this.getGlobalState().isRandomizedSave,
-                    this.getGlobalState().username, this.getGlobalState().cloudDataSyncKey);
+        socket.emit("createCode", this.getGlobalState().isRandomizedSave);
         console.log("Code request sent!");
     }
 
@@ -445,11 +444,10 @@ export class FriendTrade extends Component
      */
     sendInputCode(socket, code)
     {
-        socket.emit("tradeType", "FRIEND_TRADE", this.getGlobalState().username); //As opposed to WONDER_TRADE
+        socket.emit("tradeType", "FRIEND_TRADE", this.getGlobalState().username, this.getGlobalState().cloudDataSyncKey); //As opposed to WONDER_TRADE
         console.log("Connection established.");
         console.log("Sending code...");
-        socket.emit("checkCode", code, this.getGlobalState().isRandomizedSave,
-                    this.getGlobalState().username, this.getGlobalState().cloudDataSyncKey);
+        socket.emit("checkCode", code, this.getGlobalState().isRandomizedSave);
         console.log("Code sent!");
 
         PopUp.fire
