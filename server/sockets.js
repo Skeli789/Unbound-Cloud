@@ -99,6 +99,27 @@ async function CloudDataSyncKeyIsValidForTrade(username, cloudDataSyncKey, rando
 }
 
 /**
+ * Prevents a user from Wonder Trading twice at the same time.
+ * @param {String} username - The user who's trying to trade.
+ * @param {WebSocket} socket - The web socket used to connect to the client.
+ * @returns {Promise<Boolean>} - Whether a previous trade was cancelled.
+ */
+async function TryPreventUserFromWonderTradingTwice(username, socket)
+{
+    for (let client of Object.values(gWonderTradeClients))
+    {
+        if (client.username === username && client.tradedWith === 0) //User is already in a Wonder Trade and hasn't traded yet
+        {
+            console.log(`[WT] ${username} has active Wonder Trade elsewhere so cancelling this trade`);
+            socket.emit("invalidCloudDataSyncKey", "Your account already has a Wonder Trade in progress!");
+            return true; //Cancel the trade
+        }
+    }
+
+    return false; //No previous trade to cancel
+}
+
+/**
  * Gets the list of clients connected to Wonder Trade that can trade their Pokemon to the current user.
  * @param {String} clientId - The current client id to check the user's that can trade to it.
  * @param {String} username - The username of the current client.
@@ -117,6 +138,7 @@ function GetValidWonderTradeClientsFor(clientId, username, randomizer)
         let otherWonderTradeData = gWonderTradeClients[x];
 
         if (x === clientId //Can't trade with yourself
+        || x.username === username //Can't trade with yourself
         || otherWonderTradeData.tradedWith !== 0 //Can't trade with someone who's already traded
         || otherWonderTradeData.randomizer !== randomizer //Can't trade with someone who's randomizer setting doesn't match
         || accounts.IsUserBannedFromWonderTrade(otherWonderTradeData.username)) //Can't trade with someone who's been banned
@@ -268,6 +290,13 @@ function InitSockets(io)
                         return;
 
                     await LockWonderTrade(); //So no other threads can access it right now
+
+                    //If the user is already in a Wonder Trade, cancel it
+                    if (await TryPreventUserFromWonderTradingTwice(username, socket))
+                    {
+                        await UnlockWonderTrade(); //Unlock the mutex so other threads can access it
+                        return;
+                    }
 
                     const keys = GetValidWonderTradeClientsFor(clientId, username, randomizer);
 
