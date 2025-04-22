@@ -174,6 +174,7 @@ export class FriendTrade extends Component
         const handleLostConnection = this.handleLostConnection.bind(this);
         const connectedToFriend = this.connectedToFriend.bind(this);
         const couldntFindFriend = this.couldntFindFriend.bind(this);
+        const triedTradingWithSelf = this.triedTradingWithSelf.bind(this);
         const mismatchedRandomizer = this.mismatchedRandomizer.bind(this);
         const partnerDisconnected = this.partnerDisconnected.bind(this);
         const handleInvalidPokemon = this.handleInvalidPokemon.bind(this);
@@ -200,6 +201,7 @@ export class FriendTrade extends Component
                 socket.on('connect_error', function() {handleLostConnection(socket)});
                 socket.on('friendFound', function() {connectedToFriend(socket)});
                 socket.on('friendNotFound', function() {couldntFindFriend(socket)});
+                socket.on('tradeWithSelf', function() {triedTradingWithSelf(socket)});
                 socket.on('mismatchedRandomizer', function() {mismatchedRandomizer(socket)});
                 socket.on('partnerDisconnected', function() {partnerDisconnected(socket)});
                 socket.on('invalidPokemon', function() {handleInvalidPokemon()});
@@ -497,6 +499,29 @@ export class FriendTrade extends Component
             showCancelButton: true,
             scrollbarPadding: false,
         });
+    }
+
+    /**
+     * Processes the notice from the server that the user tried to trade with themselves.
+     * @param {WebSocket} socket - The socket used to connect to the server.
+     */
+    triedTradingWithSelf(socket)
+    {
+        socket.close();
+        this.setGlobalState({tradeData: null});
+
+        PopUp.fire
+        ({
+            icon: 'error',
+            title: "You can't trade with yourself!",
+            cancelButtonText: `Awww`,
+            showConfirmButton: false,
+            showCancelButton: true,
+            scrollbarPadding: false,
+        });
+
+        this.setState({codeInput: ""}); //Must go after pop-up
+        this.resetTimer();
     }
 
     /**

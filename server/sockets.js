@@ -375,6 +375,13 @@ function InitSockets(io)
                         if (gFriendTradeClients[otherClientId].friend === "" //Hasn't found a partner yet
                         && gFriendTradeClients[otherClientId].code === code) //Code matches so this will be the partner
                         {
+                            if (username === otherUserName || clientId === otherClientId) //Can't trade with yourself
+                            {
+                                console.log(`[FT] ${username} tried to trade with themself`);
+                                socket.emit("tradeWithSelf");
+                                return;
+                            }
+
                             partnerFound = true;
                             console.log(`[FT] ${username} has matched with ${otherUserName}`);
 
