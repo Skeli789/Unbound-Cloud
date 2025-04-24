@@ -7,6 +7,8 @@ import Table from 'react-bootstrap/Table';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
+import {GetDefaultPopUpOpts} from "../Notifications";
+
 import {AiFillWarning, AiOutlineCheckCircle, AiOutlineCloseCircle,
         AiOutlineSave, AiOutlineTool} from "react-icons/ai";
 import {BiSearchAlt2} from "react-icons/bi";
@@ -112,7 +114,7 @@ export function ShowSymbolTutorial()
         icon: "question",
         title: "Symbols",
         html: <SymbolTutorial/>,
-        scrollbarPadding: false,
+        ...GetDefaultPopUpOpts(),
     });
 
     localStorage.visitedBefore = true; //Set cookie only once user has seen this pop-up

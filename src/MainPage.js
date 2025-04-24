@@ -6,6 +6,7 @@ import axios from "axios";
 import React, {Component} from 'react';
 import {Button, ProgressBar, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {isMobile, isSmartTV, isWearable, isConsole, isEmbedded, isAndroid, isWinPhone, isIOS} from "react-device-detect";
+import {ToastContainer} from "react-toastify";
 import {StatusCode} from "status-code-enum";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -22,6 +23,8 @@ import {GlobalTradeStation} from "./GlobalTradeStation";
 // eslint-disable-next-line
 import {GoogleAd} from "./GoogleAd";
 import {Login} from "./Login";
+import {RequestPermissionForSystemNotifications, ClearWonderTradeNotificationCooldown, SendErrorToastNotificationByBoxSlot,
+        GetDefaultPopUpOpts} from "./Notifications";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname, GetSpecies,
         HasIllegalEVs, HasEggLockeOT, IsBlankMon, IsEgg, IsHoldingBannedItem, IsShiny,
         UpdateSpeciesBasedOnIdenticalRegionalForm, UpdateSpeciesBasedOnMonGender,
@@ -29,6 +32,7 @@ import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname,
 import {SignUp} from "./SignUp";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
+import {CheckForNewWonderTrade} from "./WonderTrade";
 import {DarkModeButton} from "./subcomponents/footer/DarkModeButton";
 import {MusicButton, PlayOrPauseMainMusicTheme, StopPlayingMusic} from "./subcomponents/footer/MusicButton";
 import {OpenTradeScreenButton} from "./subcomponents/footer/OpenTradeScreenButton";
@@ -74,6 +78,7 @@ const HOME_FILE_RANDOMIZER_NAME = "cloud_randomizer.dat"
 export const BLANK_PROGRESS_BAR = <ProgressBar now={0} label={"0%"} />;
 export const PURPLE_CLOUD = <span style={{color: "var(--purple)"}}>☁︎</span>;
 export const UNBOUND_LINK = <a href="https://www.pokecommunity.com/threads/pok%C3%A9mon-unbound-completed.382178/" target="_blank" rel="noopener noreferrer">Unbound</a>;
+const WONDER_TRADE_CHECK_INTERVAL = 30 * 1000; //30 seconds
 
 const PopUp = withReactContent(Swal);
 const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
@@ -131,7 +136,6 @@ export default class MainPage extends Component
             summaryMon: [null, null],
             searchCriteria: [null, null],
             changeWasMade: [false, false],
-            errorMessage: ["", ""],
             impossibleMovement: null,
             viewingBoxList: -1,
             savingMessage: "",
@@ -171,6 +175,7 @@ export default class MainPage extends Component
         };
 
         this.updateState = this.updateState.bind(this);
+        this.wonderTradeChecker = null;
     }
 
     /**
@@ -202,7 +207,7 @@ export default class MainPage extends Component
                 confirmButtonText: "I am a Tester",
                 cancelButtonText: "I am not a Tester",
                 showCancelButton: true,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             }).then((result) =>
             {
                 if (result.isConfirmed)
@@ -218,6 +223,7 @@ export default class MainPage extends Component
     {
         window.removeEventListener('beforeunload', this.tryPreventLeavingPage.bind(this));
         window.removeEventListener('mouseup', this.handleReleaseDragging.bind(this));
+        clearInterval(this.wonderTradeChecker)
     }
 
     /**
@@ -263,7 +269,6 @@ export default class MainPage extends Component
     {
         return this.setState
         ({
-            errorMessage: ["", ""],
             impossibleMovement: null,
             fileUploadError: false,
             serverConnectionError: false,
@@ -414,6 +419,18 @@ export default class MainPage extends Component
             if (!localStorage.visitedBefore)
                 ShowSymbolTutorial();
         });
+
+        //Check if there's a new Wonder Trade every so often
+        ClearWonderTradeNotificationCooldown(); //Reset the cooldown every time the box view is opened
+        this.wonderTradeChecker = setInterval(() =>
+        {
+            //No await
+            CheckForNewWonderTrade(this.state.username, this.state.isRandomizedSave,
+                                   this.state.wonderTradeData != null)
+        }, WONDER_TRADE_CHECK_INTERVAL);
+
+        //Prompt the user to allow sending desktop notifications
+        RequestPermissionForSystemNotifications();
     }
 
 
@@ -768,7 +785,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: "Problem With Cloud File",
                 html: errorMsg,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
     }
@@ -846,7 +863,7 @@ export default class MainPage extends Component
                     icon: "error",
                     title: "Problem With Last Cloud File",
                     html: errorMsg,
-                    scrollbarPadding: false,
+                    ...GetDefaultPopUpOpts(),
                 });
             }
 
@@ -976,7 +993,7 @@ export default class MainPage extends Component
                                     icon: "warning",
                                     title: "Cloud Data Corrupt",
                                     html: "The Cloud data found was corrupt. If you did not tamper with the file, please report this to Skeli at once.",
-                                    scrollbarPadding: false,
+                                    ...GetDefaultPopUpOpts(),
                                 });
                             }
                         }
@@ -995,7 +1012,7 @@ export default class MainPage extends Component
                             icon: "error",
                             title: "Last Cloud Folder Not Found",
                             html: `The folder "${this.state.homeDirHandle.name}" has likely been moved or renamed since it was last used.`,
-                            scrollbarPadding: false,
+                            ...GetDefaultPopUpOpts(),
                         }).then(async () =>
                         {
                             await SetDBVal("cloudDirectory", null); //Prevent user from picking it again
@@ -1147,7 +1164,7 @@ export default class MainPage extends Component
         ({
             icon: 'error',
             title: errorText,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         });
     }
 
@@ -1163,7 +1180,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: "Save File Can't Be Used Right Now",
                 text: this.state.errorResponseText,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
         else
@@ -1187,7 +1204,7 @@ export default class MainPage extends Component
                 title: title,
                 text: text,
                 confirmButtonText: "Which ROM Hacks are supported?",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             }).then((result) =>
             {
                 if (result.isConfirmed)
@@ -1216,6 +1233,7 @@ export default class MainPage extends Component
             title: "Supported Hacks",
             html: `<ul style="text-align: left">${supportedHacks}</ul>`,
             confirmButtonText: buttonText,
+            ...GetDefaultPopUpOpts(),
         }).then((result) =>
         {
             if (result.isConfirmed && this.state.oldVersionSaveError)
@@ -1229,6 +1247,7 @@ export default class MainPage extends Component
                         + "<li>Delete the old ROM and move the newly patched ROM to the folder where the old ROM was.</li>"
                         + "</ol>"
                         + `<p style="text-align: justify">If you do not understand these steps, ask in the relevant hack's Discord server and someone will help you out.</.b>`,
+                    ...GetDefaultPopUpOpts(),
                 });
             }
         });
@@ -1255,7 +1274,7 @@ export default class MainPage extends Component
             icon: "warning",
             title: "Cloud File Randomizer Mismatch",
             html: text,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then(() =>
         {
             if (isUsingFileHandles)
@@ -1278,7 +1297,7 @@ export default class MainPage extends Component
                 title: "A Note About Randomizers",
                 text: "Please be aware that save files with randomizers active use separate Cloud data files.",
                 confirmButtonText: "I Understand",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 allowOutsideClick: false,
             });
 
@@ -1303,7 +1322,7 @@ export default class MainPage extends Component
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 showCancelButton: false,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 didOpen: async () =>
                 {
                     try
@@ -1329,7 +1348,7 @@ export default class MainPage extends Component
                         });
                         this.changeBoxView(STATE_EDITING_HOME_BOXES);
 
-                        PopUp.fire({showConfirmButton: false});
+                        PopUp.fire({showConfirmButton: false, ...GetDefaultPopUpOpts()});
                         PopUp.close(); //Close loading pop-up
 
                         PlayOrPauseMainMusicTheme();
@@ -1345,7 +1364,7 @@ export default class MainPage extends Component
                         ({
                             icon: 'error',
                             title: errorMsg,
-                            scrollbarPadding: false,
+                            ...GetDefaultPopUpOpts(),
                         });
                     }
                 },
@@ -1404,7 +1423,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: "Cloud Folder Not Chosen",
                 html: `<p>If you already have a Cloud storage file, then pick the folder with the <b>${this.getHomeFileName()}</b> file.</p>`,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
     }
@@ -1453,7 +1472,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: errorTitle,
                 text: errorText,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
     }
@@ -1498,7 +1517,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: "Save File Not Chosen",
                 text: "Choose your ROM's save file and make sure to give full permissions to view and edit it.",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
     }
@@ -1542,7 +1561,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: errorTitle,
                 text: errorText,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
     }
@@ -1576,7 +1595,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: "Invalid Save File",
                 text: "Please upload an actual save file.",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
 
             return false;
@@ -1630,7 +1649,6 @@ export default class MainPage extends Component
      */
     setDuplicatePokemonSwappingError(fromBoxSlot, fromOffset, toBoxSlot, duplicateData)
     {
-        var errorMessage = ["", ""];
         var impossibleTo =   this.generateBlankImpossibleMovementArray();
         var impossibleFrom = this.generateBlankImpossibleMovementArray();
         var impossibleMovement = [null, null];
@@ -1645,7 +1663,7 @@ export default class MainPage extends Component
 
         impossibleMovement[toBoxSlot] = impossibleTo;
         impossibleMovement[fromBoxSlot] = impossibleFrom;
-        errorMessage[toBoxSlot] = `A duplicate is in ${boxName}.`;
+        SendErrorToastNotificationByBoxSlot(`A duplicate is in ${boxName}.`, toBoxSlot);
 
         if (impossibleMovement[0] == null)
             impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
@@ -1656,7 +1674,6 @@ export default class MainPage extends Component
 
         this.setState({
             selectedMonPos: selectedMonPos,
-            errorMessage: errorMessage,
             impossibleMovement: impossibleMovement,
         });
     }
@@ -1670,7 +1687,6 @@ export default class MainPage extends Component
      */
     setBannedItemError(pokemon, fromOffset, fromBoxSlot, toBoxSlot)
     {
-        var errorMessage = ["", ""];
         var impossibleFrom = this.generateBlankImpossibleMovementArray();
         var impossibleMovement = [null, null];
         var selectedMonPos = this.state.selectedMonPos;
@@ -1678,7 +1694,7 @@ export default class MainPage extends Component
 
         impossibleFrom[GetBoxPosBoxRow(fromPos)][GetBoxPosBoxColumn(fromPos)] = true;
         impossibleMovement[fromBoxSlot] = impossibleFrom;
-        errorMessage[fromBoxSlot] = `The ${GetItemName(GetItem(pokemon))} can't be stored.`;
+        SendErrorToastNotificationByBoxSlot(`The ${GetItemName(GetItem(pokemon))} can't be stored.`, fromBoxSlot);
 
         if (impossibleMovement[0] == null)
             impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
@@ -1689,7 +1705,6 @@ export default class MainPage extends Component
 
         this.setState({
             selectedMonPos: selectedMonPos,
-            errorMessage: errorMessage,
             impossibleMovement: impossibleMovement,
         });
     }
@@ -1703,7 +1718,6 @@ export default class MainPage extends Component
      */
     setIllegalEVsError(pokemon, fromOffset, fromBoxSlot, toBoxSlot)
     {
-        var errorMessage = ["", ""];
         var impossibleFrom = this.generateBlankImpossibleMovementArray();
         var impossibleMovement = [null, null];
         var selectedMonPos = this.state.selectedMonPos;
@@ -1711,7 +1725,7 @@ export default class MainPage extends Component
 
         impossibleFrom[GetBoxPosBoxRow(fromPos)][GetBoxPosBoxColumn(fromPos)] = true;
         impossibleMovement[fromBoxSlot] = impossibleFrom;
-        errorMessage[fromBoxSlot] = `${GetNickname(pokemon)} has too many EVs.`;
+        SendErrorToastNotificationByBoxSlot(`${GetNickname(pokemon)} has too many EVs.`, fromBoxSlot);
 
         if (impossibleMovement[0] == null)
             impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
@@ -1722,7 +1736,6 @@ export default class MainPage extends Component
 
         this.setState({
             selectedMonPos: selectedMonPos,
-            errorMessage: errorMessage,
             impossibleMovement: impossibleMovement,
         });
     }
@@ -1736,7 +1749,6 @@ export default class MainPage extends Component
      */
     setNonExistentSpeciesError(pokemon, fromOffset, fromBoxSlot, toBoxSlot)
     {
-        var errorMessage = ["", ""];
         var impossibleFrom = this.generateBlankImpossibleMovementArray();
         var impossibleMovement = [null, null];
         var selectedMonPos = this.state.selectedMonPos;
@@ -1748,14 +1760,16 @@ export default class MainPage extends Component
         if (this.getBoxTypeByBoxSlot(toBoxSlot) === BOX_HOME)
         {
             //Error placing randomized Pokemon in the cloud storage
-            errorMessage[fromBoxSlot] = "A randomized Pokémon can't be stored."; //Intentionally fromBoxSlot
+            SendErrorToastNotificationByBoxSlot("A randomized Pokémon can't be stored.", fromBoxSlot); //Intentionally fromBoxSlot
         }
         else
         {
+            let errorMsg;
             if (IsEgg(pokemon))
-                errorMessage[toBoxSlot] = "The Egg's Pokémon doesn't exist in this game.";
+                errorMsg = "The Egg's Pokémon doesn't exist in this game.";
             else
-                errorMessage[toBoxSlot] = `${GetSpeciesName(GetSpecies(pokemon), true)} doesn't exist in this game.`;
+                errorMsg = `${GetSpeciesName(GetSpecies(pokemon), true)} doesn't exist in this game.`;
+            SendErrorToastNotificationByBoxSlot(errorMsg, toBoxSlot);
         }
 
         if (impossibleMovement[0] == null)
@@ -1767,7 +1781,6 @@ export default class MainPage extends Component
 
         this.setState({
             selectedMonPos: selectedMonPos,
-            errorMessage: errorMessage,
             impossibleMovement: impossibleMovement,
         });
     }
@@ -1995,12 +2008,10 @@ export default class MainPage extends Component
 
                     //Only deselect clicked on spot
                     var selectedMonPos = this.state.selectedMonPos;
-                    var errorMessage = this.state.errorMessage;
                     selectedMonPos[multiTo] = CreateSingleBlankSelectedPos();
-                    errorMessage[multiTo] = "Not enough space for the move.";
+                    SendErrorToastNotificationByBoxSlot("Not enough space for the move.", multiTo);
                     this.setState({
                         selectedMonPos: selectedMonPos,
-                        errorMessage: errorMessage,
                         impossibleMovement: impossibleMovement,
                     });
 
@@ -2304,14 +2315,14 @@ export default class MainPage extends Component
         {
             PopUp.fire
             ({
+                icon: 'warning',
                 title: `Going back now will disconnect you from the trade!\nAre you sure you want to go back?`,
                 denyButtonText: `Stop Trading`,
                 cancelButtonText: `Cancel`,
                 showDenyButton: true, //Red button
                 showCancelButton: true,
                 showConfirmButton: false,
-                icon: 'warning',
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             }).then((result) =>
             {
                 if (result.isDenied)
@@ -2348,8 +2359,8 @@ export default class MainPage extends Component
             cancelButtonText: "Awww",
             showConfirmButton: false,
             showCancelButton: true,
-            scrollbarPadding: false,
             inGTS: false,
+            ...GetDefaultPopUpOpts(),
         });
 
         // this.setState({inGTS: !this.state.inGTS});
@@ -2593,7 +2604,7 @@ export default class MainPage extends Component
                 showCancelButton: true,
                 confirmButtonText: "Yes",
                 cancelButtonText: "No",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 didOpen: () =>
                 {
                     PopUp.hideLoading(); //From previous pop-ups
@@ -2620,7 +2631,7 @@ export default class MainPage extends Component
         ({
             title: text,
             allowOutsideClick: false,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
             didOpen: () =>
             {
                 PopUp.showLoading();
@@ -2835,7 +2846,7 @@ export default class MainPage extends Component
                 title: `Your new save file is about to be downloaded.\nMake sure you replace your old one with the new file!`,
                 confirmButtonText: `I Understand`,
                 allowOutsideClick: false,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 didOpen: () =>
                 {
                     PopUp.hideLoading(); //From previous pop-ups
@@ -2944,7 +2955,7 @@ export default class MainPage extends Component
                 showConfirmButton: false,
                 showDenyButton: true,
                 showCancelButton: true,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
 
             if (!result.isDenied) //isDenied means save anyway (uses red colour)
@@ -2953,7 +2964,7 @@ export default class MainPage extends Component
                 PopUp.fire
                 ({
                     title: 'Choose <b>Only</b> for the search option:\n<b>Will Lose Data When Saved</b>\nto find these Pokemon.',
-                    scrollbarPadding: false,
+                    ...GetDefaultPopUpOpts(),
                 });
 
                 return false;
@@ -2978,7 +2989,7 @@ export default class MainPage extends Component
                 title: "Error saving data!",
                 html: this.state.savingMessage,
                 confirmButtonText: "Awww",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 didOpen: () =>
                 {
                     PopUp.hideLoading(); //From previous pop-ups
@@ -4020,6 +4031,9 @@ export default class MainPage extends Component
 
                 {/* Allow dragging of Pokémon */}
                 {draggingImg}
+a
+                {/* Allow toast notifications */}
+                <ToastContainer />
             </div>
         );
     }

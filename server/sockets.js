@@ -149,7 +149,7 @@ function GetValidWonderTradeClientsFor(clientId, username, randomizer)
     {
         let otherWonderTradeData = gWonderTradeClients[x];
 
-        if (x === clientId //Can't trade with yourself
+        if ((clientId != null && x === clientId) //Can't trade with yourself
         || x.username === username //Can't trade with yourself
         || otherWonderTradeData.tradedWith !== 0 //Can't trade with someone who's already traded
         || otherWonderTradeData.randomizer !== randomizer //Can't trade with someone who's randomizer setting doesn't match
@@ -178,6 +178,17 @@ function GetValidWonderTradeClientsFor(clientId, username, randomizer)
     }
 
     return clients;
+}
+
+/**
+ * Checks if a user would have a Wonder Trade partner.
+ * @param {string} username - The user wanting to Wonder Trade.
+ * @param {boolean} randomizer - Whether the user is using a randomized save file.
+ * @returns {boolean} Whether the user will have a Wonder Trade partner.
+ */
+function IsWonderTradeAvailable(username, randomizer)
+{
+    return GetValidWonderTradeClientsFor(null, username, randomizer).length > 0;
 }
 
 /**
@@ -568,4 +579,4 @@ function InitSockets(io)
     });
 }
 
-module.exports = {InitSockets};
+module.exports = {InitSockets, IsWonderTradeAvailable};

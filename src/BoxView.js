@@ -8,6 +8,7 @@ import {isMobile} from "react-device-detect";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
+import {GetDefaultPopUpOpts} from "./Notifications";
 import {PokemonSummary} from "./PokemonSummary";
 import {GetIconSpeciesLink, GetIconSpeciesLinkBySpecies, GetIconSpeciesName, GetNickname, GetSpecies, HasDuplicateMovesInMoveset,
         IsBlankMon, IsEgg, IsHoldingBannedItem, IsHoldingItem, IsShiny, IsValidPokemon, MonWillLoseDataInSave,
@@ -804,7 +805,7 @@ export class BoxView extends Component
             ({
                 icon: "error",
                 title: "This Pokémon can't be selected!",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
 
             return; //Pretend like the user didn't click at all
@@ -1133,7 +1134,7 @@ export class BoxView extends Component
             cancelButtonText: `Cancel`,
             showCancelButton: true,
             icon: 'warning',
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then(async (result) =>
         {
             if (result.isConfirmed)
@@ -1193,7 +1194,7 @@ export class BoxView extends Component
             cancelButtonText: `Keep`,
             denyButtonText: `Release`,
             icon: 'warning',
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then((result) =>
         {
             if (result.isDenied) //Denied means released because it's the red button
@@ -1208,7 +1209,7 @@ export class BoxView extends Component
                     title: `Bye-bye, ${pokemonName}!`,
                     confirmButtonText: `Done`,
                     icon: 'success',
-                    scrollbarPadding: false,
+                    ...GetDefaultPopUpOpts(),
                 });
 
                 this.setState({viewingShowdown: false});
@@ -1257,7 +1258,7 @@ export class BoxView extends Component
             showCancelButton: true,
             imageUrl: GetIconSpeciesLink(pokemon),
             imageAlt: "",
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then((result) =>
         {
             if (result.isConfirmed)
@@ -1279,7 +1280,7 @@ export class BoxView extends Component
                 cancelButtonText: `Awww`,
                 showConfirmButton: false,
                 showCancelButton: true,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
         else if (HasDuplicateMovesInMoveset(pokemon))
@@ -1291,7 +1292,7 @@ export class BoxView extends Component
                 cancelButtonText: `Awww`,
                 showConfirmButton: false,
                 showCancelButton: true,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
         else
@@ -1824,15 +1825,8 @@ export class BoxView extends Component
                 {/*Below Box*/}
                 {lowerIcons}
 
-                {
-                    this.getParentState().errorMessage[this.state.boxSlot] !== ""
-                    ?
-                        <p className="error-message" id={`error-message-${idSuffix}`}>
-                            {this.getParentState().errorMessage[this.state.boxSlot]}
-                        </p>
-                    :
-                        monToView //Summary
-                }
+                {/*Summary*/}
+                {monToView}
             </div>
         )
     }

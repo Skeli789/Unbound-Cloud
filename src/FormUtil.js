@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
+import {GetDefaultPopUpOpts} from "./Notifications";
 
 export const NO_SERVER_CONNECTION_ERROR = "Couldn't connect to the server! Please try again later."
 
@@ -98,7 +99,7 @@ export function ErrorPopUp(errorMsg)
         cancelButtonText: `OK`,
         showConfirmButton: false,
         showCancelButton: true,
-        scrollbarPadding: false,
+        ...GetDefaultPopUpOpts(),
     });
 }
 
@@ -122,7 +123,7 @@ export async function SendFormToServer(data, classObj, mainPageObj, axiosRoute, 
             allowOutsideClick: false,
             showConfirmButton: false,
             showCancelButton: false,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
             didOpen: async () =>
             {
                 let res;

@@ -775,3 +775,43 @@ app.post('/saveAccountCloudData', async (req, res) =>
         return res.status(StatusCode.ClientErrorBadRequest).json(err);
     }
 });
+
+
+/*******************************************
+               Trade Functions               
+*******************************************/
+
+/**
+ * Endpoint: /checkWonderTrade - Checks if a Wonder Trade is available.
+ * @param {string} req.body.username - The user checking.
+ * @param {boolean} req.body.randomizer - Whether the user is using a randomized save.
+ * @returns {StatusCode} SuccessOK with an object of format:
+ *                       {
+ *                           waiting: Whether someone is waiting for a Wonder Trade.
+ *                       }
+ */
+app.post('/checkWonderTrade', async (req, res) =>
+{
+    try
+    {
+        //Parse the request body
+        let username = req.body.username;
+        let randomizer = req.body.randomizer;
+        if (username == null)
+            throw("Username arg was not found!");
+        else if (randomizer == null)
+            throw("Randomizer arg was not found!");
+
+        //Check if a trade is available
+        //console.log("----------------------------------------------");
+        //console.log(`[${new Date().toLocaleString()}] Checking if a Wonder Trade is available for "${username}"...`);
+        let waiting = sockets.IsWonderTradeAvailable(username, randomizer);
+        //console.log(`Wonder Trade is ${!waiting ? "not " : ""}available for ${username}`);
+        return res.status(StatusCode.SuccessOK).json({waiting: waiting});
+    }
+    catch (err)
+    {
+        console.error(`An error occurred checking if a Wonder Trade is available for ${username}:\n${err}`);
+        return res.status(StatusCode.ServerErrorInternal).json(err);
+    }
+});

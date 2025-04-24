@@ -8,6 +8,8 @@ import {Button, OverlayTrigger, Tooltip} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
+import {GetDefaultPopUpOpts} from "../../Notifications";
+
 import {MdLogout} from "react-icons/md"
 
 const PopUp = withReactContent(Swal);
@@ -58,7 +60,7 @@ export class SwitchSaveButton extends Component
                 denyButtonText: "No, Don't Save",
                 showCancelButton: true,
                 showDenyButton: true,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
 
             let saved = false;

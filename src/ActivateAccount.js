@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE, CanUseFileHandleAPI} from "./MainPage";
+import {GetDefaultPopUpOpts} from "./Notifications";
 import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, SendFormToServer} from "./FormUtil";
 import {CodeField} from "./subcomponents/CodeField";
 
@@ -166,6 +167,7 @@ export class ActivateAccount extends Component
         {
             icon: "success",
             title: "Check your inbox or spam for the new code!",
+            ...GetDefaultPopUpOpts(),
         });
     }
 
@@ -245,6 +247,7 @@ function CompletedActivationPopUp(mainPageObj, response)
     {
         icon: "success",
         title: "Account activated successfully!",
+        ...GetDefaultPopUpOpts(),
     }).then(() =>
     {
         mainPageObj.setState

@@ -12,17 +12,15 @@ import withReactContent from 'sweetalert2-react-content';
 import {BoxView, HIGHEST_HOME_BOX_NUM} from './BoxView';
 import {config} from "./config";
 import {CanUseFileHandleAPI, BOX_HOME, BOX_SLOT_LEFT} from './MainPage';
+import {PlayTradeCompletedSound, GetDefaultPopUpOpts} from './Notifications';
 import {PokemonSummary} from './PokemonSummary';
 import {GetIconSpeciesLink, GetNickname, GetSpecies} from './PokemonUtil';
 import {Timer} from './Timer';
 import {GetSpeciesName} from './Util';
 import {CodeField} from './subcomponents/CodeField';
-import {AreSoundsMuted} from './subcomponents/footer/SoundsButton';
 
 import {AiOutlineCloseCircle, AiOutlineCheckCircle} from "react-icons/ai";
 import {GoPerson} from "react-icons/go";
-
-import SfxTradeComplete from './audio/TradeComplete.mp3';
 
 import "./stylesheets/FriendTrade.css";
  
@@ -35,7 +33,6 @@ const CODE_LENGTH = 8; //The friend code's length
 const TIMER_AMOUNT = 60 * 10; //10 minutes once a socket is opened
 
 const PopUp = withReactContent(Swal);
-const tradeCompleteSound = new Audio(SfxTradeComplete);
 
 
 export class FriendTrade extends Component
@@ -247,7 +244,7 @@ export class FriendTrade extends Component
                 timer: 5000,
                 timerProgressBar: true,
                 allowOutsideClick: false,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 didOpen: () =>
                 {
                     if (!socket.connected)
@@ -275,7 +272,7 @@ export class FriendTrade extends Component
                         cancelButtonText: `Awww`,
                         showConfirmButton: false,
                         showCancelButton: true,
-                        scrollbarPadding: false,
+                        ...GetDefaultPopUpOpts(),
                     }).then(() =>
                     {
                         this.resetTradeState();
@@ -294,14 +291,14 @@ export class FriendTrade extends Component
         this.hideTimer();
         socket.close();
 
-        PopUp.fire(
-        {
+        PopUp.fire
+        ({
             icon: 'error',
             title: "The connection has been lost!\nThe Friend Trade was cancelled.",
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then(() =>
         {
             this.resetTradeState();
@@ -317,14 +314,14 @@ export class FriendTrade extends Component
         this.hideTimer();
         socket.close();
 
-        PopUp.fire(
-        {
+        PopUp.fire
+        ({
             icon: 'error',
             title: "Your partner has disconnected!\nThe Friend Trade was cancelled.",
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then(() =>
         {
             this.resetTradeState();
@@ -340,14 +337,14 @@ export class FriendTrade extends Component
         this.getGlobalState().tradeData.socket.close();
         this.resetTradeState();
 
-        PopUp.fire(
-        {
+        PopUp.fire
+        ({
             icon: 'error',
             title: "Time's up!\nYou spent too long on the trade!",
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         });
     }
 
@@ -362,14 +359,14 @@ export class FriendTrade extends Component
         socket.close();
         console.log("Cloud data sync key invalid!");
 
-        PopUp.fire(
-        {
+        PopUp.fire
+        ({
             title: data,
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
             icon: 'error',
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then(() =>
         {
             this.resetTradeState();
@@ -454,7 +451,7 @@ export class FriendTrade extends Component
         ({
             title: `Checking for the friend code...`,
             showConfirmButton: false,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
             didOpen: () =>
             {
                 PopUp.showLoading();
@@ -495,7 +492,7 @@ export class FriendTrade extends Component
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         });
     }
 
@@ -515,7 +512,7 @@ export class FriendTrade extends Component
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         });
 
         this.setState({codeInput: ""}); //Must go after pop-up
@@ -544,7 +541,7 @@ export class FriendTrade extends Component
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         });
     
         this.setState({codeInput: ""}); //Must go after pop-up
@@ -564,7 +561,7 @@ export class FriendTrade extends Component
         ({
             title: "Connected to your friend!",
             confirmButtonText: `Choose Pokémon`,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then(() =>
         {
             this.setFriendTradeState(FRIEND_TRADE_CHOOSE_POKEMON);
@@ -626,14 +623,14 @@ export class FriendTrade extends Component
         console.log("Pokemon failed checksum!");
         this.cancelTradeOffer();
 
-        PopUp.fire(
-        {
+        PopUp.fire
+        ({
             icon: 'error',
             title: "That Pokemon appears invalid and can't be traded!",
             cancelButtonText: `Awww`,
             showConfirmButton: false,
             showCancelButton: true,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         });
     }
 
@@ -658,7 +655,7 @@ export class FriendTrade extends Component
                 title: "You already have what your friend is offering!\nTell your friend to offer something else.",
                 text: `The duplicate is in ${this.getGlobalState().homeTitles[alreadyExistsRet.boxNum]}.`,
                 confirmButtonText: "Awww",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
 
             return;
@@ -680,7 +677,7 @@ export class FriendTrade extends Component
                 title: "Waiting for your friend's choice...",
                 showDenyButton: true, //Red button
                 denyButtonText: "Cancel",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 didOpen: () =>
                 {
                     PopUp.showLoading(); //Spinny circle
@@ -713,8 +710,7 @@ export class FriendTrade extends Component
                     this.getGlobalState().tradeData.boxNum,
                     this.getGlobalState().tradeData.boxPos);
 
-        if (!AreSoundsMuted())
-            tradeCompleteSound.play();
+        PlayTradeCompletedSound();
 
         let newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon, true, true)); //Use full names so to always show alt forms
         PopUp.fire
@@ -723,9 +719,9 @@ export class FriendTrade extends Component
             confirmButtonText: "Hooray!",
             imageUrl: GetIconSpeciesLink(newPokemon),
             imageAlt: "",
-            scrollbarPadding: false,
             timer: 60 * 1000, //Automatic pop-up because timer is currently hidden
             timerProgressBar: true,
+            ...GetDefaultPopUpOpts(),
         }).then(async () =>
         {
             if (CanUseFileHandleAPI())
@@ -741,9 +737,9 @@ export class FriendTrade extends Component
                         html: this.getGlobalState().savingMessage,
                         confirmButtonText: "Awww",
                         allowOutsideClick: false,
-                        scrollbarPadding: false,
                         timer: 60 * 1000, //Automatic pop-up because timer is currently hidden
                         timerProgressBar: true,
+                        ...GetDefaultPopUpOpts(),
                         didOpen: () =>
                         {
                             PopUp.hideLoading(); //From previous pop-ups
@@ -779,9 +775,9 @@ export class FriendTrade extends Component
             cancelButtonText: "Done Trading",
             showCancelButton: true,
             allowOutsideClick: false,
-            scrollbarPadding: false,
             timer: 60 * 1000, //Automatic pop-up because timer is currently hidden
             timerProgressBar: true,
+            ...GetDefaultPopUpOpts(),
         }).then((result) =>
         {
             if (result.isConfirmed) //Trade again
