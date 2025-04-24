@@ -290,8 +290,10 @@ def TestMultiSelectMove(driver: webdriver.Chrome, tester: TestCase):
     ClickButton(placeAtSpot)
 
     # Confirm the error message appeared
-    errorMessage = driver.find_element(By.ID, "error-message-home-box")
-    tester.assertEqual(errorMessage.text, "Not enough space for the move.", "Error message text is not correct.")
+    toastContainer = driver.find_element(By.CLASS_NAME, "Toastify")
+    html = toastContainer.get_attribute("innerHTML")
+    tester.assertIn("bottom-left", html, "Error message not on bottom left.")
+    tester.assertIn("Not enough space for the move.", html, "Error message not found.")
 
     # Place at a spot it will fit
     placeAtSpot = homeBox.find_element(By.ID, "home-box-icon-9") # Second row
