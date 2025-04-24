@@ -1824,15 +1824,8 @@ export class BoxView extends Component
                 {/*Below Box*/}
                 {lowerIcons}
 
-                {
-                    this.getParentState().errorMessage[this.state.boxSlot] !== ""
-                    ?
-                        <p className="error-message" id={`error-message-${idSuffix}`}>
-                            {this.getParentState().errorMessage[this.state.boxSlot]}
-                        </p>
-                    :
-                        monToView //Summary
-                }
+                {/*Summary*/}
+                {monToView}
             </div>
         )
     }

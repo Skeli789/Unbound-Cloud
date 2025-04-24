@@ -23,7 +23,7 @@ import {GlobalTradeStation} from "./GlobalTradeStation";
 // eslint-disable-next-line
 import {GoogleAd} from "./GoogleAd";
 import {Login} from "./Login";
-import {RequestPermissionForSystemNotifications, ClearWonderTradeNotificationCooldown} from "./Notifications";
+import {RequestPermissionForSystemNotifications, ClearWonderTradeNotificationCooldown, SendErrorToastNotificationByBoxSlot} from "./Notifications";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname, GetSpecies,
         HasIllegalEVs, HasEggLockeOT, IsBlankMon, IsEgg, IsHoldingBannedItem, IsShiny,
         UpdateSpeciesBasedOnIdenticalRegionalForm, UpdateSpeciesBasedOnMonGender,
@@ -135,7 +135,6 @@ export default class MainPage extends Component
             summaryMon: [null, null],
             searchCriteria: [null, null],
             changeWasMade: [false, false],
-            errorMessage: ["", ""],
             impossibleMovement: null,
             viewingBoxList: -1,
             savingMessage: "",
@@ -269,7 +268,6 @@ export default class MainPage extends Component
     {
         return this.setState
         ({
-            errorMessage: ["", ""],
             impossibleMovement: null,
             fileUploadError: false,
             serverConnectionError: false,
@@ -1648,7 +1646,6 @@ export default class MainPage extends Component
      */
     setDuplicatePokemonSwappingError(fromBoxSlot, fromOffset, toBoxSlot, duplicateData)
     {
-        var errorMessage = ["", ""];
         var impossibleTo =   this.generateBlankImpossibleMovementArray();
         var impossibleFrom = this.generateBlankImpossibleMovementArray();
         var impossibleMovement = [null, null];
@@ -1663,7 +1660,7 @@ export default class MainPage extends Component
 
         impossibleMovement[toBoxSlot] = impossibleTo;
         impossibleMovement[fromBoxSlot] = impossibleFrom;
-        errorMessage[toBoxSlot] = `A duplicate is in ${boxName}.`;
+        SendErrorToastNotificationByBoxSlot(`A duplicate is in ${boxName}.`, toBoxSlot);
 
         if (impossibleMovement[0] == null)
             impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
@@ -1674,7 +1671,6 @@ export default class MainPage extends Component
 
         this.setState({
             selectedMonPos: selectedMonPos,
-            errorMessage: errorMessage,
             impossibleMovement: impossibleMovement,
         });
     }
@@ -1688,7 +1684,6 @@ export default class MainPage extends Component
      */
     setBannedItemError(pokemon, fromOffset, fromBoxSlot, toBoxSlot)
     {
-        var errorMessage = ["", ""];
         var impossibleFrom = this.generateBlankImpossibleMovementArray();
         var impossibleMovement = [null, null];
         var selectedMonPos = this.state.selectedMonPos;
@@ -1696,7 +1691,7 @@ export default class MainPage extends Component
 
         impossibleFrom[GetBoxPosBoxRow(fromPos)][GetBoxPosBoxColumn(fromPos)] = true;
         impossibleMovement[fromBoxSlot] = impossibleFrom;
-        errorMessage[fromBoxSlot] = `The ${GetItemName(GetItem(pokemon))} can't be stored.`;
+        SendErrorToastNotificationByBoxSlot(`The ${GetItemName(GetItem(pokemon))} can't be stored.`, fromBoxSlot);
 
         if (impossibleMovement[0] == null)
             impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
@@ -1707,7 +1702,6 @@ export default class MainPage extends Component
 
         this.setState({
             selectedMonPos: selectedMonPos,
-            errorMessage: errorMessage,
             impossibleMovement: impossibleMovement,
         });
     }
@@ -1721,7 +1715,6 @@ export default class MainPage extends Component
      */
     setIllegalEVsError(pokemon, fromOffset, fromBoxSlot, toBoxSlot)
     {
-        var errorMessage = ["", ""];
         var impossibleFrom = this.generateBlankImpossibleMovementArray();
         var impossibleMovement = [null, null];
         var selectedMonPos = this.state.selectedMonPos;
@@ -1729,7 +1722,7 @@ export default class MainPage extends Component
 
         impossibleFrom[GetBoxPosBoxRow(fromPos)][GetBoxPosBoxColumn(fromPos)] = true;
         impossibleMovement[fromBoxSlot] = impossibleFrom;
-        errorMessage[fromBoxSlot] = `${GetNickname(pokemon)} has too many EVs.`;
+        SendErrorToastNotificationByBoxSlot(`${GetNickname(pokemon)} has too many EVs.`, fromBoxSlot);
 
         if (impossibleMovement[0] == null)
             impossibleMovement[0] = this.generateBlankImpossibleMovementArray();
@@ -1740,7 +1733,6 @@ export default class MainPage extends Component
 
         this.setState({
             selectedMonPos: selectedMonPos,
-            errorMessage: errorMessage,
             impossibleMovement: impossibleMovement,
         });
     }
@@ -1754,7 +1746,6 @@ export default class MainPage extends Component
      */
     setNonExistentSpeciesError(pokemon, fromOffset, fromBoxSlot, toBoxSlot)
     {
-        var errorMessage = ["", ""];
         var impossibleFrom = this.generateBlankImpossibleMovementArray();
         var impossibleMovement = [null, null];
         var selectedMonPos = this.state.selectedMonPos;
@@ -1766,14 +1757,16 @@ export default class MainPage extends Component
         if (this.getBoxTypeByBoxSlot(toBoxSlot) === BOX_HOME)
         {
             //Error placing randomized Pokemon in the cloud storage
-            errorMessage[fromBoxSlot] = "A randomized Pokémon can't be stored."; //Intentionally fromBoxSlot
+            SendErrorToastNotificationByBoxSlot("A randomized Pokémon can't be stored.", fromBoxSlot); //Intentionally fromBoxSlot
         }
         else
         {
+            let errorMsg;
             if (IsEgg(pokemon))
-                errorMessage[toBoxSlot] = "The Egg's Pokémon doesn't exist in this game.";
+                errorMsg = "The Egg's Pokémon doesn't exist in this game.";
             else
-                errorMessage[toBoxSlot] = `${GetSpeciesName(GetSpecies(pokemon), true)} doesn't exist in this game.`;
+                errorMsg = `${GetSpeciesName(GetSpecies(pokemon), true)} doesn't exist in this game.`;
+            SendErrorToastNotificationByBoxSlot(errorMsg, toBoxSlot);
         }
 
         if (impossibleMovement[0] == null)
@@ -1785,7 +1778,6 @@ export default class MainPage extends Component
 
         this.setState({
             selectedMonPos: selectedMonPos,
-            errorMessage: errorMessage,
             impossibleMovement: impossibleMovement,
         });
     }
@@ -2013,12 +2005,10 @@ export default class MainPage extends Component
 
                     //Only deselect clicked on spot
                     var selectedMonPos = this.state.selectedMonPos;
-                    var errorMessage = this.state.errorMessage;
                     selectedMonPos[multiTo] = CreateSingleBlankSelectedPos();
-                    errorMessage[multiTo] = "Not enough space for the move.";
+                    SendErrorToastNotificationByBoxSlot("Not enough space for the move.", multiTo);
                     this.setState({
                         selectedMonPos: selectedMonPos,
-                        errorMessage: errorMessage,
                         impossibleMovement: impossibleMovement,
                     });
 

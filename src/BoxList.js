@@ -232,7 +232,6 @@ export class BoxList extends Component
             currentBox: currentBoxes,
             selectedMonPos: selectedMonPos,
             summaryMon: summaryMon,
-            errorMessage: ["", ""],
             impossibleMovement: null,
             viewingBoxList: -1, //No more viewing box list
         });

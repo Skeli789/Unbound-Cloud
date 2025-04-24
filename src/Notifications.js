@@ -106,6 +106,22 @@ export function SendErrorToastNotification(text, options={})
     });
 }
 
+/**
+ * Sends an error toast notification to the user based on the box slot the error is for.
+ * @param {string} text - The text to display on the notification. 
+ * @param {number} boxSlot - The box slot the error is for.
+ * @param {object} options - The options to pass to the toast notification.
+ * @returns {string} The ID of the toast notification.
+ */
+export function SendErrorToastNotificationByBoxSlot(text, boxSlot, options={})
+{
+    return SendErrorToastNotification(text,
+    {
+        position: (boxSlot === 0) ? "bottom-left" : "bottom-right",
+        ...options,
+    });
+}
+
 
 /* Specific Notification Functions */
 
