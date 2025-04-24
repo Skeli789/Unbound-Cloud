@@ -26,6 +26,7 @@ class TestAccountSystem(TestCase):
         while attempts < 10:
             try:
                 cls.driver.get(URL_SITE)
+                break
             except Exception as e:
                 print(f"Failed to connect to {URL_SITE}: {e}")
                 attempts += 1
