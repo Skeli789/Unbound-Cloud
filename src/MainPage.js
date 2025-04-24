@@ -6,6 +6,7 @@ import axios from "axios";
 import React, {Component} from 'react';
 import {Button, ProgressBar, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {isMobile, isSmartTV, isWearable, isConsole, isEmbedded, isAndroid, isWinPhone, isIOS} from "react-device-detect";
+import {ToastContainer} from "react-toastify";
 import {StatusCode} from "status-code-enum";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
@@ -22,6 +23,7 @@ import {GlobalTradeStation} from "./GlobalTradeStation";
 // eslint-disable-next-line
 import {GoogleAd} from "./GoogleAd";
 import {Login} from "./Login";
+import {RequestPermissionForSystemNotifications, ClearWonderTradeNotificationCooldown} from "./Notifications";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname, GetSpecies,
         HasIllegalEVs, HasEggLockeOT, IsBlankMon, IsEgg, IsHoldingBannedItem, IsShiny,
         UpdateSpeciesBasedOnIdenticalRegionalForm, UpdateSpeciesBasedOnMonGender,
@@ -29,6 +31,7 @@ import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname,
 import {SignUp} from "./SignUp";
 import {BASE_GFX_LINK, CreateSingleBlankSelectedPos, GetBoxNumFromBoxOffset, GetBoxPosBoxColumn, GetBoxPosBoxRow,
         GetItemName, GetLocalBoxPosFromBoxOffset, GetOffsetFromBoxNumAndPos, GetSpeciesName} from "./Util";
+import {CheckForNewWonderTrade} from "./WonderTrade";
 import {DarkModeButton} from "./subcomponents/footer/DarkModeButton";
 import {MusicButton, PlayOrPauseMainMusicTheme, StopPlayingMusic} from "./subcomponents/footer/MusicButton";
 import {OpenTradeScreenButton} from "./subcomponents/footer/OpenTradeScreenButton";
@@ -74,6 +77,7 @@ const HOME_FILE_RANDOMIZER_NAME = "cloud_randomizer.dat"
 export const BLANK_PROGRESS_BAR = <ProgressBar now={0} label={"0%"} />;
 export const PURPLE_CLOUD = <span style={{color: "var(--purple)"}}>☁︎</span>;
 export const UNBOUND_LINK = <a href="https://www.pokecommunity.com/threads/pok%C3%A9mon-unbound-completed.382178/" target="_blank" rel="noopener noreferrer">Unbound</a>;
+const WONDER_TRADE_CHECK_INTERVAL = 30 * 1000; //30 seconds
 
 const PopUp = withReactContent(Swal);
 const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
@@ -171,6 +175,7 @@ export default class MainPage extends Component
         };
 
         this.updateState = this.updateState.bind(this);
+        this.wonderTradeChecker = null;
     }
 
     /**
@@ -218,6 +223,7 @@ export default class MainPage extends Component
     {
         window.removeEventListener('beforeunload', this.tryPreventLeavingPage.bind(this));
         window.removeEventListener('mouseup', this.handleReleaseDragging.bind(this));
+        clearInterval(this.wonderTradeChecker)
     }
 
     /**
@@ -414,6 +420,18 @@ export default class MainPage extends Component
             if (!localStorage.visitedBefore)
                 ShowSymbolTutorial();
         });
+
+        //Check if there's a new Wonder Trade every so often
+        ClearWonderTradeNotificationCooldown(); //Reset the cooldown every time the box view is opened
+        this.wonderTradeChecker = setInterval(() =>
+        {
+            //No await
+            CheckForNewWonderTrade(this.state.username, this.state.isRandomizedSave,
+                                   this.state.wonderTradeData != null)
+        }, WONDER_TRADE_CHECK_INTERVAL);
+
+        //Prompt the user to allow sending desktop notifications
+        RequestPermissionForSystemNotifications();
     }
 
 
@@ -4020,6 +4038,9 @@ export default class MainPage extends Component
 
                 {/* Allow dragging of Pokémon */}
                 {draggingImg}
+a
+                {/* Allow toast notifications */}
+                <ToastContainer />
             </div>
         );
     }

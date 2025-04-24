@@ -1,0 +1,19 @@
+/* Fix the dark mode icon of the error toast */
+[data-darkreader-scheme="dark"] .Toastify__toast-theme--dark.Toastify__toast--error svg
+{
+    --darkreader-inline-fill: var(--toastify-icon-color-error) !important;
+}
+
+.toast-with-button
+{
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    width: fit-content;
+}
+
+.hide-wonder-trade-available-notification-button
+{
+    font-size: 0.75em;
+    margin-top: 1rem;
+}

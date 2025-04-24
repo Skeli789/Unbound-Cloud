@@ -12,17 +12,15 @@ import withReactContent from 'sweetalert2-react-content';
 import {BoxView, HIGHEST_HOME_BOX_NUM} from './BoxView';
 import {config} from "./config";
 import {CanUseFileHandleAPI, BOX_HOME, BOX_SLOT_LEFT} from './MainPage';
+import {PlayTradeCompletedSound} from './Notifications';
 import {PokemonSummary} from './PokemonSummary';
 import {GetIconSpeciesLink, GetNickname, GetSpecies} from './PokemonUtil';
 import {Timer} from './Timer';
 import {GetSpeciesName} from './Util';
 import {CodeField} from './subcomponents/CodeField';
-import {AreSoundsMuted} from './subcomponents/footer/SoundsButton';
 
 import {AiOutlineCloseCircle, AiOutlineCheckCircle} from "react-icons/ai";
 import {GoPerson} from "react-icons/go";
-
-import SfxTradeComplete from './audio/TradeComplete.mp3';
 
 import "./stylesheets/FriendTrade.css";
  
@@ -35,7 +33,6 @@ const CODE_LENGTH = 8; //The friend code's length
 const TIMER_AMOUNT = 60 * 10; //10 minutes once a socket is opened
 
 const PopUp = withReactContent(Swal);
-const tradeCompleteSound = new Audio(SfxTradeComplete);
 
 
 export class FriendTrade extends Component
@@ -713,8 +710,7 @@ export class FriendTrade extends Component
                     this.getGlobalState().tradeData.boxNum,
                     this.getGlobalState().tradeData.boxPos);
 
-        if (!AreSoundsMuted())
-            tradeCompleteSound.play();
+        PlayTradeCompletedSound();
 
         let newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon, true, true)); //Use full names so to always show alt forms
         PopUp.fire

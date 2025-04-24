@@ -2,6 +2,7 @@
  * A class for handling the Wonder Trade functionality.
  */
 
+import axios from "axios";
 import React, {Component} from 'react';
 import {OverlayTrigger, Tooltip} from "react-bootstrap";
 import io from 'socket.io-client';
@@ -9,13 +10,13 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
 import {config} from "./config";
+import {SendWonderTradeCompleteNotification, SendWonderTradeWaitingNotification,
+        UserWantsNewWonderTradeNotifications, TooSoonSinceLastNewWonderTradeNotification} from "./Notifications";
 import {GetIconSpeciesLink, GetNickname, GetSpecies, HasDuplicateMovesInMoveset, HasHackedCharacterInNicknameOrOTName,
         IsEgg, IsHoldingBannedItem, IsValidPokemon} from "./PokemonUtil";
 import {CreateSingleBlankSelectedPos, GetSpeciesName} from './Util';
-import {AreSoundsMuted} from "./subcomponents/footer/SoundsButton";
 
 import {CgExport, CgImport} from "react-icons/cg";
-import SfxTradeComplete from './audio/TradeComplete.mp3';
 
 import "./stylesheets/WonderTrade.css";
 
@@ -25,7 +26,6 @@ const PopUp = withReactContent(Swal);
 const wonderTradeTooltip = props => (<Tooltip {...props}>Wonder Trade</Tooltip>);
 const cancelWonderTradeTooltip = props => (<Tooltip {...props}>Cancel Wonder Trade</Tooltip>);
 
-const tradeCompleteSound = new Audio(SfxTradeComplete);
 
 export class WonderTrade extends Component
 {
@@ -351,26 +351,32 @@ export class WonderTrade extends Component
     {
         const backupTitle = document.title;
 
+        //Wait until the user is not saving or in a trade
         while (this.getGlobalState().isSaving || this.getGlobalState().inFriendTrade) //Saving or trade in progress
             await new Promise(r => setTimeout(r, 50)); //Sleep temporarily before checking again if can continue
 
+        //Close the connection
         socket.off("disconnect"); //Prevents disconnected pop-up from showing
         socket.close();
+    
+        //Finalize the Wonder Trade
         console.log(`Received ${GetNickname(newPokemon)}`);
         newPokemon.wonderTradeTimestamp = Date.now(); //Prevent this Pokemon from instantly being sent back
-        var wonderTradeData = this.getGlobalState().wonderTradeData;
+        let wonderTradeData = this.getGlobalState().wonderTradeData;
         this.finishWonderTrade(newPokemon, wonderTradeData.boxType, wonderTradeData.boxNum, wonderTradeData.boxPos);
-        document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
 
-        if (!AreSoundsMuted()) //Play sound if not muted
-            tradeCompleteSound.play();
+        //Send user notifications
+        let newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon), true);
+        const notificationText = `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} has just arrived from ${receivedFrom}!\nIt was placed in "${this.state.boxName}".`;
+        const imageUrl = GetIconSpeciesLink(newPokemon);
+        SendWonderTradeCompleteNotification(notificationText, imageUrl); //Send notification to user
 
-        var newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon), true, true);
         PopUp.fire
         ({
-            title: `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} has just arrived from ${receivedFrom}!\nIt was placed in "${this.state.boxName}".`,
+            title: `Wonder Trade Complete!`,
+            html: notificationText.replaceAll("\n", "<br>"),
             confirmButtonText: `Hooray!`,
-            imageUrl: GetIconSpeciesLink(newPokemon),
+            imageUrl: imageUrl,
             imageAlt: "",
             scrollbarPadding: false,
         }).then(() =>
@@ -505,3 +511,36 @@ export class WonderTrade extends Component
         }
     }
 }
+
+/**
+ * Checks if someone is currently waiting for a Wonder Trade and sends a notification if they are.
+ * @param {string} username - The current user's username.
+ * @param {boolean} randomizer - Whether the currently loaded save file is randomized.
+ * @param {boolean} isWonderTradeActive - Whether the current user has a Pokemon up for Wonder Trade.
+ * @returns {Promise} A promise that resolves when the function is done executing.
+ */
+export async function CheckForNewWonderTrade(username, randomizer, isWonderTradeActive)
+{
+    if (isWonderTradeActive //A pokemon is already up for trade
+    || !UserWantsNewWonderTradeNotifications() //User doesn't want notifications right now
+    || TooSoonSinceLastNewWonderTradeNotification()) //Last notification was too recent
+        return; //Don't send a notification
+
+    const route = `${config.dev_server}/checkWonderTrade`;
+    const params = {username, randomizer};
+
+    try
+    {
+        //console.log("Checking if a Wonder Trade is available");
+        let res = await axios.post(route, params);
+        if (res.data.waiting)
+            SendWonderTradeWaitingNotification();
+    }
+    catch (err)
+    {
+        console.error(`Error checking if a Wonder Trade is available: ${err}`);
+        return null;
+    }
+}
+
+export default WonderTrade;

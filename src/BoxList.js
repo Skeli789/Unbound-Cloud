@@ -13,10 +13,10 @@ import {snapCenterToCursor} from '@dnd-kit/modifiers';
 import {TextField} from '@mui/material';
 
 import {MAX_TITLE_LENGTH, MONS_PER_BOX} from "./BoxView";
+import {PlayErrorSound, SendErrorToastNotification} from "./Notifications";
 import {GetIconSpeciesName} from "./PokemonUtil";
 import {MatchesSearchCriteria} from "./Search";
 import {CreateSingleBlankSelectedPos, GetBoxStartIndex, IsHomeBox} from "./Util";
-import {PlayErrorSound} from "./subcomponents/footer/SoundsButton";
 
 import {MdGridView} from "react-icons/md";
 
@@ -304,7 +304,7 @@ export class BoxList extends Component
         let multi = this.state.multiSelectedSpots.slice(); //Copy the current multi-selected spots
         if (multi.length >= MAX_DRAGGING_BOXES_AT_ONCE && !this.isSelectedForMultiDragging(spot))
         {
-            PlayErrorSound();
+            SendErrorToastNotification(`Only ${MAX_DRAGGING_BOXES_AT_ONCE} boxes can be selected at once!`);
             return false;
         }
 
