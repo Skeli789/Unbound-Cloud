@@ -23,7 +23,8 @@ import {GlobalTradeStation} from "./GlobalTradeStation";
 // eslint-disable-next-line
 import {GoogleAd} from "./GoogleAd";
 import {Login} from "./Login";
-import {RequestPermissionForSystemNotifications, ClearWonderTradeNotificationCooldown, SendErrorToastNotificationByBoxSlot} from "./Notifications";
+import {RequestPermissionForSystemNotifications, ClearWonderTradeNotificationCooldown, SendErrorToastNotificationByBoxSlot,
+        GetDefaultPopUpOpts} from "./Notifications";
 import {DoesPokemonSpeciesExistInGame, GetIconSpeciesName, GetItem, GetNickname, GetSpecies,
         HasIllegalEVs, HasEggLockeOT, IsBlankMon, IsEgg, IsHoldingBannedItem, IsShiny,
         UpdateSpeciesBasedOnIdenticalRegionalForm, UpdateSpeciesBasedOnMonGender,
@@ -206,7 +207,7 @@ export default class MainPage extends Component
                 confirmButtonText: "I am a Tester",
                 cancelButtonText: "I am not a Tester",
                 showCancelButton: true,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             }).then((result) =>
             {
                 if (result.isConfirmed)
@@ -784,7 +785,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: "Problem With Cloud File",
                 html: errorMsg,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
     }
@@ -862,7 +863,7 @@ export default class MainPage extends Component
                     icon: "error",
                     title: "Problem With Last Cloud File",
                     html: errorMsg,
-                    scrollbarPadding: false,
+                    ...GetDefaultPopUpOpts(),
                 });
             }
 
@@ -992,7 +993,7 @@ export default class MainPage extends Component
                                     icon: "warning",
                                     title: "Cloud Data Corrupt",
                                     html: "The Cloud data found was corrupt. If you did not tamper with the file, please report this to Skeli at once.",
-                                    scrollbarPadding: false,
+                                    ...GetDefaultPopUpOpts(),
                                 });
                             }
                         }
@@ -1011,7 +1012,7 @@ export default class MainPage extends Component
                             icon: "error",
                             title: "Last Cloud Folder Not Found",
                             html: `The folder "${this.state.homeDirHandle.name}" has likely been moved or renamed since it was last used.`,
-                            scrollbarPadding: false,
+                            ...GetDefaultPopUpOpts(),
                         }).then(async () =>
                         {
                             await SetDBVal("cloudDirectory", null); //Prevent user from picking it again
@@ -1163,7 +1164,7 @@ export default class MainPage extends Component
         ({
             icon: 'error',
             title: errorText,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         });
     }
 
@@ -1179,7 +1180,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: "Save File Can't Be Used Right Now",
                 text: this.state.errorResponseText,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
         else
@@ -1203,7 +1204,7 @@ export default class MainPage extends Component
                 title: title,
                 text: text,
                 confirmButtonText: "Which ROM Hacks are supported?",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             }).then((result) =>
             {
                 if (result.isConfirmed)
@@ -1232,6 +1233,7 @@ export default class MainPage extends Component
             title: "Supported Hacks",
             html: `<ul style="text-align: left">${supportedHacks}</ul>`,
             confirmButtonText: buttonText,
+            ...GetDefaultPopUpOpts(),
         }).then((result) =>
         {
             if (result.isConfirmed && this.state.oldVersionSaveError)
@@ -1245,6 +1247,7 @@ export default class MainPage extends Component
                         + "<li>Delete the old ROM and move the newly patched ROM to the folder where the old ROM was.</li>"
                         + "</ol>"
                         + `<p style="text-align: justify">If you do not understand these steps, ask in the relevant hack's Discord server and someone will help you out.</.b>`,
+                    ...GetDefaultPopUpOpts(),
                 });
             }
         });
@@ -1271,7 +1274,7 @@ export default class MainPage extends Component
             icon: "warning",
             title: "Cloud File Randomizer Mismatch",
             html: text,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then(() =>
         {
             if (isUsingFileHandles)
@@ -1294,7 +1297,7 @@ export default class MainPage extends Component
                 title: "A Note About Randomizers",
                 text: "Please be aware that save files with randomizers active use separate Cloud data files.",
                 confirmButtonText: "I Understand",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 allowOutsideClick: false,
             });
 
@@ -1319,7 +1322,7 @@ export default class MainPage extends Component
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 showCancelButton: false,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 didOpen: async () =>
                 {
                     try
@@ -1345,7 +1348,7 @@ export default class MainPage extends Component
                         });
                         this.changeBoxView(STATE_EDITING_HOME_BOXES);
 
-                        PopUp.fire({showConfirmButton: false});
+                        PopUp.fire({showConfirmButton: false, ...GetDefaultPopUpOpts()});
                         PopUp.close(); //Close loading pop-up
 
                         PlayOrPauseMainMusicTheme();
@@ -1361,7 +1364,7 @@ export default class MainPage extends Component
                         ({
                             icon: 'error',
                             title: errorMsg,
-                            scrollbarPadding: false,
+                            ...GetDefaultPopUpOpts(),
                         });
                     }
                 },
@@ -1420,7 +1423,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: "Cloud Folder Not Chosen",
                 html: `<p>If you already have a Cloud storage file, then pick the folder with the <b>${this.getHomeFileName()}</b> file.</p>`,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
     }
@@ -1469,7 +1472,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: errorTitle,
                 text: errorText,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
     }
@@ -1514,7 +1517,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: "Save File Not Chosen",
                 text: "Choose your ROM's save file and make sure to give full permissions to view and edit it.",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
     }
@@ -1558,7 +1561,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: errorTitle,
                 text: errorText,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
         }
     }
@@ -1592,7 +1595,7 @@ export default class MainPage extends Component
                 icon: "error",
                 title: "Invalid Save File",
                 text: "Please upload an actual save file.",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
 
             return false;
@@ -2312,14 +2315,14 @@ export default class MainPage extends Component
         {
             PopUp.fire
             ({
+                icon: 'warning',
                 title: `Going back now will disconnect you from the trade!\nAre you sure you want to go back?`,
                 denyButtonText: `Stop Trading`,
                 cancelButtonText: `Cancel`,
                 showDenyButton: true, //Red button
                 showCancelButton: true,
                 showConfirmButton: false,
-                icon: 'warning',
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             }).then((result) =>
             {
                 if (result.isDenied)
@@ -2356,8 +2359,8 @@ export default class MainPage extends Component
             cancelButtonText: "Awww",
             showConfirmButton: false,
             showCancelButton: true,
-            scrollbarPadding: false,
             inGTS: false,
+            ...GetDefaultPopUpOpts(),
         });
 
         // this.setState({inGTS: !this.state.inGTS});
@@ -2601,7 +2604,7 @@ export default class MainPage extends Component
                 showCancelButton: true,
                 confirmButtonText: "Yes",
                 cancelButtonText: "No",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 didOpen: () =>
                 {
                     PopUp.hideLoading(); //From previous pop-ups
@@ -2628,7 +2631,7 @@ export default class MainPage extends Component
         ({
             title: text,
             allowOutsideClick: false,
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
             didOpen: () =>
             {
                 PopUp.showLoading();
@@ -2843,7 +2846,7 @@ export default class MainPage extends Component
                 title: `Your new save file is about to be downloaded.\nMake sure you replace your old one with the new file!`,
                 confirmButtonText: `I Understand`,
                 allowOutsideClick: false,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 didOpen: () =>
                 {
                     PopUp.hideLoading(); //From previous pop-ups
@@ -2952,7 +2955,7 @@ export default class MainPage extends Component
                 showConfirmButton: false,
                 showDenyButton: true,
                 showCancelButton: true,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             });
 
             if (!result.isDenied) //isDenied means save anyway (uses red colour)
@@ -2961,7 +2964,7 @@ export default class MainPage extends Component
                 PopUp.fire
                 ({
                     title: 'Choose <b>Only</b> for the search option:\n<b>Will Lose Data When Saved</b>\nto find these Pokemon.',
-                    scrollbarPadding: false,
+                    ...GetDefaultPopUpOpts(),
                 });
 
                 return false;
@@ -2986,7 +2989,7 @@ export default class MainPage extends Component
                 title: "Error saving data!",
                 html: this.state.savingMessage,
                 confirmButtonText: "Awww",
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
                 didOpen: () =>
                 {
                     PopUp.hideLoading(); //From previous pop-ups

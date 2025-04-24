@@ -20,12 +20,16 @@ const NEW_WONDER_TRADE_NOTIFICATION_COOLDOWN = 5 * 60 * 1000; //Only allow notif
 const LAST_NEW_WONDER_TRADE_NOTIFICATION = "lastNewWonderTradeNotification";
 const NEW_WONDER_TRADE_NOTIFICATIONS_AGAIN = "newWonderTradeNotificationsAgain";
 
-export const GLOBAL_POPUP_OPTS =
+const GLOBAL_POPUP_OPTS =
 {
+    customClass: //Use the button style from the rest of the site
+    {
+        confirmButton: "btn btn-primary",
+        denyButton: "btn btn-danger",
+        cancelButton: "btn btn-secondary",
+    },
     scrollbarPadding: false,
-    theme: "auto",
 };
-
 
 /* General Notification Functions */
 
@@ -120,6 +124,18 @@ export function SendErrorToastNotificationByBoxSlot(text, boxSlot, options={})
         position: (boxSlot === 0) ? "bottom-left" : "bottom-right",
         ...options,
     });
+}
+
+/**
+ * Gets the default options that should apply to every pop-up.
+ * @returns {object} The default options for the pop-up.
+ */
+export function GetDefaultPopUpOpts()
+{
+    return {
+        ...GLOBAL_POPUP_OPTS,
+        theme: isDarkReaderEnabled() ? "dark" : "light",
+    };
 }
 
 

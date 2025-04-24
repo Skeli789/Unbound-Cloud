@@ -567,7 +567,7 @@ export class BoxList extends Component
             if (!this.draggingAllowed() || !this.state.draggingMode)
                 //No dragging at all, so just return the box view
                 return (
-                    <div> {/* Use div to maintain the same structure as the draggable box */}
+                    <div key={boxId}> {/* Use div to maintain the same structure as the draggable box */}
                         {boxView}
                     </div>
                 );

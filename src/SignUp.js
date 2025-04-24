@@ -3,9 +3,10 @@ import {Button, Form} from "react-bootstrap";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-import {/*BLANK_PROGRESS_BAR,*/ STATE_ENTER_ACTIVATION_CODE, STATE_LOGIN, UNOFFICIAL_RELEASE, UNBOUND_LINK, PURPLE_CLOUD} from "./MainPage";
 import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
+import {/*BLANK_PROGRESS_BAR,*/ STATE_ENTER_ACTIVATION_CODE, STATE_LOGIN, UNOFFICIAL_RELEASE, UNBOUND_LINK, PURPLE_CLOUD} from "./MainPage";
+import {GetDefaultPopUpOpts} from "./Notifications";
 import {EmailField} from "./subcomponents/EmailField";
 import {PasswordField} from "./subcomponents/PasswordField";
 import {UsernameField} from "./subcomponents/UsernameField";
@@ -403,10 +404,11 @@ export class SignUp extends Component
  */
 function CompletedRegistrationPopUp(mainPageObj, response)
 {
-    PopUp.fire(
-    {
+    PopUp.fire
+    ({
         icon: "success",
         title: "Registration complete!",
+        ...GetDefaultPopUpOpts(),
     }).then(() =>
     {
         mainPageObj.setState

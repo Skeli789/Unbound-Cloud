@@ -52,6 +52,13 @@ button, input, optgroup, select, textarea
     color: red;
 }
 
+/* Fix dark mode pop-up background color */
+[data-darkreader-scheme="dark"] div:where(.swal2-container) div:where(.swal2-popup)
+{
+    --darkreader-bg--swal2-background: var(--swal2-background) !important;
+    --darkreader-border--swal2-border: var(--swal2-border) !important;
+}
+
 /* make buttons look more modern */
 .btn
 {
@@ -76,9 +83,18 @@ button, input, optgroup, select, textarea
 {
     color: var(--purple);
     border-color: var(--purple);
+    --bs-btn-bg: var(--purple) !important;
+    --bs-btn-border-color: var(--purple) !important;
+    --bs-btn-hover-bg: var(--purple) !important;
+    --bs-btn-hover-border-color: var(--purple) !important;
+    --bs-btn-active-bg: var(--purple) !important;
+    --bs-btn-active-border-color: var(--purple) !important;
+    --bs-btn-disabled-bg: var(--purple) !important;
+    --bs-btn-disabled-border-color: var(--purple) !important;
+    --bs-btn-focus-shadow-rgb: var(--purple) !important;
 }
 
-.btn-primary:hover, .btn-primary:focus, .btn-primary:focus-visible, .btn-primary:active:focus
+.btn-primary:hover
 {
     color: #fff !important;
     background: var(--purple);

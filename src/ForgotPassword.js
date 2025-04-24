@@ -4,9 +4,10 @@ import {Button, Form, OverlayTrigger, Tooltip} from "react-bootstrap";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-import {STATE_LOGIN} from "./MainPage";
 import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, SendFormToServer,
         ValidateEmail, ValidatePassword} from "./FormUtil";
+import {STATE_LOGIN} from "./MainPage";
+import {GetDefaultPopUpOpts} from "./Notifications";
 import {CodeField} from './subcomponents/CodeField';
 import {EmailField} from "./subcomponents/EmailField";
 import {PasswordField} from "./subcomponents/PasswordField";
@@ -204,7 +205,7 @@ export class ForgotPassword extends Component
             icon: "success",
             title: "Check your inbox or spam for the code needed to reset your password!",
             confirmButtonText: "Continue",
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then(() =>
         {
             this.setState({forgotPasswordState: FP_STATE_ENTER_NEW_PASSWORD});
@@ -265,7 +266,7 @@ export class ForgotPassword extends Component
         ({
             icon: "success",
             title: "Password reset successfully!",
-            scrollbarPadding: false,
+            ...GetDefaultPopUpOpts(),
         }).then(() =>
         {
             mainPageObj.setState

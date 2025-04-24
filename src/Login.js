@@ -7,6 +7,7 @@ import withReactContent from 'sweetalert2-react-content';
 import {CanUseFileHandleAPI, UNBOUND_LINK, PURPLE_CLOUD,
         STATE_SIGN_UP, STATE_FORGOT_PASSWORD, STATE_CHOOSE_SAVE_HANDLE, STATE_UPLOAD_SAVE_FILE,
         STATE_ENTER_ACTIVATION_CODE} from "./MainPage";
+import {GetDefaultPopUpOpts} from "./Notifications";
 import {NO_SERVER_CONNECTION_ERROR, ErrorPopUp, SendFormToServer,
         ValidateEmail, ValidatePassword, ValidateUsername} from "./FormUtil";
 import {PasswordField, HandleRememberMe} from "./subcomponents/PasswordField";
@@ -148,7 +149,7 @@ export class Login extends Component
         if (accountNotActivated)
             newEditState = STATE_ENTER_ACTIVATION_CODE;
 
-        PopUp.fire({showConfirmButton: false});
+        PopUp.fire({showConfirmButton: false, ...GetDefaultPopUpOpts()});
         PopUp.close(); //Close submitting pop-up
         mainPageObj.setState
         ({
