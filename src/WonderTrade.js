@@ -367,7 +367,8 @@ export class WonderTrade extends Component
 
         //Send user notifications
         let newPokemonSpecies = GetSpeciesName(GetSpecies(newPokemon), true);
-        const notificationText = `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} has just arrived from ${receivedFrom}!\nIt was placed in "${this.state.boxName}".`;
+        const notificationText = `${GetNickname(newPokemon)}${GetNickname(newPokemon) !== newPokemonSpecies ? ` (${newPokemonSpecies})` : ""} has just arrived` + ((receivedFrom) ? ` from ${receivedFrom}!` : "!")
+                               + `\nIt was placed in "${this.state.boxName}".`;
         const imageUrl = GetIconSpeciesLink(newPokemon);
         SendWonderTradeCompleteNotification(notificationText, imageUrl); //Send notification to user
 

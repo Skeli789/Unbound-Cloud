@@ -156,7 +156,7 @@ function GetValidWonderTradeClientsFor(clientId, username, randomizer)
         || accounts.IsUserBannedFromWonderTrade(otherWonderTradeData.username)) //Can't trade with someone who's been banned
             continue;
 
-        if (username in gWonderTradeSpecies)
+        if (username != null && username in gWonderTradeSpecies)
         {
             let otherUser = otherWonderTradeData.username;
             let otherSpecies = pokemonUtil.GetSpecies(otherWonderTradeData.pokemon);
@@ -200,6 +200,9 @@ function IsWonderTradeAvailable(username, randomizer)
 function AddUserToWonderTradeSpeciesTable(username, receivedFromUser, species)
 {
     TryWipeWonderTradeSpeciesData();
+
+    if (!username || !receivedFromUser || !species)
+        return; //No point in adding an entry for a user that doesn't exist
 
     if (!(username in gWonderTradeSpecies))
         gWonderTradeSpecies[username] = {};

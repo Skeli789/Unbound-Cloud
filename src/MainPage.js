@@ -159,8 +159,8 @@ export default class MainPage extends Component
             isRandomizedSave: false,
 
             //Account System
-            username: ("username" in localStorage) ? localStorage.username : "",
-            accountCode: ("accountCode" in localStorage) ? localStorage.accountCode : "",
+            username: (ACCOUNT_SYSTEM && "username" in localStorage) ? localStorage.username : "",
+            accountCode: (ACCOUNT_SYSTEM && "accountCode" in localStorage) ? localStorage.accountCode : "",
             cloudDataSyncKey: "",
             uploadedTesterHomeFile: false,
             uploadedTesterRandomizedHomeFile: false,
