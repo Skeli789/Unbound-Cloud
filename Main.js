@@ -48,7 +48,8 @@ function ModifyRequestOrigin()
 {
     session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) =>
     {
-        details.requestHeaders["Origin"] = SERVER; //Pretend the request came from the actual site
+        if (IS_PROD)
+            details.requestHeaders["Origin"] = SERVER; //Pretend the request came from the actual site
         callback({requestHeaders: details.requestHeaders});
     });
 }

@@ -51,17 +51,14 @@ export function RequestPermissionForSystemNotifications()
  */
 export function SendSystemNotification(title, message, icon="")
 {
-    //Check if notification permission is granted
-    if (!("Notification" in window) || Notification.permission !== "granted")
-        return;
-
     //Don't send a notification if the user is on the page
     if (!document.hidden && document.hasFocus())
         return;
 
     //Send the notification
-    let notification = new Notification(title,
-    {
+    let notification = window.electronAPI.sendNotify
+    ({
+        title: title,
         body: message,
         icon: icon,
     });
@@ -166,7 +163,6 @@ export function PlayTradeCompletedSound()
  */
 export function SendWonderTradeCompleteNotification(text, imageUrl)
 {
-    document.title = "Wonder Trade Complete!"; //Indicate to the user if they're in another tab
     PlayTradeCompletedSound();
     SendSystemNotification("Wonder Trade Complete!", text, imageUrl);
     ClearWonderTradeNotificationCooldown(); //Allow receiving "Someone is waiting for a Wonder Trade!" notifications immediately after a trade

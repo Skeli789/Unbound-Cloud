@@ -260,7 +260,7 @@ export default class MainPage extends Component
                 denyButtonText: "No, Don't Save",
                 showCancelButton: true,
                 showDenyButton: true,
-                scrollbarPadding: false,
+                ...GetDefaultPopUpOpts(),
             }).then(async (result) =>
             {
                 let saved = false;
