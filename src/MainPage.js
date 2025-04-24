@@ -1146,18 +1146,20 @@ export default class MainPage extends Component
         }
         else
         {
+            let responseStatus = (error.response != null) ? error.response.status : null;
+            let responseData = (error.response != null) ? error.response.data : error.message;
             await this.setStateAndWait
             ({
                 editState: newState,
                 fileUploadError: true,
-                inaccessibleSaveError: error["response"]["status"] === StatusCode.ClientErrorForbidden,
-                oldVersionSaveError: error["response"]["status"] === StatusCode.ClientErrorUpgradeRequired,
+                inaccessibleSaveError: responseStatus === StatusCode.ClientErrorForbidden,
+                oldVersionSaveError: responseStatus === StatusCode.ClientErrorUpgradeRequired,
                 serverConnectionError: false,
-                errorResponseText: error["response"]["data"],
+                errorResponseText:responseData,
             });
 
             errorText = "Server error!\nPlease try again later."; //Will usually be overwritten with a more specific error
-            console.error(error["response"]["data"]);
+            console.error(responseData);
         }
 
         PopUp.fire
