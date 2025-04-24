@@ -1,5 +1,6 @@
 import os
 import pytest
+import time
 from unittest import TestCase
 from selenium.webdriver.common.by import By
 
@@ -19,7 +20,16 @@ class TestAccountSystem(TestCase):
     def setUpClass(cls):
         # Instantiate the driver and navigate to the site
         cls.driver = SetUpDriver(BROWSER)
-        cls.driver.get(URL_SITE)
+
+        # Try to connect 10 times to the site
+        attempts = 0
+        while attempts < 10:
+            try:
+                cls.driver.get(URL_SITE)
+            except Exception as e:
+                print(f"Failed to connect to {URL_SITE}: {e}")
+                attempts += 1
+                time.sleep(1)
 
     @classmethod
     def tearDownClass(cls):
