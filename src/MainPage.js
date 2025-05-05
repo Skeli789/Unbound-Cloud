@@ -176,6 +176,9 @@ export default class MainPage extends Component
 
         this.updateState = this.updateState.bind(this);
         this.wonderTradeChecker = null;
+
+        if (this.state.editState === STATE_MOVING_POKEMON) //For DEMO_SITE
+            this.openBoxView(false);
     }
 
     /**
@@ -409,16 +412,24 @@ export default class MainPage extends Component
 
     /**
      * Displays the box view when the user is ready to start moving Pokemon around.
+     * @param {Boolean} setBoxViewState - Whether the state should be set to STATE_MOVING_POKEMON.
      */
-    openBoxView()
+    openBoxView(setBoxViewState=true)
     {
-        this.wipeErrorMessage();
-        this.setState({editState: STATE_MOVING_POKEMON}, () =>
+        const afterStateUpdateFunc = () =>
+            {
+                PlayOrPauseMainMusicTheme();
+                if (!localStorage.visitedBefore)
+                    ShowSymbolTutorial();
+            };
+
+        if (setBoxViewState)
         {
-            PlayOrPauseMainMusicTheme();
-            if (!localStorage.visitedBefore)
-                ShowSymbolTutorial();
-        });
+            this.wipeErrorMessage();
+            this.setState({editState: STATE_MOVING_POKEMON}, afterStateUpdateFunc);
+        }
+        else
+            afterStateUpdateFunc(); //Don't update the state, just play the music and show the tutorial
 
         //Check if there's a new Wonder Trade every so often
         ClearWonderTradeNotificationCooldown(); //Reset the cooldown every time the box view is opened
@@ -1353,9 +1364,7 @@ export default class MainPage extends Component
                         PopUp.fire({showConfirmButton: false, ...GetDefaultPopUpOpts()});
                         PopUp.close(); //Close loading pop-up
 
-                        PlayOrPauseMainMusicTheme();
-                        if (!localStorage.visitedBefore)
-                            ShowSymbolTutorial();
+                        this.openBoxView(false); //False because we already set the state and just care about the music and WT setup
                     }
                     catch (error)
                     {
