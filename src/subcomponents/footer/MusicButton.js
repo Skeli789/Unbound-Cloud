@@ -82,7 +82,7 @@ function IsSongMuted()
  * Plays or pauses the main music theme that plays in the background.
  * It uses the saved cookie to determine whether to play or pause.
  */
-export function PlayOrPauseMainMusicTheme()
+export async function PlayOrPauseMainMusicTheme()
 {
     let muted = IsSongMuted();
 
@@ -95,7 +95,14 @@ export function PlayOrPauseMainMusicTheme()
     {
         //Make sure it's playing looped
         mainTheme.loop = true;
-        mainTheme.play();
+        try
+        {
+            await mainTheme.play();
+        }
+        catch (e)
+        {
+            console.error(`Error playing main music theme: ${e}`);
+        }
     }
 }
 
