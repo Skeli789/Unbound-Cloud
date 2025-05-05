@@ -195,8 +195,8 @@ export function SendWonderTradeWaitingNotification()
     SendToastNotification(text,
     {
         className: "toast-with-button",
-        closeOnClick: false, //So the user can click the button easier
         closeButton: <CloseButton />,
+        autoClose: 8 * 1000, //Keep the notification open for 8 seconds
     });
 
     //Send a system notification (will only be sent if the user is not on the page)
