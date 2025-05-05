@@ -176,9 +176,6 @@ export default class MainPage extends Component
 
         this.updateState = this.updateState.bind(this);
         this.wonderTradeChecker = null;
-
-        if (this.state.editState === STATE_MOVING_POKEMON) //For DEMO_SITE
-            this.openBoxView(false);
     }
 
     /**
@@ -203,6 +200,9 @@ export default class MainPage extends Component
 
         if (DEMO_SITE && !localStorage.visitedBefore)
         {
+            //Note that intentially this.openBoxView is not called
+            //This is so the symbol tutorial pop-up doesn't override this one
+            //and the Wonder Trade check interval isn't created
             PopUp.fire
             ({
                 icon: "warning",
