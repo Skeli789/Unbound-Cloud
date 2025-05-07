@@ -753,7 +753,7 @@ app.post('/saveAccountCloudData', async (req, res) =>
             }
             else if (cloudDataSyncKey !== userKey)
             {
-                return res.status(StatusCode.ClientErrorUnauthorized).json(INVALID_CLOUD_DATA_SYNC_KEY_ERROR);
+                return res.status(StatusCode.ClientErrorUnauthorized).json(sockets.INVALID_CLOUD_DATA_SYNC_KEY_ERROR);
             }
             else
             {

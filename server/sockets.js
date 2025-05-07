@@ -582,4 +582,4 @@ function InitSockets(io)
     });
 }
 
-module.exports = {InitSockets, IsWonderTradeAvailable};
+module.exports = {InitSockets, IsWonderTradeAvailable, INVALID_CLOUD_DATA_SYNC_KEY_ERROR};
