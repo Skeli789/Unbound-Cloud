@@ -433,12 +433,14 @@ export default class MainPage extends Component
 
         //Check if there's a new Wonder Trade every so often
         ClearWonderTradeNotificationCooldown(); //Reset the cooldown every time the box view is opened
-        this.wonderTradeChecker = setInterval(() =>
+        const checkForWonderTrade = () =>
         {
             //No await
             CheckForNewWonderTrade(this.state.username, this.state.isRandomizedSave,
                                    this.state.wonderTradeData != null)
-        }, WONDER_TRADE_CHECK_INTERVAL);
+        };
+        this.wonderTradeChecker = setInterval(checkForWonderTrade, WONDER_TRADE_CHECK_INTERVAL);
+        checkForWonderTrade(); //Check immediately
 
         //Prompt the user to allow sending desktop notifications
         RequestPermissionForSystemNotifications();
