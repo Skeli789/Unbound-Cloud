@@ -52,11 +52,11 @@ describe('Trade Util Tests', () =>
 
             mockSocket = {};
             mockSocketUtils = {
-                safeEmit: (socket, route, message) =>
+                safeEmit: (route, message) =>
                 {
                     // Store the emit calls for verification
                     if (!mockSocketUtils.emitCalls) mockSocketUtils.emitCalls = [];
-                    mockSocketUtils.emitCalls.push({ socket, route, message });
+                    mockSocketUtils.emitCalls.push({ route, message });
                 }
             };
         });
