@@ -6,7 +6,7 @@
   "main": "server.js",
   "proxy": "https://unboundcloud.net",
   "scripts": {
-    "test-js": "npx nyc mocha jstests --timeout 5000",
+    "test-js": "npx nyc mocha jstests --timeout 10000",
     "test-py": "pytest --cov pytests -s",
     "test-all": "yarn test-js && yarn test-py",
     "start-node-server": "node server.js",
@@ -38,7 +38,8 @@
     "chai-string": "^1.5.0",
     "mocha": "^11.1.0",
     "nyc": "^17.1.0",
-    "rewire": "^7.0.0"
+    "rewire": "^7.0.0",
+    "socket.io-client": "^4.8.1"
   },
   "jest": {
     "testEnvironment": "node"

@@ -1,295 +1,387 @@
-const {WebhookClient} = require('discord.js');
-const Mutex = require('async-mutex').Mutex;
-const randomstring = require("randomstring");
-require('dotenv').config({path: __dirname + '/.env'});
+const { INVALID_CLOUD_DATA_SYNC_KEY_ERROR } = require('./trade-util');
+const friendTrade = require('./friend-trade');
+const wonderTrade = require('./wonder-trade');
 
-const accounts = require('./accounts');
-const pokemonUtil = require('./pokemon-util');
+// Timeout constants
+const SOCKET_EMIT_TIMEOUT = 5000; // 5 seconds
+const SOCKET_SEND_TIMEOUT = 10000; // 10 seconds
+const HEALTH_CHECK_TIMEOUT = 3000; // 3 seconds
+const SOCKET_ACTIVITY_TIMEOUT = 120000; // 2 minutes
+const MAIN_LOOP_INTERVAL = 1000; // 1 second
+const ERROR_RECOVERY_DELAY = 1000; // 1 second
+const PING_TIMEOUT = 60000; // 60 seconds
+const PING_INTERVAL = 25000; // 25 seconds
 
-//General data
-const ENFORCE_USERNAMES = (process.env["ACCOUNT_SYSTEM"] === "true") ? true : false; //Whether to enforce usernames for trading to not be blank
-const INVALID_CLOUD_DATA_SYNC_KEY_ERROR = "The Cloud data has already been opened in another tab!\nPlease reload the page to avoid data corruption.";
-
-//Friend Trade data
-const gFriendTradeClients = {};
-const gCodesInUse = {};
-
-const FRIEND_TRADE_INITIAL = 0;
-const FRIEND_TRADE_CONNECTED = 1;
-const FRIEND_TRADE_NOTIFIED_CONNECTION = 2;
-const FRIEND_TRADE_ACCEPTED_TRADE = 3;
-const FRIEND_TRADE_ENDING_TRADE = 4;
-
-//Wonder Trade data
-const gWonderTradeDiscordWebhook = (process.env["WONDER_TRADE_WEBHOOK"]) ? new WebhookClient({url: process.env["WONDER_TRADE_WEBHOOK"]}) : null;
-const gWonderTradeClients = {};
-const gWonderTradeMutex = new Mutex();
-let gWonderTradeSpecies = {};
-let gLastWonderTradeAt = 0;
-
-const WONDER_TRADE_NOT_IN_PROGRESS = 0;
-const WONDER_TRADE_IN_PROGRESS = 1;
-const WONDER_TRADE_TRADED = 2;
-
-const WONDER_TRADE_SPECIES_COOLDOWN = 5 * 60 * 1000; //5 Minutes
-
+// Trade type constants
+const TRADE_TYPE_WONDER_TRADE = "WONDER_TRADE";
+const TRADE_TYPE_FRIEND_TRADE = "FRIEND_TRADE";
 
 
 /**
- * Creates a friend code to initiate trading.
- * @returns {String} - The code the user's friend has to submit in order to connect to them for a Friend Trade.
+ * Checks if a socket is connected and available for use.
+ * @param {Object} socket - The socket instance to check.
+ * @returns {Boolean} Whether the socket is connected and available.
  */
-function CreateFriendCode()
+function isSocketConnected(socket)
 {
-    let code;
+    return socket && socket.connected && !socket.disconnected;
+}
 
-    do
+/**
+ * Creates socket utility functions for safe operations.
+ * @param {Object} socket - The socket instance.
+ * @param {Function} updateActivity - Function to update last activity timestamp.
+ * @returns {Object} Object containing utility functions.
+ */
+function createSocketUtils(socket, updateActivity)
+{
+    /**
+     * Safely emits an event to the socket with timeout protection.
+     * @param {String} event - The event name to emit.
+     * @param {...*} args - Arguments to pass with the event.
+     * @returns {Promise<void>} Promise that resolves when emit completes or rejects on error/timeout.
+     */
+    function safeEmit(event, ...args)
     {
-        code = randomstring.generate({length: 8, charset: "alphanumeric", capitalization: "lowercase"});
-    } while (code in gCodesInUse);
-
-    return code;
-}
-
-/**
- * Locks the Wonder Trade data and prevents it from being modified again until it's unlocked.
- * @returns {Promise<void>} - A promise that resolves when the lock is acquired.
- */
-async function LockWonderTrade()
-{
-    await gWonderTradeMutex.acquire();
-}
-
-/**
- * Unlocks the Wonder Trade data for modifying again.
- */
-function UnlockWonderTrade()
-{
-    gWonderTradeMutex.release();
-}
-
-/**
- * Validates that the client trying to trade didn't already open the Cloud data in a new tab.
- * @param {String} username - The user who's trying to trade.
- * @param {String} clientId - The client id of the user trying to trade.
- * @param {String} cloudDataSyncKey - The cloud data sync key sent from the client to verify.
- * @param {Boolean} randomizer - Whether or not the Cloud Boxes are for a randomized save.
- * @param {WebSocket} socket - The web socket used to connect to the client.
- * @param {String} clientType - Either "FT" for "Friend Trade", or "WT" for "Wonder Trade".
- * @returns {Promise<Boolean>} Whether the trade is allowed to happen. False if the user already opened their Cloud Boxes in a new tab.
- */
-async function CloudDataSyncKeyIsValidForTrade(username, clientId, cloudDataSyncKey, randomizer, socket, clientType)
-{
-    const routeWhenInvalid = "invalidCloudDataSyncKey";
-
-    if (username)
-    {
-        let userKey = await accounts.GetCloudDataSyncKey(username, randomizer);
-
-        if (!cloudDataSyncKey)
+        return new Promise((resolve, reject) =>
         {
-            console.log(`[${clientType}] ${username} sent no cloud data sync key`);
-            socket.emit(routeWhenInvalid, "The cloud data sync key was missing!");
+            try
+            {
+                // Check if socket is still connected
+                if (!isSocketConnected(socket))
+                {
+                    reject(new Error('Socket instance is disconnected'));
+                    return;
+                }
+
+                // Set a timeout to reject if emit takes too long
+                const timeout = setTimeout(() =>
+                {
+                    reject(new Error('Socket instance emit timeout'));
+                }, SOCKET_EMIT_TIMEOUT); // 5 seconds
+
+                // Emit the event and resolve when done
+                socket.emit(event, ...args);
+                clearTimeout(timeout);
+                updateActivity(); // Update last activity timestamp
+                resolve();
+            }
+            catch (error)
+            {
+                reject(new Error(`Socket instance error: ${error.message}`));
+            }
+        });
+    };
+
+    /**
+     * Safely sends data to the socket with timeout protection.
+     * @param {...*} args - Arguments to pass to socket.send().
+     * @returns {Promise<void>} Promise that resolves when send completes or rejects on error/timeout.
+     */
+    function safeSend(...args)
+    {
+        return new Promise((resolve, reject) =>
+        {
+            try
+            {
+                // Check if socket is still connected
+                if (!isSocketConnected(socket))
+                {
+                    reject(new Error('Socket instance is disconnected'));
+                    return;
+                }
+
+                // Set a timeout to reject if send takes too long
+                const timeout = setTimeout(() =>
+                {
+                    reject(new Error('Socket instance send timeout'));
+                }, SOCKET_SEND_TIMEOUT); // 10 seconds
+
+                // Send the data and resolve when done
+                socket.send(...args);
+                clearTimeout(timeout);
+                updateActivity(); // Update last activity timestamp
+                resolve();
+            }
+            catch (error)
+            {
+                reject(new Error(`Socket instance error: ${error.message}`));
+            }
+        });
+    };
+
+    /**
+     * Checks the health of the socket connection by sending a ping.
+     * @returns {Promise<Boolean>} Promise that resolves to whether socket is healthy.
+     */
+    async function checkSocketHealth()
+    {
+        try
+        {
+            // Check if socket is still connected
+            if (!isSocketConnected(socket))
+                return false;
+
+            // Try a simple ping to test responsiveness
+            await Promise.race([
+                new Promise((resolve) =>
+                {
+                    socket.emit('ping', resolve);
+                }),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Health check timeout')), HEALTH_CHECK_TIMEOUT)
+                )
+            ]);
+
+            // Update last activity timestamp since the socket is responsive
+            updateActivity();
+            return true;
+        }
+        catch (error)
+        {
+            console.warn(`Socket health check failed: ${error.message}`);
             return false;
         }
-        else if (cloudDataSyncKey !== userKey)
+    };
+
+    return { safeEmit, safeSend, checkSocketHealth };
+}
+
+/**
+ * Checks if socket instance has timed out and attempts recovery.
+ * @param {Number} lastActivity - Timestamp of last activity.
+ * @param {String} clientName - Client name for logging.
+ * @param {Object} socketUtils - Socket utility functions.
+ * @param {Function} setInactive - Function to mark socket as inactive.
+ * @returns {Promise<Boolean>} Whether the socket is still active.
+ */
+async function checkSocketTimeout(lastActivity, clientName, socketUtils, setInactive)
+{
+    const timeSinceLastActivity = Date.now() - lastActivity;
+    if (timeSinceLastActivity > SOCKET_ACTIVITY_TIMEOUT) // 2 minutes
+    {
+        console.warn(`Socket instance timeout detected for ${clientName} (${timeSinceLastActivity}ms since last activity)`);
+
+        if (!(await socketUtils.checkSocketHealth()))
         {
-            console.log(`[${clientType}] ${username} sent an old cloud data sync key`);
-            socket.emit(routeWhenInvalid, INVALID_CLOUD_DATA_SYNC_KEY_ERROR);
+            console.error(`Socket instance is unresponsive for ${clientName}, terminating connection`);
+            setInactive();
             return false;
         }
     }
-    else if (ENFORCE_USERNAMES) //Account system is enabled, but no username was sent
-    {
-        console.log(`[${clientType}] ${clientId} sent no username`);
-        socket.emit(routeWhenInvalid, "A username must be provided to trade!");
-        return false;
-    }
-
     return true;
 }
 
 /**
- * Prevents a user from Wonder Trading twice at the same time.
- * @param {String} username - The user who's trying to trade.
- * @param {WebSocket} socket - The web socket used to connect to the client.
- * @returns {Promise<Boolean>} - Whether a previous trade was cancelled.
+ * Checks if socket is still connected.
+ * @param {Object} socket - The socket instance.
+ * @param {Function} setInactive - Function to mark socket as inactive.
+ * @returns {Boolean} Whether the socket is still connected.
  */
-async function TryPreventUserFromWonderTradingTwice(username, socket)
+function checkSocketConnection(socket, setInactive)
 {
-    for (let client of Object.values(gWonderTradeClients))
+    if (!isSocketConnected(socket))
     {
-        if (username && client.username //Account system is enabled
-        && client.username === username && client.tradedWith === 0) //User is already in a Wonder Trade and hasn't traded yet
+        setInactive();
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Waits for the next iteration of the main loop.
+ * @param {Object} socket - The socket instance.
+ * @param {Function} setInactive - Function to mark socket as inactive.
+ * @returns {Promise<void>} Promise that resolves after waiting or rejects if socket disconnects.
+ */
+async function waitForNextIteration(socket, setInactive)
+{
+    await Promise.race([
+        new Promise(r => setTimeout(r, MAIN_LOOP_INTERVAL)),
+        new Promise((_, reject) =>
         {
-            console.log(`[WT] ${username} has active Wonder Trade elsewhere so cancelling this trade`);
-            socket.emit("invalidCloudDataSyncKey", "Your account already has a Wonder Trade in progress!");
-            return true; //Cancel the trade
-        }
-    }
-
-    return false; //No previous trade to cancel
+            if (!isSocketConnected(socket))
+                reject(new Error('Socket instance disconnected'));
+        })
+    ]).catch(error =>
+    {
+        if (error.message?.includes('disconnected'))
+            setInactive();
+        else
+            console.error(`Timeout error: ${error}`);
+    });
 }
 
 /**
- * Gets the list of clients connected to Wonder Trade that can trade their Pokemon to the current user.
- * @param {String} clientId - The current client id to check the user's that can trade to it.
- * @param {String} username - The username of the current client.
- * @param {Boolean} randomizer - Whether or not the current client is using a randomized save.
- * @returns {Array<String>} - A list of client ids that can trade with the current user.
+ * Handles main loop errors and determines if loop should continue.
+ * @param {Error} error - The error that occurred.
+ * @param {String} clientName - Client name for logging.
+ * @param {Function} setInactive - Function to mark socket as inactive.
+ * @returns {Promise<Boolean>} Whether the loop should continue.
  */
-function GetValidWonderTradeClientsFor(clientId, username, randomizer)
+async function handleMainLoopError(error, clientName, setInactive)
 {
-    let clients = [];
+    console.error(`Error in main loop for ${clientName}:`, error);
 
-    if (accounts.IsUserBannedFromWonderTrade(username))
-        return clients; //Can't trade at all if you've been banned, but still allow the user to connect so they don't just create a second account to keep trading
-
-    for (let x of Object.keys(gWonderTradeClients))
+    // Check if error is related to socket instance being unresponsive
+    if (error.message?.includes('disconnect')
+     || error.message?.includes('timeout')
+     || error.message?.includes('instance'))
     {
-        let otherWonderTradeData = gWonderTradeClients[x];
+        setInactive();
+        return false;
+    }
 
-        if ((clientId != null && x === clientId) //Can't trade with yourself
-        || x.username === username //Can't trade with yourself
-        || otherWonderTradeData.tradedWith !== 0 //Can't trade with someone who's already traded
-        || otherWonderTradeData.randomizer !== randomizer //Can't trade with someone who's randomizer setting doesn't match
-        || accounts.IsUserBannedFromWonderTrade(otherWonderTradeData.username)) //Can't trade with someone who's been banned
-            continue;
+    await new Promise(r => setTimeout(r, ERROR_RECOVERY_DELAY));
+    return true;
+}
 
-        if (username != null && username in gWonderTradeSpecies)
+/**
+ * Sets up basic socket event listeners (ping/pong, disconnect).
+ * @param {Object} socket - The socket instance.
+ * @param {String} clientName - The client name for logging.
+ * @param {Function} updateActivity - Function to update last activity.
+ * @param {Function} setInactive - Function to mark socket as inactive.
+ */
+function setupBasicSocketHandlers(socket, clientName, updateActivity, setInactive)
+{
+    socket.on('ping', () =>
+    {
+        updateActivity();
+        try
         {
-            let otherUser = otherWonderTradeData.username;
-            let otherSpecies = pokemonUtil.GetSpecies(otherWonderTradeData.pokemon);
-
-            if (otherUser in gWonderTradeSpecies[username] //Traded with this user before
-            && otherSpecies in gWonderTradeSpecies[username][otherUser]) //Traded this species with this user before
-            {
-                let lastReceivedAt = gWonderTradeSpecies[username][otherUser][otherSpecies];
-                let timeSince = Date.now() - lastReceivedAt;
-
-                if (timeSince < WONDER_TRADE_SPECIES_COOLDOWN)
-                    continue; //Prevent receiving dupes from the same person very quickly
-                else
-                    delete gWonderTradeSpecies[username][otherUser][otherSpecies]; //This species can be traded again
-            }
+            socket.emit('pong');
         }
-
-        clients.push(x);
-    }
-
-    return clients;
-}
-
-/**
- * Checks if a user would have a Wonder Trade partner.
- * @param {string} username - The user wanting to Wonder Trade.
- * @param {boolean} randomizer - Whether the user is using a randomized save file.
- * @returns {boolean} Whether the user will have a Wonder Trade partner.
- */
-function IsWonderTradeAvailable(username, randomizer)
-{
-    return GetValidWonderTradeClientsFor(null, username, randomizer).length > 0;
-}
-
-/**
- * Adds an entry in the table that says which Pokemon this user has received from a specific user recently.
- * @param {String} username - The user to add the entry for.
- * @param {String} receivedFromUser - The user the Pokemon was received from.
- * @param {String} species - The species received from the user.
- */
-function AddUserToWonderTradeSpeciesTable(username, receivedFromUser, species)
-{
-    TryWipeWonderTradeSpeciesData();
-
-    if (!username || !receivedFromUser || !species)
-        return; //No point in adding an entry for a user that doesn't exist
-
-    if (!(username in gWonderTradeSpecies))
-        gWonderTradeSpecies[username] = {};
-
-    if (!(receivedFromUser in gWonderTradeSpecies[username]))
-        gWonderTradeSpecies[username][receivedFromUser] = {};
-
-    gWonderTradeSpecies[username][receivedFromUser][species] = Date.now();
-}
-
-/**
- * Tries to wipe the gWonderTradeSpecies table to preserve space in memory.
- */
-function TryWipeWonderTradeSpeciesData()
-{
-    if (gLastWonderTradeAt !== 0) //There has been a Wonder Trade since the server started or the data was last wiped
-    {
-        let timeSince = Date.now() - gLastWonderTradeAt;
-        if (timeSince >= WONDER_TRADE_SPECIES_COOLDOWN)
+        catch (error)
         {
-            gWonderTradeSpecies = {}; //No point in keeping data in memory when it's all expired anyway
-            gLastWonderTradeAt = 0;
+            console.error(`Error sending pong to ${clientName}:`, error);
+            setInactive();
         }
-    }
+    });
+
+    socket.on('disconnect', (reason) =>
+    {
+        setInactive();
+        console.log(`Client ${clientName} disconnected: ${reason}`);
+    });
 }
 
 /**
- * Sends a message to the Wonder Trade Discord channel.
- * @param {String} title - The title of the message.
- * @param {Number} color - The color of the message.
- * @param {Number} messageId - The ID of the message to edit, or 0 to send a new message.
- * @returns {Promise<Number>} - The ID of the message sent or edited.
+ * Handles the tradeType event to set up appropriate trade handlers.
+ * @param {Object} socket - The socket instance.
+ * @param {String} clientId - The client ID.
+ * @param {Function} updateActivity - Function to update activity.
+ * @param {Function} setInactive - Function to mark inactive.
+ * @param {Function} getClientName - Function to get current client name.
+ * @param {Function} setClientName - Function to set client name.
+ * @param {Object} socketUtils - Socket utility functions.
  */
-async function SendWonderTradeDiscordMessage(title, color, messageId)
+function setupTradeTypeHandler(socket, clientId, updateActivity, setInactive, getClientName, setClientName, socketUtils)
 {
-    let attempts = 0;
-
-    if (!gWonderTradeDiscordWebhook)
-    {
-        console.error("Wonder Trade Discord webhook is not set up!");
-        return 0;
-    }
-
-    const params =
-    {
-        username: "Unbound Cloud",
-        content: "",
-        embeds: [
-            {
-                "title": title,
-                "color": color,
-            }
-        ]
-    };
-
-    //Try to edit a previously sent message
-    if (messageId !== 0) //A message was previously sent
-    {
-        for (attempts = 0; attempts < 3; ++attempts) //Try 3 times in case there is a connection issue
-        {
-            try
-            {
-                await gWonderTradeDiscordWebhook.editMessage(messageId, params);
-                return messageId;
-            }
-            catch (err)
-            {
-                console.error(`An error occurred editing the last Wonder Trade Discord message:\n${err}`);
-            }
-        }
-    }
-
-    //Send a new message
-    for (attempts = 0; attempts < 3; ++attempts) //Try 3 times in case there is a connection issue
+    socket.on("tradeType", async (tradeType, username, cloudDataSyncKey) =>
     {
         try
         {
-            let res = await gWonderTradeDiscordWebhook.send(params);
-            return res.id;
+            // Update last activity timestamp
+            updateActivity();
+
+            // Set the username as the client name if provided
+            if (username)
+                setClientName(username);
+
+            const clientName = getClientName();
+
+            // Handle the tradeType event
+            switch (tradeType)
+            {
+                case TRADE_TYPE_WONDER_TRADE:
+                    console.log(`[WT] ${clientId} (${username}) wants a Wonder Trade`);
+                    wonderTrade.SetupWonderTradeHandlers(socket, socketUtils, clientId, username, cloudDataSyncKey, clientName, updateActivity, setInactive);
+                    break;
+                case TRADE_TYPE_FRIEND_TRADE:
+                    console.log(`[FT] ${clientId} (${username}) wants a Friend Trade`);
+                    friendTrade.SetupFriendTradeHandlers(socket, socketUtils, clientId, username, cloudDataSyncKey, clientName);
+                    break;
+                default:
+                    console.error(`Invalid trade type received from ${clientName}: ${tradeType}`);
+                    socketUtils.safeEmit("invalidCloudDataSyncKey", "Trade type not recognized!"); // Repurpose invalidCloudDataSyncKey to display the error for the user
+                    break;
+            }
         }
-        catch (err)
+        catch (error)
         {
-            console.error(`An error occurred sending the Wonder Trade Discord message:\n${err}`);
+            console.error(`Error in tradeType handler for ${getClientName()}:`, error);
+        }
+    });
+}
+
+/**
+ * Performs cleanup when socket connection ends.
+ * @param {String} clientId - The client ID.
+ * @param {String} clientName - Client name for logging.
+ * @returns {Promise<void>} Promise that resolves when cleanup is complete.
+ */
+async function performSocketCleanup(clientId, clientName)
+{
+    try
+    {
+        await wonderTrade.CleanupWonderTradeClient(clientId, clientName);
+        await friendTrade.CleanupFriendTradeClient(clientId, clientName);
+    }
+    catch (cleanupError)
+    {
+        console.error(`Error during cleanup for ${clientName}:`, cleanupError);
+    }
+}
+
+/**
+ * Runs the main processing loop for a socket connection.
+ * @param {Object} socket - The socket instance.
+ * @param {String} clientId - The client ID.
+ * @param {String} clientName - The client name.
+ * @param {Object} socketUtils - Socket utility functions.
+ * @param {Function} isActive - Function to check if socket is active.
+ * @param {Function} setInactive - Function to mark socket as inactive.
+ * @param {Function} updateActivity - Function to update last activity.
+ * @param {Function} getLastActivity - Function to get last activity timestamp.
+ * @returns {Promise<void>} Promise that resolves when the main loop ends.
+ */
+async function runMainProcessingLoop(socket, clientId, clientName, socketUtils, isActive, setInactive,
+                                     updateActivity, getLastActivity)
+{
+    // Loop until the socket is deactivated
+    while (isActive())
+    {
+        try
+        {
+            // Check for instance timeout
+            if (!(await checkSocketTimeout(getLastActivity(), clientName, socketUtils, setInactive)))
+                break;
+
+            // Check socket connection
+            if (!checkSocketConnection(socket, setInactive))
+                break;
+
+            // Process Wonder Trade transactions
+            if (!(await wonderTrade.ProcessWonderTradeTransactions(clientId, clientName, socketUtils, updateActivity, setInactive)))
+                break;
+
+            // Process Friend Trade states
+            await friendTrade.ProcessFriendTradeStates(clientId, clientName, socketUtils, updateActivity, setInactive);
+
+            // Continue to next iteration of the main loop
+            await waitForNextIteration(socket, setInactive);
+        }
+        catch (error)
+        {
+            // Try to unlock in case of error
+            try { wonderTrade.UnlockWonderTrade(); } catch { }
+
+            // Handle any errors that occur in the main loop
+            if (!(await handleMainLoopError(error, clientName, setInactive)))
+                break;
         }
     }
-
-    return 0;
 }
 
 /**
@@ -298,288 +390,49 @@ async function SendWonderTradeDiscordMessage(title, color, messageId)
  */
 function InitSockets(io)
 {
-    //When a connection is made, loop forever until a Wonder Trade is made
-    io.on("connection", async function(socket)
+    // Configure socket.io timeout settings
+    io.engine.pingTimeout = PING_TIMEOUT;
+    io.engine.pingInterval = PING_INTERVAL;
+
+    io.on("connection", async function (socket)
     {
         const clientId = socket.id;
-        let clientName = clientId; //Use the client id as the name by default
+        let clientName = clientId;
+        let isActive = true;
+        let lastActivity = Date.now();
+        
         console.log(`Client ${clientName} connected`);
 
-        socket.on("tradeType", async (tradeType, username, cloudDataSyncKey) =>
-        {
-            if (username)
-                clientName = username; //Set the client name to the username if it was sent
+        // State management functions
+        const updateActivity = () => { lastActivity = Date.now(); };
+        const setInactive = () => { isActive = false; };
+        const getLastActivity = () => lastActivity;
+        const checkIsActive = () => isActive;
+        const getClientName = () => clientName;
+        const setClientName = (name) => { clientName = name; };
 
-            if (tradeType === "WONDER_TRADE")
-            {
-                console.log(`[WT] ${clientId} (${username}) wants a Wonder Trade`);
+        const socketUtils = createSocketUtils(socket, updateActivity);
 
-                socket.on("message", async (pokemonToSend, randomizer) =>
-                {
-                    if (!(await CloudDataSyncKeyIsValidForTrade(username, clientId, cloudDataSyncKey, randomizer, socket, "WT")))
-                        return;
+        // Set up event handlers
+        setupBasicSocketHandlers(socket, clientName, updateActivity, setInactive);
+        setupTradeTypeHandler(socket, clientId, updateActivity, setInactive, getClientName, setClientName, socketUtils);
 
-                    await LockWonderTrade(); //So no other threads can access it right now
+        // Run main processing loop
+        await runMainProcessingLoop(
+            socket, 
+            clientId, 
+            clientName, 
+            socketUtils, 
+            checkIsActive, 
+            setInactive, 
+            updateActivity, 
+            getLastActivity
+        );
 
-                    //If the user is already in a Wonder Trade, cancel it
-                    if (await TryPreventUserFromWonderTradingTwice(username, socket))
-                    {
-                        await UnlockWonderTrade(); //Unlock the mutex so other threads can access it
-                        return;
-                    }
-
-                    const keys = GetValidWonderTradeClientsFor(clientId, username, randomizer);
-
-                    if (!pokemonUtil.ValidatePokemon(pokemonToSend, false))
-                    {
-                        console.log(`[WT] ${clientName} sent an invalid Pokemon for a Wonder Trade`);
-                        socket.emit("invalidPokemon");
-                    }
-                    else
-                    {
-                        if (keys.length !== 0)
-                        {
-                            let otherUsername = gWonderTradeClients[keys[0]].username;
-                            let pokemonToReceive = gWonderTradeClients[keys[0]].pokemon;
-                            let discordMessageId = gWonderTradeClients[keys[0]].discordMessageId;
-                            gWonderTradeClients[keys[0]] =  {username: otherUsername, receivedFrom: username, pokemon: pokemonToSend, originalPokemon: pokemonToReceive, tradedWith: clientId, discordMessageId: discordMessageId}; //Immediately lock the data
-                            gWonderTradeClients[clientId] = {username: username, receivedFrom: otherUsername, pokemon: pokemonToReceive, originalPokemon: pokemonToSend, tradedWith: keys[0]}; //Set this client as traded
-                            AddUserToWonderTradeSpeciesTable(username, otherUsername, pokemonUtil.GetSpecies(pokemonToReceive));
-                            AddUserToWonderTradeSpeciesTable(otherUsername, username, pokemonUtil.GetSpecies(pokemonToSend));
-                            gLastWonderTradeAt = Date.now();
-                            //Note that the randomizer key isn't needed anymore
-                        }
-                        else
-                        {
-                            if (!(clientId in gWonderTradeClients)) //Don't overwrite previously requested mon
-                            {
-                                console.log(`[WT] ${clientName} is offering ${pokemonUtil.GetSpecies(pokemonToSend)}`);
-                                let messageId = await SendWonderTradeDiscordMessage("Someone is waiting for a Wonder Trade!", 0x00FF00, 0); //Green
-                                gWonderTradeClients[clientId] = {username: username, pokemon: pokemonToSend, tradedWith: 0, randomizer: randomizer, discordMessageId: messageId};
-                            }
-                        }
-                    }
-
-                    UnlockWonderTrade();
-                });
-
-                socket.on('disconnect', async () =>
-                {
-                    await LockWonderTrade();
-                    console.log(`[WT] ${clientName} disconnected`);
-
-                    if (clientId in gWonderTradeClients && gWonderTradeClients[clientId].tradedWith === 0)
-                        await SendWonderTradeDiscordMessage("The Wonder Trade was cancelled...", 0xFF0000, gWonderTradeClients[clientId].discordMessageId); //Red
-
-                    delete gWonderTradeClients[clientId]; //Remove data so no one trades with it
-                    UnlockWonderTrade();
-                });
-            }
-            else if (tradeType === "FRIEND_TRADE")
-            {
-                console.log(`[FT] ${clientId} (${username}) wants a Friend Trade`);
-
-                socket.on("createCode", async (randomizer) =>
-                {                
-                    if (!(await CloudDataSyncKeyIsValidForTrade(username, clientId, cloudDataSyncKey, randomizer, socket, "FT")))
-                        return;
-
-                    let code = CreateFriendCode();
-                    socket.emit("createCode", code);
-                    console.log(`[FT] ${clientName} has created code "${code}"`);
-                    gFriendTradeClients[clientId] = {username: username, code: code, friend: "", randomizer: randomizer, state: FRIEND_TRADE_INITIAL};
-                    gCodesInUse[code] = true;
-                });
-
-                socket.on("checkCode", async (code, randomizer) =>
-                {
-                    let partnerFound = false;
-                    console.log(`[FT] ${clientName} is looking for code "${code}"`);
-
-                    if (!(await CloudDataSyncKeyIsValidForTrade(username, clientId, cloudDataSyncKey, randomizer, socket, "FT")))
-                        return;
-
-                    for (let otherClientId of Object.keys(gFriendTradeClients))
-                    {
-                        let otherUserName = gFriendTradeClients[otherClientId].username;
-
-                        if (gFriendTradeClients[otherClientId].friend === "" //Hasn't found a partner yet
-                        && gFriendTradeClients[otherClientId].code === code) //Code matches so this will be the partner
-                        {
-                            if ((username && otherUserName && username === otherUserName) //Account system is enabled
-                            || clientId === otherClientId) //Can't trade with yourself
-                            {
-                                console.log(`[FT] ${clientName} tried to trade with themself`);
-                                socket.emit("tradeWithSelf");
-                                return;
-                            }
-
-                            partnerFound = true;
-                            console.log(`[FT] ${clientName} has matched with ${otherUserName}`);
-
-                            if ((!randomizer && !gFriendTradeClients[otherClientId].randomizer)
-                            || (randomizer && gFriendTradeClients[otherClientId].randomizer)) //Randomizer status matches
-                            {
-                                gFriendTradeClients[clientId] = {username: username, code: code, friend: otherClientId, state: FRIEND_TRADE_CONNECTED};
-                                gFriendTradeClients[otherClientId] = {username: otherUserName, code: code, friend: clientId, state: FRIEND_TRADE_CONNECTED};
-                                //Randomizer keys no longer matter
-                            }
-                            else
-                            {
-                                console.log(`[FT] But ${clientName} and ${otherUserName} don't match randomizer statuses`);
-                                socket.emit("mismatchedRandomizer");
-                            }
-                        }
-                    }
-
-                    if (!partnerFound)
-                    {
-                        console.log(`[FT] ${clientName} could not find partner`);
-                        socket.emit("friendNotFound");
-                    }
-                });
-
-                socket.on('tradeOffer', (pokemon) =>
-                {
-                    if (!pokemonUtil.ValidatePokemon(pokemon, true))
-                    {
-                        console.log(`[FT] ${clientName} sent an invalid Pokemon for a Friend Trade`);
-                        socket.emit("invalidPokemon");
-                    }
-                    else if (clientId in gFriendTradeClients)
-                    {
-                        if (pokemon != null && "species" in pokemon)
-                            console.log(`[FT] ${clientName} is offering ${pokemonUtil.GetSpecies(pokemon)}`);
-                        else
-                            console.log(`[FT] ${clientName} cancelled the trade offer`);
-
-                        gFriendTradeClients[clientId].offeringPokemon = pokemon;
-                        gFriendTradeClients[clientId].notifiedFriendOfOffer = false;
-                    }
-                });
-
-                socket.on('acceptedTrade', () =>
-                {
-                    gFriendTradeClients[clientId].acceptedTrade = true;
-                });
-
-                socket.on('cancelledTradeAcceptance', () =>
-                {
-                    gFriendTradeClients[clientId].acceptedTrade = false;
-                });
-
-                socket.on('tradeAgain', () =>
-                {
-                    console.log(`[FT] ${clientName} wants to trade again`);
-                    gFriendTradeClients[clientId].state = FRIEND_TRADE_NOTIFIED_CONNECTION;
-                    gFriendTradeClients[clientId].offeringPokemon = null;
-                    gFriendTradeClients[clientId].notifiedFriendOfOffer = false;
-                    gFriendTradeClients[clientId].acceptedTrade = false;
-                });
-
-                socket.on('disconnect', () =>
-                {
-                    if (clientId in gFriendTradeClients)
-                        delete gCodesInUse[gFriendTradeClients[clientId].code];
-                    delete gFriendTradeClients[clientId]; //Remove data so no one trades with it
-                    console.log(`[FT] ${clientName} disconnected`);
-                });
-            }
-        });
-
-        while (true)
-        {
-            let friend, friendPokemon, originalPokemon;
-
-            await LockWonderTrade();
-            if (clientId in gWonderTradeClients && gWonderTradeClients[clientId].tradedWith !== 0)
-            {
-                originalPokemon = gWonderTradeClients[clientId].originalPokemon;
-                friendPokemon = Object.assign({}, gWonderTradeClients[clientId].pokemon);
-                pokemonUtil.UpdatePokemonAfterNonFriendTrade(friendPokemon, originalPokemon);
-                socket.send(friendPokemon, gWonderTradeClients[clientId].receivedFrom);
-
-                if (clientId in gWonderTradeClients)
-                {
-                    let species1 = pokemonUtil.GetMonSpeciesName(originalPokemon, true);
-                    let species2 = pokemonUtil.GetMonSpeciesName(friendPokemon, true);
-                    console.log(`[WT] ${gWonderTradeClients[clientId].username} received ${species2} from ${gWonderTradeClients[clientId].receivedFrom}`);
-                    if ("discordMessageId" in gWonderTradeClients[clientId])
-                        await SendWonderTradeDiscordMessage(`${species1} and ${species2} were traded!`, 0x0000FF, gWonderTradeClients[clientId].discordMessageId); //Blue
-                }
-                //Data deleted when client disconnects in case they don't receive this transmission
-            }
-            UnlockWonderTrade();
-
-            if (clientId in gFriendTradeClients
-            && gFriendTradeClients[clientId].friend !== "")
-            {
-                let username = gFriendTradeClients[clientId].username;
-                let clientName = (username) ? username : clientId; //Set the client name to the username if it was sent
-
-                switch (gFriendTradeClients[clientId].state)
-                {
-                    case FRIEND_TRADE_CONNECTED:
-                        console.log(`[FT] ${clientName} has been notified of the friend connection`);
-                        gFriendTradeClients[clientId].state = FRIEND_TRADE_NOTIFIED_CONNECTION;
-                        socket.emit("friendFound");
-                        break;
-                    case FRIEND_TRADE_NOTIFIED_CONNECTION:
-                        if (!(gFriendTradeClients[clientId].code in gCodesInUse)) //Partner disconnected
-                            socket.emit("partnerDisconnected");
-                        else
-                        {
-                            friend = gFriendTradeClients[clientId].friend;
-
-                            if (friend in gFriendTradeClients)
-                            {
-                                if ("offeringPokemon" in gFriendTradeClients[friend]
-                                && !gFriendTradeClients[friend].notifiedFriendOfOffer)
-                                {
-                                    //Send the new offer
-                                    friendPokemon = gFriendTradeClients[friend].offeringPokemon;
-
-                                    if (friendPokemon == null || !("species" in friendPokemon))
-                                        console.log(`[FT] ${clientName} has been notified of the the trade offer cancellation`);
-                                    else
-                                        console.log(`[FT] ${clientName} received offer for ${pokemonUtil.GetSpecies(friendPokemon)}`);
-
-                                    socket.emit("tradeOffer", friendPokemon); //Can be sent null (means partner cancelled offer)
-                                    gFriendTradeClients[friend].notifiedFriendOfOffer = true;
-                                }
-                                else if ("acceptedTrade" in gFriendTradeClients[clientId]
-                                && gFriendTradeClients[clientId].acceptedTrade
-                                && "acceptedTrade" in gFriendTradeClients[friend]
-                                && gFriendTradeClients[friend].acceptedTrade)
-                                {
-                                    //Swap all necessary data now so in case one partner disconnects after they receive their Pokemon the trade will still complete
-                                    gFriendTradeClients[clientId].state = FRIEND_TRADE_ACCEPTED_TRADE;
-                                    gFriendTradeClients[clientId].friendPokemon = gFriendTradeClients[friend].offeringPokemon;
-                                    gFriendTradeClients[clientId].friendUsername = gFriendTradeClients[friend].username;
-                                    gFriendTradeClients[friend].state = FRIEND_TRADE_ACCEPTED_TRADE;
-                                    gFriendTradeClients[friend].friendPokemon = gFriendTradeClients[clientId].offeringPokemon;
-                                    gFriendTradeClients[friend].friendUsername = gFriendTradeClients[clientId].username;
-                                }
-                            }
-                        }
-                        break;
-                    case FRIEND_TRADE_ACCEPTED_TRADE:
-                        friend = gFriendTradeClients[clientId].friend;
-                        friendPokemon = Object.assign({}, gFriendTradeClients[clientId].friendPokemon);
-                        pokemonUtil.UpdatePokemonAfterFriendTrade(friendPokemon, gFriendTradeClients[clientId].offeringPokemon);
-                        socket.emit("acceptedTrade", friendPokemon);
-                        gFriendTradeClients[clientId].state = FRIEND_TRADE_ENDING_TRADE;
-                        console.log(`[FT] ${clientName} received ${pokemonUtil.GetSpecies(friendPokemon)} from ${gFriendTradeClients[clientId].friendUsername}`);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            const nextLoopTime = 1000; //1 Second
-            await new Promise(r => setTimeout(r, nextLoopTime)).catch(error => console.error(`Timeout error: ${error}`)); //Wait until checking again
-        }
+        // Cleanup
+        await performSocketCleanup(clientId, clientName);
+        // console.debug(`Main loop ended for ${clientName}`);
     });
 }
 
-module.exports = {InitSockets, IsWonderTradeAvailable, INVALID_CLOUD_DATA_SYNC_KEY_ERROR};
+module.exports = { InitSockets };
