@@ -68,7 +68,7 @@ describe('Trade Util Tests', () =>
             delete require.cache[require.resolve('../trade-util')];
 
             const result = await tradeUtil.CloudDataSyncKeyIsValidForTrade(
-                '', 'client123', 'sync-key', false, mockSocketUtils, 'FT'
+                '', 'client123', 'sync-key', false, mockSocketUtils, 'TU'
             );
 
             expect(result).to.be.false;
@@ -79,7 +79,7 @@ describe('Trade Util Tests', () =>
         it('should return false when cloud data sync key is missing', async () =>
         {
             const result = await tradeUtil.CloudDataSyncKeyIsValidForTrade(
-                'testuser', 'client123', null, false, mockSocketUtils, 'WT'
+                'testuser', 'client123', null, false, mockSocketUtils, 'TU'
             );
 
             expect(result).to.be.false;
@@ -92,7 +92,7 @@ describe('Trade Util Tests', () =>
             accountsStub.GetCloudDataSyncKey = () => Promise.resolve('different-sync-key');
 
             const result = await tradeUtil.CloudDataSyncKeyIsValidForTrade(
-                'testuser', 'client123', 'wrong-sync-key', false, mockSocketUtils, 'FT'
+                'testuser', 'client123', 'wrong-sync-key', false, mockSocketUtils, 'TU'
             );
 
             expect(result).to.be.false;
@@ -105,7 +105,7 @@ describe('Trade Util Tests', () =>
             accountsStub.GetCloudDataSyncKey = () => Promise.reject(new Error('Database error'));
 
             const result = await tradeUtil.CloudDataSyncKeyIsValidForTrade(
-                'testuser', 'client123', 'sync-key', false, mockSocketUtils, 'WT'
+                'testuser', 'client123', 'sync-key', false, mockSocketUtils, 'TU'
             );
 
             expect(result).to.be.false;
@@ -118,7 +118,7 @@ describe('Trade Util Tests', () =>
             accountsStub.GetCloudDataSyncKey = () => Promise.resolve('valid-sync-key');
 
             const result = await tradeUtil.CloudDataSyncKeyIsValidForTrade(
-                'testuser', 'client123', 'valid-sync-key', false, mockSocketUtils, 'FT'
+                'testuser', 'client123', 'valid-sync-key', false, mockSocketUtils, 'TU'
             );
 
             expect(result).to.be.true;
@@ -132,7 +132,7 @@ describe('Trade Util Tests', () =>
             tradeUtil = require('../trade-util'); // Re-import the module to get the latest version with the new environment variable
 
             const result = await tradeUtil.CloudDataSyncKeyIsValidForTrade(
-                null, 'client123', 'sync-key', false, mockSocketUtils, 'WT'
+                null, 'client123', 'sync-key', false, mockSocketUtils, 'TU'
             );
 
             expect(result).to.be.true;

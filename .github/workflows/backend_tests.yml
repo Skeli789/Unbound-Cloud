@@ -34,6 +34,7 @@ concurrency:
 
 env:
   # Use inputs when available, otherwise fall back to repository variables/secrets
+  ACCOUNT_SYSTEM: ${{ inputs.ACCOUNT_SYSTEM || vars.ACCOUNT_SYSTEM }}
   APPDATA: ${{ inputs.APPDATA || vars.APPDATA }}
   UNBOUND_EMAIL: ${{ inputs.UNBOUND_EMAIL || vars.UNBOUND_EMAIL }}
   UNBOUND_EMAIL_PASSWORD: ${{ secrets.UNBOUND_EMAIL_PASSWORD }}
