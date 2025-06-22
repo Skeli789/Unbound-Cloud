@@ -520,10 +520,7 @@ describe('Friend Trade Tests', () =>
                 username: 'user1',
                 code: 'test1234',
                 friend: 'client2',
-                state: friendTrade.FRIEND_TRADE_NOTIFIED_CONNECTION, // FRIEND_TRADE_NOTIFIED_CONNECTION
-                offeringPokemon: null,
-                notifiedFriendOfOffer: false,
-                acceptedTrade: false
+                state: friendTrade.FRIEND_TRADE_NOTIFIED_CONNECTION,
             });
         });
 
@@ -648,7 +645,7 @@ describe('Friend Trade Tests', () =>
                 username: 'user1',
                 code: 'test1234',
                 friend: 'client2',
-                state: 1 // FRIEND_TRADE_CONNECTED
+                state: friendTrade.FRIEND_TRADE_CONNECTED,
             });
 
             await friendTrade.ProcessFriendTradeStates('client1', 'client1', mockSocketUtils, mockUpdateActivity, mockSetInactive);
@@ -1121,10 +1118,10 @@ describe('Friend Trade Tests', () =>
             await friendTrade.HandleTradeAgain(clientId2, 'User2');
             expect(clients.client1.state).to.equal(friendTrade.FRIEND_TRADE_NOTIFIED_CONNECTION);
             expect(clients.client2.state).to.equal(friendTrade.FRIEND_TRADE_NOTIFIED_CONNECTION);
-            expect(clients.client1.offeringPokemon).to.be.null;
-            expect(clients.client2.offeringPokemon).to.be.null;
-            expect(clients.client1.acceptedTrade).to.be.false;
-            expect(clients.client2.acceptedTrade).to.be.false;
+            expect(clients.client1.offeringPokemon).to.be.undefined;
+            expect(clients.client2.offeringPokemon).to.be.undefined;
+            expect(clients.client1.acceptedTrade).to.be.undefined;
+            expect(clients.client2.acceptedTrade).to.be.undefined;
         });
 
         it('should handle Pokemon offer cancellation and disconnect flow', async () =>

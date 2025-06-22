@@ -666,6 +666,10 @@ export class FriendTrade extends Component
         {
             socket.emit("acceptedTrade");
 
+            // Remove the old handler in case the user is trading again
+            socket.off("acceptedTrade");
+
+            // Wait for the trade to be finalized
             socket.on('acceptedTrade', function(pokemon)
             {
                 hideTimer(); //Prevent disconnecting now that the trade is done

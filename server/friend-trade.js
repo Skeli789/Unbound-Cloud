@@ -307,9 +307,11 @@ async function HandleTradeAgain(clientId, clientName)
             throw new Error(`${clientName} not found in Friend Trade clients when handling tradeAgain`);
 
         gFriendTradeClients[clientId].state = FRIEND_TRADE_NOTIFIED_CONNECTION;
-        gFriendTradeClients[clientId].offeringPokemon = null;
-        gFriendTradeClients[clientId].notifiedFriendOfOffer = false;
-        gFriendTradeClients[clientId].acceptedTrade = false;
+
+        // Delete any existing trade data for the client
+        delete gFriendTradeClients[clientId].notifiedFriendOfOffer;
+        delete gFriendTradeClients[clientId].acceptedTrade;
+        delete gFriendTradeClients[clientId].offeringPokemon;
     }
     catch (error)
     {

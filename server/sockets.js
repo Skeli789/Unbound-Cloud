@@ -338,7 +338,7 @@ async function performSocketCleanup(clientId, clientName)
  * Runs the main processing loop for a socket connection.
  * @param {Object} socket - The socket instance.
  * @param {String} clientId - The client ID.
- * @param {String} clientName - The client name.
+ * @param {Function} getClientName - Function to get current client name.
  * @param {Object} socketUtils - Socket utility functions.
  * @param {Function} isActive - Function to check if socket is active.
  * @param {Function} setInactive - Function to mark socket as inactive.
@@ -346,7 +346,7 @@ async function performSocketCleanup(clientId, clientName)
  * @param {Function} getLastActivity - Function to get last activity timestamp.
  * @returns {Promise<void>} Promise that resolves when the main loop ends.
  */
-async function runMainProcessingLoop(socket, clientId, clientName, socketUtils, isActive, setInactive,
+async function runMainProcessingLoop(socket, clientId, getClientName, socketUtils, isActive, setInactive,
                                      updateActivity, getLastActivity)
 {
     // Loop until the socket is deactivated
@@ -354,6 +354,8 @@ async function runMainProcessingLoop(socket, clientId, clientName, socketUtils, 
     {
         try
         {
+            const clientName = getClientName();
+
             // Check for instance timeout
             if (!(await checkSocketTimeout(getLastActivity(), clientName, socketUtils, setInactive)))
                 break;
@@ -421,7 +423,7 @@ function InitSockets(io)
         await runMainProcessingLoop(
             socket, 
             clientId, 
-            clientName, 
+            getClientName, 
             socketUtils, 
             checkIsActive, 
             setInactive, 
