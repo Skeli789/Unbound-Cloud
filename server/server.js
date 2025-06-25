@@ -13,7 +13,9 @@ require('dotenv').config({path: __dirname + '/.env'});
 
 const accounts = require('./accounts');
 const sockets = require('./sockets');
+const tradeUtil = require('./trade-util');
 const util = require('./util');
+const wonderTrade = require('./wonder-trade');
 
 const gSecretKey = process.env["ENCRYPTION_KEY"] || "key";
 const PORT = process.env.PORT || 3001;
@@ -194,7 +196,7 @@ app.post('/uploadSaveFile', async (req, res) =>
                     console.log(`Cloud data for ${username} loaded in ${Date.now() - startTime}ms.`);
                 }
                 else
-                    throw(`The account code is not valid for ${username}!`);
+                    throw(`INVALID_ACCOUNT_CODE`);
             }
 
             //Send the data back
@@ -753,7 +755,7 @@ app.post('/saveAccountCloudData', async (req, res) =>
             }
             else if (cloudDataSyncKey !== userKey)
             {
-                return res.status(StatusCode.ClientErrorUnauthorized).json(sockets.INVALID_CLOUD_DATA_SYNC_KEY_ERROR);
+                return res.status(StatusCode.ClientErrorUnauthorized).json(tradeUtil.INVALID_CLOUD_DATA_SYNC_KEY_ERROR);
             }
             else
             {
@@ -805,7 +807,7 @@ app.post('/checkWonderTrade', async (req, res) =>
         //Check if a trade is available
         //console.log("----------------------------------------------");
         //console.log(`[${new Date().toLocaleString()}] Checking if a Wonder Trade is available for "${username}"...`);
-        let waiting = sockets.IsWonderTradeAvailable(username, randomizer);
+        let waiting = wonderTrade.IsWonderTradeAvailable("isWonderTradeAvailable", username, randomizer);
         //console.log(`Wonder Trade is ${!waiting ? "not " : ""}available for ${username}`);
         return res.status(StatusCode.SuccessOK).json({waiting: waiting});
     }

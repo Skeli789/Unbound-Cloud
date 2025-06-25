@@ -31,6 +31,7 @@ jobs:
     uses: ./.github/workflows/backend_tests.yml
     # Pass environment variables and secrets to called workflow
     with:
+      ACCOUNT_SYSTEM: ${{ vars.ACCOUNT_SYSTEM }}
       APPDATA: ${{ vars.APPDATA }}
       UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
     secrets:
@@ -45,6 +46,7 @@ jobs:
     uses: ./.github/workflows/end_to_end_tests.yml
     # Pass environment variables and secrets to called workflow
     with:
+      ACCOUNT_SYSTEM: ${{ vars.ACCOUNT_SYSTEM }}
       APPDATA: ${{ vars.APPDATA }}
       UNBOUND_EMAIL: ${{ vars.UNBOUND_EMAIL }}
     secrets:

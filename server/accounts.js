@@ -35,6 +35,7 @@ module.exports.GetLockedUsers = GetLockedUsers;
 
 /**
  * Locks the database account files and prevents them from being modified until the current process unlocks them.
+ * @returns {Promise<void>}
  */
 async function LockAccountDB(username)
 {
@@ -53,6 +54,7 @@ module.exports.LockAccountDB = LockAccountDB;
 
 /**
  * Unlocks the database account files for editing again.
+ * @returns {Promise<void>}
  */
 async function UnlockAccountDB(username)
 {
@@ -77,6 +79,7 @@ module.exports.UnlockAccountDB = UnlockAccountDB;
 
 /**
  * Locks the table that maps emails to usernames.
+ * @returns {Promise<void>}
  */
 async function LockEmailUsernameTable()
 {
@@ -243,6 +246,7 @@ module.exports.GetContentsOfEmailToUsernameTable = GetContentsOfEmailToUsernameT
  * Adds a new email-username pair to the table.
  * @param {String} email - The email to be the key.
  * @param {String} username - The username to be the value.
+ * @returns {Promise<void>}
  */
 async function AddEmailUsernamePairToTable(email, username)
 {
@@ -258,6 +262,7 @@ module.exports.AddEmailUsernamePairToTable = AddEmailUsernamePairToTable;
 /**
  * Removes an email-username pair from the table.
  * @param {String} email - The email to remove.
+ * @returns {Promise<void>}
  */
 async function RemoveEmailUsernamePairFromTable(email)
 {
@@ -290,7 +295,7 @@ function SaveEmailToUsernameTable(data)
 /**
  * Encrypts a password for 10 rounds of hashing.
  * @param {String} password - The password to encrypt.
- * @returns {String} - The encrypted password.
+ * @returns {Promise<String>} - The encrypted password.
  */
 async function EncryptPassword(password)
 {
@@ -306,7 +311,7 @@ module.exports.EncryptPassword = EncryptPassword;
  * Compares an entered password with a password encrypted previously.
  * @param {String} password - The password just entered.
  * @param {String} encryptedPassword - The encrypted password the user originally entered when they signed up.
- * @returns true if the passwords match, false otherwise.
+ * @returns {Promise<Boolean>} true if the passwords match, false otherwise.
  */
 async function ValidatePassword(password, encryptedPassword)
 {
@@ -321,7 +326,7 @@ module.exports.ValidatePassword = ValidatePassword;
  * Checks to make sure the user entered the correct password for their account.
  * @param {String} username - The username for the account.
  * @param {String} password - The password the user entered.
- * @returns {Boolean} - true if the user entered the correct password, false if not.
+ * @returns {Promise<Boolean>} - true if the user entered the correct password, false if not.
  */
 async function VerifyCorrectPassword(username, password)
 {
@@ -344,7 +349,7 @@ module.exports.VerifyCorrectPassword = VerifyCorrectPassword;
  * @param {Array<String>} cloudTitles - Preset Cloud Box names if any.
  * @param {Array<Object>} cloudRandomizerBoxes - Preset Cloud Pokemon for randomized saves if any.
  * @param {Array<String>} cloudRandomizerTitles - Preset Cloud Box names for randomized saves if any.
- * @returns {Boolean} - true if the account was created successfully, false if not.
+ * @returns {Promise<Boolean>} - true if the account was created successfully, false if not.
  */
 async function CreateUser(email, username, password, cloudBoxes=[], cloudTitles=[], cloudRandomizerBoxes=[], cloudRandomizerTitles=[])
 {
@@ -457,7 +462,7 @@ module.exports.GetUserActivationCode = GetUserActivationCode;
 /**
  * Activate's a user's account and allows them to actually log in.
  * @param {String} username - The username the account is for.
- * @returns {Boolean} - true if the account was activated successfully, false if not.
+ * @returns {Promise<Boolean>} - true if the account was activated successfully, false if not.
  */
 async function ActivateUser(username, activationCode)
 {
@@ -495,7 +500,7 @@ module.exports.ActivateUser = ActivateUser;
 /**
  * Resends the activation code to a user's email.
  * @param {String} username - The user to resend the activation code to.
- * @returns {Boolean} true if the email was sent successfully, false if not.
+ * @returns {Promise<Boolean>} true if the email was sent successfully, false if not.
  */
 async function ResendActivationEmail(username)
 {
@@ -535,7 +540,7 @@ module.exports.ResendActivationEmail = ResendActivationEmail;
 /**
  * Sends a code a user can use to reset their password.
  * @param {String} email - The email to send the code to.
- * @returns {Boolean} true if the email was sent successfully, false if it was not.
+ * @returns {Promise<Boolean>} true if the email was sent successfully, false if it was not.
  */
 async function SendPasswordResetCode(email)
 {
@@ -563,7 +568,7 @@ module.exports.SendPasswordResetCode = SendPasswordResetCode;
 /**
  * Creates a code a user can use to reset their password.
  * @param {String} username - The username of the account to create the code for.
- * @returns {String} The recently created password reset code. null if error.
+ * @returns {Promise<String>} The recently created password reset code. null if error.
  */
 async function CreatePasswordResetCode(username)
 {
@@ -654,7 +659,7 @@ module.exports.ResetPasswordTooRecently = ResetPasswordTooRecently;
  * Changes a user's account password.
  * @param {String} username - The user of the account to change the password for.
  * @param {String} newPassword - The new password for the user's account.
- * @returns {Boolean} true if the password was changed successfully, false if not.
+ * @returns {Promise<Boolean>} true if the password was changed successfully, false if not.
  */
 async function ChangePassword(username, newPassword)
 {
@@ -691,7 +696,7 @@ module.exports.ChangePassword = ChangePassword;
   * Delete's a user's account.
   * @param {String} username - The username of the account to delete.
   * @param {String} password - The user's password to confirm the deletion.
-  * @returns {Boolean} - true if the account was deleted successfully, false if not.
+  * @returns {Promise<Boolean>} - true if the account was deleted successfully, false if not.
   */
 async function DeleteUser(username, password)
 {
@@ -739,7 +744,7 @@ module.exports.DeleteUser = DeleteUser;
 /**
  * Updates the timestamp the user last accessed their account.
  * @param {String} username - The username the account is for.
- * @returns {Boolean} - true if the timestamp was updated successfully, false if not.
+ * @returns {Promise<Boolean>} - true if the timestamp was updated successfully, false if not.
  */
 async function UpdateUserLastAccessed(username)
 {
@@ -786,7 +791,7 @@ module.exports.GetUserAccountCode = GetUserAccountCode;
  * Creates a key a user must send when trying to save the Cloud data later on. This prevents issues from opening multiple tabs.
  * @param {String} username - The user to create the key for.
  * @param {Boolean} isRandomizer - Whether or not the Cloud data is for a randomized save file.
- * @returns {String} The key just created.
+ * @returns {Promise<String>} The key just created.
  */
 async function CreateCloudDataSyncKey(username, isRandomizer)
 {
@@ -821,7 +826,7 @@ module.exports.CreateCloudDataSyncKey = CreateCloudDataSyncKey;
  * Gets the key a user must send when trying to save their Cloud data. This prevents issues from opening multiple tabs.
  * @param {String} username - The user to get the key for.
  * @param {Boolean} isRandomizer - Whether or not the Cloud data is for a randomized save file.
- * @returns {String} The user's key.
+ * @returns {Promise<String>} The user's key.
  */
 async function GetCloudDataSyncKey(username, isRandomizer)
 {
@@ -851,7 +856,7 @@ module.exports.GetCloudDataSyncKey = GetCloudDataSyncKey;
  * Gets a user's stored Pokemon.
  * @param {String} username - The user to get the Pokemon for.
  * @param {Boolean} isRandomizer - Whether or not to load the randomizer Pokemon or the regular Pokemon.
- * @returns {Array<Object>} A list of Pokemon.
+ * @returns {Promise<Array<Object>>} A list of Pokemon.
  */
 async function GetUserCloudBoxes(username, isRandomizer)
 {
@@ -889,7 +894,7 @@ module.exports.GetUserCloudTitles = GetUserCloudTitles;
  * @param {Array<Object>} cloudBoxes - The list of Pokemon to save.
  * @param {Array<String>} cloudTitles - The list of Box names to save.
  * @param {Boolean} isRandomizer - Whether or not the Pokemon saved are from a randomizer.
- * @returns {Boolean} True if the data was saved successfully, false otherwise.
+ * @returns {Promise<Boolean>} True if the data was saved successfully, false otherwise.
  */
 async function SaveAccountCloudData(username, cloudBoxes, cloudTitles, isRandomizer)
 {
@@ -947,7 +952,7 @@ module.exports.SaveAccountCloudData = SaveAccountCloudData;
 /**
  * Bans a user from partaking in Wonder Trade.
  * @param {String} username - The user to ban.
- * @returns {Boolean} true if the user was successfully banned, false if there was a problem banning them.
+ * @returns {Promise<Boolean>} true if the user was successfully banned, false if there was a problem banning them.
  */
  async function BanUserFromFromWonderTrade(username)
  {
@@ -974,4 +979,3 @@ module.exports.SaveAccountCloudData = SaveAccountCloudData;
     return ret;
  }
  module.exports.BanUserFromFromWonderTrade = BanUserFromFromWonderTrade;
- 
