@@ -849,7 +849,7 @@ export default class MainPage extends Component
     async useLastSavedHomeFile(errorMsg)
     {
         var homeData = (this.state.isRandomizedSave) ? localStorage.lastSavedRandomizerHomeData : localStorage.lastSavedHomeData;
-        var route = `${config.dev_server}/uploadCloudData`;
+        var route = `${config.dev_server}/api/cloudfile/decrypt`;
 
         this.setState
         ({
@@ -909,7 +909,7 @@ export default class MainPage extends Component
     async handleUpload(isSaveFile)
     {
         var file = isSaveFile ? this.state.selectedSaveFile : this.state.selectedHomeFile;
-        var route = `${config.dev_server}/${isSaveFile ? "uploadSaveFile" : "uploadCloudData"}`;
+        var route = `${config.dev_server}/${isSaveFile ? "api/savefile/read" : "api/cloudfile/decrypt"}`;
         var isUsingFileHandles = (isSaveFile && this.state.saveFileHandle != null)
                              || (!isSaveFile && this.state.homeFileHandle != null); //Using modern FileSystem API
 
@@ -1140,7 +1140,7 @@ export default class MainPage extends Component
      */
     async handleUploadError(error, newState)
     {
-        var errorText;
+        let errorTitle, errorText;
         console.error("An error occurred uploading the file.");
 
         if (error.message === "Network Error")
@@ -1154,8 +1154,8 @@ export default class MainPage extends Component
                 serverConnectionError: true,
             });
 
-            errorText = NO_SERVER_CONNECTION_ERROR;
-            console.error(errorText);
+            [errorTitle, errorText] = NO_SERVER_CONNECTION_ERROR.split("\n");
+            console.error(errorTitle);
         }
         else
         {
@@ -1168,17 +1168,30 @@ export default class MainPage extends Component
                 inaccessibleSaveError: responseStatus === StatusCode.ClientErrorForbidden,
                 oldVersionSaveError: responseStatus === StatusCode.ClientErrorUpgradeRequired,
                 serverConnectionError: false,
-                errorResponseText:responseData,
+                errorResponseText: responseData,
             });
 
-            errorText = "Server error!\nPlease try again later."; //Will usually be overwritten with a more specific error
+            if (responseData === "INVALID_ACCOUNT_CODE")
+            {
+                errorTitle = "Invalid account code!";
+                errorText = "Please log out and log back in.";
+                await this.setStateAndWait({fileUploadError: false}); //So the file upload error pop-up doesn't show up on top of this one
+            }
+            else
+            {
+                //Will usually be overwritten with a more specific error
+                errorTitle = "Server error!";
+                errorText = "Please try again later.";
+            }
+
             console.error(responseData);
         }
 
         PopUp.fire
         ({
             icon: 'error',
-            title: errorText,
+            title: errorTitle,
+            text: errorText,
             ...GetDefaultPopUpOpts(),
         });
     }
@@ -1327,7 +1340,7 @@ export default class MainPage extends Component
     {
         if (ACCOUNT_SYSTEM)
         {
-            var route = `${config.dev_server}/getAccountCloudData`;
+            var route = `${config.dev_server}/api/user/getAccountCloudData`;
 
             PopUp.fire
             ({
@@ -1342,14 +1355,14 @@ export default class MainPage extends Component
                 {
                     try
                     {
-                        const requestData =
+                        const params =
                         {
                             username: this.state.username,
                             accountCode: this.state.accountCode, //Used for an extra layer of security
                             randomizer: false,
                         };
             
-                        let res = await axios.post(route, requestData);
+                        let res = await axios.get(route, {params});
 
                         await this.setStateAndWait
                         ({
@@ -2660,7 +2673,7 @@ export default class MainPage extends Component
     async getEncryptedHomeFile(serverConnectionErrorMsg)
     {
         var res;
-        const homeRoute = `${config.dev_server}/encryptCloudData`;
+        const homeRoute = `${config.dev_server}/api/cloudfile/encrypt`;
         const homeData =
         {
             titles: this.state.homeTitles,
@@ -2690,7 +2703,7 @@ export default class MainPage extends Component
      */
     async saveAccountCloudData(serverConnectionErrorMsg)
     {
-        const homeRoute = `${config.dev_server}/saveAccountCloudData`;
+        const homeRoute = `${config.dev_server}/api/user/saveAccountCloudData`;
         const homeData =
         {
             titles: this.state.homeTitles,
@@ -2718,7 +2731,7 @@ export default class MainPage extends Component
 
         try
         {
-            await axios.post(homeRoute, requestData);
+            await axios.put(homeRoute, requestData);
             return true;
         }
         catch (error)
@@ -2738,7 +2751,7 @@ export default class MainPage extends Component
     async getUpdatedSaveFile(serverConnectionErrorMsg)
     {
         let res, originalSaveContents, requestData;
-        const saveRoute = `${config.dev_server}/getUpdatedSaveFile`;
+        const saveRoute = `${config.dev_server}/api/savefile/update`;
 
         requestData =
         {

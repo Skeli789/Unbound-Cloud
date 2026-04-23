@@ -122,7 +122,7 @@ export class ActivateAccount extends Component
                 activationCode: this.state.codeInput,
             }
 
-            await SendFormToServer(requestData, this, this.mainPage, "/activateUser", CompletedActivationPopUp);
+            await SendFormToServer(requestData, this, this.mainPage, "/api/user/activate", CompletedActivationPopUp);
         }
         else
         {
@@ -147,7 +147,7 @@ export class ActivateAccount extends Component
                 accountCode: this.getGlobalState().accountCode,
             }
     
-            await SendFormToServer(requestData, this, this.mainPage, "/resendActivationCode", this.checkEmailForNewCodePopUp.bind(this));
+            await SendFormToServer(requestData, this, this.mainPage, "/api/user/sendActivationCode", this.checkEmailForNewCodePopUp.bind(this));
         }
         else
         {

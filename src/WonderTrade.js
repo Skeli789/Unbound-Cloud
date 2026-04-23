@@ -527,13 +527,13 @@ export async function CheckForNewWonderTrade(username, randomizer, isWonderTrade
     || TooSoonSinceLastNewWonderTradeNotification()) //Last notification was too recent
         return; //Don't send a notification
 
-    const route = `${config.dev_server}/checkWonderTrade`;
+    const route = `${config.dev_server}/api/wonderTrade/available`;
     const params = {username, randomizer};
 
     try
     {
         //console.log("Checking if a Wonder Trade is available");
-        let res = await axios.post(route, params);
+        let res = await axios.get(route, {params});
         if (res.data.waiting)
             SendWonderTradeWaitingNotification();
     }

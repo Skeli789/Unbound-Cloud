@@ -261,7 +261,7 @@ export class SignUp extends Component
 
         if (errorMsg === "") //No error
         {
-            const route = "/createuser";
+            const route = "/api/user/new";
             const requestData =
             {
                 email: this.state.emailInput,

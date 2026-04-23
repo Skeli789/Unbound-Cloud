@@ -185,7 +185,7 @@ export class ForgotPassword extends Component
         if (errorMsg === "") //No error
         {
             const requestData = {email: this.state.emailInput};
-            await SendFormToServer(requestData, this, this.mainPage, "/sendPasswordResetCode", this.passwordResetCodeSentPopUp.bind(this));
+            await SendFormToServer(requestData, this, this.mainPage, "/api/user/sendPasswordResetCode", this.passwordResetCodeSentPopUp.bind(this));
         }
         else
         {
@@ -246,7 +246,7 @@ export class ForgotPassword extends Component
                 newPassword: this.state.passwordInput,
             };
 
-            await SendFormToServer(requestData, this, this.mainPage, "/resetPassword", this.completedPasswordResetPopUp.bind(this));
+            await SendFormToServer(requestData, this, this.mainPage, "/api/user/resetPassword", this.completedPasswordResetPopUp.bind(this));
         }
         else
         {

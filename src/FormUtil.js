@@ -6,7 +6,7 @@ import withReactContent from 'sweetalert2-react-content';
 import {config} from "./config";
 import {GetDefaultPopUpOpts} from "./Notifications";
 
-export const NO_SERVER_CONNECTION_ERROR = "Couldn't connect to the server! Please try again later."
+export const NO_SERVER_CONNECTION_ERROR = "Couldn't connect to the server!\nPlease try again later."
 
 const MAX_LENGTHS =
 {

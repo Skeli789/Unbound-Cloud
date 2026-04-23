@@ -128,7 +128,7 @@ export class Login extends Component
                 password: this.state.passwordInput,
             };
 
-            await SendFormToServer(requestData, this, this.mainPage, "/checkUser", this.completedLoginPopUp.bind(this));
+            await SendFormToServer(requestData, this, this.mainPage, "/api/user/login", this.completedLoginPopUp.bind(this));
         }
         else
         {
