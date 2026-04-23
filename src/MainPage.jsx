@@ -82,7 +82,7 @@ const WONDER_TRADE_CHECK_INTERVAL = 30 * 1000; //30 seconds
 
 const PopUp = withReactContent(Swal);
 const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
-const DEBUG_ORIGINAL_FILE_METHOD = process.env.REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD === "true"; //Using the browser upload and download functions
+const DEBUG_ORIGINAL_FILE_METHOD = import.meta.env.VITE_USE_ORIGINAL_UPLOAD_DOWNLOAD === "true"; //Using the browser upload and download functions
 const DISABLE_ON_MOBILE = false; //Prevent mobile devices from using the site without a password
 const DEMO_SITE = false; //Initial loading page is the box moving so people can see how the site would work
 const MAINTENANCE = false; //Locks the site from non beta-testers while new features are integrated
@@ -849,7 +849,7 @@ export default class MainPage extends Component
     async useLastSavedHomeFile(errorMsg)
     {
         var homeData = (this.state.isRandomizedSave) ? localStorage.lastSavedRandomizerHomeData : localStorage.lastSavedHomeData;
-        var route = `${config.dev_server}/api/cloudfile/decrypt`;
+        var route = `${config.devServer}/api/cloudfile/decrypt`;
 
         this.setState
         ({
@@ -909,7 +909,7 @@ export default class MainPage extends Component
     async handleUpload(isSaveFile)
     {
         var file = isSaveFile ? this.state.selectedSaveFile : this.state.selectedHomeFile;
-        var route = `${config.dev_server}/${isSaveFile ? "api/savefile/read" : "api/cloudfile/decrypt"}`;
+        var route = `${config.devServer}/${isSaveFile ? "api/savefile/read" : "api/cloudfile/decrypt"}`;
         var isUsingFileHandles = (isSaveFile && this.state.saveFileHandle != null)
                              || (!isSaveFile && this.state.homeFileHandle != null); //Using modern FileSystem API
 
@@ -1340,7 +1340,7 @@ export default class MainPage extends Component
     {
         if (ACCOUNT_SYSTEM)
         {
-            var route = `${config.dev_server}/api/user/getAccountCloudData`;
+            var route = `${config.devServer}/api/user/getAccountCloudData`;
 
             PopUp.fire
             ({
@@ -2673,7 +2673,7 @@ export default class MainPage extends Component
     async getEncryptedHomeFile(serverConnectionErrorMsg)
     {
         var res;
-        const homeRoute = `${config.dev_server}/api/cloudfile/encrypt`;
+        const homeRoute = `${config.devServer}/api/cloudfile/encrypt`;
         const homeData =
         {
             titles: this.state.homeTitles,
@@ -2703,7 +2703,7 @@ export default class MainPage extends Component
      */
     async saveAccountCloudData(serverConnectionErrorMsg)
     {
-        const homeRoute = `${config.dev_server}/api/user/saveAccountCloudData`;
+        const homeRoute = `${config.devServer}/api/user/saveAccountCloudData`;
         const homeData =
         {
             titles: this.state.homeTitles,
@@ -2751,7 +2751,7 @@ export default class MainPage extends Component
     async getUpdatedSaveFile(serverConnectionErrorMsg)
     {
         let res, originalSaveContents, requestData;
-        const saveRoute = `${config.dev_server}/api/savefile/update`;
+        const saveRoute = `${config.devServer}/api/savefile/update`;
 
         requestData =
         {

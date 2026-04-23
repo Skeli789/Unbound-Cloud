@@ -11,7 +11,7 @@
     "test-all": "yarn test-js && yarn test-py",
     "start-node-server": "node server.js",
     "start-python-server": "python src/Interface.py",
-    "start": "concurrently -k \"yarn start-node-server\" \"yarn start-python-server\""
+    "start": "concurrently -k \"node server.js\" \"python src/Interface.py\""
   },
   "dependencies": {
     "async-mutex": "^0.5.0",

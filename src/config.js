@@ -1,7 +1,10 @@
-/*
-    Configurations for running the application.
-*/
+/**
+ * Configuration file for connecting to the development server.
+ */
 
-export const config = {
-    "dev_server" : "http://localhost:3001"
-}
+const DEV_SERVER = import.meta.env.VITE_DEV_SERVER ?? ""; // If it's an environment variable, then use it
+
+export const config =
+{
+    devServer : DEV_SERVER,
+};

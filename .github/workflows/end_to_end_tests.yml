@@ -77,7 +77,7 @@ jobs:
       DISPLAY: :99
       RESOLUTION: 1920x1080
       BROWSER: ${{ matrix.browser }}
-      REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD: ${{ matrix.uploadDownload }}
+      VITE_USE_ORIGINAL_UPLOAD_DOWNLOAD: ${{ matrix.uploadDownload }}
 
     steps:
       - name: Checkout code

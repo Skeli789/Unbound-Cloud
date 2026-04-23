@@ -178,7 +178,7 @@ export class FriendTrade extends Component
         const handleInvalidCloudDataSyncKey = this.handleInvalidCloudDataSyncKey.bind(this);
 
         console.log("Connecting...");
-        var socket = io(`${config.dev_server}`, {autoConnect: false});
+        var socket = io(`${config.devServer}`, {autoConnect: false});
 
         const tradeData =
         {

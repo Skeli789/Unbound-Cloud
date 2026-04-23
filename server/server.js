@@ -17,6 +17,7 @@ const wonderTrade = require('./wonder-trade');
 
 const gSecretKey = process.env["ENCRYPTION_KEY"] || "key";
 const PORT = process.env.PORT || 3001;
+const PYTHON_SERVER_PORT = process.env.PYTHON_SERVER_PORT || 3005;
 
 const MAX_PAYLOAD_SIZE = 10; //10 MB
 app.use(cors());
@@ -59,7 +60,7 @@ module.exports = { app, http };
  */
 async function SendRequestToPythonServer(route, params)
 {
-    const url = `http://localhost:3005/${route}`;
+    const url = `http://localhost:${PYTHON_SERVER_PORT}/${route}`;
     const keyPairs = Object.keys(params).map(key => `${key}=${params[key]}`).join("&");
     return await axios.get(`${url}?${keyPairs}`, { timeout: 10000 }); //10 second timeout);
 }

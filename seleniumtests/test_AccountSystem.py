@@ -11,7 +11,7 @@ from seleniumtests.SignUpUtil import HandleSignUp, RemoveExistingAccounts
 from seleniumtests.TestUtils import *
 from seleniumtests.UploadSaveFileUtil import *
 
-USE_UPLOAD_DOWNLOAD = os.getenv("REACT_APP_USE_ORIGINAL_UPLOAD_DOWNLOAD", "false").lower() == "true"
+USE_UPLOAD_DOWNLOAD = os.getenv("VITE_USE_ORIGINAL_UPLOAD_DOWNLOAD", "false").lower() == "true"
 
 
 @pytest.mark.incremental

@@ -248,7 +248,7 @@ export class WonderTrade extends Component
         if (!this.state.isActive && IsValidPokemon(pokemon))
         {
             console.log("Connecting...");
-            var socket = io(`${config.dev_server}`, {autoConnect: false});
+            var socket = io(`${config.devServer}`, {autoConnect: false});
 
             const wonderTradeData =
             {
@@ -527,7 +527,7 @@ export async function CheckForNewWonderTrade(username, randomizer, isWonderTrade
     || TooSoonSinceLastNewWonderTradeNotification()) //Last notification was too recent
         return; //Don't send a notification
 
-    const route = `${config.dev_server}/api/wonderTrade/available`;
+    const route = `${config.devServer}/api/wonderTrade/available`;
     const params = {username, randomizer};
 
     try

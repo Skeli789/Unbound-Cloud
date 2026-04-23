@@ -130,7 +130,7 @@ export async function SendFormToServer(data, classObj, mainPageObj, axiosRoute, 
 
                 try
                 {
-                    res = await axios.post(`${config.dev_server}${axiosRoute}`, data, {});
+                    res = await axios.post(`${config.devServer}${axiosRoute}`, data, {});
                     successPopUpFunc(mainPageObj, res);
                 }
                 catch (error)
