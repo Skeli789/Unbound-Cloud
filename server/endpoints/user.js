@@ -348,4 +348,41 @@ router.put('/saveAccountCloudData', async (req, res) =>
     }
 });
 
+/**
+ * Endpoint: GET /validateCloudDataSyncKey - Checks if a user's cloud data sync key is still valid.
+ * @param {String} username - The username of the account to validate the key for.
+ * @param {String} accountCode - The account code of the account (extra security layer).
+ * @param {String} cloudDataSyncKey - The cloud data sync key to validate.
+ * @param {Boolean} randomizer - Whether or not the key is for a randomized save.
+ * @returns {StatusCode} SuccessOK if the key is valid, ClientErrorUnauthorized if not.
+ */
+router.get('/validateCloudDataSyncKey', async (req, res) =>
+{
+    var username = req.query.username;
+    var accountCode = req.query.accountCode;
+    var cloudDataSyncKey = req.query.cloudDataSyncKey;
+    var randomizer = req.query.randomizer;
+
+    try
+    {
+        randomizer = (randomizer === "true");
+
+        if (!accounts.UserExists(username))
+            return res.status(StatusCode.ClientErrorNotFound).send("Username was not found!");
+        else if (accounts.GetUserAccountCode(username) !== accountCode)
+            return res.status(StatusCode.ClientErrorUnauthorized).json("Account code is incorrect!");
+
+        let userKey = await accounts.GetCloudDataSyncKey(username, randomizer);
+        if (userKey === "" || cloudDataSyncKey !== userKey)
+            return res.status(StatusCode.ClientErrorUnauthorized).json(tradeUtil.INVALID_CLOUD_DATA_SYNC_KEY_ERROR);
+
+        return res.status(StatusCode.SuccessOK).json({});
+    }
+    catch (err)
+    {
+        console.error(`An error occurred validating the cloud data sync key for ${username}:\n${err}`);
+        return res.status(StatusCode.ClientErrorBadRequest).json(`${err}`);
+    }
+});
+
 module.exports = router;

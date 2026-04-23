@@ -79,6 +79,7 @@ export const BLANK_PROGRESS_BAR = <ProgressBar now={0} label={"0%"} />;
 export const PURPLE_CLOUD = <span style={{color: "var(--purple)"}}>☁︎</span>;
 export const UNBOUND_LINK = <a href="https://www.pokecommunity.com/threads/pok%C3%A9mon-unbound-completed.382178/" target="_blank" rel="noopener noreferrer">Unbound</a>;
 const WONDER_TRADE_CHECK_INTERVAL = 30 * 1000; //30 seconds
+const CLOUD_SYNC_KEY_CHECK_INTERVAL = 15 * 1000; //15 seconds
 
 const PopUp = withReactContent(Swal);
 const ACCOUNT_SYSTEM = true; //Use an account system to login instead of saving the Cloud data locally
@@ -176,6 +177,7 @@ export default class MainPage extends Component
 
         this.updateState = this.updateState.bind(this);
         this.wonderTradeChecker = null;
+        this.cloudSyncKeyChecker = null;
     }
 
     /**
@@ -226,7 +228,8 @@ export default class MainPage extends Component
     {
         window.removeEventListener('beforeunload', this.tryPreventLeavingPage.bind(this));
         window.removeEventListener('mouseup', this.handleReleaseDragging.bind(this));
-        clearInterval(this.wonderTradeChecker)
+        clearInterval(this.wonderTradeChecker);
+        clearInterval(this.cloudSyncKeyChecker);
     }
 
     /**
@@ -442,8 +445,57 @@ export default class MainPage extends Component
         this.wonderTradeChecker = setInterval(checkForWonderTrade, WONDER_TRADE_CHECK_INTERVAL);
         checkForWonderTrade(); //Check immediately
 
+        //Periodically check if the cloud data sync key is still valid (detects new tab login)
+        if (ACCOUNT_SYSTEM)
+        {
+            clearInterval(this.cloudSyncKeyChecker);
+            this.cloudSyncKeyChecker = setInterval(this.checkCloudDataSyncKey.bind(this), CLOUD_SYNC_KEY_CHECK_INTERVAL);
+        }
+
         //Prompt the user to allow sending desktop notifications
         RequestPermissionForSystemNotifications();
+    }
+
+    /**
+     * Checks if the user's cloud data sync key is still valid.
+     * If it isn't, shows a pop-up and forces a page reload when dismissed.
+     */
+    async checkCloudDataSyncKey()
+    {
+        const { username, accountCode, cloudDataSyncKey, isRandomizedSave } = this.state;
+
+        if (!username || !cloudDataSyncKey)
+            return;
+
+        try
+        {
+            const route = `${config.devServer}/api/user/validateCloudDataSyncKey`;
+            await axios.get(route, { params: { username, accountCode, cloudDataSyncKey, randomizer: isRandomizedSave } });
+        }
+        catch (error)
+        {
+            //Only act on 401 (invalid key); ignore network errors to avoid false positives
+            if (!error.response || error.response.status !== StatusCode.ClientErrorUnauthorized)
+                return;
+
+            clearInterval(this.cloudSyncKeyChecker);
+            this.cloudSyncKeyChecker = null;
+            this.setState({changeWasMade: [false, false]}); //Prevent the "unsaved changes" pop-up from showing since the user can't do anything about it
+
+            PopUp.fire
+            ({
+                icon: 'error',
+                title: 'Logged In Elsewhere',
+                text: 'You have logged in to Unbound Cloud in a new tab. You can no longer access your data in this tab.',
+                confirmButtonText: 'OK',
+                showCancelButton: false,
+                allowOutsideClick: false,
+                ...GetDefaultPopUpOpts(),
+            }).then(() =>
+            {
+                window.location.reload();
+            });
+        }
     }
 
 

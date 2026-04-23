@@ -6,5 +6,5 @@ const DEV_SERVER = import.meta.env.VITE_DEV_SERVER ?? ""; // If it's an environm
 
 export const config =
 {
-    devServer : DEV_SERVER,
+    devServer: DEV_SERVER,
 };
