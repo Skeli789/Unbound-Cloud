@@ -625,44 +625,45 @@ def main():
         file.close()
 
     ## Convert Base Stats C File ##
-    defines = Defines.CStructArrayToDict(f"{GAME_DATA_DIR}/{version}/Base_Stats.c", "gBaseStats", {})
-    with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "w") as file:
-        file.write(json.dumps(defines, indent=4) + "\n")
+    if os.path.exists(f"{GAME_DATA_DIR}/{version}/Base_Stats.c"):
+        defines = Defines.CStructArrayToDict(f"{GAME_DATA_DIR}/{version}/Base_Stats.c", "gBaseStats", {})
+        with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "w") as file:
+            file.write(json.dumps(defines, indent=4) + "\n")
 
-    ## Trim Base Stats JSON File ##
-    with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "r") as file:
-        data = json.load(file)
-        del data["SPECIES_EGG"]
-        if "SPECIES_MISSINGNO" in data:
-            del data["SPECIES_MISSINGNO"]
-        if "SPECIES_LUGIA_S" in data:
-            del data["SPECIES_LUGIA_S"]
-        if "SPECIES_SHADOW_WARRIOR" in data:
-            del data["SPECIES_SHADOW_WARRIOR"]
-        for key in data:
-            try:
-                del data[key]["idTag"]
-                del data[key]["catchRate"]
-                del data[key]["expYield"]
-                del data[key]["evYield_HP"]
-                del data[key]["evYield_Attack"]
-                del data[key]["evYield_Defense"]
-                del data[key]["evYield_SpAttack"]
-                del data[key]["evYield_SpDefense"]
-                del data[key]["evYield_Speed"]
-                del data[key]["item1"]
-                del data[key]["item2"]
-                del data[key]["eggCycles"]
-                del data[key]["friendship"]
-                del data[key]["eggGroup1"]
-                del data[key]["eggGroup2"]
-                del data[key]["safariZoneFleeRate"]
-                del data[key]["noFlip"]
-            except KeyError:
-                pass
+        ## Trim Base Stats JSON File ##
+        with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "r") as file:
+            data = json.load(file)
+            del data["SPECIES_EGG"]
+            if "SPECIES_MISSINGNO" in data:
+                del data["SPECIES_MISSINGNO"]
+            if "SPECIES_LUGIA_S" in data:
+                del data["SPECIES_LUGIA_S"]
+            if "SPECIES_SHADOW_WARRIOR" in data:
+                del data["SPECIES_SHADOW_WARRIOR"]
+            for key in data:
+                try:
+                    del data[key]["idTag"]
+                    del data[key]["catchRate"]
+                    del data[key]["expYield"]
+                    del data[key]["evYield_HP"]
+                    del data[key]["evYield_Attack"]
+                    del data[key]["evYield_Defense"]
+                    del data[key]["evYield_SpAttack"]
+                    del data[key]["evYield_SpDefense"]
+                    del data[key]["evYield_Speed"]
+                    del data[key]["item1"]
+                    del data[key]["item2"]
+                    del data[key]["eggCycles"]
+                    del data[key]["friendship"]
+                    del data[key]["eggGroup1"]
+                    del data[key]["eggGroup2"]
+                    del data[key]["safariZoneFleeRate"]
+                    del data[key]["noFlip"]
+                except KeyError:
+                    pass
 
-    with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "w") as file:
-        file.write(json.dumps(data, indent=4) + "\n")
+        with open(f"{GAME_DATA_DIR}/{version}/BaseStats.json", "w") as file:
+            file.write(json.dumps(data, indent=4) + "\n")
 
 
 if __name__ == '__main__':

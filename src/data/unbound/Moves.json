@@ -834,5 +834,6 @@
     "MOVE_SUPERCELLSLAM": true,
     "MOVE_PSYCHICNOISE": true,
     "MOVE_UPPERHAND": true,
-    "MOVE_MALIGNANTCHAIN": true
+    "MOVE_MALIGNANTCHAIN": true,
+    "MOVE_NIHILLIGHT": true
 }

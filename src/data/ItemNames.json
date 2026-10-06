@@ -2254,6 +2254,141 @@
 	"ITEM_METAL_ALLOY": {
 		"name": "Metal Alloy"
 	},
+	"ITEM_CLEFABLITE": {
+		"name": "Clefablite"
+	},
+	"ITEM_VICTREEBELITE": {
+		"name": "Victreebelite"
+	},
+	"ITEM_STARMINITE": {
+		"name": "Starminite"
+	},
+    "ITEM_DRAGONINITE": {
+		"name": "Dragoninite"
+	},
+	"ITEM_MEGANIUMITE": {
+		"name": "Meganiumite"
+	},
+    "ITEM_FERALIGITE": {
+		"name": "Feraligite"
+	},
+    "ITEM_SKARMORYITE": {
+		"name": "Skarmoryite"
+	},
+	"ITEM_FROSSLASSITE": {
+		"name": "Froslassite"
+	},
+	"ITEM_EMBOARITE": {
+		"name": "Emboarite"
+	},
+	"ITEM_EXCADRITE": {
+		"name": "Excadrite"
+	},
+	"ITEM_SCOLIPITE": {
+		"name": "Scolipite"
+	},
+	"ITEM_SCRAFTINITE": {
+		"name": "Scraftinite"
+	},
+	"ITEM_EELEKTROSSITE": {
+		"name": "Eelektrossite"
+	},
+	"ITEM_CHANDELURITE": {
+		"name": "Chandelurite"
+	},
+	"ITEM_CHESNAUGHTITE": {
+		"name": "Chesnaughtite"
+	},
+	"ITEM_DELPHOXITE": {
+		"name": "Delphoxite"
+	},
+	"ITEM_GRENINJITE": {
+		"name": "Greninjite"
+	},
+	"ITEM_PYROARITE": {
+		"name": "Pyroarite"
+	},
+	"ITEM_FLOETTITE": {
+		"name": "Floettite"
+	},
+	"ITEM_MALAMARITE": {
+		"name": "Malamarite"
+	},
+	"ITEM_BARBARACITE": {
+		"name": "Barbaracite"
+	},
+	"ITEM_DRAGALGITE": {
+		"name": "Dragalgite"
+	},
+	"ITEM_HAWLUCHANITE": {
+		"name": "Hawluchanite"
+	},
+	"ITEM_ZYGARDITE": {
+		"name": "Zygardite"
+	},
+	"ITEM_DRAMPANITE": {
+		"name": "Drampanite"
+	},
+	"ITEM_FALINKSITE": {
+		"name": "Falinksite"
+	},
+	"ITEM_RAICHUNITE_X": {
+		"name": "Raichunite X"
+	},
+	"ITEM_RAICHUNITE_Y": {
+		"name": "Raichunite Y"
+	},
+	"ITEM_CHIMECHITE": {
+		"name": "Chimechite"
+	},
+	"ITEM_ABSOLITE_Z": {
+		"name": "Absolite Z"
+	},
+	"ITEM_STARAPTITE": {
+		"name": "Staraptite"
+	},
+	"ITEM_GARCHOMPITE_Z": {
+		"name": "Garchompite Z"
+	},
+	"ITEM_LUCARIONITE_Z": {
+		"name": "Lucarionite Z"
+	},
+	"ITEM_HEATRANITE": {
+		"name": "Heatranite"
+	},
+	"ITEM_DARKRANITE": {
+		"name": "Darkranite"
+	},
+	"ITEM_GOLURKITE": {
+		"name": "Golurkite"
+	},
+	"ITEM_MEOWSTICITE": {
+		"name": "Meowsticite"
+	},
+	"ITEM_CRABOMINITE": {
+		"name": "Crabominite"
+	},
+	"ITEM_GOLISOPITE": {
+		"name": "Golisopite"
+	},
+	"ITEM_MAGEARNITE": {
+		"name": "Magearnite"
+	},
+	"ITEM_ZERAORITE": {
+		"name": "Zeraorite"
+	},
+	"ITEM_SCOVILLAINITE": {
+		"name": "Scovillainite"
+	},
+	"ITEM_GLIMMORANITE": {
+		"name": "Glimmoranite"
+	},
+	"ITEM_TATSUGIRINITE": {
+		"name": "Tatsugirinite"
+	},
+	"ITEM_BAXCALIBRITE": {
+		"name": "Baxcalibrite"
+	},
 
 	"ITEM_MAGM_BADGE": {
 		"name": "MAGM Badge (MAGM)"
@@ -2334,9 +2469,6 @@
 
 	"ITEM_LUXRANITE": {
 		"name": "Luxranite (GSC)"
-	},
-	"ITEM_MEGANIUMITE": {
-		"name": "Meganiumite (GSC)"
 	},
 	"ITEM_TYPHLOSIONITE": {
 		"name": "Typhlosinite (GSC)"
